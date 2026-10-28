@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
-// Demo stores are never indexed (spec 5.8).
+// Demo stores are never indexed (spec 5.8); robots.txt also disallows everything.
 export const metadata: Metadata = {
-  title: 'VoirCheck demo stores',
-  robots: { index: false, follow: false },
+  title: 'Fictional demo stores · VoirCheck',
+  robots: { index: false, follow: false, nocache: true },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

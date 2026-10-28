@@ -1,0 +1,25 @@
+# Render Blueprint (https://render.com/docs/blueprint-spec). Created from the dashboard, not deployed from here.
+#
+# rootDir is deliberately left unset (= repo root): Render makes files outside a service's rootDir
+# unavailable at build time, and this pnpm workspace needs the root lockfile and packages/shared.
+# buildFilter limits auto-deploys to the files the stores service actually uses.
+services:
+  - type: web
+    name: voircheck-stores
+    runtime: node
+    region: virginia
+    plan: free
+    buildCommand: npx -y pnpm@10.18.3 install --frozen-lockfile --prod=false && npx -y pnpm@10.18.3 --filter @voircheck/stores build
+    startCommand: npx -y pnpm@10.18.3 --filter @voircheck/stores start
+    healthCheckPath: /robots.txt
+    autoDeployTrigger: commit # switch to checksPass once CI exists
+    buildFilter:
+      paths:
+        - apps/stores/**
+        - packages/shared/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - tsconfig.base.json
+        - .node-version
+        - render.yaml
