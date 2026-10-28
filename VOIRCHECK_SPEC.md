@@ -147,19 +147,23 @@
 ### 5.7 PayPal flow ✅
 **Verified facts (PayPal docs, Oct 27 2026)**
 - Authorization holds funds, valid **29 days**; **3-day honor period**; reauthorize issues a **new authorization ID** and restarts the 3 days. Void endpoint: `POST /v2/payments/authorizations/{id}/void`.
-- Different payee per order: `purchase_units[].payee.email_address` (or `merchant_id`). Docs only show it with `intent: CAPTURE`. **AUTHORIZE + payee is unconfirmed: spike test.**
+- **Reauthorize: ✅ CONFIRMED behavior (spike)**: inside the honor period it is rejected with `422 REAUTHORIZATION_TOO_SOON` ("only allowed once from Day 4 to Day 29"). Day 4+ success not testable on spike day.
+- Different payee per order: `purchase_units[].payee.email_address` (or `merchant_id`). Docs only show it with `intent: CAPTURE`. **AUTHORIZE + payee: ❌ FAILED in spike (Oct 27)**: authorize + capture to a third-party payee work, but **void returns `403 PERMISSION_DENIED`** (stores A and B both), and a vaulted charge with a payee returns `BILLING_AGREEMENT_NOT_FOUND`. Void on the app's own account (no payee): ✅ CONFIRMED. See `docs/spike-results.md`.
 - Agent Toolkit order tools: `create_order`, `get_order`, `pay_order`, `create_refund`, `get_refund` (plus invoices, disputes, shipment tracking, catalog, subscriptions, reporting). **No authorize/capture/void tools.** Frameworks: Vercel AI SDK (TS), OpenAI Agents SDK, LangChain, MCP. Sandbox OAuth tokens last ~3–8h; implement refresh.
 - Vaulting PayPal wallet: `payment_source.paypal.attributes.vault` (`store_in_vault: ON_SUCCESS`, `usage_type: MERCHANT`); sandbox works after enabling **Vault** in Sandbox App Settings → Advanced options. Off-session use requires Risk Data Acquisition (RDA). Production needs reference-transaction approval (not needed for the hackathon).
+- **Vaulting: ✅ CONFIRMED (spike)**: first AUTHORIZE order returns vault status `VAULTED`; a second order with `payment_source.paypal.vault_id` is created already `COMPLETED` with an authorization, **no buyer approval**. No RDA header needed in sandbox.
+- **Webhooks: ✅ CONFIRMED (spike)**: order approved / authorization created / authorization voided delivered; 4/4 passed `verify-webhook-signature`.
 
 **Decisions**
 - **Buyer approval UI:** PayPal **JS SDK v6** buttons.
-- **Order intent:** `AUTHORIZE` for every purchase (funds held), then server decides: SAFE → capture; HOLD → wait for user (show 3-day countdown; offer reauthorize); BLOCK → void.
+- **Order intent:** `AUTHORIZE` for every purchase (funds held), then server decides: SAFE → capture; HOLD → wait for user (show 3-day honor-period countdown and the 29-day expiry; offer reauthorize **only from day 4, once**); BLOCK → void.
 - **Agent ↔ PayPal:** PayPal **Agent Toolkit** for create/get order and refunds + **our own custom tools** (REST) for authorize, capture, void, reauthorize.
 - **Safety gate (non-negotiable):** the agent can only *request* money actions. **Server code enforces the verdict rules**; a capture to a BLOCK store is impossible without the user's explicit override, regardless of what the AI says (defends against prompt injection from scanned pages).
 - **Webhooks (signature-verified):** order approved, authorization created / voided, capture completed / denied, vault payment-token created. They update the UI live and write to the audit log.
-- **Auto-pay mode:** uses a vaulted PayPal wallet (buyer approves once, with vaulting on). Fallback if vaulting fails: auto-pay goes up to a single-tap approval.
+- **Auto-pay mode:** uses a vaulted PayPal wallet (buyer approves once, with vaulting on). Vaulting confirmed in spike, so the single-tap fallback is not needed. Vaulted charges also go to the app's own merchant (no payee).
 - **Build order:** **half-day PayPal spike first** (script, no UI) testing: (1) AUTHORIZE + custom payee, (2) void, (3) reauthorize, (4) vault + charge vaulted wallet, (5) webhook delivery + signature verification. Print pass/fail; update this spec from the results. Then UI-first for the rest.
 - **Fallback if AUTHORIZE + payee fails:** all payments go to one sandbox merchant; the store identity is stored in order metadata (`custom_id` / description) and shown in the UI.
+- **✅ Decision (spike, Oct 27): per-store payees dropped; void requires own-account payee.** Every order omits `payee`, so the app's own sandbox merchant receives it. Store identity lives in `purchase_units[0].custom_id` + `description` and is shown in the UI. Overrides the per-store payee plan in 5.3 (item 4).
 
 ### 5.8 Demo stores ✅
 **Two kinds of sites VoirCheck scans**
@@ -423,6 +427,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — Name locked: VoirCheck.
 - 2026-10-27 — AG Grid = stretch goal only.
 - 2026-10-27 — Repo created: JoJoshJo/voircheck (init commit a70c1c6). Every Claude Code prompt starts with the REPO CHECK.
+- 2026-10-27 — PayPal spike done (`docs/spike-results.md`): void to a third-party payee → `PERMISSION_DENIED`, so **per-store payees dropped; all payments go to the app's own merchant; store identity in `custom_id` + description**. Void (own account), vaulting + no-approval charge, and verified webhooks CONFIRMED. Reauthorize rejected days 1–3 (`REAUTHORIZATION_TOO_SOON`).
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.
