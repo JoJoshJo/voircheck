@@ -1,0 +1,1 @@
+ALTER TABLE "candidates" ALTER COLUMN "price" DROP NOT NULL;

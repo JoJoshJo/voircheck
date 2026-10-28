@@ -38,7 +38,7 @@ export interface KernelVisit {
 
 export interface PageVisitor {
   /** Throws only when the browser itself can't be used; per-page failures come back in `pages`. */
-  visit(urls: string[]): Promise<KernelVisit>;
+  visit(urls: string[], hooks?: { onSession?: (s: { sessionId: string; liveViewUrl?: string }) => void }): Promise<KernelVisit>;
 }
 
 /**
@@ -125,7 +125,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
   if (execSec * 1000 >= totalTimeoutMs) throw new Error('totalTimeoutMs must exceed the page navigation budget');
 
   return {
-    async visit(urls) {
+    async visit(urls, hooks) {
       const started = Date.now();
       const browser = await client.browsers.create({
         headless: !(opts.liveView ?? true),
@@ -134,6 +134,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
         timeout_seconds: Math.ceil(totalTimeoutMs / 1000) + 30,
       }, { timeout: 20_000, maxRetries: 0 });
       const sessionId = browser.session_id;
+      hooks?.onSession?.({ sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined });
       let replayId: string | undefined;
       let replayUrl: string | undefined;
       try {

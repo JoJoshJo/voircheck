@@ -87,7 +87,8 @@ export const candidates = pgTable(
     storeName: text('store_name').notNull(),
     storeUrl: text('store_url').notNull(),
     productTitle: text('product_title').notNull(),
-    price: numeric('price', { precision: 10, scale: 2 }).notNull(),
+    // null for a pasted link (check-a-link): the price isn't known, and the money gate refuses to charge without one.
+    price: numeric('price', { precision: 10, scale: 2 }),
     currency: char('currency', { length: 3 }).notNull().default('USD'),
     source: candidateSource('source').notNull(),
     rank: integer('rank'),

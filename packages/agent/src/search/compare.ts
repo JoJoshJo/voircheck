@@ -123,3 +123,36 @@ export async function compareStores(query: string, opts: CompareOptions): Promis
   if (!picks.length) return { status: 'no_results', query };
   return { status: 'ok', stores: picks, sameProduct, channel3: 'ok', ...(opts.demoMode ? { demoSkipped: true } : {}) };
 }
+
+// ---------- check-a-link peers (demo stores) ----------
+
+/**
+ * A pasted link has no comparison set, so the price and clone signals would have nothing to compare. For our own
+ * demo stores (Demo mode ON), compare against the store's twin plus the legit store of the next pair, on the same
+ * page (home, product or about), with the store's hero product as the shared item. Real URLs: no peers yet.
+ */
+export function demoPeersForUrl(rawUrl: string, baseUrl = DEFAULT_DEMO_STORES_BASE_URL): { slug: string; storeName: string; productTitle: string; peers: Array<{ url: string; productTitle: string }> } | null {
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    return null;
+  }
+  const base = new URL(baseUrl);
+  const hosted = STORES.find((s) => s.hosts.some((h) => h.toLowerCase() === url.hostname.toLowerCase()));
+  const m = url.hostname === base.hostname ? url.pathname.match(/^\/s\/([^/]+)(\/.*)?$/) : null;
+  const store = hosted ?? (m ? STORES.find((s) => s.slug === m[1]) : undefined);
+  if (!store) return null;
+  const rest = hosted ? url.pathname.replace(/\/$/, '') : (m?.[2] ?? '').replace(/\/$/, '');
+
+  const twin = STORES.find((s) => s.pair === store.pair && s.slug !== store.slug)!;
+  const other = STORES.find((s) => s.pair === (store.pair % 3) + 1 && s.role === 'legit')!;
+  const hero = store.products[0]!;
+  const productTitle = store.products.find((p) => rest === `/products/${p.slug}`)?.name ?? hero.name;
+  return {
+    slug: store.slug,
+    storeName: store.name,
+    productTitle,
+    peers: [twin, other].map((s) => ({ url: `${demoStoreUrl(s, baseUrl).replace(/\/$/, '')}${rest}`, productTitle })),
+  };
+}

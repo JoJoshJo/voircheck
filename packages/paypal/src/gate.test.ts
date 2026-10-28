@@ -132,6 +132,15 @@ describe('approve mode', () => {
     expect(store.payments.size).toBe(1);
   });
 
+  it('a candidate with no known price (pasted link) can never be charged', async () => {
+    const { gate, pp, store } = setup();
+    store.candidates.get('cand-1')!.price = null;
+    expect(await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'click-0001', ...urls })).toEqual({ ok: false, reason: 'no known price for this store' });
+    store.vaultTokens.push({ userId: USER, paypalVaultTokenId: 'V', status: 'VAULTED' });
+    expect(await gate.autoPay({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'auto-0001' })).toEqual({ ok: false, reason: 'no known price for this store' });
+    expect(pp.callsTo(/orders/)).toHaveLength(0);
+  });
+
   it("refuses another user's candidate, and audits it", async () => {
     const { gate, pp, store } = setup();
     const r = await gate.startApprovePurchase({ userId: OTHER_USER, candidateId: 'cand-1', idempotencyKey: 'click-0001', ...urls });

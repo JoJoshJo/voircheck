@@ -56,8 +56,9 @@ const PAGES: Record<string, PageSnapshot> = {
 
 function fakeVisitor(behavior: 'ok' | 'throw' | 'timeout' = 'ok'): PageVisitor & { visit: ReturnType<typeof vi.fn> } {
   return {
-    visit: vi.fn(async (urls: string[]): Promise<KernelVisit> => {
+    visit: vi.fn(async (urls: string[], hooks?: { onSession?: (s: { sessionId: string; liveViewUrl?: string }) => void }): Promise<KernelVisit> => {
       if (behavior === 'throw') throw new Error('KERNEL API 503');
+      hooks?.onSession?.({ sessionId: 'sess_test', liveViewUrl: 'https://live.example.test/sess_test' });
       return {
         sessionId: 'sess_test',
         liveViewUrl: 'https://live.example.test/sess_test',
@@ -138,6 +139,18 @@ describe('scanStore', () => {
     expect(result.kernel).toEqual({ sessionId: 'sess_test', liveViewUrl: 'https://live.example.test/sess_test' });
   });
 
+  it('reports progress: the browser session first, then all six signals', async () => {
+    const events: Array<{ type: string; id?: string }> = [];
+    await scanStore({ url: 'https://velbrook-outlet.shop/', peers: [{ url: 'https://velbrook.com/' }, { url: 'https://ondaya.com/' }] }, deps({ onProgress: (e) => events.push(e) }));
+    expect(events.filter((e) => e.type === 'browser')).toHaveLength(1);
+    expect(events.filter((e) => e.type === 'signal').map((e) => e.id).sort()).toEqual(['ai_page', 'clone', 'domain_age', 'price', 'ssl_redirects', 'threat_list']);
+  });
+
+  it('a throwing progress listener does not break the scan', async () => {
+    const { result } = await scanStore({ url: 'https://velbrook.com/' }, deps({ onProgress: () => { throw new Error('ui gone'); } }));
+    expect(result.signals).toHaveLength(6);
+  });
+
   it('the original store is SAFE even when its copy is a peer', async () => {
     const { result } = await scanStore({ url: 'https://velbrook.com/', peers: [{ url: 'https://velbrook-outlet.shop/' }, { url: 'https://ondaya.com/' }] }, deps());
     expect(signal(result, 'clone').status).toBe('pass');
@@ -147,11 +160,34 @@ describe('scanStore', () => {
 
   it('young domain + price >40% below → hard rule HOLD at least', async () => {
     const { result } = await scanStore(
-      { url: 'https://ondaya.com/', price: 20, peers: [{ url: 'https://velbrook.com/', price: 59 }] },
+      { url: 'https://ondaya.com/', price: 20, peers: [{ url: 'https://velbrook.com/', price: 59 }, { url: 'https://velbrook-outlet.shop/', price: 59 }] },
       deps({ ageDays: 5 }),
     );
     expect(result.hardRulesTriggered).toContain('young_domain_cheap_price');
     expect(result.verdict).not.toBe('SAFE');
+  });
+
+  it('peers listing a different product are left out of the price comparison', async () => {
+    const { result } = await scanStore(
+      {
+        url: 'https://ondaya.com/',
+        price: 20,
+        productTitle: 'Zephlet Buds',
+        peers: [{ url: 'https://velbrook.com/', price: 59, productTitle: 'Zephlet Buds' }, { url: 'https://velbrook-outlet.shop/', price: 79, productTitle: 'Acme Buds Pro' }],
+      },
+      deps(),
+    );
+    expect(signal(result, 'price')).toMatchObject({ status: 'unavailable', points: 0 });
+  });
+
+  it('sameProduct: false → price unavailable', async () => {
+    const { result } = await scanStore({ url: 'https://ondaya.com/', price: 20, sameProduct: false, peers: [{ url: 'https://velbrook.com/', price: 59 }, { url: 'https://velbrook-outlet.shop/', price: 59 }] }, deps());
+    expect(signal(result, 'price').status).toBe('unavailable');
+  });
+
+  it("refuses Channel3's buy.trychannel3.com redirect links (scan the retailer page instead)", async () => {
+    await expect(scanStore({ url: 'https://buy.trychannel3.com/8748UGP-p1PB-23L6YR?o=1' }, deps())).rejects.toThrow('Channel3 buy link');
+    await expect(scanStore({ url: 'https://velbrook.com/', peers: [{ url: 'https://buy.trychannel3.com/x' }] }, deps())).rejects.toThrow();
   });
 
   it('threat-list hit → BLOCK', async () => {

@@ -1,1 +1,61 @@
 @import "tailwindcss";
+
+/*
+ * VoirCheck design tokens (spec 5.12, "Mono ink"). No brand accent color: the only color in the UI is a verdict.
+ * Two weights only: regular (400) and medium (500).
+ */
+@theme {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-surface: #f5f5f4;
+  --color-line: #e7e5e4;
+  --color-ink: #0c0c0c;
+  --color-muted: #6b6866;
+  --color-faint: #a8a29e;
+  --color-transparent: transparent;
+
+  --color-safe-bg: #eaf3de;
+  --color-safe: #27500a;
+  --color-hold-bg: #faeeda;
+  --color-hold: #633806;
+  --color-block-bg: #fcebeb;
+  --color-block: #791f1f;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, var(--font-inter), sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+
+  --radius-card: 18px;
+  --radius-control: 10px;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Mascot: lightweight float while scanning; still for reduced motion. */
+@keyframes vc-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes vc-scan {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+@keyframes vc-tick {
+  from { opacity: 0; transform: scale(0.6); }
+  to { opacity: 1; transform: scale(1); }
+}
+.vc-float { animation: vc-float 2.4s ease-in-out infinite; }
+.vc-scan { animation: vc-scan 1.6s ease-in-out infinite; transform-origin: 30px 44px; }
+.vc-tick { animation: vc-tick 240ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .vc-float, .vc-scan, .vc-tick { animation: none; }
+}

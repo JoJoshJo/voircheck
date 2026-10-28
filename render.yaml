@@ -23,3 +23,50 @@ services:
         - tsconfig.base.json
         - .node-version
         - render.yaml
+
+  - type: web
+    name: voircheck-web
+    runtime: node
+    region: virginia
+    plan: free # Starter from Nov 11 through Dec 15 (spec 5.16)
+    buildCommand: npx -y pnpm@10.18.3 install --frozen-lockfile --prod=false && npx -y pnpm@10.18.3 --filter @voircheck/web build
+    # The start script binds $PORT (next start --port ${PORT:-3000}).
+    startCommand: npx -y pnpm@10.18.3 --filter @voircheck/web start
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit # switch to checksPass once CI exists
+    buildFilter:
+      paths:
+        - apps/web/**
+        - packages/**
+        - db/**
+        - package.json
+        - pnpm-lock.yaml
+        - pnpm-workspace.yaml
+        - tsconfig.base.json
+        - .node-version
+        - render.yaml
+    envVars:
+      # Secrets: set in the dashboard when syncing the Blueprint (sync: false = never stored in this file).
+      - key: DATABASE_URL
+        sync: false
+      - key: NEON_AUTH_BASE_URL
+        sync: false
+      - key: NEON_AUTH_COOKIE_SECRET
+        sync: false
+      - key: KERNEL_API_KEY
+        sync: false
+      - key: GOOGLE_SAFE_BROWSING_API_KEY
+        sync: false
+      - key: CHANNEL3_API_KEY
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_WEBHOOK_ID
+        sync: false
+      # Not secret.
+      - key: PAYPAL_BASE_URL
+        value: https://api-m.sandbox.paypal.com
+      - key: DEMO_STORES_BASE_URL
+        value: https://voircheck-stores.onrender.com

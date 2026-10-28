@@ -18,12 +18,12 @@ describe('price signal', () => {
 
   it.each([
     [23, [59, 59], 'fail'], // Velbrook-Outlet: 61% below
-    [35.3, [59], 'fail'], // 40.2% below
-    [35.4, [59], 'warn'], // exactly 40% → warn (rule is "more than")
+    [35.3, [59, 59], 'fail'], // 40.2% below
+    [35.4, [59, 59], 'warn'], // exactly 40% → warn (rule is "more than")
     [44, [59, 59], 'warn'], // Nyuie Clearance: 25% below
-    [47.2, [59], 'pass'], // exactly 20% → pass (rule is "more than")
+    [47.2, [59, 59], 'pass'], // exactly 20% → pass (rule is "more than")
     [56, [59, 59], 'pass'], // 0ndaya: ~5% below must NOT fire
-    [70, [59], 'pass'], // above peers
+    [70, [59, 59], 'pass'], // above peers
   ])('price %f vs %j → %s', (price, peers, status) => {
     expect(evaluatePrice({ price, title: 'Zephlet Buds', peerPrices: peers }).outcome.status).toBe(status);
   });
@@ -32,6 +32,16 @@ describe('price signal', () => {
     const r = evaluatePrice({ price: 50, title: 'X', peerPrices: [100, 40, 120] });
     expect(r.belowPct).toBe(50);
     expect(r.outcome.evidence.join(' ')).toContain('50% below');
+  });
+
+  it('needs ≥3 offers for the exact same product (this store + 2 others), else unavailable with 0 points', () => {
+    expect(evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59] }).outcome).toMatchObject({ status: 'unavailable', evidence: [expect.stringContaining('Only 2 offers')] });
+    expect(evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59, 62] }).outcome.status).toBe('fail');
+  });
+
+  it('never compares across different products', () => {
+    const r = evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59, 62], sameProduct: false });
+    expect(r).toMatchObject({ belowPct: null, outcome: { status: 'unavailable' } });
   });
 
   it('is unavailable without a price or peers', () => {

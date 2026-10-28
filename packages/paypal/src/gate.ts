@@ -184,12 +184,17 @@ export class MoneyGate {
       await this.audit(input.userId, 'user', 'purchase.refused', null, { reason: 'candidate not found', candidateId: input.candidateId });
       return { ok: false, reason: 'candidate not found' };
     }
+    if (candidate.price === null) {
+      await this.audit(input.userId, 'user', 'purchase.refused', null, { reason: 'no known price', candidateId: candidate.id });
+      return { ok: false, reason: 'no known price for this store' };
+    }
+    const price = candidate.price;
     const storeSlug = storeSlugFor(candidate);
     const order = await createOrder(
       this.paypal,
       {
         intent: 'AUTHORIZE',
-        amount: toMoney(candidate.price, candidate.currency),
+        amount: toMoney(price, candidate.currency),
         storeSlug,
         storeName: candidate.storeName,
         returnUrl: input.returnUrl,
@@ -207,7 +212,7 @@ export class MoneyGate {
       authorizationId: null,
       captureId: null,
       storeSlug,
-      amount: toMoney(candidate.price, candidate.currency).value,
+      amount: toMoney(price, candidate.currency).value,
       currency: candidate.currency,
       status: 'created',
       mode: 'approve',
@@ -312,6 +317,7 @@ export class MoneyGate {
     };
     const candidate = await this.store.getCandidateForUser(input.candidateId, input.userId);
     if (!candidate) return refuse('candidate not found');
+    if (candidate.price === null) return refuse('no known price for this store');
     const [profile, vault, v] = await Promise.all([this.store.getProfile(input.userId), this.store.getActiveVaultToken(input.userId), this.verdictFor(input.scanId, candidate)]);
     const amount = toMoney(candidate.price, candidate.currency);
     const decision = decideAutopay({

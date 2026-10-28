@@ -115,7 +115,7 @@
 - **Six signals (all on):**
   1. Domain age & registration (WHOIS/RDAP)
   2. SSL & redirects (valid HTTPS, cert age/issuer, cross-domain redirects)
-  3. Too-good-to-be-true price (vs the other stores for the same item)
+  3. Too-good-to-be-true price (vs the other stores for the same item). **Rule (Oct 28):** compares against the **median of the other same-product offers** and scores only when there are **≥3 offers for the exact same product** (this store + at least 2 others); otherwise status `unavailable` (0 points). Never compares across different products (Channel3 `sameProduct: false`). Scans always use the **retailer's real product page**, never Channel3's `buy.trychannel3.com` redirect link (the scanner refuses those URLs).
   4. AI page analysis (missing contact/address, fake reviews, urgency tricks, copied text, missing/broken policies)
   5. Threat-list lookup (e.g., Google Safe Browsing)
   6. Clone / lookalike detection (copied layout/logo/text, lookalike domains)
@@ -444,6 +444,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — Spec made consistent with spike: per-store payees removed from 5.3/5.8/5.9; auto-pay uses direct CAPTURE.
 - 2026-10-28 — ORM locked: **Drizzle ORM + drizzle-kit** for schema and migrations; Neon serverless driver for app queries, `DATABASE_URL_UNPOOLED` for migrations. Monorepo scaffolded; 11 tables migrated to Neon; `audit_log` append-only via trigger (app connects as table owner, so grants alone can't enforce it); 6 demo stores seeded.
 - 2026-10-28 — Scanner built (`packages/scanner`): five non-AI signals + AI placeholder, points weights per 5.6, hard rules + can't-verify, KERNEL-only page visits, SSRF guards. Google Safe Browsing is non-commercial only: fine for the hackathon; a paid VoirCheck must move signal 5 to Google Web Risk.
+- 2026-10-28 — Price signal tightened: median of same-product offers, scores only with ≥3 offers for the exact same product, else `unavailable` (0 points); never across different products; scan the retailer's product page, never Channel3's redirect link.
 - 2026-10-28 — Hosting: Render **free plan during the build**; `voircheck-stores` + `voircheck-web` move to **Starter ($7/mo) on Nov 11** before recording and stay through Dec 15. Demo earbuds renamed to **Zephlet Buds** (the old name matched an existing product; avoid third-party trademarks).
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.

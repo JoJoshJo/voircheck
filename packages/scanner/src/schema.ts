@@ -14,7 +14,18 @@ export const StoreUrl = z
     } catch {
       return false;
     }
-  }, 'must be an http(s) URL without credentials');
+  }, 'must be an http(s) URL without credentials')
+  // Scan the retailer's own page, never Channel3's attributed buy link (it redirects, which would skew signal 2).
+  .refine((s) => !isChannel3Redirect(s), "scan the retailer's product page, not a Channel3 buy link");
+
+export function isChannel3Redirect(raw: string): boolean {
+  try {
+    const host = new URL(raw).hostname.toLowerCase();
+    return host === 'trychannel3.com' || host.endsWith('.trychannel3.com');
+  } catch {
+    return false;
+  }
+}
 
 export const Peer = z.object({
   url: StoreUrl,
@@ -31,6 +42,8 @@ export const ScanInput = z.object({
   /** Optional: the item's price/title at this store when the caller already knows it (e.g. from Channel3). */
   price: z.number().positive().optional(),
   productTitle: z.string().min(1).max(300).optional(),
+  /** false when the peers sell different products (Channel3 `sameProduct: false`): the price signal then stays unavailable. */
+  sameProduct: z.boolean().optional(),
 });
 export type ScanInput = z.input<typeof ScanInput>;
 

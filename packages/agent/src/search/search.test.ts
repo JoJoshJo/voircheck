@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { getProductDetail, normalizeProducts, searchProducts, type Channel3Product } from './channel3';
-import { compareStores, demoItemFor, demoResults, pickStoresForItem } from './compare';
+import { compareStores, demoItemFor, demoPeersForUrl, demoResults, pickStoresForItem } from './compare';
 
 const offer = (domain: string, price: number, extra: Record<string, unknown> = {}) => ({
   url: `https://www.buy.trychannel3.com/r/${domain}`,
@@ -162,5 +162,29 @@ describe('demo mode', () => {
   it('demo ON but item not in the demo catalog → real results, flagged', async () => {
     const r = await compareStores('hiking boots', { ...opts(mockFetch(200, { products: PRODUCTS })), demoMode: true });
     expect(r).toMatchObject({ status: 'ok', demoSkipped: true });
+  });
+});
+
+describe('demoPeersForUrl (check-a-link on a demo store)', () => {
+  const B = 'https://voircheck-stores.onrender.com/s';
+  it('twin + legit store of the next pair, same page, hero product as the item', () => {
+    expect(demoPeersForUrl(`${B}/velbrook-outlet-deals`)).toEqual({
+      slug: 'velbrook-outlet-deals',
+      storeName: 'Velbrook-Outlet Deals',
+      productTitle: 'Zephlet Buds',
+      peers: [
+        { url: `${B}/velbrook-supply`, productTitle: 'Zephlet Buds' },
+        { url: `${B}/ondaya-home`, productTitle: 'Zephlet Buds' },
+      ],
+    });
+  });
+  it('keeps the product page and its product', () => {
+    const r = demoPeersForUrl(`${B}/nyuie-market-clearance/products/nimbair-purifier`)!;
+    expect(r.productTitle).toBe('Nimbair Purifier');
+    expect(r.peers.map((p) => p.url)).toEqual([`${B}/nyuie-market/products/nimbair-purifier`, `${B}/velbrook-supply/products/nimbair-purifier`]);
+  });
+  it('null for real sites and unknown slugs', () => {
+    expect(demoPeersForUrl('https://www.bestbuy.com/site/x')).toBeNull();
+    expect(demoPeersForUrl(`${B}/not-a-store`)).toBeNull();
   });
 });

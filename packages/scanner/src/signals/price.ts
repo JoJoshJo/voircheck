@@ -2,7 +2,11 @@ import { unavailable, type SignalOutcome } from './types';
 
 /** Signal 3: too-good-to-be-true price vs the other stores for the same item. */
 
-export const PRICE = { failAbovePct: 40, warnAbovePct: 20 } as const;
+/**
+ * Scores only with ≥3 offers for the exact same product (this store + at least 2 others); the reference is the
+ * median of the other offers. Fewer offers, or a comparison across different products, is "unavailable" (0 points).
+ */
+export const PRICE = { failAbovePct: 40, warnAbovePct: 20, minOffers: 3 } as const;
 
 const PRICE_RE = /(?:US\s?)?[$€£]\s?(\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)/;
 
@@ -37,11 +41,15 @@ export function median(xs: number[]): number {
 
 const money = (n: number) => `$${n.toFixed(2)}`;
 
-export function evaluatePrice(input: { price: number | null; title: string | null; peerPrices: number[] }): { outcome: SignalOutcome; belowPct: number | null } {
+export function evaluatePrice(input: { price: number | null; title: string | null; peerPrices: number[]; sameProduct?: boolean }): { outcome: SignalOutcome; belowPct: number | null } {
   const id = 'price' as const;
   const item = input.title ? `"${input.title}"` : 'this item';
+  if (input.sameProduct === false) return { outcome: unavailable(id, 'The other stores sell different products, so prices are not compared.'), belowPct: null };
   if (input.price === null) return { outcome: unavailable(id, `Couldn't find the price of ${item} on this store.`), belowPct: null };
-  if (input.peerPrices.length === 0) return { outcome: unavailable(id, `No other store's price for ${item} to compare with.`), belowPct: null };
+  const offers = input.peerPrices.length + 1;
+  if (offers < PRICE.minOffers) {
+    return { outcome: unavailable(id, `Only ${offers} offer${offers === 1 ? '' : 's'} for exactly ${item}; prices are compared from ${PRICE.minOffers} offers up.`), belowPct: null };
+  }
 
   const ref = median(input.peerPrices);
   const belowPct = Math.round(((ref - input.price) / ref) * 1000) / 10;

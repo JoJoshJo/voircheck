@@ -16,8 +16,8 @@ export interface CandidateRow {
   storeName: string;
   storeUrl: string;
   productTitle: string;
-  /** numeric(10,2) as returned by Postgres. */
-  price: string;
+  /** numeric(10,2) as returned by Postgres; null for a pasted link whose price isn't known (never chargeable). */
+  price: string | null;
   currency: string;
   source: 'channel3' | 'demo' | 'link';
 }
