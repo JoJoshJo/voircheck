@@ -36,7 +36,7 @@
 | Item | Purpose | Status |
 |---|---|---|
 | GitHub repo | Code | ✅ |
-| PayPal Developer sandbox app + **7 sandbox business accounts** (6 demo stores + 1 stand-in merchant) + **1 sandbox personal (buyer) account**; Vault enabled in sandbox app settings ("PayPal and Venmo: save payment methods"); `.env` filled | Payments | ✅ |
+| PayPal Developer sandbox app + **7 sandbox business accounts** (6 demo stores + 1 stand-in merchant) + **1 sandbox personal (buyer) account**; Vault enabled in sandbox app settings ("PayPal and Venmo: save payment methods"); `.env` filled. **Only the app's own sandbox merchant account + the buyer account are used for payments** (spike, 5.7); the 7 business accounts are unused | Payments | ✅ |
 | Resend (free tier) | Trust Receipt emails | ⬜ |
 | **3** cheap fresh domains (Velbrook-Outlet, 0ndaya, Nyuie Clearance) | Buy ~1 week before recording (~Nov 3–5) | ⬜ |
 | Google Safe Browsing API key | Threat-list signal | ⬜ |
@@ -96,9 +96,7 @@
    - *Check-a-link box:* user pastes any store/product URL; VoirCheck scans that exact store. All scans run in KERNEL's cloud browser, never from our server (SSRF protection — details in piece 17).
 2. **Compare stores for one item:** agent finds the item at 2–3 stores (Channel3), scans each store, ranks by **trust first, then price**. The cheap-but-fake store visibly loses.
 3. **Demo mode toggle** (visible, labeled, **ON by default**): injects our fictional, clearly labeled demo stores (see 5.8) into results so the scenario is reliable for the video and judges. OFF = real Channel3 results only, scanned live.
-4. **Sandbox payees:** each order sets its own PayPal `payee`:
-   - Each of the 6 demo stores → its own sandbox business account (blocked stores show their authorization being voided)
-   - Real Channel3 retailers → one sandbox "stand-in merchant" account, labeled as a stand-in in the UI
+4. **Sandbox payees:** all orders go to the **app's own sandbox merchant account** (no `payee` field). Store identity is stored in `purchase_units[0].custom_id` (store slug) + `description` (store name); the UI shows the store name. Blocked/held payments are voided on the app's own account (spike, 5.7).
 5. **Verdict handling**
    - SAFE → capture (Approve mode: after user approval; Auto-pay mode: automatically if under limit)
    - HOLD → payment authorized (held, not taken); user sees evidence and taps **Capture** or **Void**; screen shows the authorization expiry countdown (confirm exact PayPal window in piece 7)
@@ -161,9 +159,10 @@
 - **Safety gate (non-negotiable):** the agent can only *request* money actions. **Server code enforces the verdict rules**; a capture to a BLOCK store is impossible without the user's explicit override, regardless of what the AI says (defends against prompt injection from scanned pages).
 - **Webhooks (signature-verified):** order approved, authorization created / voided, capture completed / denied, vault payment-token created. They update the UI live and write to the audit log.
 - **Auto-pay mode:** uses a vaulted PayPal wallet (buyer approves once, with vaulting on). Vaulting confirmed in spike, so the single-tap fallback is not needed. Vaulted charges also go to the app's own merchant (no payee).
+- **Auto-pay charges a SAFE store directly with intent `CAPTURE` using the vaulted wallet**, so capturing a vaulted authorization is not required. Proven: T5 (no-approval vaulted charge) plus a direct check after the spike, `intent: CAPTURE` + `vault_id` → order `4LJ90652RG565781F` COMPLETED, capture `1HR073536B772753V` COMPLETED, no buyer step. The verdict check runs **before** the order is created.
 - **Build order:** **half-day PayPal spike first** (script, no UI) testing: (1) AUTHORIZE + custom payee, (2) void, (3) reauthorize, (4) vault + charge vaulted wallet, (5) webhook delivery + signature verification. Print pass/fail; update this spec from the results. Then UI-first for the rest.
 - **Fallback if AUTHORIZE + payee fails:** all payments go to one sandbox merchant; the store identity is stored in order metadata (`custom_id` / description) and shown in the UI.
-- **✅ Decision (spike, Oct 27): per-store payees dropped; void requires own-account payee.** Every order omits `payee`, so the app's own sandbox merchant receives it. Store identity lives in `purchase_units[0].custom_id` + `description` and is shown in the UI. Overrides the per-store payee plan in 5.3 (item 4).
+- **✅ Decision (spike, Oct 27): per-store payees dropped; void requires own-account payee.** Every order omits `payee`, so the app's own sandbox merchant receives it. Store identity lives in `purchase_units[0].custom_id` + `description` and is shown in the UI. 5.3 (item 4), 5.8 and 5.9 updated to match.
 
 ### 5.8 Demo stores ✅
 **Two kinds of sites VoirCheck scans**
@@ -198,17 +197,17 @@
 - `noindex` / robots.txt disallow on all demo stores; they **never collect real payment or personal details** (checkout goes only through our PayPal sandbox flow).
 - Only the 3 scam/borderline stores need fresh cheap domains (buy ~Nov 3–5). Legit demo stores can use hosting subdomains or older domains.
 
-**Sandbox payees:** one sandbox business account per demo store (6) + one stand-in merchant for real retailers (1) = **7 business accounts** + 1 buyer account.
+**Sandbox payees:** no per-store payees (spike T3: void to a third-party payee → `PERMISSION_DENIED`). The 7 sandbox business accounts already created are unused for payments; keep them, no action needed.
 
 ### 5.9 Data model (Neon Postgres) ✅
 | Table | Holds |
 |---|---|
 | `profiles` | user_id, display_name, language, autopay_enabled, autopay_limit, created_at |
-| `demo_stores` | id, slug, name, domain, pair (1–3), role (legit / scam / borderline), sandbox_payee_email, theme (config) |
+| `demo_stores` | id, slug, name, domain, pair (1–3), role (legit / scam / borderline), theme (config) |
 | `shopping_sessions` | id, user_id, entry_type (chat / link), query_or_url, demo_mode, status, created_at |
 | `candidates` | id, session_id, store_name, store_url, product_title, price, currency, source (channel3 / demo / link), rank |
 | `scans` | id, store_domain, url, risk_score (0–100), verdict (SAFE / HOLD / BLOCK), signals (jsonb: all six results + evidence), explanation (jsonb, per language), hard_rules_triggered, kernel_replay_url, scanned_at, cache_expires_at (+24h) |
-| `payments` | id, session_id, candidate_id, scan_id, paypal_order_id, authorization_id, capture_id, payee, amount, currency, status, mode (approve / auto), override_used, created_at, updated_at |
+| `payments` | id, session_id, candidate_id, scan_id, paypal_order_id, authorization_id, capture_id, store_slug, amount, currency, status, mode (approve / auto), override_used, created_at, updated_at |
 | `trust_receipts` | id, public_slug (unguessable), payment_id or scan_id, language, snapshot (jsonb), emailed_at, created_at |
 | `audit_log` | id, user_id, actor (user / agent / system / webhook), action, entity, entity_id, details (jsonb), created_at; **append-only** |
 | `webhook_events` | id, paypal_event_id (unique → idempotency), event_type, signature_verified, payload (jsonb), received_at, processed_at |
@@ -336,7 +335,7 @@ voircheck/
 2. **SSRF:** user URLs are only ever opened inside KERNEL. Our server only does RDAP/WHOIS, DNS and TLS checks on the hostname, and **blocks localhost, private/link-local IP ranges and cloud metadata addresses**; resolve-then-check to stop DNS rebinding; `http`/`https` only; URL length limit.
 3. **Rate limits (balanced):** guests 5 agent requests + 15 store scans per hour; signed-in users double that; per-IP limits; **global cap 500 scans/day** to protect credits.
 4. **Webhooks:** verify every PayPal webhook signature; idempotency via unique `paypal_event_id`.
-5. **Money integrity:** the server takes price/payee from its own stored `candidates` row, **never from the browser**; money gate enforced server-side (5.7).
+5. **Money integrity:** the server takes price/store (`store_slug` → `custom_id`) from its own stored `candidates` row, **never from the browser**; money gate enforced server-side (5.7).
 6. **XSS:** AI explanations and page quotes always rendered as **plain text**, never HTML.
 7. **Validation:** Zod on every API input and every AI JSON output; reject anything malformed.
 8. **Headers:** strict CSP (allow PayPal SDK domains), HSTS, X-Content-Type-Options, frame-ancestors, Referrer-Policy.
@@ -428,6 +427,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — AG Grid = stretch goal only.
 - 2026-10-27 — Repo created: JoJoshJo/voircheck (init commit a70c1c6). Every Claude Code prompt starts with the REPO CHECK.
 - 2026-10-27 — PayPal spike done (`docs/spike-results.md`): void to a third-party payee → `PERMISSION_DENIED`, so **per-store payees dropped; all payments go to the app's own merchant; store identity in `custom_id` + description**. Void (own account), vaulting + no-approval charge, and verified webhooks CONFIRMED. Reauthorize rejected days 1–3 (`REAUTHORIZATION_TOO_SOON`).
+- 2026-10-27 — Spec made consistent with spike: per-store payees removed from 5.3/5.8/5.9; auto-pay uses direct CAPTURE.
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.
