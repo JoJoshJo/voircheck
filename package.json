@@ -4,13 +4,23 @@
   "type": "module",
   "packageManager": "pnpm@10.18.3",
   "scripts": {
+    "typecheck": "tsc --noEmit && pnpm -r typecheck",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "build": "pnpm -r build",
     "spike": "tsx scripts/paypal-spike.ts",
-    "typecheck": "tsc --noEmit"
+    "db:generate": "pnpm --filter @voircheck/db generate",
+    "db:migrate": "pnpm --filter @voircheck/db migrate",
+    "db:seed": "pnpm --filter @voircheck/db seed",
+    "db:verify": "pnpm --filter @voircheck/db verify"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
     "dotenv": "^16.4.7",
-    "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "eslint": "^10.13.0",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.0.5"
   }
 }

@@ -7,3 +7,5 @@ dist/
 .DS_Store
 *.log
 *.local.json
+*.tsbuildinfo
+next-env.d.ts

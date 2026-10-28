@@ -291,6 +291,7 @@ Eligible for three sponsor prizes; only one can be won.
 | Styling | **Tailwind CSS** with Mono ink tokens (5.12) |
 | AI | **Vercel AI SDK** + Anthropic (Sonnet 5.5 agent, Haiku 5.5 scans); PayPal Agent Toolkit plugs in natively |
 | Database / auth | **Neon** (serverless Postgres) + **Neon managed Better Auth**; ownership checks in server code + Postgres RLS where useful |
+| ORM / migrations | **Drizzle ORM + drizzle-kit** (schema + SQL migrations in `db/`). App queries use the **Neon serverless driver** with `DATABASE_URL`; migrations and seed use `DATABASE_URL_UNPOOLED`. Owner filter helper `ownedBy()` in `packages/shared` |
 | Payments | **PayPal JS SDK v6** (frontend) + **Orders v2 REST** (server) + **Agent Toolkit** |
 | Product search | **Channel3** API + MCP server |
 | Scanning | **KERNEL** cloud browser (all page visits) + RDAP/WHOIS, TLS checks, Google Safe Browsing |
@@ -428,6 +429,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — Repo created: JoJoshJo/voircheck (init commit a70c1c6). Every Claude Code prompt starts with the REPO CHECK.
 - 2026-10-27 — PayPal spike done (`docs/spike-results.md`): void to a third-party payee → `PERMISSION_DENIED`, so **per-store payees dropped; all payments go to the app's own merchant; store identity in `custom_id` + description**. Void (own account), vaulting + no-approval charge, and verified webhooks CONFIRMED. Reauthorize rejected days 1–3 (`REAUTHORIZATION_TOO_SOON`).
 - 2026-10-27 — Spec made consistent with spike: per-store payees removed from 5.3/5.8/5.9; auto-pay uses direct CAPTURE.
+- 2026-10-28 — ORM locked: **Drizzle ORM + drizzle-kit** for schema and migrations; Neon serverless driver for app queries, `DATABASE_URL_UNPOOLED` for migrations. Monorepo scaffolded; 11 tables migrated to Neon; `audit_log` append-only via trigger (app connects as table owner, so grants alone can't enforce it); 6 demo stores seeded.
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.
