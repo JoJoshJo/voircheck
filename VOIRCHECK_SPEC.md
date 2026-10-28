@@ -36,13 +36,13 @@
 | Item | Purpose | Status |
 |---|---|---|
 | GitHub repo | Code | ✅ |
-| PayPal Developer sandbox app + **7 sandbox business accounts** (6 demo stores + 1 stand-in merchant) + **1 sandbox personal (buyer) account**; Vault enabled in sandbox app settings | Payments | ⬜ |
+| PayPal Developer sandbox app + **7 sandbox business accounts** (6 demo stores + 1 stand-in merchant) + **1 sandbox personal (buyer) account**; Vault enabled in sandbox app settings ("PayPal and Venmo: save payment methods"); `.env` filled | Payments | ✅ |
 | Resend (free tier) | Trust Receipt emails | ⬜ |
 | **3** cheap fresh domains (Velbrook-Outlet, 0ndaya, Nyuie Clearance) | Buy ~1 week before recording (~Nov 3–5) | ⬜ |
 | Google Safe Browsing API key | Threat-list signal | ⬜ |
 | Google Cloud OAuth client | "Sign in with Google" | ⬜ |
-| Supabase project | DB + audit log | ⬜ |
-| Anthropic API key (+ monthly spend limit set in Console) | AI (Sonnet 5.5 agent, Haiku 5.5 scans) | ⬜ |
+| Neon project `voircheck` (US East) + **Better Auth enabled** (Neon console: Better Auth page → Enable Auth); 4 vars in `.env` | Database + login | ✅ |
+| Anthropic API key in a dedicated `voircheck` Console workspace (+ workspace spend limit ~$40) | AI (Sonnet 5.5 agent, Haiku 5.5 scans) | ⬜ **Deferred: J adds ~$30–40 credit by Nov 3 (hard stop Nov 4)** |
 | APIMatic Context Plugin (in Claude Code) + APIMatic claim form | PayPal integration accuracy; sponsor eligibility | ⬜ |
 | Channel3 key (promo `PAYPAL-HACKATHON-2026`, 20k credits) | Product search | ⬜ |
 | KERNEL ($50 credits via sponsor page) | Cloud browser for store scans, live view/replay | ⬜ |
@@ -196,7 +196,7 @@
 
 **Sandbox payees:** one sandbox business account per demo store (6) + one stand-in merchant for real retailers (1) = **7 business accounts** + 1 buyer account.
 
-### 5.9 Data model (Supabase / Postgres) ✅
+### 5.9 Data model (Neon Postgres) ✅
 | Table | Holds |
 |---|---|
 | `profiles` | user_id, display_name, language, autopay_enabled, autopay_limit, created_at |
@@ -219,8 +219,9 @@
 - **Retention:** keep everything through judging (Dec 15, 2026); afterwards auto-delete user data 90 days after creation; keep anonymized scan stats.
 
 ### 5.10 Login & judge access ✅
-- **Regular users:** Supabase Auth with **magic link + Google + email/password**. Language picker is the first onboarding screen (see 5.6).
-- **Judges / visitors:** a **"Try the demo" button** on the landing page creates a **private temporary guest account** (Supabase anonymous sign-in) per visitor, preset to English, Demo mode ON, auto-pay OFF. Guest data follows the retention rule.
+- **Env vars (verified in Neon docs, Oct 27):** `DATABASE_URL` (pooled connection string from the console's **Connect** button), `DATABASE_URL_UNPOOLED` (same, with *Connection pooling* toggled off; for migrations), `NEON_AUTH_BASE_URL` (Settings → Better Auth → Project Info), `NEON_AUTH_COOKIE_SECRET` (self-generated, ≥32 chars: `openssl rand -base64 32`).
+- **Regular users:** **Neon's managed Better Auth** (called "Better Auth" in the Neon console; users/sessions stored in our Postgres `neon_auth` schema) with **magic link + Google + email/password**. Language picker is the first onboarding screen (see 5.6).
+- **Judges / visitors:** a **"Try the demo" button** on the landing page creates a **private temporary guest account** per visitor (Neon Auth has no anonymous sign-in listed, so the server creates a real temporary account with a random demo email and signs the visitor in automatically; auto-deleted per retention), preset to English, Demo mode ON, auto-pay OFF. Guest data follows the retention rule.
 - **README backup:** PayPal **sandbox buyer login** (needed to approve in the PayPal popup) + a regular demo email/password in case the button fails. Sandbox credentials only, never real ones.
 - Guest accounts get rate limits (set in piece 17) to protect AI/KERNEL/Channel3 credits.
 
@@ -256,7 +257,10 @@
 - **Shopping agent (chat + tool calls):** Claude **Sonnet 5.5** (`claude-sonnet-5-5`).
 - **AI page analysis signal:** Claude **Haiku 5.5** (`claude-haiku-5-5`); 3 stores scanned in parallel. Returns **structured JSON only** (findings + evidence quotes + per-language explanation text).
 - **Explanations:** written by the scan model in the user's chosen language, in the calm/plain tone (5.12).
-- **Cost control:** monthly spend limit set in the Anthropic Console before judging; guest rate limits (piece 17); 24h scan cache (5.5).
+- **Cost control:** dedicated `voircheck` Console workspace with its own spend limit (~$40) so a VoirCheck problem can't affect GhostCheck; guest rate limits (piece 17); 24h scan cache (5.5).
+- **Verified prices (Oct 27):** Haiku 5.5 $0.10 in / $0.50 out per MTok (<100K-token prompts); Sonnet 5.5 $2.00 in / $10.00 out, cache read $0.10. Estimate ≈ $0.05–0.08 per demo session → ~$25–40 for 500 sessions + ~$10–20 dev.
+- 🟡 **Proposed cost levers:** develop with Haiku 5.5 as the agent model (one config value, `AGENT_MODEL`), switch to Sonnet 5.5 for recording + judging; prompt caching on the agent's system prompt + tool definitions.
+- **Availability:** Anthropic key arrives by **Nov 3**. Build order must put AI-dependent work last: scanner builds the 5 non-AI signals first with the AI signal behind a placeholder that returns "unavailable" (scoring already handles that, see 5.18).
 - **Sponsor AI tooling:** no sponsor provides free model credits. Use the **APIMatic Context Plugin** in Claude Code while building the PayPal integration (free; improves accuracy; makes us eligible for Best Use of APIMatic and the participant/winner subscription offers via APIMatic's form). Astropods and Elastic: not used.
 
 **Prompt-injection defenses (all four, mandatory)**
@@ -283,7 +287,7 @@ Eligible for three sponsor prizes; only one can be won.
 | App | **Next.js (App Router) + TypeScript** |
 | Styling | **Tailwind CSS** with Mono ink tokens (5.12) |
 | AI | **Vercel AI SDK** + Anthropic (Sonnet 5.5 agent, Haiku 5.5 scans); PayPal Agent Toolkit plugs in natively |
-| Database / auth | **Supabase** (Postgres, Auth, RLS) |
+| Database / auth | **Neon** (serverless Postgres) + **Neon managed Better Auth**; ownership checks in server code + Postgres RLS where useful |
 | Payments | **PayPal JS SDK v6** (frontend) + **Orders v2 REST** (server) + **Agent Toolkit** |
 | Product search | **Channel3** API + MCP server |
 | Scanning | **KERNEL** cloud browser (all page visits) + RDAP/WHOIS, TLS checks, Google Safe Browsing |
@@ -304,7 +308,7 @@ voircheck/
 │  ├─ paypal/         # REST wrappers (authorize/capture/void/reauthorize), webhook verify, money gate
 │  ├─ agent/          # agent tools + prompts (Toolkit + custom tools)
 │  └─ shared/         # types, Zod schemas, i18n strings (EN/FR)
-├─ supabase/          # migrations, RLS policies, seed (demo_stores)
+├─ db/                # migrations, RLS policies, seed (demo_stores)
 ├─ scripts/           # paypal-spike.ts, run-test-set.ts
 ├─ docs/              # architecture diagram, test-set results
 ├─ VOIRCHECK_SPEC.md
@@ -318,7 +322,7 @@ voircheck/
   2. `voircheck-stores`: one service serving all 6 demo stores, routed by domain/host
   3. Render Workflows: scans + test-set runs
   - Verify instance pricing at signup; confirm credits cover Nov 1 → Dec 15.
-- **Supabase free tier + daily keep-alive:** a scheduled job writes/reads a heartbeat row once a day so the project never pauses (free projects pause after ~1 week idle; verify current policy).
+- **Neon free plan:** compute auto-suspends after 5 min idle and wakes on the next request (first request slightly slower); no long-term pause, so **no keep-alive job needed**. Free plan: 100 CU-hours/project/month, 1 GB storage/project; monitor usage during judging.
 - **Uptime monitoring:** free monitor checks the app + all 6 demo stores every 5 min, with phone/email alerts. Watch closely Dec 1–15.
 - **Domains:** 3 fresh scam-store domains (5.8) point to `voircheck-stores`; legit demo stores use Render subdomains or older domains.
 - **Freeze rule:** after submission (Nov 12), no risky deploys until judging ends Dec 15; fixes only.
@@ -393,10 +397,10 @@ voircheck/
 Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM ET**; internal target **submit by noon ET**.
 | Date | Work |
 |---|---|
-| Oct 27 (tonight) | Accounts: PayPal sandbox app + 7 business + 1 buyer + Vault enabled; Supabase; Anthropic key + spend limit; Channel3 (promo); KERNEL credits; Render credits; Resend; Safe Browsing key; Google OAuth client; uptime monitor; APIMatic plugin |
-| Oct 28 | **PayPal spike (half day, `scripts/paypal-spike.ts`)** → update 5.7 from results; pnpm monorepo scaffold; Supabase migrations + RLS + seed |
+| Oct 27 (tonight) | Accounts: PayPal sandbox app + 7 business + 1 buyer + Vault enabled ✅ (done); Neon + Neon Auth; Anthropic key + spend limit; Channel3 (promo); KERNEL credits; Render credits; Resend; Safe Browsing key; Google OAuth client; uptime monitor; APIMatic plugin |
+| Oct 28 | **PayPal spike (half day, `scripts/paypal-spike.ts`)** → update 5.7 from results; pnpm monorepo scaffold; Neon migrations + RLS + seed |
 | Oct 29–30 | `apps/stores`: one template, 6 themes, planted tells + hidden injection, demo banner, noindex; deploy to Render |
-| Oct 31–Nov 2 | `packages/scanner`: six signals, scoring + hard rules, KERNEL integration, SSRF guards, Render Workflows, unit tests |
+| Oct 31–Nov 2 | `packages/scanner`: five non-AI signals first, AI page-analysis signal behind a placeholder until the Anthropic key arrives (by Nov 3); full scanner: scoring + hard rules, KERNEL integration, SSRF guards, Render Workflows, unit tests |
 | Nov 3 | Channel3 search + enrichment + MCP; **buy 3 scam-store domains** and point them at `voircheck-stores` |
 | Nov 4–5 | `packages/agent` + `packages/paypal`: Sonnet agent, Toolkit + custom tools, money gate, JS SDK v6 checkout, webhooks, HOLD/BLOCK/override, auto-pay + vault |
 | Nov 6 | Workspace UI (split view), mascot, Trust Receipt + Resend email, EN/FR i18n. **🚦 Checkpoint: full SAFE/HOLD/BLOCK flow works end to end? → decide AG Grid / mobile** |
@@ -419,6 +423,8 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — Name locked: VoirCheck.
 - 2026-10-27 — AG Grid = stretch goal only.
 - 2026-10-27 — Repo created: JoJoshJo/voircheck (init commit a70c1c6). Every Claude Code prompt starts with the REPO CHECK.
+- 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
+- 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.
 - 2026-10-27 — Piece 20 partly locked: 2:50 video structure; narration and on-camera decision deferred to ~Nov 8.
 - 2026-10-27 — Piece 19 locked: 11-section README with judge quick-start; MIT license.
