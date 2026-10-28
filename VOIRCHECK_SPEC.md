@@ -106,7 +106,7 @@
 ### 5.4 Product search ✅
 - **Source:** Channel3 API (real retailers; promo credits). Must be called for real, since the sponsor prize requires actual API calls.
 - **Stores per item:** **3**: legit demo store, scam demo store (both only when Demo mode is ON), and one real Channel3 retailer. Demo mode OFF → top 3 real Channel3 retailers.
-- **Products:** real search works for any item. Demo stores carry a **3-item catalog**: wireless earbuds, air purifier, smartwatch. All demo-store products use **made-up generic names** (e.g., "AeroBuds Pro"), never real brands.
+- **Products:** real search works for any item. Demo stores carry a **3-item catalog**: wireless earbuds, air purifier, smartwatch. All demo-store products use **made-up generic names** (e.g., "Zephlet Buds"), never real brands.
 - **Video hero item:** wireless earbuds; the other two appear briefly to prove nothing is hardcoded.
 - **No results / Channel3 error:** honest agent message ("I couldn't find that"), suggests a broader search, and offers the check-a-link box. Never silently fake results.
 
@@ -185,7 +185,7 @@
 5. Broken policies (missing, copy-pasted or contradictory refund/shipping)
 6. Fake scarcity / viewers ("only 2 left", "43 people viewing" that never change)
 
-**Catalog** (generic made-up product names, e.g., "AeroBuds Pro"; legit / scam price)
+**Catalog** (generic made-up product names, e.g., "Zephlet Buds"; legit / scam price)
 - Wireless earbuds: $59 / $23
 - Air purifier: $129 / $49
 - Smartwatch: $149 / $59
@@ -321,11 +321,11 @@ voircheck/
 ```
 
 ### 5.16 Hosting & uptime ✅
-- **Render, always-on paid instances, paid with the $50 hackathon credits** (no cold starts):
+- **Render free plan during the build; switch `voircheck-stores` and `voircheck-web` to the Starter instance ($7/mo each) on Nov 11, before recording, and keep it through Dec 15** (paid with the $50 hackathon credits; Starter is always-on, so no cold starts during recording or judging). Free instances sleep when idle, so expect a slow first load until Nov 11.
   1. `voircheck-web`: main app
   2. `voircheck-stores`: one service serving all 6 demo stores, routed by domain/host
   3. Render Workflows: scans + test-set runs
-  - Verify instance pricing at signup; confirm credits cover Nov 1 → Dec 15.
+  - Confirm the credits cover Starter for both services Nov 11 → Dec 15.
 - **Neon free plan:** compute auto-suspends after 5 min idle and wakes on the next request (first request slightly slower); no long-term pause, so **no keep-alive job needed**. Free plan: 100 CU-hours/project/month, 1 GB storage/project; monitor usage during judging.
 - **Uptime monitoring:** free monitor checks the app + all 6 demo stores every 5 min, with phone/email alerts. Watch closely Dec 1–15.
 - **Domains:** 3 fresh scam-store domains (5.8) point to `voircheck-stores`; legit demo stores use Render subdomains or older domains.
@@ -412,7 +412,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 | Nov 8 | Playwright e2e, GitHub Actions CI, failure-case handling; **decide narration / on-camera** |
 | Nov 9 | Stretch (AG Grid dashboard) **or** polish buffer |
 | Nov 10 | Security self-audit + fixes, `SECURITY.md`, `pnpm audit` |
-| Nov 11 | Record + edit video, README + GIF, Devpost draft; deploy freeze begins after final deploy |
+| Nov 11 | **Switch `voircheck-stores` + `voircheck-web` to Render Starter ($7/mo) before recording**; record + edit video, README + GIF, Devpost draft; deploy freeze begins after final deploy |
 | Nov 12 | Final checks, add MIT `LICENSE`, repo public, YouTube public, **submit by noon ET** |
 
 **Rules:** if a day slips, cut from the stretch list first, then email, then auto-pay; never cut the core SAFE/HOLD/BLOCK flow, the PayPal integration, the video, or the security day. Sleep counts: tired builders ship bugs on submission day.
@@ -430,6 +430,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — PayPal spike done (`docs/spike-results.md`): void to a third-party payee → `PERMISSION_DENIED`, so **per-store payees dropped; all payments go to the app's own merchant; store identity in `custom_id` + description**. Void (own account), vaulting + no-approval charge, and verified webhooks CONFIRMED. Reauthorize rejected days 1–3 (`REAUTHORIZATION_TOO_SOON`).
 - 2026-10-27 — Spec made consistent with spike: per-store payees removed from 5.3/5.8/5.9; auto-pay uses direct CAPTURE.
 - 2026-10-28 — ORM locked: **Drizzle ORM + drizzle-kit** for schema and migrations; Neon serverless driver for app queries, `DATABASE_URL_UNPOOLED` for migrations. Monorepo scaffolded; 11 tables migrated to Neon; `audit_log` append-only via trigger (app connects as table owner, so grants alone can't enforce it); 6 demo stores seeded.
+- 2026-10-28 — Hosting: Render **free plan during the build**; `voircheck-stores` + `voircheck-web` move to **Starter ($7/mo) on Nov 11** before recording and stay through Dec 15. Demo earbuds renamed to **Zephlet Buds** (the old name matched an existing product; avoid third-party trademarks).
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.

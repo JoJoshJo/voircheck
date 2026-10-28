@@ -21,11 +21,11 @@ const NO_TELLS: Record<TellId, boolean> = {
 const BASE_PRODUCTS: Record<ProductId, Omit<Product, 'price'>> = {
   earbuds: {
     id: 'earbuds',
-    slug: 'aerobuds-pro',
-    name: 'AeroBuds Pro',
+    slug: 'zephlet-buds',
+    name: 'Zephlet Buds',
     tagline: 'Wireless earbuds that stay put on a long run.',
     description:
-      'AeroBuds Pro are lightweight wireless earbuds with a secure wing fit, sweat resistance and a pocket-sized charging case. Tuned for clear vocals and steady bass at every volume.',
+      'Zephlet Buds are lightweight wireless earbuds with a secure wing fit, sweat resistance and a pocket-sized charging case. Tuned for clear vocals and steady bass at every volume.',
     features: ['Up to 8 hours per charge, 30 with the case', 'IPX5 sweat and splash resistance', 'Adaptive noise reduction', 'Three sizes of ear tips included'],
   },
   purifier: {
@@ -120,7 +120,8 @@ const VELBROOK_OUTLET_DEALS: StoreConfig = cloneStore(VELBROOK_SUPPLY, {
   role: 'scam',
   theme: 'velbrook-outlet-deals',
   products: catalog({ earbuds: 23, purifier: 49, watch: 59 }), // ~60% lower
-  contact: { email: 'velbrookoutletdeals.help2026@gmail.com' },
+  // TODO: replace with J-owned free-email addresses before recording (by Nov 10).
+  contact: { email: 'velbrook-outlet-help@example.com' },
   reviews: ['Jessica M.', 'Robert K.', 'Linda P.', 'Michael B.', 'Sarah T.', 'David W.', 'Emily C.', 'James L.'].map((author, i) => ({
     author,
     rating: 5 as const,
@@ -194,7 +195,8 @@ const ZERO_NDAYA_HOME: StoreConfig = cloneStore(ONDAYA_HOME, {
   role: 'scam',
   theme: '0ndaya-home',
   products: catalog({ earbuds: 56, purifier: 121, watch: 139 }), // only ~10% lower: price signal must NOT fire
-  contact: { email: '0ndayahome.store.support@gmail.com' },
+  // TODO: replace with J-owned free-email addresses before recording (by Nov 10).
+  contact: { email: 'ondaya-support@example.com' },
   policies: {
     refund: null,
     shipping: ['{{STORE_NAME}} ships worldwide.', 'Free shipping on all orders. Shipping fees are non-refundable and are charged at checkout.'],
