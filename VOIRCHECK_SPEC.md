@@ -119,6 +119,8 @@
   4. AI page analysis (missing contact/address, fake reviews, urgency tricks, copied text, missing/broken policies)
   5. Threat-list lookup (e.g., Google Safe Browsing)
   6. Clone / lookalike detection (copied layout/logo/text, lookalike domains)
+- **Threat-list licence:** Google Safe Browsing API (signal 5) is free but **for non-commercial use only**; commercial use requires **Google Web Risk**. The hackathon demo is non-commercial. If VoirCheck becomes a paid product, migrate signal 5 to Web Risk.
+- **Implementation (`packages/scanner`, Oct 28):** page visits go through KERNEL only (one browser session per scan, one tab per store, the store's About/Contact page read too; session always deleted). Hosting subdomains (e.g. `*.onrender.com`) inherit the provider's domain age; the evidence says so. Clone text similarity ignores text every store in the comparison shares (catalog copy, template).
 - **No faked signal values, ever.** It's fine that some signals come back clean on the demo store (e.g., threat lists).
 - **Demo scam store:** knockoff of our *own* legit demo store (so clone detection fires for real, no trademarks), hosted on a **fresh cheap domain bought ~1 week before recording** so its young domain age is genuine.
 - **Real-world test set (proof layer):** ~20 known fake shops (public scam/phishing feeds) + ~20 legit shops, run through VoirCheck; publish accuracy (caught X/20, false alarms Y/20) in README + video. Record one short clip of a real live catch with brand names blurred. Never publicly name a real site as a scam without a source.
@@ -135,6 +137,17 @@
   - Threat-list hit → always **BLOCK**
   - No valid HTTPS → at least **HOLD**
   - Domain < 30 days old **and** price > 40% below the other stores → at least **HOLD**
+  - KERNEL visit failed / timed out → at least **HOLD** ("can't verify", 5.18)
+- **Points per signal (pass / warn / fail; "unavailable" = 0 everywhere)**, one config object `WEIGHTS` in `packages/scanner/src/scoring.ts`; starting values, tune on the test set:
+  | Signal | warn | fail | Why |
+  |---|---|---|---|
+  | 1 Domain age (<30d fail, <180d warn) | 10 | 25 | New honest shops exist; alone stays SAFE, with a cheap price the hard rule lifts it |
+  | 2 SSL & redirects (cross-domain redirect = warn) | 15 | 30 | No valid HTTPS is also a hard rule |
+  | 3 Price (>20% below warn, >40% below fail) | 12 | 30 | Classic lure, but real sales exist: HOLD alone, not BLOCK |
+  | 4 AI page analysis | 15 | 35 | Strong but a model's judgment; unavailable = 0 so a missing AI key never causes HOLD |
+  | 5 Threat list | – | 100 | Someone else's confirmed finding (BLOCK by hard rule too) |
+  | 6 Clone / lookalike (lookalike name/domain OR copied text = warn; both = fail) | 20 | 40 | Borrowed name + copied page is the textbook fake shop |
+  - Every warn stays SAFE alone; every fail except domain age reaches HOLD alone; BLOCK needs two strong signals (e.g. clone + fresh domain = 65, clone + price = 70, AI + price = 65).
 - **BLOCK override:** user may still pay a BLOCK store only after an explicit "I understand the risk" confirmation. The override is recorded on the Trust Receipt. **Never allowed in Auto-pay mode.**
 - **Language:**
   - User picks language **at the start of onboarding** (first screen); changeable later in settings.
@@ -430,6 +443,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — PayPal spike done (`docs/spike-results.md`): void to a third-party payee → `PERMISSION_DENIED`, so **per-store payees dropped; all payments go to the app's own merchant; store identity in `custom_id` + description**. Void (own account), vaulting + no-approval charge, and verified webhooks CONFIRMED. Reauthorize rejected days 1–3 (`REAUTHORIZATION_TOO_SOON`).
 - 2026-10-27 — Spec made consistent with spike: per-store payees removed from 5.3/5.8/5.9; auto-pay uses direct CAPTURE.
 - 2026-10-28 — ORM locked: **Drizzle ORM + drizzle-kit** for schema and migrations; Neon serverless driver for app queries, `DATABASE_URL_UNPOOLED` for migrations. Monorepo scaffolded; 11 tables migrated to Neon; `audit_log` append-only via trigger (app connects as table owner, so grants alone can't enforce it); 6 demo stores seeded.
+- 2026-10-28 — Scanner built (`packages/scanner`): five non-AI signals + AI placeholder, points weights per 5.6, hard rules + can't-verify, KERNEL-only page visits, SSRF guards. Google Safe Browsing is non-commercial only: fine for the hackathon; a paid VoirCheck must move signal 5 to Google Web Risk.
 - 2026-10-28 — Hosting: Render **free plan during the build**; `voircheck-stores` + `voircheck-web` move to **Starter ($7/mo) on Nov 11** before recording and stay through Dec 15. Demo earbuds renamed to **Zephlet Buds** (the old name matched an existing product; avoid third-party trademarks).
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.

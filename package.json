@@ -12,7 +12,8 @@
     "db:generate": "pnpm --filter @voircheck/db generate",
     "db:migrate": "pnpm --filter @voircheck/db migrate",
     "db:seed": "pnpm --filter @voircheck/db seed",
-    "db:verify": "pnpm --filter @voircheck/db verify"
+    "db:verify": "pnpm --filter @voircheck/db verify",
+    "scan": "tsx scripts/scan.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -22,5 +23,8 @@
     "typescript": "5.9.3",
     "typescript-eslint": "^8.72.1",
     "vitest": "^5.0.5"
+  },
+  "dependencies": {
+    "@voircheck/scanner": "workspace:*"
   }
 }

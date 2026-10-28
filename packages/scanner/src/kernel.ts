@@ -1,0 +1,181 @@
+import Kernel from '@onkernel/sdk';
+import { z } from 'zod';
+import { errorMessage } from './signals/types';
+
+/**
+ * All store page visits happen in KERNEL's isolated cloud browser (spec 5.5 / 5.17). Our server never fetches a
+ * store page: it sends KERNEL a Playwright snippet that runs next to the browser and returns only extracted data.
+ * Every browser session is deleted in `finally`, including on timeout.
+ */
+
+export const PageSnapshot = z.object({
+  requestedUrl: z.string(),
+  finalUrl: z.string(),
+  redirectChain: z.array(z.string()).max(30),
+  httpStatus: z.number().nullable(),
+  title: z.string().max(1000),
+  siteName: z.string().max(300).nullable(),
+  h1: z.string().max(1000).nullable(),
+  visibleText: z.string().max(200_000),
+  fullText: z.string().max(200_000),
+  structure: z.array(z.string()).max(5000),
+  aboutUrl: z.string().nullable(),
+  aboutText: z.string().max(100_000).nullable(),
+});
+export type PageSnapshot = z.infer<typeof PageSnapshot>;
+
+export type PageVisit = { ok: true; page: PageSnapshot } | { ok: false; error: string };
+
+export interface KernelVisit {
+  sessionId: string | null;
+  liveViewUrl?: string;
+  replayUrl?: string;
+  /** Same order as the requested URLs. */
+  pages: PageVisit[];
+  /** Wall-clock seconds the browser session was open (KERNEL bills per browser-second). */
+  sessionSeconds: number;
+}
+
+export interface PageVisitor {
+  /** Throws only when the browser itself can't be used; per-page failures come back in `pages`. */
+  visit(urls: string[]): Promise<KernelVisit>;
+}
+
+/**
+ * Runs inside KERNEL's VM in one executor: each URL gets its own tab (the first reuses `page`, the tab the live view
+ * shows), all in parallel. URLs are embedded as a JSON literal. Per-URL errors are returned, not thrown.
+ * (One executor with many tabs: separate named executors per URL timed out at 6 pages in testing.)
+ */
+function snapshotCode(urls: string[], navTimeoutMs: number): string {
+  return `
+const urls = ${JSON.stringify(urls)};
+const snapshot = async (page, requestedUrl) => {
+const res = await page.goto(requestedUrl, { waitUntil: 'domcontentloaded', timeout: ${navTimeoutMs} });
+await page.waitForLoadState('networkidle', { timeout: 4000 }).catch(() => {});
+const chain = [];
+for (let r = res ? res.request() : null; r; r = r.redirectedFrom()) chain.unshift(r.url());
+const finalUrl = page.url();
+if (chain[chain.length - 1] !== finalUrl) chain.push(finalUrl);
+const data = await page.evaluate(() => {
+  const meta = (sel) => document.querySelector(sel)?.getAttribute('content')?.trim() || null;
+  const title = document.title || '';
+  const parts = title.split(/\\s+[·|–—-]\\s+/);
+  const siteName = meta('meta[property="og:site_name"]') || meta('meta[name="application-name"]') || (parts.length > 1 ? parts[parts.length - 1] : title) || null;
+  const clone = document.body ? document.body.cloneNode(true) : null;
+  clone?.querySelectorAll('script,style,noscript,template').forEach((n) => n.remove());
+  const structure = [];
+  const walk = (el, depth) => {
+    if (structure.length >= 5000 || depth > 40) return;
+    structure.push(el.tagName.toLowerCase());
+    for (const c of el.children) walk(c, depth + 1);
+  };
+  if (document.body) walk(document.body, 0);
+  return {
+    title: title.slice(0, 1000),
+    siteName: siteName ? siteName.slice(0, 300) : null,
+    h1: document.querySelector('h1')?.innerText?.trim().slice(0, 1000) || null,
+    visibleText: (document.body?.innerText || '').slice(0, 200000),
+    fullText: (clone?.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 200000),
+    structure,
+  };
+});
+// The store's own About/Contact page (same origin only): clones copy it word for word, and it's where contact info lives.
+const aboutUrl = await page.evaluate(() => {
+  const here = location.href.split('#')[0];
+  const links = [...document.querySelectorAll('a[href]')].filter((a) => a.origin === location.origin && a.href.split('#')[0] !== here);
+  const pick = links.find((a) => /\\b(about|contact)\\b/i.test(a.innerText || '')) || links.find((a) => /about|contact/i.test(a.pathname));
+  return pick ? pick.href.split('#')[0] : null;
+}).catch(() => null);
+let aboutText = null;
+if (aboutUrl) {
+  try {
+    await page.goto(aboutUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    aboutText = (await page.evaluate(() => document.body?.innerText || '')).slice(0, 100000);
+  } catch {}
+}
+return { requestedUrl, finalUrl, redirectChain: chain.slice(0, 30), httpStatus: res ? res.status() : null, ...data, aboutUrl, aboutText };
+};
+return await Promise.all(urls.map(async (u, i) => {
+  try {
+    const tab = i === 0 ? page : await context.newPage();
+    return { ok: true, page: await snapshot(tab, u) };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err).slice(0, 300) };
+  }
+}));
+`;
+}
+
+export interface KernelVisitorOptions {
+  apiKey: string;
+  /** Live view needs a headful browser (spec 5.5 scan UX). */
+  liveView?: boolean;
+  /** Try to record a replay; skipped quietly if the plan doesn't allow it. */
+  replay?: boolean;
+  /** Whole visit budget, browser create to last page. On expiry the scan is "couldn't verify". */
+  totalTimeoutMs?: number;
+  navTimeoutMs?: number;
+}
+
+export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
+  const client = new Kernel({ apiKey: opts.apiKey, timeout: 20_000, maxRetries: 1 });
+  const totalTimeoutMs = opts.totalTimeoutMs ?? 90_000;
+  const navTimeoutMs = opts.navTimeoutMs ?? 45_000;
+  const execSec = Math.ceil(navTimeoutMs / 1000) + 15;
+  if (execSec * 1000 >= totalTimeoutMs) throw new Error('totalTimeoutMs must exceed the page navigation budget');
+
+  return {
+    async visit(urls) {
+      const started = Date.now();
+      const browser = await client.browsers.create({
+        headless: !(opts.liveView ?? true),
+        stealth: false,
+        // Inactivity backstop in case our delete below never runs (process crash).
+        timeout_seconds: Math.ceil(totalTimeoutMs / 1000) + 30,
+      }, { timeout: 20_000, maxRetries: 0 });
+      const sessionId = browser.session_id;
+      let replayId: string | undefined;
+      let replayUrl: string | undefined;
+      try {
+        if (opts.replay ?? true) {
+          try {
+            const replay = await client.browsers.replays.start(sessionId, { max_duration_in_seconds: Math.ceil(totalTimeoutMs / 1000) });
+            replayId = replay.replay_id;
+            replayUrl = replay.replay_view_url;
+          } catch {
+            // Replays may not be on this plan; the scan doesn't need them.
+          }
+        }
+
+        const work = client.browsers.playwright
+          .execute(
+            sessionId,
+            { code: snapshotCode(urls, navTimeoutMs), timeout_sec: execSec },
+            // The HTTP call must outlive the server-side execute timeout, and must not retry (that would re-run the visit).
+            { timeout: (execSec + 10) * 1000, maxRetries: 0 },
+          )
+          .then((res): PageVisit[] => {
+            if (!res.success) throw new Error((res.error ?? 'page visit failed').slice(0, 300));
+            const raw = Array.isArray(res.result) ? res.result : [];
+            return urls.map((_, i): PageVisit => {
+              const item = raw[i] as { ok?: boolean; page?: unknown; error?: unknown } | undefined;
+              if (!item?.ok) return { ok: false, error: typeof item?.error === 'string' ? item.error : 'page visit failed' };
+              const parsed = PageSnapshot.safeParse(item.page);
+              return parsed.success ? { ok: true, page: parsed.data } : { ok: false, error: 'unexpected page data from browser' };
+            });
+          });
+        let timer: NodeJS.Timeout | undefined;
+        const timeout = new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new Error(`cloud browser visit timed out after ${Math.round(totalTimeoutMs / 1000)}s`)), totalTimeoutMs - (Date.now() - started));
+        });
+        const pages = await Promise.race([work, timeout])
+          .catch((err): PageVisit[] => urls.map(() => ({ ok: false, error: errorMessage(err) })))
+          .finally(() => clearTimeout(timer));
+        return { sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined, replayUrl, pages, sessionSeconds: (Date.now() - started) / 1000 };
+      } finally {
+        if (replayId) await client.browsers.replays.stop(replayId, { id_or_name: sessionId }).catch(() => {});
+        await client.browsers.deleteByID(sessionId).catch(() => {});
+      }
+    },
+  };
+}
