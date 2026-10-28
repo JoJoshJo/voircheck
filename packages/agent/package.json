@@ -2,6 +2,13 @@
   "name": "@voircheck/agent",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts" },
-  "scripts": { "typecheck": "tsc --noEmit" }
+  "exports": {
+    ".": "./src/index.ts",
+    "./search": "./src/search/index.ts"
+  },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "@voircheck/shared": "workspace:*",
+    "zod": "4.6.7"
+  }
 }

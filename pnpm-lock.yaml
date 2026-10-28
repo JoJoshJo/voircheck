@@ -8,6 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@voircheck/agent':
+        specifier: workspace:*
+        version: link:packages/agent
+      '@voircheck/paypal':
+        specifier: workspace:*
+        version: link:packages/paypal
       '@voircheck/scanner':
         specifier: workspace:*
         version: link:packages/scanner
@@ -109,9 +115,29 @@ importers:
         specifier: ^4.23.15
         version: 4.23.15
 
-  packages/agent: {}
+  packages/agent:
+    dependencies:
+      '@voircheck/shared':
+        specifier: workspace:*
+        version: link:../shared
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
 
-  packages/paypal: {}
+  packages/paypal:
+    dependencies:
+      '@voircheck/db':
+        specifier: workspace:*
+        version: link:../../db
+      '@voircheck/shared':
+        specifier: workspace:*
+        version: link:../shared
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(@neondatabase/serverless@1.2.0)
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
 
   packages/scanner:
     dependencies:

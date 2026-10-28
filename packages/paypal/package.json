@@ -3,5 +3,11 @@
   "private": true,
   "type": "module",
   "exports": { ".": "./src/index.ts" },
-  "scripts": { "typecheck": "tsc --noEmit" }
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": {
+    "@voircheck/db": "workspace:*",
+    "@voircheck/shared": "workspace:*",
+    "drizzle-orm": "^0.45.4",
+    "zod": "4.6.7"
+  }
 }

@@ -13,7 +13,9 @@
     "db:migrate": "pnpm --filter @voircheck/db migrate",
     "db:seed": "pnpm --filter @voircheck/db seed",
     "db:verify": "pnpm --filter @voircheck/db verify",
-    "scan": "tsx scripts/scan.ts"
+    "scan": "tsx scripts/scan.ts",
+    "search": "tsx scripts/search.ts",
+    "paypal-check": "tsx scripts/paypal-check.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -25,6 +27,8 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
+    "@voircheck/agent": "workspace:*",
+    "@voircheck/paypal": "workspace:*",
     "@voircheck/scanner": "workspace:*"
   }
 }
