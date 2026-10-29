@@ -11,12 +11,19 @@ import { piiKeysPresent, redactWebhookPayload } from '@voircheck/paypal';
 import { eq } from 'drizzle-orm';
 
 const apply = process.argv.includes('--apply');
+
+function canonical(v: unknown): string {
+  if (Array.isArray(v)) return `[${v.map(canonical).join(',')}]`;
+  if (v && typeof v === 'object') return `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canonical((v as Record<string, unknown>)[k])}`).join(',')}}`;
+  return JSON.stringify(v);
+}
 const db = createDb(process.env.DATABASE_URL);
 
 const rows = await db.select({ id: webhookEvents.id, eventType: webhookEvents.eventType, payload: webhookEvents.payload }).from(webhookEvents);
 const changed = rows
   .map((r) => ({ ...r, redacted: redactWebhookPayload(r.payload), pii: piiKeysPresent(r.payload) }))
-  .filter((r) => JSON.stringify(r.redacted) !== JSON.stringify(r.payload));
+  // Compare ignoring key order: Postgres jsonb stores keys in its own order.
+  .filter((r) => canonical(r.redacted) !== canonical(r.payload));
 
 const byType = new Map<string, number>();
 const keys = new Set<string>();
