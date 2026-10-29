@@ -154,7 +154,8 @@ describe('approve mode', () => {
     const r = await gate.completeApproval(paymentId, USER);
     expect(r.ok && r.payment).toMatchObject({ status: 'captured', captureId: 'CAP-AUTH-ORDER1', overrideUsed: false });
     expect(pp.callsTo(/capture$/)).toHaveLength(1);
-    expect(store.audit.map((a) => a.action)).toEqual(['order.created', 'authorization.created', 'gate.capture', 'payment.captured']);
+    // Seeded user has Auto-pay on and no saved wallet, so this first purchase also asks PayPal to save it.
+    expect(store.audit.map((a) => a.action)).toEqual(['wallet.save_requested', 'order.created', 'authorization.created', 'gate.capture', 'payment.captured']);
   });
 
   it.each(['scan-hold', 'scan-stale', 'scan-other-store', null])('%s → held, never captured automatically', async (scanId) => {
@@ -415,5 +416,53 @@ describe('concurrent duplicates (React double effect, double click, webhook + br
     await Promise.all([gate.completeApproval(id, USER, 'user'), gate.completeApproval(id, USER, 'webhook')]);
     expect(store.payments.get(id)?.status).toBe('captured');
     expect(store.audit.filter((x) => x.action === 'payment.captured')).toHaveLength(1);
+  });
+});
+
+describe('saving the wallet during a purchase (Auto-pay on, nothing saved yet)', () => {
+  it('the approval order asks PayPal to vault; only the token ID is stored after authorization', async () => {
+    const pp = fakePayPal({ vaultOnAuthorize: 'VAULT-NEW' });
+    const { store } = seededStore(); // Auto-pay on, $100 limit, no wallet
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'first-0001', ...urls });
+    const body = pp.callsTo(/POST \/v2\/checkout\/orders$/)[0]!.body as { payment_source: { paypal: { attributes?: { vault?: Record<string, string> } } } };
+    expect(body.payment_source.paypal.attributes?.vault).toEqual({ store_in_vault: 'ON_SUCCESS', usage_type: 'MERCHANT', customer_type: 'CONSUMER' });
+    await gate.completeApproval(r.ok ? r.payment.id : '', USER);
+    expect(store.vaultTokens).toEqual([{ userId: USER, paypalVaultTokenId: 'VAULT-NEW', status: 'VAULTED' }]);
+    expect(JSON.stringify(store.audit)).not.toContain('buyer@example.com');
+  });
+
+  it('then the next purchase is charged automatically with that wallet', async () => {
+    const pp = fakePayPal({ vaultOnAuthorize: 'VAULT-NEW' });
+    const { store } = seededStore();
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const first = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'first-0001', ...urls });
+    await gate.completeApproval(first.ok ? first.payment.id : '', USER);
+    const second = await gate.autoPay({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'second-0001' });
+    expect(second.ok && second.payment).toMatchObject({ mode: 'auto', status: 'captured' });
+    const lastBody = pp.callsTo(/POST \/v2\/checkout\/orders$/).at(-1)!.body as { payment_source: unknown };
+    expect(lastBody.payment_source).toEqual({ paypal: { vault_id: 'VAULT-NEW' } });
+  });
+
+  it('no vault request when Auto-pay is off, a wallet is already saved, or on a "Pay anyway" order', async () => {
+    for (const setupCase of ['off', 'saved', 'override'] as const) {
+      const pp = fakePayPal();
+      const { store } = seededStore();
+      if (setupCase === 'off') store.profiles.set(USER, { userId: USER, autopayEnabled: false, autopayLimit: null });
+      if (setupCase === 'saved') store.vaultTokens.push({ userId: USER, paypalVaultTokenId: 'V', status: 'VAULTED' });
+      const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+      await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-block', idempotencyKey: `case-${setupCase}`, override: setupCase === 'override', ...urls });
+      const body = pp.callsTo(/POST \/v2\/checkout\/orders$/)[0]!.body as { payment_source: { paypal: { attributes?: unknown } } };
+      expect(body.payment_source.paypal.attributes).toBeUndefined();
+    }
+  });
+
+  it('if the authorize response lacks the vault ID, it is read from the order', async () => {
+    const pp = fakePayPal();
+    const { store } = seededStore();
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-hold', idempotencyKey: 'first-0002', ...urls });
+    await gate.completeApproval(r.ok ? r.payment.id : '', USER);
+    expect(pp.callsTo(/GET \/v2\/checkout\/orders/).length).toBeGreaterThanOrEqual(2); // approval check + vault lookup
   });
 });

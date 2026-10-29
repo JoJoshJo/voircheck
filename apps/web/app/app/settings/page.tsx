@@ -1,16 +1,15 @@
-import { WalletSetup } from '../../../components/WalletSetup';
-import { btnPrimary, card, input, label } from '../../../components/ui';
+import { btnPrimary, btnSecondary, card, input, label } from '../../../components/ui';
 import { getPayPal } from '../../../lib/paypal';
 import { DICTS } from '../../../lib/i18n';
 import { requireOnboardedUser } from '../../../lib/user';
-import { saveSettings } from './actions';
+import { removeSavedPayPal, saveSettings } from './actions';
 
 export const dynamic = 'force-dynamic';
 
-export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string }> }) {
+export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ saved?: string; error?: string; removed?: string }> }) {
   const { user, profile, lang } = await requireOnboardedUser();
   const t = DICTS[lang];
-  const { saved, error } = await searchParams;
+  const { saved, error, removed } = await searchParams;
   const hasWallet = !!(await getPayPal().store.getActiveVaultToken(user.id));
   return (
     <main className="mx-auto max-w-xl px-4 pb-20 sm:px-6">
@@ -49,10 +48,16 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           {error && <span className="text-[14px] text-muted">1–1000 USD</span>}
         </div>
       </form>
-      {profile.autopayEnabled && (
+      {(profile.autopayEnabled || hasWallet) && (
         <section className={`${card} mt-6 space-y-3 p-6`}>
           <h2 className="text-[15px] font-medium">{t.wallet.title}</h2>
-          <WalletSetup t={t} lang={lang} hasWallet={hasWallet} />
+          <p className="text-[15px] text-muted">{removed ? t.wallet.removed : hasWallet ? t.wallet.saved : t.wallet.nextPurchase}</p>
+          <p className="text-[13px] text-faint">{t.wallet.tokenOnly}</p>
+          {hasWallet && (
+            <form action={removeSavedPayPal}>
+              <button className={btnSecondary}>{t.wallet.remove}</button>
+            </form>
+          )}
         </section>
       )}
     </main>

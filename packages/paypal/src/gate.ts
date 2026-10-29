@@ -222,6 +222,10 @@ export class MoneyGate {
     }
     const price = candidate.price;
     const storeSlug = storeSlugFor(candidate);
+    // Auto-pay on but no saved wallet yet: this approval also saves the wallet (spike T5: vault with purchase).
+    // Decided here from our own rows, never by the browser. Never on a "Pay anyway" order.
+    const [profile, savedWallet] = await Promise.all([this.store.getProfile(input.userId), this.store.getActiveVaultToken(input.userId)]);
+    const saveWallet = !input.override && (input.saveWalletForAutopay || (!!profile?.autopayEnabled && !savedWallet));
     const order = await createOrder(
       this.paypal,
       {
@@ -231,7 +235,7 @@ export class MoneyGate {
         storeName: candidate.storeName,
         returnUrl: input.returnUrl,
         cancelUrl: input.cancelUrl,
-        vaultOnSuccess: input.saveWalletForAutopay,
+        vaultOnSuccess: saveWallet,
       },
       requestIdFor('order', input.userId, candidate.id, input.idempotencyKey),
     );
@@ -251,6 +255,7 @@ export class MoneyGate {
       // Recorded up front: the user already confirmed "I understand the risk" before this order existed.
       overrideUsed: input.override,
     });
+    if (saveWallet) await this.audit(input.userId, 'user', 'wallet.save_requested', payment.id, { reason: 'Auto-pay is on and no PayPal is saved yet' });
     if (input.override) await this.audit(input.userId, 'user', 'override.confirmed', payment.id, { scanId: input.scanId, note: 'user confirmed "I understand the risk"' });
     await this.audit(input.userId, 'user', 'order.created', payment.id, { orderId: order.id, intent: 'AUTHORIZE', amount: payment.amount, currency: payment.currency, storeSlug, override: input.override });
     return { ok: true, payment, approvalUrl: approvalLink(order) };
@@ -276,7 +281,12 @@ export class MoneyGate {
       const authorized = order.status === 'COMPLETED' ? order : await authorizeOrder(this.paypal, payment.paypalOrderId, requestIdFor('authorize', payment.id));
       const auth = firstAuthorization(authorized);
       if (!auth) return { ok: false, reason: 'PayPal returned no authorization', payment };
-      const vault = authorized.payment_source?.paypal?.attributes?.vault;
+      let vault = authorized.payment_source?.paypal?.attributes?.vault;
+      // The vault ID isn't always on the authorize response (spike T5); the order has it once vaulting finished.
+      if (!vault?.id && (await this.store.hasAudit('payment', payment.id, 'wallet.save_requested'))) {
+        vault = (await getOrder(this.paypal, payment.paypalOrderId)).payment_source?.paypal?.attributes?.vault;
+      }
+      // Only the vault token ID and its status are kept; never the buyer's email, name or account details.
       if (vault?.id) await this.store.saveVaultToken(userId, vault.id, vault.status ?? 'VAULTED');
       payment = await this.store.updatePayment(payment.id, { authorizationId: auth.id, status: 'authorized' });
       await this.audit(userId, actor, 'authorization.created', payment.id, { authorizationId: auth.id, walletSaved: !!vault?.id });
@@ -338,7 +348,14 @@ export class MoneyGate {
     return { ok: true, payment: updated };
   }
 
-  /** Auto-pay setup, step 1: a vault setup token the buyer approves in the PayPal popup (no purchase). */
+  /**
+   * Standalone wallet save (no purchase). DISABLED in the app (not exposed by any route): the sandbox app's token
+   * lacks the `vault/payment-tokens/readwrite` scope, so /v3/vault/setup-tokens returns 403 NOT_AUTHORIZED
+   * (Oct 29). The wallet is saved during the first approved purchase instead (vault with purchase, spike T5).
+   * Kept, with tests, in case that scope is granted later.
+   *
+   * Auto-pay setup, step 1: a vault setup token the buyer approves in the PayPal popup (no purchase).
+   */
   async startWalletSetup(raw: z.input<typeof WalletSetupInput>): Promise<{ setupTokenId: string }> {
     const input = WalletSetupInput.parse(raw);
     const token = await createVaultSetupToken(this.paypal, { returnUrl: input.returnUrl, cancelUrl: input.cancelUrl }, requestIdFor('vault-setup', input.userId, String(this.now().getTime())));

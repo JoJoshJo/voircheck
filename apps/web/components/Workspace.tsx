@@ -24,7 +24,7 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
   return fmt(t.workspace.hoursAgo, { n: Math.floor(mins / 60) });
 }
 
-export function Workspace({ t, lang, initialDemoMode, autopay }: { t: Dict; lang: string; initialDemoMode: boolean; autopay: boolean }) {
+export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean }) {
   const [tab, setTab] = useState<'chat' | 'results'>('results');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [url, setUrl] = useState('');
@@ -139,7 +139,7 @@ export function Workspace({ t, lang, initialDemoMode, autopay }: { t: Dict; lang
           {state.phase === 'done' && (
             <>
               <ResultCard t={t} scan={state.scan} cached={state.cached} onRescan={() => void run(state.scan.url, true)} />
-              <BuyCard t={t} lang={lang} scan={state.scan} candidate={state.candidate} autopay={autopay} />
+              <BuyCard t={t} lang={lang} clientId={clientId} scan={state.scan} candidate={state.candidate} autopay={autopay} />
             </>
           )}
           {state.phase === 'error' && (
@@ -204,7 +204,7 @@ function LiveView({ t, url }: { t: Dict; url: string | null }) {
 }
 
 /** Product, price, store and "Pay with PayPal" when we know the price; otherwise a plain explanation. */
-function BuyCard({ t, lang, scan, candidate, autopay }: { t: Dict; lang: string; scan: ScanView; candidate: CandidateView; autopay: boolean }) {
+function BuyCard({ t, lang, clientId, scan, candidate, autopay }: { t: Dict; lang: string; clientId: string; scan: ScanView; candidate: CandidateView; autopay: boolean }) {
   if (!candidate.price) return <div className={`${card} p-5 text-[14px] leading-relaxed text-muted`}>{t.pay.noPrice}</div>;
   const money = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: candidate.currency }).format(Number(candidate.price));
   return (
@@ -223,7 +223,7 @@ function BuyCard({ t, lang, scan, candidate, autopay }: { t: Dict; lang: string;
           <dd className="mt-1 font-medium">{candidate.storeName}</dd>
         </div>
       </dl>
-      <Checkout key={`${scan.id}-${candidate.id}`} t={t} lang={lang} candidateId={candidate.id} scanId={scan.id} autopay={autopay} />
+      <Checkout key={`${scan.id}-${candidate.id}`} t={t} lang={lang} clientId={clientId} candidateId={candidate.id} scanId={scan.id} autopay={autopay} />
     </div>
   );
 }

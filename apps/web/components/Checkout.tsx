@@ -16,7 +16,23 @@ const autopayRequests = new Map<string, Promise<{ autopaid: boolean; reason?: st
  * Approval is detected three ways: the SDK's onApprove, a "check again" button that asks the server (which asks
  * PayPal), and the CHECKOUT.ORDER.APPROVED webhook on the server.
  */
-export function Checkout({ t, lang, candidateId, scanId, autopay, override = false }: { t: Dict; lang: string; candidateId: string; scanId: string; autopay: boolean; override?: boolean }) {
+export function Checkout({
+  t,
+  lang,
+  clientId,
+  candidateId,
+  scanId,
+  autopay,
+  override = false,
+}: {
+  t: Dict;
+  lang: string;
+  clientId: string;
+  candidateId: string;
+  scanId: string;
+  autopay: boolean;
+  override?: boolean;
+}) {
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
   const paymentId = useRef<string | null>(null);
@@ -43,10 +59,11 @@ export function Checkout({ t, lang, candidateId, scanId, autopay, override = fal
         const r = await autopayRequests.get(key)!;
         if (cancelled) return;
         if (r.autopaid && r.payment) return goTo(r.payment);
-        setNote(fmt(t.pay.autopayFellBack, { reason: reason(r.reason) }));
+        // First purchase with Auto-pay on: the server adds "save this wallet" to the order (vault with purchase).
+        setNote(r.reason === 'no saved PayPal wallet' ? t.pay.autopayFirstSave : fmt(t.pay.autopayFellBack, { reason: reason(r.reason) }));
       }
       try {
-        const sdk = await createPayPalInstance(lang);
+        const sdk = await createPayPalInstance(lang, clientId);
         const eligible = await sdk.findEligibleMethods({ currencyCode: 'USD' });
         if (cancelled) return;
         if (!eligible.isEligible('paypal')) return setPhase('unavailable');
@@ -103,7 +120,7 @@ export function Checkout({ t, lang, candidateId, scanId, autopay, override = fal
     return () => {
       cancelled = true;
     };
-  }, [candidateId, scanId, autopay, override]);
+  }, [candidateId, scanId, autopay, override, clientId]);
 
   async function checkAgain() {
     if (!paymentId.current) return;

@@ -75,7 +75,7 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
           )}
         </div>
         {p.verdict === 'BLOCK' && p.status === 'voided' && p.mode === 'approve' && p.scanId && (
-          <PayAnyway t={t} lang={lang} candidateId={p.candidateId} scanId={p.scanId} />
+          <PayAnyway t={t} lang={lang} clientId={process.env.PAYPAL_CLIENT_ID ?? ''} candidateId={p.candidateId} scanId={p.scanId} />
         )}
       </section>
     </main>

@@ -11,14 +11,15 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * Checkout API (spec 5.7). The browser sends IDs only; amount, currency and store always come from our rows,
+ * Checkout API (spec 5.7). The standalone "save PayPal without a purchase" actions were removed: the sandbox app lacks
+ * the vault/payment-tokens scope (403); the wallet is saved during the first purchase instead (MoneyGate).
+ * The browser sends IDs only; amount, currency and store always come from our rows,
  * and every money decision is made by MoneyGate. Responses never include PayPal order/authorization/capture IDs,
  * except the order ID the PayPal SDK itself needs to open the approval popup.
  */
 const Id = z.string().uuid();
 const Key = z.string().min(8).max(100);
 const bodies = {
-  'client-token': z.object({}),
   start: z.object({ candidateId: Id, scanId: Id, idempotencyKey: Key, override: z.boolean().default(false) }),
   approve: z.object({ paymentId: Id }),
   status: z.object({ paymentId: Id }),
@@ -27,8 +28,6 @@ const bodies = {
   reauthorize: z.object({ paymentId: Id }),
   cancel: z.object({ paymentId: Id }),
   autopay: z.object({ candidateId: Id, scanId: Id, idempotencyKey: Key }),
-  'wallet-setup': z.object({}),
-  'wallet-confirm': z.object({ setupTokenId: z.string().min(5).max(100) }),
 } as const;
 type Action = keyof typeof bodies;
 
@@ -49,7 +48,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ action: string
   const parsed = bodies[action as Action].safeParse(await req.json().catch(() => ({})));
   if (!parsed.success) return json({ error: 'bad_request' }, 400);
   const lang = isLang(profile.language) ? profile.language : 'en';
-  const { gate, paypal } = getPayPal();
+  const { gate } = getPayPal();
   const userId = user.id;
   const view = async (paymentId: string, receipt = true) => {
     if (receipt) await upsertPaymentReceipt(paymentId, lang);
@@ -60,13 +59,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ action: string
     // Already validated against bodies[action] above.
     const b = parsed.data as unknown;
     switch (action as Action) {
-      case 'client-token': {
-        // PayPal scopes the token to bare hostnames and refuses localhost, so local dev gets an unscoped sandbox token.
-        const host = new URL(await appOrigin()).hostname;
-        const local = host === 'localhost' || /^[\d.]+$/.test(host) || host.endsWith('.localhost');
-        const { token } = await paypal.browserClientToken(local ? [] : [host]);
-        return json({ clientToken: token });
-      }
       case 'start': {
         const { candidateId, scanId, idempotencyKey, override } = b as z.infer<(typeof bodies)['start']>;
         const origin = await appOrigin();
@@ -125,15 +117,6 @@ export async function POST(req: Request, ctx: { params: Promise<{ action: string
         const r = await gate.autoPay({ userId, candidateId, scanId, idempotencyKey });
         if (!r.ok) return json({ autopaid: false, reason: r.reason });
         return json({ autopaid: true, payment: await view(r.payment.id) });
-      }
-      case 'wallet-setup': {
-        const origin = await appOrigin();
-        const { setupTokenId } = await gate.startWalletSetup({ userId, returnUrl: `${origin}/app/settings`, cancelUrl: `${origin}/app/settings` });
-        return json({ setupToken: setupTokenId });
-      }
-      case 'wallet-confirm': {
-        const r = await gate.confirmWalletSetup({ userId, setupTokenId: (b as { setupTokenId: string }).setupTokenId });
-        return r.ok ? json({ saved: true }) : json({ error: 'refused', reason: r.reason }, 409);
       }
     }
   } catch (err) {

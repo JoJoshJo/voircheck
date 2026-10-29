@@ -67,7 +67,7 @@ export function HoldActions({ t, payment }: { t: Dict; payment: PaymentView }) {
 }
 
 /** BLOCK: small secondary "Pay anyway" link → strong warning + checkbox → a new PayPal approval with the override. */
-export function PayAnyway({ t, lang, candidateId, scanId }: { t: Dict; lang: string; candidateId: string; scanId: string }) {
+export function PayAnyway({ t, lang, clientId, candidateId, scanId }: { t: Dict; lang: string; clientId: string; candidateId: string; scanId: string }) {
   const [open, setOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [go, setGo] = useState(false);
@@ -93,7 +93,7 @@ export function PayAnyway({ t, lang, candidateId, scanId }: { t: Dict; lang: str
         </>
       ) : (
         <div className="mt-4 rounded-control bg-white p-4 text-ink">
-          <Checkout t={t} lang={lang} candidateId={candidateId} scanId={scanId} autopay={false} override />
+          <Checkout t={t} lang={lang} clientId={clientId} candidateId={candidateId} scanId={scanId} autopay={false} override />
         </div>
       )}
     </div>
