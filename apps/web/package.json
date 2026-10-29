@@ -12,6 +12,7 @@
     "@neondatabase/auth": "0.7.0-beta",
     "@voircheck/agent": "workspace:*",
     "@voircheck/db": "workspace:*",
+    "@voircheck/paypal": "workspace:*",
     "@voircheck/scanner": "workspace:*",
     "@voircheck/shared": "workspace:*",
     "dotenv": "^16.4.7",

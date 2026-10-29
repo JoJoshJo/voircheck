@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 loadEnv({ path: fileURLToPath(new URL('../../.env', import.meta.url)), quiet: true });
 
 const nextConfig: NextConfig = {
-  transpilePackages: ['@voircheck/shared', '@voircheck/db', '@voircheck/scanner', '@voircheck/agent'],
+  transpilePackages: ['@voircheck/shared', '@voircheck/db', '@voircheck/scanner', '@voircheck/agent', '@voircheck/paypal'],
   // Server-only SDKs with Node built-ins; keep them out of the bundler.
   serverExternalPackages: ['@onkernel/sdk', '@neondatabase/serverless'],
   poweredByHeader: false,

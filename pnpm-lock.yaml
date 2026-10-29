@@ -79,6 +79,9 @@ importers:
       '@voircheck/db':
         specifier: workspace:*
         version: link:../../db
+      '@voircheck/paypal':
+        specifier: workspace:*
+        version: link:../../packages/paypal
       '@voircheck/scanner':
         specifier: workspace:*
         version: link:../../packages/scanner
