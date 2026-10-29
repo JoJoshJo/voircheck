@@ -36,6 +36,17 @@ export interface ScanReport {
 
 const okPage = (v: PageVisit | undefined): PageSnapshot | null => (v?.ok ? v.page : null);
 
+/**
+ * Which store a URL belongs to: its host, plus the store segment when several stores share one host under /s/<slug>
+ * (our demo stores on Render). Two pages of the same store compare as the same store.
+ */
+export function storeKey(raw: string): string {
+  const u = new URL(raw);
+  const host = u.hostname.toLowerCase().replace(/^www\./, '');
+  const sub = u.pathname.match(/^\/s\/([^/]+)/)?.[1];
+  return sub ? `${host}/s/${sub.toLowerCase()}` : host;
+}
+
 export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise<ScanReport> {
   const input = ScanInput.parse(rawInput);
   const now = deps.now?.() ?? new Date();
@@ -99,11 +110,13 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   // Price: the item title comes from the caller, the peers, or the product page's heading.
   const title = input.productTitle ?? input.peers.find((p) => p.productTitle)?.productTitle ?? targetPage?.h1 ?? null;
   const ownPrice = input.price ?? (targetPage && title ? findPriceNear(targetPage.visibleText, title) : null);
-  // Only offers for the exact same product count: a peer whose title differs is left out.
+  // Comparison set: only the exact same product, never this store itself, never a store VoirCheck blocked.
   const sameItem = (peerTitle: string | undefined) => !peerTitle || !title || normalizeTitle(peerTitle) === normalizeTitle(title);
+  const self = storeKey(url.href);
+  const excludedBlocked = input.peers.filter((p) => p.verdict === 'BLOCK' && storeKey(p.url) !== self).length;
   const peerPrices = input.peers
     .map((p, i) => {
-      if (!sameItem(p.productTitle)) return null;
+      if (storeKey(p.url) === self || p.verdict === 'BLOCK' || p.sameProduct === false || !sameItem(p.productTitle)) return null;
       if (p.price !== undefined) return p.price;
       const page = peerPages[i];
       const peerTitle = p.productTitle ?? title;
@@ -113,7 +126,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   const price =
     ownPrice === null && !targetPage
       ? { outcome: unavailable('price', `Couldn't load the store page in the cloud browser, so its price is unknown.`), belowPct: null }
-      : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct });
+      : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct, excludedBlocked });
   emit(price.outcome);
 
   const threatUrls = [...new Set([url.href, targetPage?.finalUrl].filter((u): u is string => !!u))];

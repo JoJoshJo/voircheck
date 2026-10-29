@@ -36,13 +36,27 @@ describe('Trust Receipt snapshot', () => {
     })!;
     const text = JSON.stringify(snap);
     for (const secret of ['ORDER-SECRET', 'AUTH-SECRET', 'user-1', 'buyer@example.com', 'sess-1']) expect(text).not.toContain(secret);
-    expect(Object.keys(snap).sort()).toEqual(['action', 'actionAt', 'amount', 'currency', 'hardRules', 'productTitle', 'scannedAt', 'score', 'signals', 'storeHost', 'storeName', 'v', 'verdict']);
-    expect(snap).toMatchObject({ action: 'voided', verdict: 'BLOCK', storeHost: 'voircheck-stores.onrender.com' });
+    expect(Object.keys(snap).sort()).toEqual(['action', 'actionAt', 'amount', 'currency', 'hardRules', 'productTitle', 'scannedAt', 'score', 'signals', 'storeHost', 'storeName', 'storeUrl', 'v', 'verdict']);
+    expect(snap).toMatchObject({ action: 'voided', verdict: 'BLOCK', storeHost: 'voircheck-stores.onrender.com', storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-outlet-deals' });
     // The shared-hosting note is skipped in favour of the real finding.
     expect(snap.signals.find((s) => s.id === 'clone')?.summary).toBe('vs Velbrook Supply: copied name.');
   });
 
   it('no receipt before a decision exists', () => {
     expect(buildSnapshot({ payment: { status: 'created', overrideUsed: false, amount: '23.00', currency: 'USD' }, candidate, scan, now: new Date() })).toBeNull();
+  });
+});
+
+describe('price "unavailable" on the receipt', () => {
+  it('the receipt summary for an unavailable price has no number', () => {
+    const snap = buildSnapshot({
+      payment: { status: 'captured', overrideUsed: false, amount: '59.00', currency: 'USD' },
+      candidate: { storeName: 'Velbrook Supply', storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-supply', productTitle: 'Zephlet Buds' },
+      scan: { ...scan, verdict: 'SAFE' as const, riskScore: 0, signals: [{ id: 'price', status: 'unavailable', points: 0, evidence: ['Not enough other trustworthy stores sell exactly "Zephlet Buds" to compare prices.'] }] },
+      now: new Date(),
+    })!;
+    const price = snap.signals.find((s) => s.id === 'price')!;
+    expect(price.status).toBe('unavailable');
+    expect(price.summary).not.toMatch(/[\d$]/);
   });
 });

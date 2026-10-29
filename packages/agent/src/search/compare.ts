@@ -128,13 +128,15 @@ export async function compareStores(query: string, opts: CompareOptions): Promis
 
 /**
  * A pasted link has no comparison set, so the price and clone signals would have nothing to compare. For our own
- * demo stores (Demo mode ON), compare against the store's twin plus the legit store of the next pair, on the same
- * page (home, product or about), with the store's hero product as the shared item. Real URLs: no peers yet.
+ * demo stores (Demo mode ON), compare against all five other demo stores on the same page (home, product or about),
+ * with the store's hero product (or the product page's item) as the shared item. The caller adds each peer's own
+ * latest verdict (from our scans) so the scanner can leave BLOCK stores out of the price median; the clone check still
+ * sees them. Real URLs: no peers yet.
  */
 export function demoPeersForUrl(
   rawUrl: string,
   baseUrl = DEFAULT_DEMO_STORES_BASE_URL,
-): { slug: string; storeName: string; storeUrl: string; productTitle: string; price: number; peers: Array<{ url: string; productTitle: string }> } | null {
+): { slug: string; storeName: string; storeUrl: string; productTitle: string; price: number; peers: Array<{ url: string; storeUrl: string; productTitle: string }> } | null {
   let url: URL;
   try {
     url = new URL(rawUrl);
@@ -148,8 +150,8 @@ export function demoPeersForUrl(
   if (!store) return null;
   const rest = hosted ? url.pathname.replace(/\/$/, '') : (m?.[2] ?? '').replace(/\/$/, '');
 
-  const twin = STORES.find((s) => s.pair === store.pair && s.slug !== store.slug)!;
-  const other = STORES.find((s) => s.pair === (store.pair % 3) + 1 && s.role === 'legit')!;
+  // Twin first (it matters most for the copycat check), then the other pairs. Never the store itself.
+  const others = [...STORES.filter((s) => s.pair === store.pair && s.slug !== store.slug), ...STORES.filter((s) => s.pair !== store.pair)];
   const hero = store.products[0]!;
   const product = store.products.find((p) => rest === `/products/${p.slug}`) ?? hero;
   const productTitle = product.name;
@@ -160,6 +162,6 @@ export function demoPeersForUrl(
     productTitle,
     // The demo store's own price for the item, from our config (never from the browser).
     price: product.price,
-    peers: [twin, other].map((s) => ({ url: `${demoStoreUrl(s, baseUrl).replace(/\/$/, '')}${rest}`, productTitle })),
+    peers: others.map((s) => ({ url: `${demoStoreUrl(s, baseUrl).replace(/\/$/, '')}${rest}`, storeUrl: demoStoreUrl(s, baseUrl), productTitle })),
   };
 }

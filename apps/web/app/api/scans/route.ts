@@ -3,7 +3,7 @@ import { assertSafeUrlShape, kernelVisitor, scanStore, SsrfError, StoreUrl } fro
 import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
 import { checkScanLimits } from '../../../lib/rate-limit';
-import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest, saveScan } from '../../../lib/scans';
+import { canonicalUrl, findFreshScan, finishLinkRequest, latestVerdictForStore, recordLinkRequest, saveScan } from '../../../lib/scans';
 import { toScanView, type ScanEvent } from '../../../lib/scan-view';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
@@ -69,8 +69,10 @@ export async function POST(req: Request) {
       send({ type: 'start', url });
       try {
         const kernelKey = process.env.KERNEL_API_KEY;
+        // Each peer's own latest verdict: a BLOCK store's price must not enter this store's price comparison.
+        const peers = demo ? await Promise.all(demo.peers.map(async (p) => ({ url: p.url, productTitle: p.productTitle, verdict: await latestVerdictForStore(p.storeUrl) }))) : [];
         const { result } = await scanStore(
-          { url, peers: demo?.peers ?? [], productTitle: demo?.productTitle },
+          { url, peers, productTitle: demo?.productTitle },
           {
             visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: true, replay: true }) : null,
             safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,

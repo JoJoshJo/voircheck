@@ -32,6 +32,10 @@ export const Peer = z.object({
   /** Price for the same item at this peer. If omitted, it's read from the peer page (inside KERNEL). */
   price: z.number().positive().optional(),
   productTitle: z.string().min(1).max(300).optional(),
+  /** This peer's own latest verdict, if it was scanned. A BLOCK store's price never enters the comparison. */
+  verdict: z.enum(['SAFE', 'HOLD', 'BLOCK']).optional(),
+  /** false = this offer is a different product (Channel3 sameProduct:false); left out of the price comparison. */
+  sameProduct: z.boolean().optional(),
 });
 export type Peer = z.infer<typeof Peer>;
 

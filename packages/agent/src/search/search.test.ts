@@ -167,23 +167,19 @@ describe('demo mode', () => {
 
 describe('demoPeersForUrl (check-a-link on a demo store)', () => {
   const B = 'https://voircheck-stores.onrender.com/s';
-  it('twin + legit store of the next pair, same page, hero product as the item', () => {
-    expect(demoPeersForUrl(`${B}/velbrook-outlet-deals`)).toEqual({
-      slug: 'velbrook-outlet-deals',
-      storeName: 'Velbrook-Outlet Deals',
-      storeUrl: `${B}/velbrook-outlet-deals`,
-      productTitle: 'Zephlet Buds',
-      price: 23,
-      peers: [
-        { url: `${B}/velbrook-supply`, productTitle: 'Zephlet Buds' },
-        { url: `${B}/ondaya-home`, productTitle: 'Zephlet Buds' },
-      ],
-    });
+  it('all five other demo stores (twin first), same page, hero product as the item; never the store itself', () => {
+    const r = demoPeersForUrl(`${B}/velbrook-outlet-deals`)!;
+    expect(r).toMatchObject({ slug: 'velbrook-outlet-deals', storeName: 'Velbrook-Outlet Deals', storeUrl: `${B}/velbrook-outlet-deals`, productTitle: 'Zephlet Buds', price: 23 });
+    expect(r.peers.map((p) => p.url)).toEqual([`${B}/velbrook-supply`, `${B}/ondaya-home`, `${B}/0ndaya-home`, `${B}/nyuie-market`, `${B}/nyuie-market-clearance`]);
+    expect(r.peers.every((p) => p.productTitle === 'Zephlet Buds' && p.url === p.storeUrl)).toBe(true);
+    expect(r.peers.some((p) => p.url.includes('velbrook-outlet-deals'))).toBe(false);
   });
+
   it('keeps the product page and its product', () => {
     const r = demoPeersForUrl(`${B}/nyuie-market-clearance/products/nimbair-purifier`)!;
     expect(r).toMatchObject({ productTitle: 'Nimbair Purifier', price: 94 });
-    expect(r.peers.map((p) => p.url)).toEqual([`${B}/nyuie-market/products/nimbair-purifier`, `${B}/velbrook-supply/products/nimbair-purifier`]);
+    expect(r.peers[0]).toEqual({ url: `${B}/nyuie-market/products/nimbair-purifier`, storeUrl: `${B}/nyuie-market`, productTitle: 'Nimbair Purifier' });
+    expect(r.peers).toHaveLength(5);
   });
   it('null for real sites and unknown slugs', () => {
     expect(demoPeersForUrl('https://www.bestbuy.com/site/x')).toBeNull();

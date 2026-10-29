@@ -17,13 +17,13 @@ describe('price signal', () => {
   });
 
   it.each([
-    [23, [59, 59], 'fail'], // Velbrook-Outlet: 61% below
-    [35.3, [59, 59], 'fail'], // 40.2% below
-    [35.4, [59, 59], 'warn'], // exactly 40% → warn (rule is "more than")
-    [44, [59, 59], 'warn'], // Nyuie Clearance: 25% below
-    [47.2, [59, 59], 'pass'], // exactly 20% → pass (rule is "more than")
-    [56, [59, 59], 'pass'], // 0ndaya: ~5% below must NOT fire
-    [70, [59, 59], 'pass'], // above peers
+    [23, [59, 59, 59], 'fail'], // Velbrook-Outlet: 61% below
+    [35.3, [59, 59, 59], 'fail'], // 40.2% below
+    [35.4, [59, 59, 59], 'warn'], // exactly 40% → warn (rule is "more than")
+    [44, [59, 59, 59], 'warn'], // Nyuie Clearance: 25% below
+    [47.2, [59, 59, 59], 'pass'], // exactly 20% → pass (rule is "more than")
+    [56, [59, 59, 59], 'pass'], // 0ndaya: ~5% below must NOT fire
+    [70, [59, 59, 59], 'pass'], // above peers
   ])('price %f vs %j → %s', (price, peers, status) => {
     expect(evaluatePrice({ price, title: 'Zephlet Buds', peerPrices: peers }).outcome.status).toBe(status);
   });
@@ -34,9 +34,20 @@ describe('price signal', () => {
     expect(r.outcome.evidence.join(' ')).toContain('50% below');
   });
 
-  it('needs ≥3 offers for the exact same product (this store + 2 others), else unavailable with 0 points', () => {
-    expect(evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59] }).outcome).toMatchObject({ status: 'unavailable', evidence: [expect.stringContaining('Only 2 offers')] });
-    expect(evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59, 62] }).outcome.status).toBe('fail');
+  it('needs ≥3 comparison offers (not counting this store); 2 → unavailable with 0 points and no number shown', () => {
+    const two = evaluatePrice({ price: 59, title: 'Zephlet Buds', peerPrices: [23, 62] });
+    expect(two).toMatchObject({ belowPct: null, outcome: { status: 'unavailable' } });
+    expect(two.outcome.evidence.join(' ')).not.toMatch(/[\d$]/);
+    expect(evaluatePrice({ price: 23, title: 'Zephlet Buds', peerPrices: [59, 62, 58] }).outcome.status).toBe('fail');
+  });
+
+  it('"typical" is the median of 3+ offers; individual prices are never listed', () => {
+    const odd = evaluatePrice({ price: 59, title: 'Zephlet Buds', peerPrices: [62, 56, 58] });
+    expect(odd.outcome.evidence[0]).toBe('$59.00 here vs $58.00 typical (the median of 3 other stores selling the same item).');
+    expect(odd.outcome.evidence.join(' ')).not.toContain('$62.00');
+    const even = evaluatePrice({ price: 59, title: 'Zephlet Buds', peerPrices: [62, 56, 58, 44] });
+    expect(even.outcome.evidence[0]).toContain('$57.00 typical');
+    expect(evaluatePrice({ price: 59, title: 'X', peerPrices: [62, 56, 58], excludedBlocked: 1 }).outcome.evidence).toContain('Stores VoirCheck blocked were left out of the comparison.');
   });
 
   it('never compares across different products', () => {

@@ -11,6 +11,8 @@ export const ReceiptSnapshot = z.object({
   v: z.literal(1),
   storeName: z.string(),
   storeHost: z.string(),
+  /** The store's own page (e.g. …/s/velbrook-supply). Optional: receipts made before Oct 29 only have the host. */
+  storeUrl: z.string().optional(),
   productTitle: z.string(),
   amount: z.string().nullable(),
   currency: z.string(),
@@ -48,6 +50,7 @@ export function buildSnapshot(input: {
     v: 1,
     storeName: input.candidate.storeName,
     storeHost: new URL(input.candidate.storeUrl).host,
+    storeUrl: input.candidate.storeUrl,
     productTitle: input.candidate.productTitle,
     amount: input.payment.amount,
     currency: input.payment.currency,

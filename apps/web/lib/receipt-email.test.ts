@@ -145,3 +145,31 @@ describe('Trust Receipt email content', () => {
     expect(html).not.toContain('<b>copied</b>');
   });
 });
+
+describe('email with an unavailable price and the store URL', () => {
+  const s = snapshot({
+    verdict: 'SAFE',
+    score: 0,
+    action: 'captured',
+    storeName: 'Velbrook Supply',
+    amount: '59.00',
+    storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-supply',
+    signals: [
+      { id: 'domain_age', status: 'pass', points: 0, summary: 'onrender.com was registered on 2015-03-28.' },
+      { id: 'price', status: 'unavailable', points: 0, summary: 'Not enough other trustworthy stores sell exactly "Zephlet Buds" to compare prices.' },
+    ],
+  });
+  it('never shows a price comparison when the signal is unavailable', () => {
+    const { html, text } = buildReceiptEmail({ snapshot: s, slug: 'AbCdEfGhIjKlMnOpQrStUvWx', lang: 'en', baseUrl: 'https://x.test' });
+    for (const out of [html, text]) {
+      expect(out).not.toContain('typical');
+      expect(out).not.toContain('$23');
+      expect(out).not.toContain('Price vs other stores');
+    }
+  });
+  it("the Store row shows the store's own page URL, not the bare host", () => {
+    const { html, text } = buildReceiptEmail({ snapshot: s, slug: 'AbCdEfGhIjKlMnOpQrStUvWx', lang: 'en', baseUrl: 'https://x.test' });
+    expect(text).toContain('Store: Velbrook Supply (https://voircheck-stores.onrender.com/s/velbrook-supply)');
+    expect(html).toContain('https://voircheck-stores.onrender.com/s/velbrook-supply');
+  });
+});

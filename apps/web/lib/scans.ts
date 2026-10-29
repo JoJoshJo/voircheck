@@ -2,7 +2,7 @@ import 'server-only';
 import { candidates, scans, shoppingSessions } from '@voircheck/db/schema';
 import type { ScanResult } from '@voircheck/scanner';
 import { ownedBy } from '@voircheck/shared';
-import { and, desc, eq, gt } from 'drizzle-orm';
+import { and, desc, eq, gt, like, or } from 'drizzle-orm';
 import { getDb } from './db';
 
 export const CACHE_HOURS = 24;
@@ -24,6 +24,22 @@ export async function findFreshScan(url: string): Promise<ScanRecord | null> {
     .orderBy(desc(scans.scannedAt))
     .limit(1);
   return row ?? null;
+}
+
+/**
+ * A store's own latest verdict (any age), from scans of its URL or any page under it. The scanner uses it to leave
+ * BLOCK stores out of other stores' price comparison. Unscanned stores have no verdict (undefined).
+ */
+export async function latestVerdictForStore(storeUrl: string): Promise<'SAFE' | 'HOLD' | 'BLOCK' | undefined> {
+  const base = storeUrl.replace(/\/$/, '');
+  const prefix = `${base.replace(/[\\%_]/g, (c) => `\\${c}`)}/%`;
+  const [row] = await getDb()
+    .select({ verdict: scans.verdict })
+    .from(scans)
+    .where(or(eq(scans.url, base), eq(scans.url, `${base}/`), like(scans.url, prefix)))
+    .orderBy(desc(scans.scannedAt))
+    .limit(1);
+  return row?.verdict;
 }
 
 /** Replay links can carry a session token in the query; only the bare link is stored. Live-view links are never stored. */

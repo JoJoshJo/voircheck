@@ -41,7 +41,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
           <VerdictLabel verdict={s.verdict} t={t} />
           <h1 className="mt-1 text-[24px] font-medium tracking-tight">{s.storeName}</h1>
           <p className="mt-1 text-[14px] opacity-80">
-            {s.storeHost} · {t.workspace.score}: {s.score}/100
+            {s.storeUrl ?? s.storeHost} · {t.workspace.score}: {s.score}/100
           </p>
         </div>
         <Mascot mood={s.verdict} size={84} title={t.verdict[s.verdict]} />

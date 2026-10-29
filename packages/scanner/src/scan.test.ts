@@ -131,7 +131,10 @@ describe('SSRF guards', () => {
 
 describe('scanStore', () => {
   it('Velbrook-Outlet clone at 61% below peers → BLOCK', async () => {
-    const { result } = await scanStore({ url: 'https://velbrook-outlet.shop/', peers: [{ url: 'https://velbrook.com/' }, { url: 'https://ondaya.com/' }] }, deps());
+    const { result } = await scanStore(
+      { url: 'https://velbrook-outlet.shop/', peers: [{ url: 'https://velbrook.com/' }, { url: 'https://ondaya.com/' }, { url: 'https://nyuie.com/', price: 58, productTitle: 'Zephlet Buds' }] },
+      deps(),
+    );
     expect(signal(result, 'price').status).toBe('fail');
     expect(signal(result, 'clone').status).toBe('fail');
     expect(signal(result, 'ai_page')).toMatchObject({ status: 'unavailable', points: 0, evidence: ['AI analysis not yet enabled'] });
@@ -160,11 +163,41 @@ describe('scanStore', () => {
 
   it('young domain + price >40% below → hard rule HOLD at least', async () => {
     const { result } = await scanStore(
-      { url: 'https://ondaya.com/', price: 20, peers: [{ url: 'https://velbrook.com/', price: 59 }, { url: 'https://velbrook-outlet.shop/', price: 59 }] },
+      { url: 'https://ondaya.com/', price: 20, peers: [{ url: 'https://velbrook.com/', price: 59 }, { url: 'https://velbrook-outlet.shop/', price: 59 }, { url: 'https://nyuie.com/', price: 58 }] },
       deps({ ageDays: 5 }),
     );
     expect(result.hardRulesTriggered).toContain('young_domain_cheap_price');
     expect(result.verdict).not.toBe('SAFE');
+  });
+
+  it("a BLOCK store's price never enters the comparison (the live $23 Velbrook-Outlet bug)", async () => {
+    const peers = [
+      { url: 'https://velbrook-outlet.shop/', price: 23, verdict: 'BLOCK' as const },
+      { url: 'https://ondaya.com/', price: 62 },
+      { url: 'https://nyuie.com/', price: 58 },
+    ];
+    const two = await scanStore({ url: 'https://velbrook.com/', price: 59, peers }, deps());
+    expect(signal(two.result, 'price')).toMatchObject({ status: 'unavailable', points: 0 }); // only 2 valid offers left
+    expect(signal(two.result, 'price').evidence.join(' ')).not.toContain('23');
+    const three = await scanStore({ url: 'https://velbrook.com/', price: 59, peers: [...peers, { url: 'https://zero.example/', price: 56 }] }, deps());
+    expect(signal(three.result, 'price').evidence[0]).toBe('$59.00 here vs $58.00 typical (the median of 3 other stores selling the same item).');
+  });
+
+  it('the scanned store is never in its own comparison set (other pages of the same store included)', async () => {
+    const base = 'https://voircheck-stores.onrender.com/s';
+    const { result } = await scanStore(
+      {
+        url: `${base}/velbrook-supply`,
+        price: 59,
+        peers: [
+          { url: `${base}/velbrook-supply/products/zephlet-buds`, price: 10 },
+          { url: `${base}/ondaya-home`, price: 62 },
+          { url: `${base}/nyuie-market`, price: 58 },
+        ],
+      },
+      deps(),
+    );
+    expect(signal(result, 'price').status).toBe('unavailable');
   });
 
   it('peers listing a different product are left out of the price comparison', async () => {
