@@ -4,7 +4,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema.ts"
+    "./schema": "./src/schema.ts",
+    "./retention": "./src/retention.ts"
   },
   "scripts": {
     "generate": "drizzle-kit generate",

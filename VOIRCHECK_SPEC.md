@@ -455,6 +455,8 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - Local dev and production share one Neon database and one PayPal webhook (→ production). Production processes webhooks for local test payments; keep production on the same gate version before testing payment flows locally.
 - Duplicate sandbox auto-pay charge from before the concurrency fix: order `42R00643N4130501B` ($59, sandbox). MoneyGate now serializes money actions per key (PayPal-Request-Id does not dedupe concurrent duplicates).
 
+- TODO (after Dec 15): schedule the retention job (`pnpm retention:run --apply`, e.g. a daily Render Cron Job). It refuses to run before 2026-12-15; see README → Operations.
+
 **Reminders**
 - Anthropic key + ~$30–40 credit by Nov 3 (hard stop Nov 4).
 - Render $50 credits: ask on Discord (portal failed).
