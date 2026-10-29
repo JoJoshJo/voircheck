@@ -433,7 +433,8 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 ### 5.22 Backlog
 **Deployment**
 - voircheck-web is LIVE at https://voircheck-web.onrender.com (Neon trusted domain added).
-- TODO: create the PayPal sandbox webhook pointing at the live web URL; add `PAYPAL_WEBHOOK_ID` to `.env` and Render.
+- ✅ Done (Oct 29): PayPal sandbox webhook `9JE42617KY204225Y` → `https://voircheck-web.onrender.com/api/paypal/webhook` (signature-verified route), events `CHECKOUT.ORDER.APPROVED`, `PAYMENT.AUTHORIZATION.CREATED`, `PAYMENT.AUTHORIZATION.VOIDED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `VAULT.PAYMENT-TOKEN.CREATED`; `PAYPAL_WEBHOOK_ID` added to `.env`. Old tunnel webhooks: none left.
+- TODO: add `PAYPAL_WEBHOOK_ID` to Render (voircheck-web).
 - TODO (security day Nov 10): turn OFF "Allow Localhost" in Neon Better Auth settings; check every user-data query uses `ownedBy()`; review the pinned `@neondatabase/auth` beta.
 - TODO: make auth setup load at runtime, not at build time (build failed when `NEON_AUTH_BASE_URL` was missing).
 
