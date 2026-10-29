@@ -253,6 +253,7 @@
 7. **History:** past requests and receipts
 8. **Settings:** language, auto-pay toggle + limit, account
 9. **How it works / Accuracy:** explains the six signals + publishes real-world test-set results
+10. **Privacy (`/privacy`) and Terms (`/terms`)** (added Oct 29): public, indexable, EN + FR, "Last updated" date; written from the actual data inventory (Neon + Neon Auth incl. session IP/user agent, settings, scans, sandbox payments, stored PayPal webhook payloads, append-only audit log, public receipts; processors Neon, Render, PayPal sandbox, Resend, KERNEL, Google Safe Browsing, RDAP registries, Google sign-in; Channel3 + Anthropic marked "not live yet"). Contact email in one constant (`apps/web/lib/legal.ts`). Footer on every page: Privacy · Terms · How it works. `LICENSE` (MIT) at repo root.
 
 **Devices:** desktop is the priority (judges + video). Baseline: **not broken on phones** (split view stacks into tabs). Full mobile polish only if time allows (stretch).
 
@@ -479,6 +480,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-29 — Resend on mail.voircheck.com for Trust Receipt emails
 - 2026-10-29 — Price signal comparison set fixed: ≥3 valid offers *excluding* the scanned store (it previously counted itself), stores whose own latest verdict is BLOCK, and `sameProduct:false` offers; median shown only when valid; demo check-a-link compares against all five other demo stores. Receipts show the store's own page URL.
 - 2026-10-29 — Google sign-in via own OAuth client in Neon Auth
+- 2026-10-29 — Privacy + Terms pages for Google OAuth branding
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.

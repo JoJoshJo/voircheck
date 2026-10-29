@@ -243,6 +243,7 @@ const en = {
     accuracyTitle: 'Accuracy',
     accuracyBody: 'We’re testing VoirCheck on about 20 known fake shops and 20 real ones. The results will be published here.',
   },
+  footer: { privacy: 'Privacy', terms: 'Terms', howItWorks: 'How it works' },
   common: { yes: 'Yes', no: 'No', english: 'English', french: 'Français', demoBanner: 'Demo account · sandbox money only' },
 };
 
@@ -484,6 +485,7 @@ const fr: Dict = {
     accuracyTitle: 'Fiabilité',
     accuracyBody: 'Nous testons VoirCheck sur une vingtaine de fausses boutiques connues et une vingtaine de vraies. Les résultats seront publiés ici.',
   },
+  footer: { privacy: 'Confidentialité', terms: 'Conditions', howItWorks: 'Comment ça marche' },
   common: { yes: 'Oui', no: 'Non', english: 'English', french: 'Français', demoBanner: 'Compte de démo · argent fictif (sandbox) uniquement' },
 };
 
