@@ -1,5 +1,8 @@
 import { handleWebhook } from '@voircheck/paypal';
+import { getProfile } from '../../../../lib/user';
+import { isLang } from '../../../../lib/i18n';
 import { getPayPal } from '../../../../lib/paypal';
+import { upsertPaymentReceipt } from '../../../../lib/receipts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,7 +25,12 @@ export async function POST(req: Request) {
     const { paypal, store, gate } = getPayPal();
     const out = await handleWebhook({ headers, rawBody }, { paypal, webhookId, store });
     if (out.outcome === 'processed' && out.followUp?.action === 'complete_approval') {
-      await gate.completeApproval(out.followUp.paymentId, out.followUp.userId, 'webhook');
+      const { paymentId, userId } = out.followUp;
+      await gate.completeApproval(paymentId, userId, 'webhook');
+      // Receipt + email even if the buyer closed the tab (the browser path does the same; the email is sent once).
+      const profile = await getProfile(userId);
+      const origin = process.env.APP_URL ?? new URL(req.url).origin;
+      await upsertPaymentReceipt(paymentId, profile && isLang(profile.language) ? profile.language : 'en', origin).catch(() => null);
     }
     return Response.json({ outcome: out.outcome }, { status: out.httpStatus });
   } catch (err) {

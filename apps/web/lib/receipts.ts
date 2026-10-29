@@ -1,15 +1,22 @@
 import 'server-only';
-import { candidates, payments, scans, trustReceipts } from '@voircheck/db/schema';
-import { desc, eq } from 'drizzle-orm';
+import { auditLog, candidates, payments, scans, shoppingSessions, trustReceipts } from '@voircheck/db/schema';
+import { and, desc, eq, isNull, sql } from 'drizzle-orm';
+import { after } from 'next/server';
 import { randomBytes } from 'node:crypto';
+import { Resend } from 'resend';
 import { getDb } from './db';
 import type { Lang } from './i18n';
+import { DEFAULT_EMAIL_FROM, deliverReceiptEmail, type ResendLike } from './receipt-mailer';
 import { buildSnapshot, ReceiptSnapshot } from './receipt-snapshot';
 
 export { actionFor, buildSnapshot, ReceiptSnapshot, type ReceiptAction } from './receipt-snapshot';
 
-/** Create or refresh the receipt for a payment (one per payment; the slug never changes). Returns the slug. */
-export async function upsertPaymentReceipt(paymentId: string, lang: Lang): Promise<string | null> {
+/**
+ * Create or refresh the receipt for a payment (one per payment; the slug never changes). Returns the slug.
+ * Called after the money decision is saved; the email is scheduled after the response and can't affect the payment.
+ * `baseUrl` is the public app URL for the receipt link (APP_URL, else the request's own origin).
+ */
+export async function upsertPaymentReceipt(paymentId: string, lang: Lang, baseUrl: string): Promise<string | null> {
   const db = getDb();
   const [row] = await db
     .select({ payment: payments, candidate: candidates, scan: scans })
@@ -23,24 +30,63 @@ export async function upsertPaymentReceipt(paymentId: string, lang: Lang): Promi
   if (!snapshot) return null;
 
   const [existing] = await db.select({ id: trustReceipts.id, slug: trustReceipts.publicSlug }).from(trustReceipts).where(eq(trustReceipts.paymentId, paymentId)).limit(1);
+  let receipt: { id: string; slug: string };
   if (existing) {
     await db.update(trustReceipts).set({ snapshot, language: lang }).where(eq(trustReceipts.id, existing.id));
-    return existing.slug;
+    receipt = existing;
+  } else {
+    const slug = randomBytes(18).toString('base64url'); // 144 bits: unguessable
+    const [inserted] = await db
+      .insert(trustReceipts)
+      .values({ publicSlug: slug, paymentId, scanId: row.scan.id, language: lang, snapshot })
+      .returning({ id: trustReceipts.id, slug: trustReceipts.publicSlug });
+    receipt = inserted!;
   }
-  const slug = randomBytes(18).toString('base64url'); // 144 bits: unguessable
-  await db.insert(trustReceipts).values({ publicSlug: slug, paymentId, scanId: row.scan.id, language: lang, snapshot });
-  await emailReceipt(slug);
-  return slug;
+  scheduleReceiptEmail({ receiptId: receipt.id, slug: receipt.slug, sessionId: row.payment.sessionId, lang, snapshot, baseUrl });
+  return receipt.slug;
 }
 
-/**
- * Email copy of the receipt (spec 5.3 #6). Hook only: Resend is set up later (RESEND_API_KEY). It will send the
- * receipt link to the signed-in user's own address; the receipt itself stays free of personal info.
- */
-export async function emailReceipt(slug: string): Promise<void> {
-  if (!process.env.RESEND_API_KEY) return; // not set up yet
-  // TODO(Resend): look up the payment owner's email server-side and send this link.
-  console.info(`receipt email pending Resend setup: /r/${slug.slice(0, 4)}…`);
+// ---------- Trust Receipt email (Resend, spec 5.3 #6) ----------
+
+let resendClient: ResendLike | null | undefined;
+function getResend(): ResendLike | null {
+  if (resendClient === undefined) resendClient = process.env.RESEND_API_KEY ? (new Resend(process.env.RESEND_API_KEY) as unknown as ResendLike) : null;
+  return resendClient;
+}
+
+/** Runs after the response (Next `after`); outside a request (scripts) it just runs in the background. */
+function scheduleReceiptEmail(input: { receiptId: string; slug: string; sessionId: string; lang: Lang; snapshot: ReceiptSnapshot; baseUrl: string }) {
+  const job = () => sendReceiptEmail(input).then(() => undefined, () => undefined);
+  try {
+    after(job);
+  } catch {
+    void job();
+  }
+}
+
+async function sendReceiptEmail(input: { receiptId: string; slug: string; sessionId: string; lang: Lang; snapshot: ReceiptSnapshot; baseUrl: string }) {
+  const db = getDb();
+  // The payment owner's account email (Neon Auth). Read server-side only; never stored in the receipt or audit log.
+  const [owner] = await db.select({ userId: shoppingSessions.userId }).from(shoppingSessions).where(eq(shoppingSessions.id, input.sessionId)).limit(1);
+  const result = owner ? await db.execute<{ email: string | null }>(sql`select email from neon_auth."user" where id = ${owner.userId} limit 1`) : null;
+  const to = (result?.rows?.[0]?.email as string | null | undefined) ?? null;
+
+  return deliverReceiptEmail(
+    { receiptId: input.receiptId, slug: input.slug, to, lang: input.lang, snapshot: input.snapshot, baseUrl: input.baseUrl },
+    {
+      resend: getResend(),
+      from: process.env.EMAIL_FROM || DEFAULT_EMAIL_FROM,
+      claim: async () =>
+        (await db.update(trustReceipts).set({ emailedAt: new Date() }).where(and(eq(trustReceipts.id, input.receiptId), isNull(trustReceipts.emailedAt))).returning({ id: trustReceipts.id }))
+          .length === 1,
+      release: async () => {
+        await db.update(trustReceipts).set({ emailedAt: null }).where(eq(trustReceipts.id, input.receiptId));
+      },
+      audit: async (action, details) => {
+        await db.insert(auditLog).values({ userId: owner?.userId ?? null, actor: 'system', action, entity: 'trust_receipt', entityId: input.receiptId, details });
+      },
+    },
+  );
 }
 
 export async function getReceiptBySlug(slug: string) {

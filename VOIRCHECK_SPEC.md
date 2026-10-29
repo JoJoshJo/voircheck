@@ -102,6 +102,7 @@
    - HOLD → payment authorized (held, not taken); user sees evidence and taps **Capture** or **Void**; screen shows the authorization expiry countdown (confirm exact PayPal window in piece 7)
    - BLOCK → authorization voided; evidence shown (override rules decided in piece 6)
 6. **Outcome:** every paid / held / blocked decision produces a shareable **Trust Receipt** page (store, evidence, verdict, PayPal action taken) **plus an email copy** (Resend). If time runs short, email is cut first; the receipt page stays.
+   - **Receipt email (built Oct 29):** Resend, sender `VoirCheck <receipts@mail.voircheck.com>` (`EMAIL_FROM`), to the signed-in user's account email, in their language (EN/FR). Sent after each **final** outcome: captured (SAFE), captured after HOLD, voided (BLOCK), paid anyway after a BLOCK override; a HOLD that is still waiting gets no email. Content: store, item, amount, verdict + score, top 2–3 reasons, outcome, link to `${APP_URL}/r/<slug>`; Mono ink inline HTML + plain text; nothing beyond what the public receipt shows (no PayPal IDs). Never blocks a payment: scheduled after the response, errors caught and logged, result (`sent` + Resend message id / `failed`) in `audit_log`. One email per receipt (`trust_receipts.emailed_at` claim + Resend idempotency key `trust-receipt/<receipt id>`). No `RESEND_API_KEY` → skipped (logged once). Demo/guest accounts (`.invalid` addresses) are skipped.
 
 ### 5.4 Product search ✅
 - **Source:** Channel3 API (real retailers; promo credits). Must be called for real, since the sponsor prize requires actual API calls.
@@ -309,7 +310,7 @@ Eligible for three sponsor prizes; only one can be won.
 | Product search | **Channel3** API + MCP server |
 | Scanning | **KERNEL** cloud browser (all page visits) + RDAP/WHOIS, TLS checks, Google Safe Browsing |
 | Background jobs | **Render Workflows** (parallel store scans, test-set runs) |
-| Email | **Resend** |
+| Email | **Resend** on `mail.voircheck.com` (Trust Receipt emails; see 5.3 #6) |
 | Hosting | **Render** (web app, 6 demo stores, workflows) |
 | Validation | **Zod** for every API input and every AI JSON output |
 | Tests | **Vitest** (scoring + money-gate unit tests) + **Playwright** (end-to-end demo flow) |
@@ -474,6 +475,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-28 — Scanner built (`packages/scanner`): five non-AI signals + AI placeholder, points weights per 5.6, hard rules + can't-verify, KERNEL-only page visits, SSRF guards. Google Safe Browsing is non-commercial only: fine for the hackathon; a paid VoirCheck must move signal 5 to Google Web Risk.
 - 2026-10-28 — Price signal tightened: median of same-product offers, scores only with ≥3 offers for the exact same product, else `unavailable` (0 points); never across different products; scan the retailer's product page, never Channel3's redirect link.
 - 2026-10-28 — Hosting: Render **free plan during the build**; `voircheck-stores` + `voircheck-web` move to **Starter ($7/mo) on Nov 11** before recording and stay through Dec 15. Demo earbuds renamed to **Zephlet Buds** (the old name matched an existing product; avoid third-party trademarks).
+- 2026-10-29 — Resend on mail.voircheck.com for Trust Receipt emails
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.

@@ -31,6 +31,7 @@ const bodies = {
 } as const;
 type Action = keyof typeof bodies;
 
+/** Public app URL for links (receipt emails): APP_URL, else the request's own origin. */
 async function appOrigin(): Promise<string> {
   if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, '');
   const h = await headers();
@@ -51,7 +52,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ action: string
   const { gate } = getPayPal();
   const userId = user.id;
   const view = async (paymentId: string, receipt = true) => {
-    if (receipt) await upsertPaymentReceipt(paymentId, lang);
+    if (receipt) await upsertPaymentReceipt(paymentId, lang, await appOrigin());
     return getPaymentView(paymentId, userId);
   };
 
