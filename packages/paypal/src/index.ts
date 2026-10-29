@@ -25,3 +25,4 @@ export {
 export { handleWebhook, verifyWebhookSignature, type WebhookOutcome, type WebhookEvent } from './webhooks';
 export { MemoryGateStore, type GateStore, type CandidateRow, type ScanRow, type PaymentRow, type PaymentStatus, type Verdict } from './store';
 export { drizzleGateStore } from './drizzle-store';
+export { redactWebhookPayload, piiKeysPresent, PII_KEYS } from './webhook-redact';

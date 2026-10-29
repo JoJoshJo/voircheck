@@ -11,12 +11,18 @@ importers:
       '@voircheck/agent':
         specifier: workspace:*
         version: link:packages/agent
+      '@voircheck/db':
+        specifier: workspace:*
+        version: link:db
       '@voircheck/paypal':
         specifier: workspace:*
         version: link:packages/paypal
       '@voircheck/scanner':
         specifier: workspace:*
         version: link:packages/scanner
+      drizzle-orm:
+        specifier: ^0.45.4
+        version: 0.45.4(@neondatabase/serverless@1.2.0)(kysely@0.29.7)
     devDependencies:
       '@types/node':
         specifier: ^22.10.0

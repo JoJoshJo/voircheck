@@ -45,6 +45,14 @@ describe('Privacy and Terms pages', () => {
     expect(PRIVACY.en.sections.flatMap((s) => s.items ?? []).find((i) => i.startsWith('Channel3'))).toContain('not live yet');
   });
 
+  it('privacy says PayPal notifications keep only payment status details (no buyer PII)', () => {
+    for (const lang of ['en', 'fr'] as const) {
+      const p = JSON.stringify(PRIVACY[lang]);
+      expect(p).not.toMatch(/sandbox buyer account|compte acheteur sandbox/);
+    }
+    expect(JSON.stringify(PRIVACY.en)).toContain('we keep only payment status details');
+  });
+
   it('terms cover as-is, sandbox only, verdicts not guarantees, fictional demo stores, fair use and MIT', () => {
     const t = JSON.stringify(TERMS.en);
     for (const must of ['without any warranty', 'sandbox', 'not guarantees', 'fictional', 'Don’t use it to attack', 'MIT License']) expect(t).toContain(must);

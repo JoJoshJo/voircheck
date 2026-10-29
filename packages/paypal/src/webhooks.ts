@@ -1,6 +1,7 @@
 import type { PayPalClient } from './client';
 import { requestIdFor } from './gate';
 import type { GateStore, PaymentRow, PaymentStatus } from './store';
+import { redactWebhookPayload } from './webhook-redact';
 
 /**
  * PayPal webhooks (spec 5.7 / 5.17 #4): verify every signature with PayPal, record each event once keyed on
@@ -72,7 +73,8 @@ export async function handleWebhook(req: { headers: Record<string, string | unde
   }
   if (!verified) return { httpStatus: 401, outcome: 'rejected', reason: 'signature verification failed' };
 
-  const state = await deps.store.recordWebhookEvent({ paypalEventId: event.id, eventType: event.event_type, signatureVerified: true, payload: event });
+  // Stored redacted (payment status details only, no payer PII); verification above used the original event.
+  const state = await deps.store.recordWebhookEvent({ paypalEventId: event.id, eventType: event.event_type, signatureVerified: true, payload: redactWebhookPayload(event) });
   if (state === 'processed') return { httpStatus: 200, outcome: 'duplicate' };
 
   const result = await applyEvent(event, deps.store);
