@@ -15,6 +15,8 @@ export {
   AutopayInput,
   UserCaptureInput,
   PaymentActionInput,
+  WalletSetupInput,
+  WalletConfirmInput,
   type EffectiveVerdict,
   type CaptureDecision,
   type GateResult,

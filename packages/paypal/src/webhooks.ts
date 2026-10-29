@@ -40,7 +40,7 @@ export async function verifyWebhookSignature(paypal: PayPalClient, webhookId: st
 }
 
 /** Status only moves forward; a late "authorization created" can't undo a capture or void. */
-const RANK: Record<PaymentStatus, number> = { created: 0, approved: 1, authorized: 2, capture_pending: 3, captured: 4, voided: 4, capture_denied: 4, failed: 4 };
+const RANK: Record<PaymentStatus, number> = { created: 0, approved: 1, authorized: 2, capture_pending: 3, captured: 4, voided: 4, capture_denied: 4, failed: 4, cancelled: 4 };
 const canMove = (from: PaymentStatus, to: PaymentStatus) => RANK[to] > RANK[from] || (from === 'capture_pending' && RANK[to] === 4);
 
 export type WebhookOutcome =

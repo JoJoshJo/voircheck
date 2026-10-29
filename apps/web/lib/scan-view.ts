@@ -12,12 +12,21 @@ export interface ScanView {
   scannedAt: string;
 }
 
+/** The thing that could be bought from this result. Price comes from our own rows; null = nothing to pay. */
+export interface CandidateView {
+  id: string;
+  storeName: string;
+  productTitle: string;
+  price: string | null;
+  currency: string;
+}
+
 export type ScanEvent =
   | { type: 'start'; url: string }
   | { type: 'browser'; liveViewUrl: string | null }
   | { type: 'signal'; id: SignalResult['id']; status: SignalResult['status']; points: number }
-  | { type: 'done'; scan: ScanView }
-  | { type: 'cached'; scan: ScanView }
+  | { type: 'done'; scan: ScanView; candidate: CandidateView }
+  | { type: 'cached'; scan: ScanView; candidate: CandidateView }
   | { type: 'error'; code: 'auth' | 'rate' | 'url' | 'failed' };
 
 export function toScanView(row: { id: string; url: string; storeDomain: string; verdict: Verdict; riskScore: number; signals: unknown; hardRulesTriggered: string[]; scannedAt: Date }): ScanView {

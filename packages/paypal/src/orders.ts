@@ -125,3 +125,30 @@ export const chargeVaultedWallet = (c: PayPalClient, input: Omit<CreateOrderInpu
 export const firstAuthorization = (o: Order) => o.purchase_units?.[0]?.payments?.authorizations?.[0] ?? null;
 export const firstCapture = (o: Order) => o.purchase_units?.[0]?.payments?.captures?.[0] ?? null;
 export const approvalLink = (o: Order) => o.links?.find((l) => l.rel === 'payer-action' || l.rel === 'approve')?.href ?? null;
+
+// ---------- save a PayPal wallet without a purchase (Payment Method Tokens v3) ----------
+
+export interface SetupToken {
+  id: string;
+  status: string;
+  links?: PayPalLink[];
+}
+
+export const createVaultSetupToken = (c: PayPalClient, input: { returnUrl: string; cancelUrl: string }, requestId: string) =>
+  c.request<SetupToken>('POST', '/v3/vault/setup-tokens', {
+    body: {
+      payment_source: {
+        paypal: {
+          usage_type: 'MERCHANT',
+          customer_type: 'CONSUMER',
+          permit_multiple_payment_tokens: false,
+          experience_context: { return_url: input.returnUrl, cancel_url: input.cancelUrl, vault_instruction: 'ON_PAYER_APPROVAL', brand_name: 'VoirCheck' },
+        },
+      },
+    },
+    requestId,
+  });
+
+/** Turns an approved setup token into a long-lived payment token; only its ID is ever stored. */
+export const createVaultPaymentToken = (c: PayPalClient, setupTokenId: string, requestId: string) =>
+  c.request<{ id: string }>('POST', '/v3/vault/payment-tokens', { body: { payment_source: { token: { id: setupTokenId, type: 'SETUP_TOKEN' } } }, requestId });

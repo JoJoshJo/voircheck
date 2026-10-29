@@ -131,7 +131,10 @@ export async function compareStores(query: string, opts: CompareOptions): Promis
  * demo stores (Demo mode ON), compare against the store's twin plus the legit store of the next pair, on the same
  * page (home, product or about), with the store's hero product as the shared item. Real URLs: no peers yet.
  */
-export function demoPeersForUrl(rawUrl: string, baseUrl = DEFAULT_DEMO_STORES_BASE_URL): { slug: string; storeName: string; productTitle: string; peers: Array<{ url: string; productTitle: string }> } | null {
+export function demoPeersForUrl(
+  rawUrl: string,
+  baseUrl = DEFAULT_DEMO_STORES_BASE_URL,
+): { slug: string; storeName: string; storeUrl: string; productTitle: string; price: number; peers: Array<{ url: string; productTitle: string }> } | null {
   let url: URL;
   try {
     url = new URL(rawUrl);
@@ -148,11 +151,15 @@ export function demoPeersForUrl(rawUrl: string, baseUrl = DEFAULT_DEMO_STORES_BA
   const twin = STORES.find((s) => s.pair === store.pair && s.slug !== store.slug)!;
   const other = STORES.find((s) => s.pair === (store.pair % 3) + 1 && s.role === 'legit')!;
   const hero = store.products[0]!;
-  const productTitle = store.products.find((p) => rest === `/products/${p.slug}`)?.name ?? hero.name;
+  const product = store.products.find((p) => rest === `/products/${p.slug}`) ?? hero;
+  const productTitle = product.name;
   return {
     slug: store.slug,
     storeName: store.name,
+    storeUrl: demoStoreUrl(store, baseUrl),
     productTitle,
+    // The demo store's own price for the item, from our config (never from the browser).
+    price: product.price,
     peers: [twin, other].map((s) => ({ url: `${demoStoreUrl(s, baseUrl).replace(/\/$/, '')}${rest}`, productTitle })),
   };
 }

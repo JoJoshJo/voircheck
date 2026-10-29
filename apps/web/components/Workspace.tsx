@@ -3,17 +3,18 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { fmt, type Dict } from '../lib/i18n';
-import type { ScanEvent, ScanView } from '../lib/scan-view';
+import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
+import { Checkout } from './Checkout';
 import { DEMO_COOKIE } from '../lib/workspace';
 import { Mascot } from './Mascot';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, card, input } from './ui';
-import { VERDICT_CLASSES, VerdictBadge } from './Verdict';
+import { VERDICT_CLASSES, VerdictLabel } from './Verdict';
 
 type ScanState =
   | { phase: 'idle' }
   | { phase: 'scanning'; url: string; signals: Partial<Record<string, SignalState>>; liveViewUrl: string | null }
-  | { phase: 'done'; scan: ScanView; cached: boolean }
+  | { phase: 'done'; scan: ScanView; candidate: CandidateView; cached: boolean }
   | { phase: 'error'; code: string; url?: string };
 
 export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
@@ -23,7 +24,7 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
   return fmt(t.workspace.hoursAgo, { n: Math.floor(mins / 60) });
 }
 
-export function Workspace({ t, initialDemoMode }: { t: Dict; initialDemoMode: boolean }) {
+export function Workspace({ t, lang, initialDemoMode, autopay }: { t: Dict; lang: string; initialDemoMode: boolean; autopay: boolean }) {
   const [tab, setTab] = useState<'chat' | 'results'>('results');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [url, setUrl] = useState('');
@@ -57,8 +58,8 @@ export function Workspace({ t, initialDemoMode }: { t: Dict; initialDemoMode: bo
           if (!raw) continue;
           const e = JSON.parse(raw) as ScanEvent;
           setState((s) => {
-            if (e.type === 'cached') return { phase: 'done', scan: e.scan, cached: true };
-            if (e.type === 'done') return { phase: 'done', scan: e.scan, cached: false };
+            if (e.type === 'cached') return { phase: 'done', scan: e.scan, candidate: e.candidate, cached: true };
+            if (e.type === 'done') return { phase: 'done', scan: e.scan, candidate: e.candidate, cached: false };
             if (e.type === 'error') return { phase: 'error', code: e.code, url: target };
             if (s.phase !== 'scanning') return s;
             if (e.type === 'browser') return { ...s, liveViewUrl: e.liveViewUrl };
@@ -135,7 +136,12 @@ export function Workspace({ t, initialDemoMode }: { t: Dict; initialDemoMode: bo
 
           {state.phase === 'idle' && <p className="px-1 text-[15px] text-muted">{t.workspace.empty}</p>}
           {state.phase === 'scanning' && <ScanningCard t={t} url={state.url} signals={state.signals} liveViewUrl={state.liveViewUrl} />}
-          {state.phase === 'done' && <ResultCard t={t} scan={state.scan} cached={state.cached} onRescan={() => void run(state.scan.url, true)} />}
+          {state.phase === 'done' && (
+            <>
+              <ResultCard t={t} scan={state.scan} cached={state.cached} onRescan={() => void run(state.scan.url, true)} />
+              <BuyCard t={t} lang={lang} scan={state.scan} candidate={state.candidate} autopay={autopay} />
+            </>
+          )}
           {state.phase === 'error' && (
             <div className={`${card} p-5 text-[15px] text-muted`}>
               {state.code === 'rate' ? t.workspace.errorRate : state.code === 'url' ? t.workspace.errorUrl : t.workspace.errorGeneric}
@@ -197,14 +203,39 @@ function LiveView({ t, url }: { t: Dict; url: string | null }) {
   );
 }
 
+/** Product, price, store and "Pay with PayPal" when we know the price; otherwise a plain explanation. */
+function BuyCard({ t, lang, scan, candidate, autopay }: { t: Dict; lang: string; scan: ScanView; candidate: CandidateView; autopay: boolean }) {
+  if (!candidate.price) return <div className={`${card} p-5 text-[14px] leading-relaxed text-muted`}>{t.pay.noPrice}</div>;
+  const money = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: candidate.currency }).format(Number(candidate.price));
+  return (
+    <div className={`${card} space-y-5 p-5`}>
+      <dl className="grid grid-cols-3 gap-4 text-[14px]">
+        <div>
+          <dt className="text-faint">{t.pay.product}</dt>
+          <dd className="mt-1 font-medium">{candidate.productTitle}</dd>
+        </div>
+        <div>
+          <dt className="text-faint">{t.pay.price}</dt>
+          <dd className="mt-1 font-medium">{money}</dd>
+        </div>
+        <div>
+          <dt className="text-faint">{t.pay.store}</dt>
+          <dd className="mt-1 font-medium">{candidate.storeName}</dd>
+        </div>
+      </dl>
+      <Checkout key={`${scan.id}-${candidate.id}`} t={t} lang={lang} candidateId={candidate.id} scanId={scan.id} autopay={autopay} />
+    </div>
+  );
+}
+
 function ResultCard({ t, scan, cached, onRescan }: { t: Dict; scan: ScanView; cached: boolean; onRescan: () => void }) {
   const signals = Object.fromEntries(scan.signals.map((s) => [s.id, s.status])) as Record<string, SignalState>;
   return (
     <div className={`${card} relative overflow-hidden`}>
       <div className={`flex items-center justify-between gap-4 px-5 py-5 ${VERDICT_CLASSES[scan.verdict]}`}>
         <div>
-          <VerdictBadge verdict={scan.verdict} t={t} large />
-          <p className="mt-3 text-[16px] font-medium">{t.verdict[`${scan.verdict}_line`]}</p>
+          <VerdictLabel verdict={scan.verdict} t={t} />
+          <p className="mt-1 text-[16px] font-medium">{t.verdict[`${scan.verdict}_line`]}</p>
           <p className="mt-1 text-[13px] opacity-80">
             {t.workspace.score}: {scan.score}/100
           </p>

@@ -7,7 +7,7 @@ import { DEMO_COOKIE, demoModeFrom } from '../../lib/workspace';
 export const dynamic = 'force-dynamic';
 
 export default async function WorkspacePage() {
-  const { lang } = await requireOnboardedUser();
+  const { lang, profile } = await requireOnboardedUser();
   const demo = demoModeFrom((await cookies()).get(DEMO_COOKIE)?.value);
-  return <Workspace t={DICTS[lang]} initialDemoMode={demo} />;
+  return <Workspace t={DICTS[lang]} lang={lang} initialDemoMode={demo} autopay={profile.autopayEnabled} />;
 }

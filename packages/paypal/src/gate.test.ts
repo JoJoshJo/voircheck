@@ -309,3 +309,111 @@ describe('auto-pay', () => {
     expect(store.audit.length - before).toBe(3); // refused + allowed + captured
   });
 });
+
+// ---------- "Pay anyway", cancel, wallet setup ----------
+
+describe('Pay anyway (BLOCK override in approve mode)', () => {
+  it('a new order with the confirmed override is captured after approval, audited as the user', async () => {
+    const { gate, pp, store } = setup();
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-block', idempotencyKey: 'override-0001', override: true, ...urls });
+    expect(r.ok && r.payment.overrideUsed).toBe(true);
+    const done = await gate.completeApproval(r.ok ? r.payment.id : '', USER);
+    expect(done.ok && done.payment).toMatchObject({ status: 'captured', overrideUsed: true });
+    expect(pp.callsTo(/void$/)).toHaveLength(0);
+    const actions = store.audit.map((a) => `${a.actor}:${a.action}`);
+    expect(actions).toEqual(['user:override.confirmed', 'user:order.created', 'system:authorization.created', 'user:gate.capture', 'user:payment.captured']);
+  });
+
+  it('without the override, the same BLOCK store is voided', async () => {
+    const { gate } = setup();
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-block', idempotencyKey: 'normal-0001', ...urls });
+    expect((await gate.completeApproval(r.ok ? r.payment.id : '', USER)).payment?.status).toBe('voided');
+  });
+
+  it('Auto-pay never accepts an override, even with a saved wallet and a high limit', async () => {
+    const { gate, pp, store } = setup();
+    store.vaultTokens.push({ userId: USER, paypalVaultTokenId: 'V', status: 'VAULTED' });
+    store.profiles.set(USER, { userId: USER, autopayEnabled: true, autopayLimit: '1000.00' });
+    expect(await gate.autoPay({ userId: USER, candidateId: 'cand-1', scanId: 'scan-block', idempotencyKey: 'auto-0009', override: true })).toEqual({ ok: false, reason: 'override is never allowed in Auto-pay' });
+    expect(pp.callsTo(/orders/)).toHaveLength(0);
+  });
+});
+
+describe('popup closed / cancelled', () => {
+  it('an unapproved order is marked cancelled; nothing was held', async () => {
+    const pp = fakePayPal({ orderStatus: 'PAYER_ACTION_REQUIRED' });
+    const { store } = seededStore();
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'click-0001', ...urls });
+    const c = await gate.cancelPurchase({ userId: USER, paymentId: r.ok ? r.payment.id : '' });
+    expect(c.ok && c.payment.status).toBe('cancelled');
+    expect(pp.callsTo(/authorize$/)).toHaveLength(0);
+  });
+
+  it('if the buyer approved after all (sandbox second click), cancel refuses and the approval is finished instead', async () => {
+    const { gate, paymentId } = await authorized('scan-safe');
+    expect(await gate.cancelPurchase({ userId: USER, paymentId })).toMatchObject({ ok: false, reason: 'already approved' });
+    expect((await gate.completeApproval(paymentId, USER)).payment?.status).toBe('captured');
+  });
+});
+
+describe('saving a wallet for Auto-pay (no purchase)', () => {
+  it('setup token → approved → payment token ID stored, nothing else', async () => {
+    const { gate, pp, store } = setup();
+    const { setupTokenId } = await gate.startWalletSetup({ userId: USER, ...urls });
+    expect(await gate.confirmWalletSetup({ userId: USER, setupTokenId })).toEqual({ ok: true });
+    expect(store.vaultTokens).toEqual([{ userId: USER, paypalVaultTokenId: `PTOKEN-${setupTokenId}`, status: 'VAULTED' }]);
+    const setupBody = pp.callsTo(/setup-tokens/)[0]!.body as { payment_source: { paypal: { usage_type: string } } };
+    expect(setupBody.payment_source.paypal.usage_type).toBe('MERCHANT');
+  });
+
+  it("refuses to confirm a setup token another user started", async () => {
+    const { gate, store } = setup();
+    const { setupTokenId } = await gate.startWalletSetup({ userId: OTHER_USER, ...urls });
+    expect(await gate.confirmWalletSetup({ userId: USER, setupTokenId })).toEqual({ ok: false, reason: 'unknown setup token' });
+    expect(store.vaultTokens).toHaveLength(0);
+  });
+
+  it('browser-safe client token is scoped to the page origin', async () => {
+    const { pp } = setup();
+    expect(await pp.client.browserClientToken(['voircheck-web.onrender.com'])).toEqual({ token: 'browser-safe-token', expiresIn: 900 });
+    const body = pp.calls.find((c) => c.path.endsWith('#client_token'))!.body as string;
+    expect(new URLSearchParams(body).get('domains[]')).toBe('voircheck-web.onrender.com');
+  });
+});
+
+describe('two paths settling the same payment (browser + webhook)', () => {
+  it('a payment already settled elsewhere is not captured or voided again', async () => {
+    const { gate, pp, store, paymentId } = await authorized('scan-safe');
+    await gate.completeApproval(paymentId, USER); // first path captures
+    store.payments.get(paymentId)!.status = 'authorized'; // simulate the second path having read a stale row…
+    store.payments.get(paymentId)!.status = 'voided'; // …while the first actually finished as voided
+    const r = await gate.userCapture({ userId: USER, paymentId });
+    expect(r.ok).toBe(false);
+    expect(pp.callsTo(/capture$/)).toHaveLength(1);
+  });
+});
+
+describe('concurrent duplicates (React double effect, double click, webhook + browser)', () => {
+  it('two simultaneous auto-pay requests with the same key charge once', async () => {
+    const pp = fakePayPal({ slowMs: 30 });
+    const { store } = seededStore();
+    store.vaultTokens.push({ userId: USER, paypalVaultTokenId: 'V', status: 'VAULTED' });
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const input = { userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'auto-0001' };
+    const [a, b] = await Promise.all([gate.autoPay(input), gate.autoPay(input)]);
+    expect(a.ok && b.ok && a.payment.id === b.payment.id).toBe(true);
+    expect(new Set([...store.payments.values()].map((p) => p.paypalOrderId)).size).toBe(1);
+  });
+
+  it('two simultaneous completions of one approval capture once', async () => {
+    const pp = fakePayPal({ slowMs: 30 });
+    const { store } = seededStore();
+    const gate = new MoneyGate({ paypal: pp.client, store, now: () => NOW });
+    const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'click-0001', ...urls });
+    const id = r.ok ? r.payment.id : '';
+    await Promise.all([gate.completeApproval(id, USER, 'user'), gate.completeApproval(id, USER, 'webhook')]);
+    expect(store.payments.get(id)?.status).toBe('captured');
+    expect(store.audit.filter((x) => x.action === 'payment.captured')).toHaveLength(1);
+  });
+});

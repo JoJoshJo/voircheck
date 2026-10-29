@@ -49,15 +49,30 @@ export async function saveScan(result: ScanResult): Promise<ScanRecord> {
   return row!;
 }
 
-/** Every check-a-link request: a shopping session + its candidate (price unknown for a pasted link). */
-export async function recordLinkRequest(opts: { userId: string; url: string; demoMode: boolean; storeName: string; productTitle: string }) {
+/**
+ * Every check-a-link request: a shopping session + its candidate. A pasted real link has no known price (null, never
+ * chargeable); a demo store's price comes from our own config.
+ */
+export async function recordLinkRequest(opts: {
+  userId: string;
+  url: string;
+  demoMode: boolean;
+  storeName: string;
+  storeUrl: string;
+  productTitle: string;
+  price: string | null;
+  source: 'demo' | 'link';
+}): Promise<{ sessionId: string; candidateId: string }> {
   const db = getDb();
   const [session] = await db
     .insert(shoppingSessions)
     .values({ userId: opts.userId, entryType: 'link', queryOrUrl: opts.url, demoMode: opts.demoMode, status: 'scanning' })
     .returning({ id: shoppingSessions.id });
-  await db.insert(candidates).values({ sessionId: session!.id, storeName: opts.storeName, storeUrl: opts.url, productTitle: opts.productTitle, price: null, source: 'link', rank: 1 });
-  return session!.id;
+  const [candidate] = await db
+    .insert(candidates)
+    .values({ sessionId: session!.id, storeName: opts.storeName, storeUrl: opts.storeUrl, productTitle: opts.productTitle, price: opts.price, currency: 'USD', source: opts.source, rank: 1 })
+    .returning({ id: candidates.id });
+  return { sessionId: session!.id, candidateId: candidate!.id };
 }
 
 export async function finishLinkRequest(userId: string, sessionId: string, status: 'done' | 'failed') {

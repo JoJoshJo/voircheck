@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
-import { VERDICT_CLASSES, VerdictBadge } from '../../../../components/Verdict';
+import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
 import { DICTS, fmt } from '../../../../lib/i18n';
 import { getScanForUser } from '../../../../lib/scans';
 import { toScanView } from '../../../../lib/scan-view';
@@ -29,8 +29,8 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
       </Link>
       <div className={`mt-5 flex items-center justify-between gap-6 rounded-card px-6 py-6 ${VERDICT_CLASSES[scan.verdict]}`}>
         <div className="min-w-0">
-          <VerdictBadge verdict={scan.verdict} t={t} large />
-          <h1 className="mt-3 text-[22px] font-medium tracking-tight">{t.verdict[`${scan.verdict}_line`]}</h1>
+          <VerdictLabel verdict={scan.verdict} t={t} />
+          <h1 className="mt-1 text-[22px] font-medium tracking-tight">{t.verdict[`${scan.verdict}_line`]}</h1>
           <p className="mt-1 truncate text-[14px] opacity-80">{scan.url}</p>
           <p className="mt-1 text-[13px] opacity-80">
             {t.workspace.score}: {scan.score}/100 · {fmt(t.evidence.scannedAt, { when })}

@@ -5,6 +5,8 @@ import { PayPalApiError, type PayPalClient } from './client';
 import {
   approvalLink,
   authorizeOrder,
+  createVaultPaymentToken,
+  createVaultSetupToken,
   captureAuthorization,
   chargeVaultedWallet,
   createOrder,
@@ -135,7 +137,11 @@ export const StartPurchaseInput = z.object({
   returnUrl: Url,
   cancelUrl: Url,
   saveWalletForAutopay: z.boolean().default(false),
+  /** "Pay anyway" on a BLOCK store, after the user ticked "I understand the risk". Never in Auto-pay. */
+  override: z.boolean().default(false),
 });
+export const WalletSetupInput = z.object({ userId: Id, returnUrl: Url, cancelUrl: Url });
+export const WalletConfirmInput = z.object({ userId: Id, setupTokenId: z.string().min(5).max(100) });
 export const AutopayInput = z.object({ userId: Id, candidateId: Id, scanId: Id.nullable().default(null), idempotencyKey: z.string().min(8).max(100), override: z.boolean().default(false) });
 export const PaymentActionInput = z.object({ userId: Id, paymentId: Id });
 export const UserCaptureInput = PaymentActionInput.extend({ override: z.boolean().default(false) });
@@ -155,6 +161,28 @@ export interface MoneyGateOptions {
   store: GateStore;
   now?: () => Date;
 }
+
+/**
+ * Per-key serialization. PayPal-Request-Id only deduplicates a repeat that arrives AFTER the first call finished;
+ * two identical calls in flight at once both go through (seen live: React's double effect charged twice). So every
+ * action that creates an order or moves money runs one at a time per purchase/payment key; the duplicate then gets
+ * PayPal's stored result (same request id) or the already-settled row. Single-process lock: VoirCheck runs one
+ * web instance (spec 5.16); a second instance would need a database lock instead.
+ */
+class KeyedLock {
+  private readonly tails = new Map<string, Promise<unknown>>();
+  run<T>(key: string, fn: () => Promise<T>): Promise<T> {
+    const prev = this.tails.get(key) ?? Promise.resolve();
+    const next = prev.then(fn, fn);
+    const tail = next.catch(() => undefined);
+    this.tails.set(key, tail);
+    void tail.then(() => {
+      if (this.tails.get(key) === tail) this.tails.delete(key);
+    });
+    return next;
+  }
+}
+const LOCK = new KeyedLock();
 
 export class MoneyGate {
   private readonly paypal: PayPalClient;
@@ -176,8 +204,12 @@ export class MoneyGate {
     return effectiveVerdict(scan, candidate, this.now());
   }
 
-  /** Approve mode, step 1: AUTHORIZE order for the candidate's stored price. Returns the PayPal approval link. */
   async startApprovePurchase(raw: z.input<typeof StartPurchaseInput>): Promise<GateResult> {
+    return LOCK.run(`purchase:${String(raw.userId)}:${String(raw.candidateId)}:${String(raw.idempotencyKey)}`, () => this._startApprovePurchase(raw));
+  }
+
+  /** Approve mode, step 1: AUTHORIZE order for the candidate's stored price. Returns the PayPal approval link. */
+  private async _startApprovePurchase(raw: z.input<typeof StartPurchaseInput>): Promise<GateResult> {
     const input = StartPurchaseInput.parse(raw);
     const candidate = await this.store.getCandidateForUser(input.candidateId, input.userId);
     if (!candidate) {
@@ -216,17 +248,23 @@ export class MoneyGate {
       currency: candidate.currency,
       status: 'created',
       mode: 'approve',
-      overrideUsed: false,
+      // Recorded up front: the user already confirmed "I understand the risk" before this order existed.
+      overrideUsed: input.override,
     });
-    await this.audit(input.userId, 'user', 'order.created', payment.id, { orderId: order.id, intent: 'AUTHORIZE', amount: payment.amount, currency: payment.currency, storeSlug });
+    if (input.override) await this.audit(input.userId, 'user', 'override.confirmed', payment.id, { scanId: input.scanId, note: 'user confirmed "I understand the risk"' });
+    await this.audit(input.userId, 'user', 'order.created', payment.id, { orderId: order.id, intent: 'AUTHORIZE', amount: payment.amount, currency: payment.currency, storeSlug, override: input.override });
     return { ok: true, payment, approvalUrl: approvalLink(order) };
+  }
+
+  async completeApproval(paymentId: string, userId: string, actor: AuditActor = 'system'): Promise<GateResult> {
+    return LOCK.run(`payment:${paymentId}`, () => this._completeApproval(paymentId, userId, actor));
   }
 
   /**
    * Approve mode, step 2 (after the buyer approved; from the return URL or the CHECKOUT.ORDER.APPROVED webhook):
    * authorize, keep the saved-wallet token ID if any, then settle by verdict.
    */
-  async completeApproval(paymentId: string, userId: string, actor: AuditActor = 'system'): Promise<GateResult> {
+  private async _completeApproval(paymentId: string, userId: string, actor: AuditActor = 'system'): Promise<GateResult> {
     let payment = await this.store.getPaymentForUser(paymentId, userId);
     if (!payment) return { ok: false, reason: 'payment not found' };
     if (payment.mode !== 'approve') return { ok: false, reason: 'not an approve-mode payment', payment };
@@ -251,15 +289,21 @@ export class MoneyGate {
     const candidate = await this.store.getCandidateForUser(payment.candidateId, userId);
     if (!candidate) return { ok: false, reason: 'candidate not found', payment };
     const v = await this.verdictFor(payment.scanId, candidate);
-    const decision = decideCapture({ verdict: v.verdict, trigger: 'system', override: false });
-    await this.audit(userId, 'system', `gate.${decision.action}`, payment.id, { verdict: v.verdict, why: v.why, reason: decision.reason, trigger: 'system' });
-    if (decision.action === 'capture') return this.doCapture(payment, userId, false, 'system');
+    // A "Pay anyway" order carries the user's explicit, already-audited override; everything else settles as the system.
+    const trigger = payment.overrideUsed ? 'user' : 'system';
+    const decision = decideCapture({ verdict: v.verdict, trigger, override: payment.overrideUsed });
+    await this.audit(userId, trigger === 'user' ? 'user' : 'system', `gate.${decision.action}`, payment.id, { verdict: v.verdict, why: v.why, reason: decision.reason, trigger, override: payment.overrideUsed });
+    if (decision.action === 'capture') return this.doCapture(payment, userId, decision.overrideUsed, trigger === 'user' ? 'user' : 'system');
     if (decision.action === 'void') return this.doVoid(payment, userId, 'system');
     return { ok: true, payment };
   }
 
-  /** The user tapped Capture on a held payment (override only after the "I understand the risk" step). */
   async userCapture(raw: z.input<typeof UserCaptureInput>): Promise<GateResult> {
+    return LOCK.run(`payment:${String(raw.paymentId)}`, () => this._userCapture(raw));
+  }
+
+  /** The user tapped Capture on a held payment (override only after the "I understand the risk" step). */
+  private async _userCapture(raw: z.input<typeof UserCaptureInput>): Promise<GateResult> {
     const input = UserCaptureInput.parse(raw);
     const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
     if (!payment) return { ok: false, reason: 'payment not found' };
@@ -277,8 +321,48 @@ export class MoneyGate {
     return this.doCapture(payment, input.userId, decision.overrideUsed, 'user');
   }
 
-  /** Releasing held money is always allowed. */
+  async cancelPurchase(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    return LOCK.run(`payment:${String(raw.paymentId)}`, () => this._cancelPurchase(raw));
+  }
+
+  /** The buyer closed or cancelled the PayPal popup before approving: nothing was held, the order is dropped. */
+  private async _cancelPurchase(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    const input = PaymentActionInput.parse(raw);
+    const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
+    if (!payment) return { ok: false, reason: 'payment not found' };
+    if (payment.status !== 'created') return { ok: true, payment };
+    const order = await getOrder(this.paypal, payment.paypalOrderId);
+    if (order.status === 'APPROVED') return { ok: false, reason: 'already approved', payment }; // approval won the race: finish it instead
+    const updated = await this.store.updatePayment(payment.id, { status: 'cancelled' });
+    await this.audit(input.userId, 'user', 'order.cancelled', payment.id, { orderStatus: order.status });
+    return { ok: true, payment: updated };
+  }
+
+  /** Auto-pay setup, step 1: a vault setup token the buyer approves in the PayPal popup (no purchase). */
+  async startWalletSetup(raw: z.input<typeof WalletSetupInput>): Promise<{ setupTokenId: string }> {
+    const input = WalletSetupInput.parse(raw);
+    const token = await createVaultSetupToken(this.paypal, { returnUrl: input.returnUrl, cancelUrl: input.cancelUrl }, requestIdFor('vault-setup', input.userId, String(this.now().getTime())));
+    await this.audit(input.userId, 'user', 'vault.setup_started', token.id, {}, `vault_setup:${input.userId}`);
+    return { setupTokenId: token.id };
+  }
+
+  /** Auto-pay setup, step 2: exchange the approved setup token for a payment token and keep only its ID. */
+  async confirmWalletSetup(raw: z.input<typeof WalletConfirmInput>): Promise<{ ok: true } | { ok: false; reason: string }> {
+    const input = WalletConfirmInput.parse(raw);
+    // Only a setup token this user started can be confirmed for this user.
+    if (!(await this.store.hasAudit(`vault_setup:${input.userId}`, input.setupTokenId, 'vault.setup_started'))) return { ok: false, reason: 'unknown setup token' };
+    const token = await createVaultPaymentToken(this.paypal, input.setupTokenId, requestIdFor('vault-confirm', input.setupTokenId));
+    await this.store.saveVaultToken(input.userId, token.id, 'VAULTED');
+    await this.audit(input.userId, 'user', 'vault.saved', null, {}, 'vault_token');
+    return { ok: true };
+  }
+
   async userVoid(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    return LOCK.run(`payment:${String(raw.paymentId)}`, () => this._userVoid(raw));
+  }
+
+  /** Releasing held money is always allowed. */
+  private async _userVoid(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
     const input = PaymentActionInput.parse(raw);
     const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
     if (!payment) return { ok: false, reason: 'payment not found' };
@@ -288,6 +372,10 @@ export class MoneyGate {
   }
 
   async reauthorize(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    return LOCK.run(`payment:${String(raw.paymentId)}`, () => this._reauthorize(raw));
+  }
+
+  private async _reauthorize(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
     const input = PaymentActionInput.parse(raw);
     const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
     if (!payment) return { ok: false, reason: 'payment not found' };
@@ -308,8 +396,12 @@ export class MoneyGate {
     return { ok: true, payment: updated };
   }
 
-  /** Auto-pay: verdict + limit check FIRST, then a direct CAPTURE on the saved wallet (spike T5c). */
   async autoPay(raw: z.input<typeof AutopayInput>): Promise<GateResult> {
+    return LOCK.run(`autopay:${String(raw.userId)}:${String(raw.candidateId)}:${String(raw.idempotencyKey)}`, () => this._autoPay(raw));
+  }
+
+  /** Auto-pay: verdict + limit check FIRST, then a direct CAPTURE on the saved wallet (spike T5c). */
+  private async _autoPay(raw: z.input<typeof AutopayInput>): Promise<GateResult> {
     const input = AutopayInput.parse(raw);
     const refuse = async (reason: string, details: Record<string, unknown> = {}) => {
       await this.audit(input.userId, 'agent', 'autopay.refused', null, { reason, candidateId: input.candidateId, scanId: input.scanId, ...details });
@@ -358,7 +450,19 @@ export class MoneyGate {
     return { ok: true, payment };
   }
 
+  /** Another path (the webhook, a second tab) may have settled this payment meanwhile: act only on a still-open hold. */
+  private async stillHeld(payment: PaymentRow, userId: string): Promise<PaymentRow | null> {
+    const fresh = await this.store.getPaymentForUser(payment.id, userId);
+    return fresh && fresh.status === 'authorized' && fresh.authorizationId ? fresh : null;
+  }
+
   private async doCapture(payment: PaymentRow, userId: string, overrideUsed: boolean, actor: AuditActor): Promise<GateResult> {
+    const open = await this.stillHeld(payment, userId);
+    if (!open) {
+      const now = await this.store.getPaymentForUser(payment.id, userId);
+      return now?.status === 'captured' ? { ok: true, payment: now } : { ok: false, reason: `payment is already ${now?.status ?? 'gone'}`, payment: now ?? payment };
+    }
+    payment = open;
     try {
       const capture = await captureAuthorization(this.paypal, payment.authorizationId!, requestIdFor('capture', payment.id));
       const updated = await this.store.updatePayment(payment.id, { captureId: capture.id, status: captureStatus(capture), overrideUsed });
@@ -371,6 +475,12 @@ export class MoneyGate {
   }
 
   private async doVoid(payment: PaymentRow, userId: string, actor: AuditActor): Promise<GateResult> {
+    const open = await this.stillHeld(payment, userId);
+    if (!open) {
+      const now = await this.store.getPaymentForUser(payment.id, userId);
+      return now?.status === 'voided' ? { ok: true, payment: now } : { ok: false, reason: `payment is already ${now?.status ?? 'gone'}`, payment: now ?? payment };
+    }
+    payment = open;
     try {
       await voidAuthorization(this.paypal, payment.authorizationId!, requestIdFor('void', payment.id));
       const updated = await this.store.updatePayment(payment.id, { status: 'voided' });

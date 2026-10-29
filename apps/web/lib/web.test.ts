@@ -32,7 +32,7 @@ describe('i18n', () => {
     expect(keys(DICTS.fr)).toEqual(keys(DICTS.en));
     const en = keys(DICTS.en);
     const get = (d: object, k: string) => k.split('.').reduce<unknown>((o, part) => (o as Record<string, unknown>)[part], d);
-    const same = en.filter((k) => get(DICTS.en, k) === get(DICTS.fr, k) && !['common.english', 'common.french', 'evidence.points'].includes(k));
+    const same = en.filter((k) => get(DICTS.en, k) === get(DICTS.fr, k) && !['common.english', 'common.french', 'evidence.points', 'pay.hours', 'pay.minutes'].includes(k));
     expect(same).toEqual([]);
   });
   it('no exclamation marks in UI copy (spec 5.12 tone)', () => {

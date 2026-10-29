@@ -3,7 +3,7 @@ import { PayPalClient } from './client';
 import { MemoryGateStore, type CandidateRow, type ScanRow, type Verdict } from './store';
 
 /** Test-only fake of the PayPal sandbox API. Repeated PayPal-Request-Ids return the original result, like PayPal. */
-export function fakePayPal(opts: { verifyStatus?: 'SUCCESS' | 'FAILURE'; vaultOnAuthorize?: string; authCreateTime?: string; captureStatus?: string } = {}) {
+export function fakePayPal(opts: { verifyStatus?: 'SUCCESS' | 'FAILURE'; vaultOnAuthorize?: string; authCreateTime?: string; captureStatus?: string; orderStatus?: string; slowMs?: number } = {}) {
   const byRequestId = new Map<string, unknown>();
   const calls: Array<{ method: string; path: string; body: unknown; requestId?: string }> = [];
   let orderSeq = 0;
@@ -18,12 +18,18 @@ export function fakePayPal(opts: { verifyStatus?: 'SUCCESS' | 'FAILURE'; vaultOn
     const requestId = headers['paypal-request-id'];
     const body = init?.body && typeof init.body === 'string' && url.pathname !== '/v1/oauth2/token' ? JSON.parse(init.body) : undefined;
     const path = url.pathname;
+    if (path === '/v1/oauth2/token' && String(init?.body).includes('response_type=client_token')) {
+      calls.push({ method, path: '/v1/oauth2/token#client_token', body: String(init?.body) });
+      return json(200, { access_token: 'browser-safe-token', expires_in: 900 });
+    }
     if (path === '/v1/oauth2/token') {
       tokenCalls++;
       return json(200, { access_token: `tok_${tokenCalls}`, expires_in: 32400 });
     }
     calls.push({ method, path, body, requestId });
     if (requestId && byRequestId.has(requestId)) return json(200, byRequestId.get(requestId));
+    // Like PayPal: a duplicate that arrives while the first is still in flight is NOT deduplicated.
+    if (opts.slowMs) await new Promise((r) => setTimeout(r, opts.slowMs));
 
     let res: unknown;
     let m: RegExpMatchArray | null;
@@ -34,7 +40,7 @@ export function fakePayPal(opts: { verifyStatus?: 'SUCCESS' | 'FAILURE'; vaultOn
         ? { id, status: 'COMPLETED', intent: b.intent, purchase_units: [{ payments: { captures: [{ id: `CAP-${id}`, status: opts.captureStatus ?? 'COMPLETED' }] } }] }
         : { id, status: 'PAYER_ACTION_REQUIRED', intent: b.intent, links: [{ rel: 'payer-action', href: `https://www.sandbox.paypal.com/checkoutnow?token=${id}` }] };
     } else if (method === 'GET' && (m = path.match(/^\/v2\/checkout\/orders\/([^/]+)$/))) {
-      res = { id: m[1], status: 'APPROVED' };
+      res = { id: m[1], status: opts.orderStatus ?? 'APPROVED' };
     } else if (method === 'POST' && (m = path.match(/^\/v2\/checkout\/orders\/([^/]+)\/authorize$/))) {
       res = {
         id: m[1],
@@ -50,6 +56,10 @@ export function fakePayPal(opts: { verifyStatus?: 'SUCCESS' | 'FAILURE'; vaultOn
       res = null;
     } else if (method === 'POST' && (m = path.match(/^\/v2\/payments\/authorizations\/([^/]+)\/reauthorize$/))) {
       res = { id: `RE-${m[1]}`, status: 'CREATED' };
+    } else if (method === 'POST' && path === '/v3/vault/setup-tokens') {
+      res = { id: `SETUP${++orderSeq}`, status: 'PAYER_ACTION_REQUIRED' };
+    } else if (method === 'POST' && path === '/v3/vault/payment-tokens') {
+      res = { id: `PTOKEN-${(body as { payment_source: { token: { id: string } } }).payment_source.token.id}`, customer: { id: 'CUST1' } };
     } else if (method === 'POST' && path === '/v1/notifications/verify-webhook-signature') {
       return json(200, { verification_status: opts.verifyStatus ?? 'SUCCESS' });
     } else {

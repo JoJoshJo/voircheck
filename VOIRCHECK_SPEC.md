@@ -434,16 +434,23 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 **Deployment**
 - voircheck-web is LIVE at https://voircheck-web.onrender.com (Neon trusted domain added).
 - ✅ Done (Oct 29): PayPal sandbox webhook `9JE42617KY204225Y` → `https://voircheck-web.onrender.com/api/paypal/webhook` (signature-verified route), events `CHECKOUT.ORDER.APPROVED`, `PAYMENT.AUTHORIZATION.CREATED`, `PAYMENT.AUTHORIZATION.VOIDED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `VAULT.PAYMENT-TOKEN.CREATED`; `PAYPAL_WEBHOOK_ID` added to `.env`. Old tunnel webhooks: none left.
-- TODO: add `PAYPAL_WEBHOOK_ID` to Render (voircheck-web).
+- ✅ Done (Oct 29): `PAYPAL_WEBHOOK_ID` added to Render (voircheck-web); webhook also subscribed to `PAYMENT.CAPTURE.PENDING` and `PAYMENT.CAPTURE.DECLINED`.
 - TODO (security day Nov 10): turn OFF "Allow Localhost" in Neon Better Auth settings; check every user-data query uses `ownedBy()`; review the pinned `@neondatabase/auth` beta.
 - TODO: make auth setup load at runtime, not at build time (build failed when `NEON_AUTH_BASE_URL` was missing).
 
 **Polish**
-- Price check shows "Not checked" on legit demo stores (should run like on the scam twin).
-- Verdict label ("Block"/"Safe") is oddly indented.
-- "Rules that set the verdict: None" → "No special rule applied. The score set the verdict."
+- ✅ Fixed (Oct 29): price check showed "Not checked" on legit demo stores. Cause: KERNEL loaded Render's cold-start "SERVICE WAKING UP" page; scans now wait for the real page (up to 90 s) or count as "can't verify".
+- ✅ Fixed (Oct 29): verdict label indentation.
+- ✅ Fixed (Oct 29): "No special rule applied. The score set the verdict." (EN + FR).
 - Demo store colors (J dislikes the current palette).
 - Legit demo-store addresses: use clearly fictional ones; contact emails on domains we don't own.
+- "Pay anyway" link on the BLOCK screen is easy to miss next to "View the receipt" (keep it secondary, but more visible).
+- PayPal's own button is yellow (SDK default); check v6 styling options for a black/white button to fit Mono ink.
+
+**PayPal (Oct 29)**
+- TODO (J, PayPal Developer Dashboard): enable **Save payment methods** for the sandbox app. Auto-pay's one-time "save PayPal" (vault without purchase, `/v3/vault/setup-tokens`) returns `403 NOT_AUTHORIZED`; the app token lacks the `vault/payment-tokens/readwrite` scope. Fallback if it can't be enabled: save the wallet with the first approved purchase (proven in spike T5).
+- Local dev and production share one Neon database and one PayPal webhook (→ production). Production processes webhooks for local test payments; keep production on the same gate version before testing payment flows locally.
+- Duplicate sandbox auto-pay charge from before the concurrency fix: order `42R00643N4130501B` ($59, sandbox). MoneyGate now serializes money actions per key (PayPal-Request-Id does not dedupe concurrent duplicates).
 
 **Reminders**
 - Anthropic key + ~$30–40 credit by Nov 3 (hard stop Nov 4).

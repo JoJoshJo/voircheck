@@ -9,10 +9,12 @@ export const VERDICT_CLASSES: Record<Verdict, string> = {
   BLOCK: 'bg-block-bg text-block',
 };
 
-export function VerdictBadge({ verdict, t, large = false }: { verdict: Verdict; t: Dict; large?: boolean }) {
-  return (
-    <span className={`inline-flex items-center rounded-full font-medium ${VERDICT_CLASSES[verdict]} ${large ? 'px-4 py-1.5 text-[15px]' : 'px-2.5 py-0.5 text-[13px]'}`}>
-      {t.verdict[verdict]}
-    </span>
-  );
+/** Pill for lists (history, receipts). */
+export function VerdictBadge({ verdict, t }: { verdict: Verdict; t: Dict }) {
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[13px] font-medium ${VERDICT_CLASSES[verdict]}`}>{t.verdict[verdict]}</span>;
+}
+
+/** Label inside a verdict-colored band: plain text, aligned with the heading (no pill padding). */
+export function VerdictLabel({ verdict, t }: { verdict: Verdict; t: Dict }) {
+  return <p className="text-[13px] font-medium uppercase tracking-[0.08em]">{t.verdict[verdict]}</p>;
 }

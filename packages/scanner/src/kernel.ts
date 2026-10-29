@@ -46,11 +46,25 @@ export interface PageVisitor {
  * shows), all in parallel. URLs are embedded as a JSON literal. Per-URL errors are returned, not thrown.
  * (One executor with many tabs: separate named executors per URL timed out at 6 pages in testing.)
  */
-function snapshotCode(urls: string[], navTimeoutMs: number): string {
+function snapshotCode(urls: string[], navTimeoutMs: number, wakeWaitMs: number): string {
   return `
 const urls = ${JSON.stringify(urls)};
+// Free hosting tiers (e.g. Render) answer a sleeping service with a "waking up" holding page first.
+// Scanning that page would compare the wrong content, so wait for the real page, or fail ("can't verify").
+const WAKING = ${WAKING_RE.toString()};
 const snapshot = async (page, requestedUrl) => {
-const res = await page.goto(requestedUrl, { waitUntil: 'domcontentloaded', timeout: ${navTimeoutMs} });
+let res = await page.goto(requestedUrl, { waitUntil: 'domcontentloaded', timeout: ${navTimeoutMs} });
+const bodyText = () => page.evaluate(() => (document.body ? document.body.innerText : '')).catch(() => '');
+if (WAKING.test(await bodyText())) {
+  const until = Date.now() + ${wakeWaitMs};
+  let awake = false;
+  while (Date.now() < until) {
+    await page.waitForTimeout(4000);
+    res = await page.goto(requestedUrl, { waitUntil: 'domcontentloaded', timeout: ${navTimeoutMs} }).catch(() => res);
+    if (!WAKING.test(await bodyText())) { awake = true; break; }
+  }
+  if (!awake) throw new Error('the store was still starting up (hosting cold start)');
+}
 await page.waitForLoadState('networkidle', { timeout: 4000 }).catch(() => {});
 const chain = [];
 for (let r = res ? res.request() : null; r; r = r.redirectedFrom()) chain.unshift(r.url());
@@ -106,6 +120,9 @@ return await Promise.all(urls.map(async (u, i) => {
 `;
 }
 
+/** Holding pages shown by hosting providers while a sleeping service starts (Render's free tier). */
+export const WAKING_RE = /SERVICE WAKING UP|INCOMING HTTP REQUEST DETECTED|APPLICATION LOADING/;
+
 export interface KernelVisitorOptions {
   apiKey: string;
   /** Live view needs a headful browser (spec 5.5 scan UX). */
@@ -115,13 +132,16 @@ export interface KernelVisitorOptions {
   /** Whole visit budget, browser create to last page. On expiry the scan is "couldn't verify". */
   totalTimeoutMs?: number;
   navTimeoutMs?: number;
+  /** How long to wait for a sleeping store to wake up before the visit counts as failed. */
+  wakeWaitMs?: number;
 }
 
 export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
   const client = new Kernel({ apiKey: opts.apiKey, timeout: 20_000, maxRetries: 1 });
-  const totalTimeoutMs = opts.totalTimeoutMs ?? 90_000;
+  const totalTimeoutMs = opts.totalTimeoutMs ?? 180_000;
   const navTimeoutMs = opts.navTimeoutMs ?? 45_000;
-  const execSec = Math.ceil(navTimeoutMs / 1000) + 15;
+  const wakeWaitMs = opts.wakeWaitMs ?? 90_000;
+  const execSec = Math.ceil((navTimeoutMs + wakeWaitMs) / 1000) + 20;
   if (execSec * 1000 >= totalTimeoutMs) throw new Error('totalTimeoutMs must exceed the page navigation budget');
 
   return {
@@ -151,7 +171,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
         const work = client.browsers.playwright
           .execute(
             sessionId,
-            { code: snapshotCode(urls, navTimeoutMs), timeout_sec: execSec },
+            { code: snapshotCode(urls, navTimeoutMs, wakeWaitMs), timeout_sec: execSec },
             // The HTTP call must outlive the server-side execute timeout, and must not retry (that would re-run the visit).
             { timeout: (execSec + 10) * 1000, maxRetries: 0 },
           )

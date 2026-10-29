@@ -171,7 +171,9 @@ describe('demoPeersForUrl (check-a-link on a demo store)', () => {
     expect(demoPeersForUrl(`${B}/velbrook-outlet-deals`)).toEqual({
       slug: 'velbrook-outlet-deals',
       storeName: 'Velbrook-Outlet Deals',
+      storeUrl: `${B}/velbrook-outlet-deals`,
       productTitle: 'Zephlet Buds',
+      price: 23,
       peers: [
         { url: `${B}/velbrook-supply`, productTitle: 'Zephlet Buds' },
         { url: `${B}/ondaya-home`, productTitle: 'Zephlet Buds' },
@@ -180,7 +182,7 @@ describe('demoPeersForUrl (check-a-link on a demo store)', () => {
   });
   it('keeps the product page and its product', () => {
     const r = demoPeersForUrl(`${B}/nyuie-market-clearance/products/nimbair-purifier`)!;
-    expect(r.productTitle).toBe('Nimbair Purifier');
+    expect(r).toMatchObject({ productTitle: 'Nimbair Purifier', price: 94 });
     expect(r.peers.map((p) => p.url)).toEqual([`${B}/nyuie-market/products/nimbair-purifier`, `${B}/velbrook-supply/products/nimbair-purifier`]);
   });
   it('null for real sites and unknown slugs', () => {

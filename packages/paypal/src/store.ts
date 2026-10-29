@@ -6,7 +6,7 @@
 
 export type Verdict = 'SAFE' | 'HOLD' | 'BLOCK';
 export type PaymentMode = 'approve' | 'auto';
-export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed';
+export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed' | 'cancelled';
 export type AuditActor = 'user' | 'agent' | 'system' | 'webhook';
 
 export interface CandidateRow {

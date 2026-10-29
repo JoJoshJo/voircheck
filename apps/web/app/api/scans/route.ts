@@ -41,17 +41,20 @@ export async function POST(req: Request) {
   if (!limit.ok) return oneShot({ type: 'error', code: 'rate' }, 429);
 
   const demo = demoMode ? demoPeersForUrl(url, process.env.DEMO_STORES_BASE_URL) : null;
-  const sessionId = await recordLinkRequest({
-    userId: user.id,
-    url,
-    demoMode,
-    storeName: demo?.storeName ?? new URL(url).hostname,
-    productTitle: demo?.productTitle ?? new URL(url).hostname,
-  });
+  const host = new URL(url).hostname;
+  const candidateFields = {
+    storeName: demo?.storeName ?? host,
+    storeUrl: demo?.storeUrl ?? url,
+    productTitle: demo?.productTitle ?? host,
+    price: demo ? demo.price.toFixed(2) : null,
+    source: demo ? ('demo' as const) : ('link' as const),
+  };
+  const { sessionId, candidateId } = await recordLinkRequest({ userId: user.id, url, demoMode, ...candidateFields });
+  const candidate = { id: candidateId, storeName: candidateFields.storeName, productTitle: candidateFields.productTitle, price: candidateFields.price, currency: 'USD' };
 
   if (cached) {
     await finishLinkRequest(user.id, sessionId, 'done');
-    return oneShot({ type: 'cached', scan: toScanView(cached) }, 200);
+    return oneShot({ type: 'cached', scan: toScanView(cached), candidate }, 200);
   }
 
   const stream = new ReadableStream<Uint8Array>({
@@ -80,7 +83,7 @@ export async function POST(req: Request) {
         );
         const row = await saveScan(result);
         await finishLinkRequest(user.id, sessionId, 'done');
-        send({ type: 'done', scan: toScanView(row) });
+        send({ type: 'done', scan: toScanView(row), candidate });
       } catch (err) {
         await finishLinkRequest(user.id, sessionId, 'failed').catch(() => {});
         send({ type: 'error', code: err instanceof SsrfError ? 'url' : 'failed' });

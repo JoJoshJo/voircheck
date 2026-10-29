@@ -201,3 +201,11 @@ describe('threat list signal', () => {
     expect(r.outcome.evidence[0]).toContain('phishing');
   });
 });
+
+describe('hosting cold-start holding pages', () => {
+  it('recognizes Render-style "waking up" pages so they are never scanned as the store', async () => {
+    const { WAKING_RE } = await import('../kernel');
+    expect(WAKING_RE.test('10:58:02 INCOMING HTTP REQUEST DETECTED ...\n10:58:05 SERVICE WAKING UP ...')).toBe(true);
+    expect(WAKING_RE.test('Velbrook Supply\nZephlet Buds\n$59.00')).toBe(false);
+  });
+});

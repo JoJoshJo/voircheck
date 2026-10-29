@@ -87,6 +87,26 @@ export class PayPalClient {
     return this.pendingToken;
   }
 
+  /**
+   * Browser-safe client token for the JS SDK v6 (response_type=client_token), scoped to the given page hostnames
+   * (bare hostnames like "voircheck-web.onrender.com"; PayPal rejects origins and localhost).
+   * Safe to send to the browser; the server access token never is.
+   */
+  async browserClientToken(domains: string[]): Promise<{ token: string; expiresIn: number }> {
+    const basic = Buffer.from(`${this.opts.clientId}:${this.opts.clientSecret}`).toString('base64');
+    const body = new URLSearchParams({ grant_type: 'client_credentials', response_type: 'client_token' });
+    if (domains.length) body.set('domains[]', domains.join(','));
+    const res = await this.fetchImpl(`${this.baseUrl}/v1/oauth2/token`, {
+      method: 'POST',
+      headers: { authorization: `Basic ${basic}`, 'content-type': 'application/x-www-form-urlencoded' },
+      body: body.toString(),
+      signal: AbortSignal.timeout(this.opts.timeoutMs ?? 20_000),
+    });
+    const json = (await readJson(res)) as { access_token?: string; expires_in?: number } & ErrorBody;
+    if (!res.ok || !json?.access_token) throw toError(res.status, json);
+    return { token: json.access_token, expiresIn: json.expires_in ?? 3600 };
+  }
+
   private async fetchToken(): Promise<string> {
     const basic = Buffer.from(`${this.opts.clientId}:${this.opts.clientSecret}`).toString('base64');
     const res = await this.fetchImpl(`${this.baseUrl}/v1/oauth2/token`, {
