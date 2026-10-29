@@ -38,7 +38,10 @@ const en = {
     haveAccount: 'Already have an account?',
     createOne: 'Create one',
     signInInstead: 'Sign in',
-    moreSoon: 'Magic link and Google sign-in are coming soon.',
+    moreSoon: 'Magic link sign-in is coming soon.',
+    google: 'Continue with Google',
+    or: 'or',
+    googleFailed: 'Google sign-in didn’t finish. Try again, or use your email instead.',
     failed: 'That didn’t work. Check your email and password.',
   },
   onboarding: {
@@ -276,7 +279,10 @@ const fr: Dict = {
     haveAccount: 'Vous avez déjà un compte ?',
     createOne: 'En créer un',
     signInInstead: 'Se connecter',
-    moreSoon: 'La connexion par lien magique et par Google arrive bientôt.',
+    moreSoon: 'La connexion par lien magique arrive bientôt.',
+    google: 'Continuer avec Google',
+    or: 'ou',
+    googleFailed: 'La connexion avec Google n’a pas abouti. Réessayez ou utilisez votre e-mail.',
     failed: 'Échec de la connexion. Vérifiez votre e-mail et votre mot de passe.',
   },
   onboarding: {
