@@ -430,6 +430,26 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 
 **Rules:** if a day slips, cut from the stretch list first, then email, then auto-pay; never cut the core SAFE/HOLD/BLOCK flow, the PayPal integration, the video, or the security day. Sleep counts: tired builders ship bugs on submission day.
 
+### 5.22 Backlog
+**Deployment**
+- voircheck-web is LIVE at https://voircheck-web.onrender.com (Neon trusted domain added).
+- TODO: create the PayPal sandbox webhook pointing at the live web URL; add `PAYPAL_WEBHOOK_ID` to `.env` and Render.
+- TODO (security day Nov 10): turn OFF "Allow Localhost" in Neon Better Auth settings; check every user-data query uses `ownedBy()`; review the pinned `@neondatabase/auth` beta.
+- TODO: make auth setup load at runtime, not at build time (build failed when `NEON_AUTH_BASE_URL` was missing).
+
+**Polish**
+- Price check shows "Not checked" on legit demo stores (should run like on the scam twin).
+- Verdict label ("Block"/"Safe") is oddly indented.
+- "Rules that set the verdict: None" → "No special rule applied. The score set the verdict."
+- Demo store colors (J dislikes the current palette).
+- Legit demo-store addresses: use clearly fictional ones; contact emails on domains we don't own.
+
+**Reminders**
+- Anthropic key + ~$30–40 credit by Nov 3 (hard stop Nov 4).
+- Render $50 credits: ask on Discord (portal failed).
+- Replace scam-store example.com emails with J-owned free-email addresses by Nov 10.
+- Buy the 3 fresh scam-store domains Nov 3–5.
+
 ### 5.2 Stretch list (only after core flow works; decide ~Nov 6)
 1. AG Grid / AG Studio risk review dashboard (sponsor prize; see 5.14)
 2. Full mobile polish of the web app
