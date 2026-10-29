@@ -30,7 +30,7 @@ describe('Continue with Google', () => {
 
   it('shows a calm inline message when Google sign-in failed or was cancelled', () => {
     const t = DICTS.en;
-    expect(renderToStaticMarkup(createElement(AuthForm, { mode: 'sign-in', action: noop, t, oauthError: true }))).toContain(t.auth.googleFailed);
+    expect(renderToStaticMarkup(createElement(AuthForm, { mode: 'sign-in', action: noop, t, authError: 'oauth' }))).toContain(t.auth.googleFailed);
     expect(renderToStaticMarkup(createElement(AuthForm, { mode: 'sign-in', action: noop, t }))).not.toContain(t.auth.googleFailed);
   });
 });
