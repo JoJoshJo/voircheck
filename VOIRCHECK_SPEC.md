@@ -440,7 +440,6 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - ✅ Done (Oct 29): PayPal sandbox webhook `9JE42617KY204225Y` → `https://voircheck-web.onrender.com/api/paypal/webhook` (signature-verified route), events `CHECKOUT.ORDER.APPROVED`, `PAYMENT.AUTHORIZATION.CREATED`, `PAYMENT.AUTHORIZATION.VOIDED`, `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`, `VAULT.PAYMENT-TOKEN.CREATED`; `PAYPAL_WEBHOOK_ID` added to `.env`. Old tunnel webhooks: none left.
 - ✅ Done (Oct 29): `PAYPAL_WEBHOOK_ID` added to Render (voircheck-web); webhook also subscribed to `PAYMENT.CAPTURE.PENDING` and `PAYMENT.CAPTURE.DECLINED`.
 - TODO (security day Nov 10): turn OFF "Allow Localhost" in Neon Better Auth settings; check every user-data query uses `ownedBy()`; review the pinned `@neondatabase/auth` beta.
-- TODO: make auth setup load at runtime, not at build time (build failed when `NEON_AUTH_BASE_URL` was missing).
 
 **Polish**
 - ✅ Fixed (Oct 29): price check showed "Not checked" on legit demo stores. Cause: KERNEL loaded Render's cold-start "SERVICE WAKING UP" page; scans now wait for the real page (up to 90 s) or count as "can't verify".

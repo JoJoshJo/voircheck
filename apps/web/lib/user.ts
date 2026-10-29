@@ -3,7 +3,7 @@ import { profiles } from '@voircheck/db/schema';
 import { ownedBy } from '@voircheck/shared';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth } from './auth/server';
+import { getAuth } from './auth/server';
 import { getDb } from './db';
 import { isGuestEmail } from './guest';
 import { DICTS, isLang, type Lang } from './i18n';
@@ -18,7 +18,7 @@ export interface CurrentUser {
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const { data: session } = await auth.getSession();
+  const { data: session } = await getAuth().getSession();
   const u = session?.user;
   if (!u?.id) return null;
   return { id: u.id, email: u.email ?? '', name: u.name ?? '', isGuest: isGuestEmail(u.email) };

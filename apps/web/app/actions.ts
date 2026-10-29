@@ -4,7 +4,7 @@ import { profiles } from '@voircheck/db/schema';
 import { randomBytes } from 'node:crypto';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { auth } from '../lib/auth/server';
+import { getAuth } from '../lib/auth/server';
 import { getDb } from '../lib/db';
 import { GUEST_EMAIL_DOMAIN } from '../lib/guest';
 import { allowDemoCreation } from '../lib/rate-limit';
@@ -21,7 +21,7 @@ export async function startDemo(): Promise<{ error: string } | never> {
   if (!allowDemoCreation(ip)) return { error: 'rate' };
 
   const id = randomBytes(9).toString('base64url').toLowerCase().replace(/[^a-z0-9]/g, 'x');
-  const { data, error } = await auth.signUp.email({
+  const { data, error } = await getAuth().signUp.email({
     email: `guest-${id}@${GUEST_EMAIL_DOMAIN}`,
     name: 'Demo shopper',
     password: randomBytes(24).toString('base64url'),
@@ -37,6 +37,6 @@ export async function startDemo(): Promise<{ error: string } | never> {
 }
 
 export async function signOut() {
-  await auth.signOut();
+  await getAuth().signOut();
   redirect('/');
 }
