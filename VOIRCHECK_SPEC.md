@@ -448,7 +448,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - PayPal's own button is yellow (SDK default); check v6 styling options for a black/white button to fit Mono ink.
 
 **PayPal (Oct 29)**
-- TODO (J, PayPal Developer Dashboard): enable **Save payment methods** for the sandbox app. Auto-pay's one-time "save PayPal" (vault without purchase, `/v3/vault/setup-tokens`) returns `403 NOT_AUTHORIZED`; the app token lacks the `vault/payment-tokens/readwrite` scope. Fallback if it can't be enabled: save the wallet with the first approved purchase (proven in spike T5).
+- ✅ Done (Oct 29): Auto-pay saves the wallet **during the first approved purchase** (vault with purchase, spike T5); the next SAFE purchase under the limit is charged automatically. Verified live: purchase 1 order `5R931449A9707780Y` (approved, wallet saved), purchase 2 order `96329336S2810421K` (auto, no approval). The standalone save (no purchase, `/v3/vault/setup-tokens`) stays disabled: it returns `403 NOT_AUTHORIZED` because the app token lacks the `vault/payment-tokens/readwrite` scope, even with "Save payment methods" checked. "Remove saved PayPal" marks the token removed in our DB (deleting it at PayPal needs that same scope).
 - Local dev and production share one Neon database and one PayPal webhook (→ production). Production processes webhooks for local test payments; keep production on the same gate version before testing payment flows locally.
 - Duplicate sandbox auto-pay charge from before the concurrency fix: order `42R00643N4130501B` ($59, sandbox). MoneyGate now serializes money actions per key (PayPal-Request-Id does not dedupe concurrent duplicates).
 
