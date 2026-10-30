@@ -25,9 +25,10 @@ export function magicLinkRedirectUrls(origin: string): { callbackURL: string; ne
 }
 
 /** Which calm message the sign-in page shows after a redirect back from Google or a magic link. */
-export function authErrorFromParams(params: { error?: string | string[]; link?: string | string[] }): 'link_expired' | 'oauth' | null {
+export function authErrorFromParams(params: { error?: string | string[]; link?: string | string[] }): 'link_expired' | 'link_other_browser' | 'oauth' | null {
   const all = (v?: string | string[]) => (Array.isArray(v) ? v : v ? [v] : []);
   const errors = all(params.error).map((e) => e.toUpperCase());
+  if (all(params.link).includes('other_browser')) return 'link_other_browser';
   if (all(params.link).length || errors.some((e) => e.includes('TOKEN') || e === 'ATTEMPTS_EXCEEDED')) return 'link_expired';
   if (errors.length) return 'oauth';
   return null;

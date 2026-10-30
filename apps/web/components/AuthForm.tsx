@@ -8,7 +8,7 @@ import { MagicLinkPanel } from './MagicLinkPanel';
 import { btnPrimary, input, label } from './ui';
 
 type Action = (prev: { error: boolean } | null, form: FormData) => Promise<{ error: boolean }>;
-export type AuthError = 'oauth' | 'link_expired' | null;
+export type AuthError = 'oauth' | 'link_expired' | 'link_other_browser' | null;
 
 /**
  * Sign-in / sign-up: Google, then email with a password, or "Email me a sign-in link" (magic link).
@@ -29,7 +29,7 @@ export function AuthForm({
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   // An expired link brings people back here: show the link option straight away.
-  const [method, setMethod] = useState<'password' | 'link'>(authError === 'link_expired' ? 'link' : initialMethod);
+  const [method, setMethod] = useState<'password' | 'link'>(authError === 'link_expired' || authError === 'link_other_browser' ? 'link' : initialMethod);
   const signUp = mode === 'sign-up';
   return (
     <div className="mx-auto w-full max-w-sm space-y-5">
@@ -37,7 +37,7 @@ export function AuthForm({
       <GoogleButton label={t.auth.google} working={t.auth.working} errorText={t.auth.googleFailed} />
       {authError && (
         <p role="status" className="text-center text-[14px] text-muted">
-          {authError === 'link_expired' ? t.auth.linkExpired : t.auth.googleFailed}
+          {authError === 'link_expired' ? t.auth.linkExpired : authError === 'link_other_browser' ? t.auth.linkOtherBrowser : t.auth.googleFailed}
         </p>
       )}
       <div className="flex items-center gap-3 text-[13px] text-faint" aria-hidden="true">
