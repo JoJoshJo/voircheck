@@ -1,3 +1,4 @@
+import { detectBlockedPage } from './blocked-page';
 import { domainInfo } from './domain';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
@@ -87,24 +88,28 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
 
   const kernel = visit instanceof Error ? null : visit;
   const targetVisit = kernel?.pages[0];
-  const targetPage = okPage(targetVisit);
-  const kernelError = visit instanceof Error ? errorMessage(visit) : targetVisit && !targetVisit.ok ? targetVisit.error : null;
+  // What the browser actually loaded (for redirects/HTTPS), and the page content signals may judge: a bot check,
+  // error page or empty shell isn't the store, so content signals get nothing and the scan can't verify it.
+  const loadedPage = okPage(targetVisit);
+  const blocked = loadedPage ? detectBlockedPage(loadedPage) : null;
+  const targetPage = blocked ? null : loadedPage;
+  const kernelError = visit instanceof Error ? errorMessage(visit) : targetVisit && !targetVisit.ok ? targetVisit.error : blocked ? blocked.message : null;
   const peerPages = input.peers.map((_, i) => okPage(kernel?.pages[i + 1]));
 
   // SSL & redirects: if KERNEL ended on another host, check that host's certificate too (after its own SSRF check).
   let tls = tlsInput;
-  if (targetPage) {
-    const finalHost = new URL(targetPage.finalUrl).hostname;
+  if (loadedPage) {
+    const finalHost = new URL(loadedPage.finalUrl).hostname;
     if (finalHost !== url.hostname) {
       try {
-        assertSafeUrlShape(targetPage.finalUrl);
+        assertSafeUrlShape(loadedPage.finalUrl);
         tls = await safeTlsCheck(tlsCheck, finalHost);
       } catch (err) {
         tls = { valid: false, error: err instanceof SsrfError ? `redirect target blocked: ${err.message}` : errorMessage(err) };
       }
     }
   }
-  const ssl = evaluateSsl({ url: url.href, navigation: targetPage && { finalUrl: targetPage.finalUrl, redirectChain: targetPage.redirectChain }, tls, now });
+  const ssl = evaluateSsl({ url: url.href, navigation: loadedPage && { finalUrl: loadedPage.finalUrl, redirectChain: loadedPage.redirectChain }, tls, now });
   emit(ssl.outcome);
 
   // Price: the item title comes from the caller, the peers, or the product page's heading.
@@ -125,7 +130,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     .filter((x): x is number => x !== null);
   const price =
     ownPrice === null && !targetPage
-      ? { outcome: unavailable('price', `Couldn't load the store page in the cloud browser, so its price is unknown.`), belowPct: null }
+      ? { outcome: unavailable('price', blocked ? `Couldn't read the store page: ${blocked.message}, so its price is unknown.` : `Couldn't load the store page in the cloud browser, so its price is unknown.`), belowPct: null }
       : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct, excludedBlocked });
   emit(price.outcome);
 
@@ -138,6 +143,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     (deps.analyzer ?? placeholderAnalyzer)
       .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
+      .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
       .then((o) => {
         emit(o);
         return o;
@@ -153,6 +159,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     subject(url.href, targetPage),
     peerUrls.map((u, i) => subject(u.href, peerPages[i] ?? null)),
   );
+  if (blocked && input.peers.length) clone.evidence.unshift(`Couldn't read the store page: ${blocked.message}; only the web addresses were compared.`);
   emit(clone);
 
   const facts: ScanFacts = {
@@ -164,7 +171,9 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   };
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {
-    scored.signals.find((s) => s.id === 'ssl_redirects')?.evidence.push(`Couldn't verify this store: the cloud browser visit failed (${kernelError ?? 'unknown error'}).`);
+    scored.signals
+      .find((s) => s.id === 'ssl_redirects')
+      ?.evidence.push(blocked ? `Couldn't verify this store: ${blocked.message}, so the cloud browser never saw the shop itself.` : `Couldn't verify this store: the cloud browser visit failed (${kernelError ?? 'unknown error'}).`);
   }
 
   const result = ScanResult.parse({

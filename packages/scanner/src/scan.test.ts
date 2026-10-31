@@ -243,6 +243,25 @@ describe('scanStore', () => {
     expect(signal(result, 'ssl_redirects').evidence.join(' ')).toContain("Couldn't verify this store");
   });
 
+  it("a bot-check page is never SAFE: page signals unavailable, can't verify → HOLD", async () => {
+    const challenge: PageSnapshot = {
+      ...snapshot('https://velbrook.com/', 'velbrook.com', 'Checking your browser before accessing velbrook.com. This process is automatic.'),
+      title: 'velbrook.com',
+      h1: 'Checking your browser before accessing velbrook.com',
+    };
+    const visitor: PageVisitor = { visit: async (urls) => ({ sessionId: 's', pages: urls.map(() => ({ ok: true as const, page: challenge })), sessionSeconds: 2 }) };
+    const { result, meta } = await scanStore({ url: 'https://velbrook.com/' }, deps({ visitor }));
+    expect(result.hardRulesTriggered).toContain('cant_verify');
+    expect(result.verdict).toBe('HOLD');
+    expect(meta.kernelError).toBe('blocked by a bot check');
+    for (const id of ['price', 'ai_page', 'clone']) expect(signal(result, id).status).toBe('unavailable');
+    expect(signal(result, 'price').evidence.join(' ')).toContain('blocked by a bot check');
+    expect(signal(result, 'ai_page').evidence.join(' ')).toContain('blocked by a bot check');
+    expect(signal(result, 'ssl_redirects').evidence.join(' ')).toContain("Couldn't verify this store: blocked by a bot check");
+    // The navigation itself was real, so HTTPS/redirect facts still count.
+    expect(signal(result, 'ssl_redirects').status).toBe('pass');
+  });
+
   it('no KERNEL configured → HOLD', async () => {
     const { result } = await scanStore({ url: 'https://velbrook.com/' }, deps({ visitor: null }));
     expect(result.verdict).toBe('HOLD');

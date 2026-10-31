@@ -1,5 +1,6 @@
 import Kernel from '@onkernel/sdk';
 import { z } from 'zod';
+import { CHALLENGE_RE, MAX_CHALLENGE_TEXT } from './blocked-page';
 import { errorMessage } from './signals/types';
 
 /**
@@ -66,6 +67,15 @@ if (WAKING.test(await bodyText())) {
   if (!awake) throw new Error('the store was still starting up (hosting cold start)');
 }
 await page.waitForLoadState('networkidle', { timeout: 4000 }).catch(() => {});
+// Bot checks (Cloudflare & co.) often clear on their own in a real browser: give them a few seconds.
+// If still blocked, the server sees the challenge text and counts the scan as "couldn't verify".
+const CHALLENGE = ${CHALLENGE_RE.toString()};
+const shortChallenge = async () => { const t = await bodyText(); return t.length <= ${MAX_CHALLENGE_TEXT} && CHALLENGE.test(t + ' ' + (await page.title().catch(() => ''))); };
+if (await shortChallenge()) {
+  const until = Date.now() + ${CHALLENGE_WAIT_MS};
+  while (Date.now() < until && (await shortChallenge())) await page.waitForTimeout(1500);
+  await page.waitForLoadState('domcontentloaded', { timeout: 4000 }).catch(() => {});
+}
 const chain = [];
 for (let r = res ? res.request() : null; r; r = r.redirectedFrom()) chain.unshift(r.url());
 const finalUrl = page.url();
@@ -120,6 +130,9 @@ return await Promise.all(urls.map(async (u, i) => {
 `;
 }
 
+/** How long a bot check may take to clear itself before the page counts as blocked. */
+const CHALLENGE_WAIT_MS = 10_000;
+
 /** Holding pages shown by hosting providers while a sleeping service starts (Render's free tier). */
 export const WAKING_RE = /SERVICE WAKING UP|INCOMING HTTP REQUEST DETECTED|APPLICATION LOADING/;
 
@@ -141,7 +154,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
   const totalTimeoutMs = opts.totalTimeoutMs ?? 180_000;
   const navTimeoutMs = opts.navTimeoutMs ?? 45_000;
   const wakeWaitMs = opts.wakeWaitMs ?? 90_000;
-  const execSec = Math.ceil((navTimeoutMs + wakeWaitMs) / 1000) + 20;
+  const execSec = Math.ceil((navTimeoutMs + wakeWaitMs + CHALLENGE_WAIT_MS) / 1000) + 20;
   if (execSec * 1000 >= totalTimeoutMs) throw new Error('totalTimeoutMs must exceed the page navigation budget');
 
   return {
