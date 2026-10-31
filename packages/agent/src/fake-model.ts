@@ -80,7 +80,8 @@ const PRICE_RE = /(?:\s(?:for|à)\s+)?\b(?:under|below|less than|max(?:imum)?|up
 const LEAD_RE = /^(?:please\s+)?(?:can you\s+|could you\s+)?(?:find|search(?: for)?|look(?:ing)? for|buy|get|show)(?:\s+me)?\s+|^(?:trouve|cherche|achète)(?:[- ]moi)?\s+(?:des\s+|un\s+|une\s+)?/i;
 const BUY_OTHER_RE = /\b(buy|order|pay|get it|achète|commande|paye)\b.*\b(from|at|chez|à)\b|\b(cheaper|cheapest|moins cher)\b/i;
 const FOLLOW_UP_RE = /\b(cheaper|cheapest|instead|that one|this one|moins cher|plutôt|celle-ci|celle-là)\b/i;
-const APPROVED_RE = /\b(approved|i paid|paid it|done|j['’]ai (payé|validé|approuvé)|c['’]est validé)\b/i;
+// No trailing \b: it never matches after an accented letter ("validé").
+const APPROVED_RE = /\b(approved|i paid|paid it|done|j['’]ai (payé|validé|approuvé)|c['’]est validé)(?=$|[\s.,;:!?])/i;
 
 export function parseShoppingRequest(text: string): { query: string; maxPrice: number | null } | null {
   const m = text.match(PRICE_RE);
@@ -132,7 +133,8 @@ export class FakeModel implements ModelClient {
     if (last.role === 'user') {
       const text = last.text;
       if (APPROVED_RE.test(text)) {
-        const order = latest<{ status: string; paymentId?: string }>('create_order');
+        // The latest order that exists (a later refusal doesn't replace it).
+        const order = [...history].reverse().find((h) => h.name === 'create_order' && !h.isError && (h.result as { paymentId?: string } | null)?.paymentId)?.result as { paymentId?: string } | undefined;
         return order?.paymentId ? { text: '', toolCalls: [call('request_payment', { paymentId: order.paymentId })] } : say(t.noOrder);
       }
       // A follow-up about earlier results ("the cheaper one", "instead") with no results in this chat: ask, don't search.
