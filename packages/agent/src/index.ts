@@ -4,3 +4,4 @@ export * from './model';
 export * from './fake-model';
 export * from './loop';
 export * from './prompt';
+export * from './tools';

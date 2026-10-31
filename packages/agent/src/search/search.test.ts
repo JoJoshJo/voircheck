@@ -152,6 +152,16 @@ describe('demo mode', () => {
     expect(r.status === 'ok' && r.stores).toHaveLength(2);
   });
 
+  it('a budget leaves out offers above it (real and demo)', async () => {
+    const r = await compareStores('wireless earbuds', { ...opts(mockFetch(200, { products: PRODUCTS })), demoMode: true, maxPrice: 50 });
+    expect(r.status === 'ok' && r.stores.map((s) => [s.storeName, s.price])).toEqual([
+      ['Velbrook-Outlet Deals', 23],
+      ['shopb.com', 45],
+      ['shopc.com', 49], // the demo store over budget leaves room for one more real retailer
+    ]);
+    expect(await compareStores('earbuds', { ...opts(mockFetch(200, { products: PRODUCTS })), demoMode: false, maxPrice: 10 })).toEqual({ status: 'no_results', query: 'earbuds' });
+  });
+
   it('demo OFF: top 3 real retailers only; errors stay typed', async () => {
     const ok = await compareStores('wireless earbuds', { ...opts(mockFetch(200, { products: PRODUCTS })), demoMode: false });
     expect(ok.status === 'ok' && ok.stores.every((s) => s.source === 'channel3')).toBe(true);

@@ -81,6 +81,8 @@ export interface CompareOptions extends Channel3Options {
   demoPair?: 1 | 2 | 3;
   demoStoresBaseUrl?: string;
   searchLimit?: number;
+  /** The person's budget: offers above it are left out (demo stores too). */
+  maxPrice?: number | null;
 }
 
 export type CompareOutcome =
@@ -103,11 +105,13 @@ export type CompareOutcome =
  * store, and one real Channel3 retailer. Otherwise: the top 3 real Channel3 retailers.
  */
 export async function compareStores(query: string, opts: CompareOptions): Promise<CompareOutcome> {
-  const real = await searchProducts(query, opts.searchLimit ?? 20, opts);
+  const found = await searchProducts(query, opts.searchLimit ?? 20, opts);
+  const within = (r: SearchResult) => opts.maxPrice == null || r.price <= opts.maxPrice;
+  const real: SearchOutcome = found.status === 'ok' ? (found.results.some(within) ? { status: 'ok', results: found.results.filter(within) } : { status: 'no_results', query }) : found;
   const item = opts.demoMode ? demoItemFor(query) : null;
 
   if (item) {
-    const demo = demoResults(item, opts.demoPair ?? 1, opts.demoStoresBaseUrl);
+    const demo = demoResults(item, opts.demoPair ?? 1, opts.demoStoresBaseUrl).filter(within);
     const extra = real.status === 'ok' ? pickStoresForItem(real.results, STORES_PER_ITEM - demo.length).picks : [];
     return {
       status: 'ok',

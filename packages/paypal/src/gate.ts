@@ -116,6 +116,19 @@ export function decideAutopay(input: {
   return { allowed: true };
 }
 
+/** Why the gate refuses an order the agent asked for (codes; the agent words them in the user's language). */
+export type AgentRefusal = 'block' | 'unverified' | 'no_price' | 'not_found';
+
+/**
+ * The agent may only prepare orders at stores with a fresh SAFE or HOLD scan. BLOCK and can't-verify stores are refused
+ * before any order exists: "Pay anyway" on a BLOCK store is the user's own action on the store card, never the agent's.
+ */
+export function decideAgentOrder(verdict: EffectiveVerdict): { allowed: true } | { allowed: false; reason: AgentRefusal } {
+  if (verdict === 'BLOCK') return { allowed: false, reason: 'block' };
+  if (verdict === 'UNVERIFIED') return { allowed: false, reason: 'unverified' };
+  return { allowed: true };
+}
+
 /** Reauthorize: only from day 4 to day 29 of the original authorization, and only once (spike T4). */
 export function decideReauthorize(input: { authorizedAt: Date; now: Date; alreadyReauthorized: boolean }): AutopayDecision {
   if (input.alreadyReauthorized) return { allowed: false, reason: 'already reauthorized once' };
@@ -140,6 +153,8 @@ export const StartPurchaseInput = z.object({
   /** "Pay anyway" on a BLOCK store, after the user ticked "I understand the risk". Never in Auto-pay. */
   override: z.boolean().default(false),
 });
+/** What the agent can ask for: IDs only. No override and no wallet flag exist here, so the agent can't send them. */
+export const AgentPurchaseInput = z.object({ userId: Id, candidateId: Id, scanId: Id.nullable().default(null), idempotencyKey: z.string().min(8).max(100), returnUrl: Url, cancelUrl: Url });
 export const WalletSetupInput = z.object({ userId: Id, returnUrl: Url, cancelUrl: Url });
 export const WalletConfirmInput = z.object({ userId: Id, setupTokenId: z.string().min(5).max(100) });
 export const AutopayInput = z.object({ userId: Id, candidateId: Id, scanId: Id.nullable().default(null), idempotencyKey: z.string().min(8).max(100), override: z.boolean().default(false) });
@@ -259,6 +274,26 @@ export class MoneyGate {
     if (input.override) await this.audit(input.userId, 'user', 'override.confirmed', payment.id, { scanId: input.scanId, note: 'user confirmed "I understand the risk"' });
     await this.audit(input.userId, 'user', 'order.created', payment.id, { orderId: order.id, intent: 'AUTHORIZE', amount: payment.amount, currency: payment.currency, storeSlug, override: input.override });
     return { ok: true, payment, approvalUrl: approvalLink(order) };
+  }
+
+  /**
+   * The shopping agent's create_order: refuse BLOCK / can't-verify stores up front (audited as the agent), otherwise
+   * the same AUTHORIZE order as the user's own checkout, never with an override. Settling stays with completeApproval.
+   */
+  async agentStartPurchase(raw: z.input<typeof AgentPurchaseInput>): Promise<GateResult | { ok: false; reason: AgentRefusal }> {
+    const input = AgentPurchaseInput.parse(raw);
+    const refuse = async (reason: AgentRefusal, details: Record<string, unknown> = {}) => {
+      await this.audit(input.userId, 'agent', 'agent.order_refused', null, { reason, candidateId: input.candidateId, scanId: input.scanId, ...details });
+      return { ok: false as const, reason };
+    };
+    const candidate = await this.store.getCandidateForUser(input.candidateId, input.userId);
+    if (!candidate) return refuse('not_found');
+    if (candidate.price === null) return refuse('no_price');
+    const v = await this.verdictFor(input.scanId, candidate);
+    const decision = decideAgentOrder(v.verdict);
+    if (!decision.allowed) return refuse(decision.reason, { verdict: v.verdict, why: v.why });
+    await this.audit(input.userId, 'agent', 'agent.order_requested', null, { verdict: v.verdict, candidateId: candidate.id, scanId: input.scanId });
+    return this.startApprovePurchase({ ...input, override: false, saveWalletForAutopay: false });
   }
 
   async completeApproval(paymentId: string, userId: string, actor: AuditActor = 'system'): Promise<GateResult> {

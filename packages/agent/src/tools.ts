@@ -1,0 +1,143 @@
+import { HARD_RULES, SIGNAL_IDS, type SignalResult } from '@voircheck/scanner';
+import { z } from 'zod';
+import type { AgentTool, AnyAgentTool } from './loop';
+
+/**
+ * The shopping agent's four tools (spec 5.3 / 5.7 / 5.13). The model only names things by our IDs:
+ * - Prices, store URLs and amounts come from our own rows (Channel3 / demo config), never from the model; any extra
+ *   field the model sends (price, amount, override) is stripped by the input schemas.
+ * - Scan results reach the model as a structured summary in OUR words (verdict, score, signal statuses, hard rules,
+ *   one injection flag). Never evidence strings, page text, titles or hidden text: those can carry page content.
+ * - Money: create_order prepares an AUTHORIZE order through MoneyGate (which refuses BLOCK / unverified stores);
+ *   request_payment asks MoneyGate to settle an approved order. There is no capture, void or override tool.
+ */
+
+const Id = z.string().min(1).max(100);
+const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
+
+// ---------- search ----------
+
+export const StoreOffer = z.object({
+  storeId: Id,
+  storeName: z.string().max(80),
+  productTitle: z.string().max(120),
+  price: z.string().regex(/^\d+\.\d{2}$/).nullable(),
+  currency: z.string().length(3),
+  demo: z.boolean(),
+});
+export type StoreOffer = z.infer<typeof StoreOffer>;
+
+export const SearchInput = z.object({
+  query: z.string().trim().min(2).max(120),
+  maxPrice: z.number().positive().max(100_000).nullable().default(null),
+});
+export const SearchOutput = z.discriminatedUnion('status', [
+  z.object({ status: z.literal('ok'), stores: z.array(StoreOffer).max(3), sameProduct: z.boolean() }),
+  z.object({ status: z.literal('no_results') }),
+  z.object({ status: z.literal('unavailable') }),
+]);
+export type SearchOutput = z.infer<typeof SearchOutput>;
+
+// ---------- scan verdict ----------
+
+export const SignalSummary = z.object({
+  id: z.enum(SIGNAL_IDS),
+  status: z.enum(['pass', 'warn', 'fail', 'unavailable']),
+  points: z.number().int().min(0).max(100),
+  /** Our own fixed wording for this signal + status. */
+  meaning: z.string().max(80),
+});
+export const ScanSummary = z.object({
+  storeId: Id,
+  verdict: Verdict,
+  score: z.number().int().min(0).max(100),
+  hardRules: z.array(z.enum(HARD_RULES)),
+  signals: z.array(SignalSummary).max(SIGNAL_IDS.length),
+  /** The page hid text that addresses AI agents (hidden-text extract). A flag only: the text itself never reaches the agent. */
+  pageTriedToInstructAgents: z.boolean(),
+});
+export type ScanSummary = z.infer<typeof ScanSummary>;
+export const ScanOutput = z.union([ScanSummary, z.object({ storeId: Id, status: z.literal('unavailable'), reason: z.enum(['unknown_store', 'rate_limited', 'failed']) })]);
+export type ScanOutput = z.infer<typeof ScanOutput>;
+
+const MEANING: Record<(typeof SIGNAL_IDS)[number], Record<SignalResult['status'], string>> = {
+  domain_age: { pass: 'the domain is not new', warn: 'the domain is fairly new', fail: 'the domain is very new', unavailable: "couldn't check the domain age" },
+  ssl_redirects: { pass: 'HTTPS and redirects look normal', warn: 'something is off with HTTPS or redirects', fail: 'no valid HTTPS or a suspicious redirect', unavailable: "couldn't check HTTPS" },
+  price: { pass: 'the price is in line with other stores', warn: 'the price is unusually low', fail: 'the price is far below other stores', unavailable: "couldn't compare the price" },
+  ai_page: { pass: 'the page reads like a normal shop', warn: 'the page has some warning signs', fail: 'the page has strong scam signs', unavailable: 'page analysis not available' },
+  threat_list: { pass: 'not on threat lists', warn: 'a threat list has concerns', fail: 'listed on a threat list', unavailable: "couldn't check threat lists" },
+  clone: { pass: "doesn't copy another store", warn: 'looks a bit like another store', fail: 'copies another store', unavailable: "couldn't check for copies" },
+};
+
+/** What a finished scan looks like to the agent. Built field by field; nothing from the page is copied. */
+export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[] }): ScanSummary {
+  const injection = scan.signals.some((s) => s.collected?.pages.some((p) => p.hiddenText?.some((h) => h.possibleInjection)));
+  return ScanSummary.parse({
+    storeId,
+    verdict: scan.verdict,
+    score: scan.score,
+    hardRules: scan.hardRules.filter((r): r is (typeof HARD_RULES)[number] => (HARD_RULES as readonly string[]).includes(r)),
+    signals: scan.signals.map((s) => ({ id: s.id, status: s.status, points: s.points, meaning: MEANING[s.id][s.status] })),
+    pageTriedToInstructAgents: injection,
+  });
+}
+
+// ---------- money ----------
+
+export const RefusalReason = z.enum(['block', 'unverified', 'no_price', 'not_found', 'other']);
+export const CreateOrderOutput = z.discriminatedUnion('status', [
+  z.object({ storeId: Id, status: z.literal('awaiting_buyer_approval'), paymentId: Id }),
+  z.object({ storeId: Id, status: z.literal('refused'), reason: RefusalReason }),
+]);
+export type CreateOrderOutput = z.infer<typeof CreateOrderOutput>;
+export const PaymentOutcome = z.enum(['waiting_for_buyer', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'not_found']);
+export const RequestPaymentOutput = z.object({ paymentId: Id, status: PaymentOutcome });
+export type RequestPaymentOutput = z.infer<typeof RequestPaymentOutput>;
+
+/** What the server provides. Each call is already scoped to the signed-in user and this conversation. */
+export interface AgentDeps {
+  searchStores(query: string, maxPrice: number | null): Promise<SearchOutput>;
+  /** The finished scan (fresh or cached) of a store from this conversation's search. */
+  scanStore(storeId: string): Promise<{ status: 'ok'; verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[] } | { status: 'unavailable'; reason: 'unknown_store' | 'rate_limited' | 'failed' }>;
+  /** MoneyGate.agentStartPurchase: AUTHORIZE order at our price, or a refusal. */
+  createOrder(storeId: string): Promise<CreateOrderOutput>;
+  /** MoneyGate.completeApproval: settles an approved order by verdict. */
+  requestPayment(paymentId: string): Promise<RequestPaymentOutput>;
+}
+
+export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
+  const search: AgentTool<z.infer<typeof SearchInput>, SearchOutput> = {
+    name: 'search_products',
+    description: 'Find one item at up to 3 stores. Returns store IDs, product titles and prices from our product search. Pass maxPrice when the person gives a budget.',
+    input: SearchInput,
+    output: SearchOutput,
+    run: ({ query, maxPrice }) => deps.searchStores(query, maxPrice),
+  };
+  const verdict: AgentTool<{ storeId: string }, ScanOutput> = {
+    name: 'get_scan_verdict',
+    description: "Check a store from the search results with VoirCheck's scanner. Returns the verdict (SAFE, HOLD or BLOCK), the risk score and each signal's status. Call it for every store before recommending one.",
+    input: z.object({ storeId: Id }),
+    output: ScanOutput,
+    run: async ({ storeId }) => {
+      const r = await deps.scanStore(storeId);
+      return r.status === 'ok' ? scanSummaryForAgent(storeId, r) : { storeId, status: 'unavailable' as const, reason: r.reason };
+    },
+  };
+  const order: AgentTool<{ storeId: string }, CreateOrderOutput> = {
+    name: 'create_order',
+    description: 'Prepare a PayPal order (funds held, not taken) for the item at this store, at the price from the search. The person approves it in PayPal. VoirCheck refuses BLOCK stores and stores it cannot verify.',
+    input: z.object({ storeId: Id }),
+    output: CreateOrderOutput,
+    run: ({ storeId }) => deps.createOrder(storeId),
+  };
+  const pay: AgentTool<{ paymentId: string }, RequestPaymentOutput> = {
+    name: 'request_payment',
+    description: "Ask VoirCheck to settle an order the person approved in PayPal. The server decides from the scan: SAFE is captured, HOLD stays held for the person, BLOCK is released. Returns the payment's status.",
+    input: z.object({ paymentId: Id }),
+    output: RequestPaymentOutput,
+    run: ({ paymentId }) => deps.requestPayment(paymentId),
+  };
+  return [search, verdict, order, pay];
+}
+
+export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment'] as const;

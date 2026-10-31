@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decideAutopay, decideCapture, decideReauthorize, effectiveVerdict, MoneyGate, scanCoversStore, storeSlugFor, type EffectiveVerdict } from './gate';
+import { decideAgentOrder, decideAutopay, decideCapture, decideReauthorize, effectiveVerdict, MoneyGate, scanCoversStore, storeSlugFor, type EffectiveVerdict } from './gate';
 import { fakePayPal, NOW, OTHER_USER, seededStore, USER } from './test-helpers';
 
 const DAY = 86_400_000;
@@ -464,5 +464,49 @@ describe('saving the wallet during a purchase (Auto-pay on, nothing saved yet)',
     const r = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-hold', idempotencyKey: 'first-0002', ...urls });
     await gate.completeApproval(r.ok ? r.payment.id : '', USER);
     expect(pp.callsTo(/GET \/v2\/checkout\/orders/).length).toBeGreaterThanOrEqual(2); // approval check + vault lookup
+  });
+});
+
+describe('the shopping agent asks for an order (agentStartPurchase)', () => {
+  it.each<[EffectiveVerdict, 'allowed' | 'block' | 'unverified']>([
+    ['SAFE', 'allowed'],
+    ['HOLD', 'allowed'],
+    ['BLOCK', 'block'],
+    ['UNVERIFIED', 'unverified'],
+  ])('decideAgentOrder(%s) → %s', (verdict, expected) => {
+    const d = decideAgentOrder(verdict);
+    expect(d.allowed ? 'allowed' : d.reason).toBe(expected);
+  });
+
+  it.each([
+    ['scan-block', 'block'],
+    ['scan-stale', 'unverified'],
+    ['scan-other-store', 'unverified'],
+    [null, 'unverified'],
+  ])('refuses %s before any PayPal call, audited as the agent', async (scanId, reason) => {
+    const { pp, store, gate } = setup();
+    const r = await gate.agentStartPurchase({ userId: USER, candidateId: 'cand-1', scanId, idempotencyKey: 'agent-0001', ...urls });
+    expect(r).toEqual({ ok: false, reason });
+    expect(pp.callsTo(/POST \/v2\/checkout\/orders/)).toHaveLength(0);
+    expect(store.payments.size).toBe(0);
+    expect(store.audit.at(-1)).toMatchObject({ actor: 'agent', action: 'agent.order_refused', details: { reason } });
+  });
+
+  it("refuses another user's candidate", async () => {
+    const { gate } = setup();
+    expect(await gate.agentStartPurchase({ userId: OTHER_USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'agent-0001', ...urls })).toEqual({ ok: false, reason: 'not_found' });
+  });
+
+  it('SAFE → an AUTHORIZE order for the price in OUR row, no override; settling stays with the gate', async () => {
+    const { pp, store, gate } = setup();
+    const r = await gate.agentStartPurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'agent-0001', ...urls, override: true, price: '0.01' } as never);
+    expect(r.ok).toBe(true);
+    const [order] = pp.callsTo(/POST \/v2\/checkout\/orders$/);
+    expect(order!.body).toMatchObject({ intent: 'AUTHORIZE', purchase_units: [{ amount: { value: '59.00', currency_code: 'USD' } }] });
+    const payment = [...store.payments.values()][0]!;
+    expect(payment).toMatchObject({ status: 'created', overrideUsed: false, amount: '59.00' });
+    expect(pp.callsTo(/capture|void/)).toHaveLength(0);
+    const done = await gate.completeApproval(payment.id, USER, 'agent');
+    expect(done.ok && done.payment.status).toBe('captured');
   });
 });

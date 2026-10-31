@@ -153,6 +153,9 @@ importers:
 
   packages/agent:
     dependencies:
+      '@voircheck/scanner':
+        specifier: workspace:*
+        version: link:../scanner
       '@voircheck/shared':
         specifier: workspace:*
         version: link:../shared
