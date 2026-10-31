@@ -39,6 +39,7 @@ function snapshot(url: string, siteName: string, text: string): PageSnapshot {
     aboutUrl: null,
     aboutText: null,
     links: [],
+    hiddenCandidates: [],
   };
 }
 

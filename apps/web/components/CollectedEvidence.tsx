@@ -1,5 +1,5 @@
 import type { SignalResult } from '@voircheck/scanner';
-import type { Dict } from '../lib/i18n';
+import { fmt, type Dict } from '../lib/i18n';
 
 type Collected = NonNullable<SignalResult['collected']>;
 
@@ -21,8 +21,26 @@ export function CollectedEvidence({ collected, t }: { collected: Collected; t: D
     [t.factReturns, f.returnPolicy ? t.present : none],
     [t.factDiscounts, list(f.discountsPct.map((d) => `${d}%`))],
   ];
+  const hidden = collected.pages.flatMap((p) => (p.hiddenText ?? []).map((h) => ({ ...h, page: t[`kind_${p.kind}`] })));
   return (
     <div className="mt-4 border-t border-line pt-4">
+      <h4 className="text-[14px] font-medium">{t.hiddenTitle}</h4>
+      <p className="mt-1 text-[13px] text-faint">{t.hiddenNote}</p>
+      {hidden.length ? (
+        <ul className="mb-5 mt-3 space-y-3">
+          {hidden.map((h, i) => (
+            <li key={i}>
+              <blockquote className="border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{h.text}”</blockquote>
+              <p className="mt-1 pl-3 text-[13px] text-muted">
+                {h.possibleInjection ? <span className="mr-2 rounded-full bg-block-bg px-2 py-0.5 font-medium text-block">{t.hiddenInjection}</span> : null}
+                {t[`hidden_${h.reason}`]} · {fmt(t.hiddenOn, { page: h.page })} · <code className="text-[12px]">{h.hint}</code>
+              </p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mb-5 mt-2 text-[14px] text-muted">{t.hiddenNone}</p>
+      )}
       <h4 className="text-[14px] font-medium">{t.collectedTitle}</h4>
       <p className="mt-1 text-[13px] text-faint">{t.collectedNote}</p>
       <p className="mt-3 text-[13px] text-muted">

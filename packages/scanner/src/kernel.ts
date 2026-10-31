@@ -2,6 +2,7 @@ import Kernel from '@onkernel/sdk';
 import { z } from 'zod';
 import { CHALLENGE_RE, MAX_CHALLENGE_TEXT } from './blocked-page';
 import { EVIDENCE_BUDGET_MS, EvidencePage, MAX_EVIDENCE_TEXT, PageLink, type EvidenceKind } from './evidence-pages';
+import { HiddenCandidate, HIDDEN_TEXT_JS } from './hidden-text';
 import { errorMessage } from './signals/types';
 
 /**
@@ -25,6 +26,9 @@ export const PageSnapshot = z.object({
   aboutText: z.string().max(100_000).nullable(),
   /** The page's own <a href> links (absolute), for picking evidence pages. Never taken from page text. */
   links: z.array(PageLink).max(400),
+  /** Text in the DOM but hidden from people (raw; filtered and flagged on our server). Untrusted. */
+  // A malformed hidden-text report must never cost us the page itself.
+  hiddenCandidates: z.array(HiddenCandidate).max(100).catch([]),
 });
 export type PageSnapshot = z.infer<typeof PageSnapshot>;
 
@@ -119,6 +123,7 @@ const data = await page.evaluate(() => {
   };
 });
 // The store's own About/Contact page (same origin only): clones copy it word for word, and it's where contact info lives.
+const hiddenCandidates = await page.evaluate(${HIDDEN_TEXT_JS}).catch(() => []);
 const aboutUrl = await page.evaluate(() => {
   const here = location.href.split('#')[0];
   const links = [...document.querySelectorAll('a[href]')].filter((a) => a.origin === location.origin && a.href.split('#')[0] !== here);
@@ -132,7 +137,7 @@ if (aboutUrl) {
     aboutText = (await page.evaluate(() => document.body?.innerText || '')).slice(0, 100000);
   } catch {}
 }
-return { requestedUrl, finalUrl, redirectChain: chain.slice(0, 30), httpStatus: res ? res.status() : null, ...data, aboutUrl, aboutText };
+return { requestedUrl, finalUrl, redirectChain: chain.slice(0, 30), httpStatus: res ? res.status() : null, ...data, aboutUrl, aboutText, hiddenCandidates };
 };
 return await Promise.all(urls.map(async (u, i) => {
   try {
@@ -170,7 +175,8 @@ return await Promise.all(targets.map(async (t) => {
         fullText: (clone?.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, ${MAX_EVIDENCE_TEXT}),
       };
     });
-    return { ok: true, page: { url: t.url, finalUrl: tab.url(), kind: t.kind, ...data } };
+    const hiddenCandidates = await tab.evaluate(${HIDDEN_TEXT_JS}).catch(() => []);
+    return { ok: true, page: { url: t.url, finalUrl: tab.url(), kind: t.kind, ...data, hiddenCandidates } };
   } catch (err) {
     return { ok: false, error: String(err && err.message || err).slice(0, 200) };
   } finally {

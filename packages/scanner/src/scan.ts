@@ -1,6 +1,7 @@
 import { detectBlockedPage } from './blocked-page';
 import { domainInfo } from './domain';
 import { extractFacts, keepInScope, pickEvidenceLinks, type CollectedEvidence } from './evidence-pages';
+import { filterHiddenText } from './hidden-text';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
 import { score, WEIGHTS } from './scoring';
@@ -138,12 +139,22 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   // Extra pages of the scanned store (same KERNEL session), and fixed-pattern facts over them: evidence only for now.
   const evidencePages = targetPage ? keepInScope(kernel?.evidencePages ?? [], targetPage.finalUrl) : [];
   const pageFacts = extractFacts([targetPage?.visibleText ?? '', ...evidencePages.map((p) => p.visibleText)], targetPage?.finalUrl ?? url.href);
+  // Hidden-from-people text per page (filtered, injection-flagged). Evidence only; quoted, never followed.
+  const readPages = targetPage
+    ? [
+        { url: targetPage.finalUrl, kind: 'home' as const, title: targetPage.title, hiddenText: filterHiddenText(targetPage.hiddenCandidates) },
+        ...evidencePages.map((p) => ({ url: p.finalUrl, kind: p.kind, title: p.title, hiddenText: filterHiddenText(p.hiddenCandidates) })),
+      ]
+    : [];
+  const hiddenText = readPages.flatMap((p) => p.hiddenText.map((h) => ({ ...h, pageUrl: p.url, pageKind: p.kind })));
   const collected: CollectedEvidence | undefined = targetPage
     ? {
-        pages: [
-          { url: targetPage.finalUrl, kind: 'home' as const, title: targetPage.title.slice(0, 300) },
-          ...evidencePages.map((p) => ({ url: p.finalUrl, kind: p.kind, title: p.title.slice(0, 300) })),
-        ],
+        pages: readPages.map((p) => ({
+          url: p.url,
+          kind: p.kind,
+          title: p.title.slice(0, 300),
+          ...(p.hiddenText.length ? { hiddenText: p.hiddenText.map((h) => ({ ...h, text: h.text.slice(0, 500) })) } : {}),
+        })),
         facts: pageFacts,
       }
     : undefined;
@@ -155,7 +166,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return r;
     }),
     (deps.analyzer ?? placeholderAnalyzer)
-      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts })
+      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
       .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
       .then((o): SignalOutcome => (collected ? { ...o, collected } : o))

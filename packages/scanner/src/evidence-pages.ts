@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { domainInfo } from './domain';
+import { HiddenCandidate, HiddenText } from './hidden-text';
 
 /**
  * Multi-page evidence (spec 5.5, prepares the AI signal 5.13). After the homepage, the same KERNEL session opens up
@@ -28,6 +29,7 @@ export const EvidencePage = z.object({
   visibleText: z.string().max(MAX_EVIDENCE_TEXT),
   /** Includes hidden text (where planted injections hide). */
   fullText: z.string().max(MAX_EVIDENCE_TEXT),
+  hiddenCandidates: z.array(HiddenCandidate).max(100).catch([]),
 });
 export type EvidencePage = z.infer<typeof EvidencePage>;
 
@@ -148,7 +150,17 @@ export const CollectedFacts = z.object({
 export type CollectedFacts = z.infer<typeof CollectedFacts>;
 
 export const CollectedEvidence = z.object({
-  pages: z.array(z.object({ url: z.string().max(2048), kind: z.union([z.enum(EVIDENCE_KINDS), z.literal('home')]), title: z.string().max(300) })).max(5),
+  pages: z
+    .array(
+      z.object({
+        url: z.string().max(2048),
+        kind: z.union([z.enum(EVIDENCE_KINDS), z.literal('home')]),
+        title: z.string().max(300),
+        /** Hidden-from-people text on this page, quoted as evidence (untrusted; never followed). */
+        hiddenText: z.array(HiddenText).max(10).optional(),
+      }),
+    )
+    .max(5),
   facts: CollectedFacts,
 });
 export type CollectedEvidence = z.infer<typeof CollectedEvidence>;
