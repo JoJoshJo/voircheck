@@ -12,7 +12,7 @@ const signals = (over: Partial<Record<(typeof SIGNAL_IDS)[number], SignalStatus>
 const scanned = (url: string, label: Label, verdict: Verdict, extra: Partial<Extract<EvalRow, { outcome: 'scanned' }>> = {}): EvalRow => ({
   url,
   label,
-  split: 'test',
+  split: 'holdout',
   outcome: 'scanned',
   verdict,
   score: verdict === 'BLOCK' ? 80 : verdict === 'HOLD' ? 40 : 5,
@@ -28,13 +28,13 @@ describe('eval metrics', () => {
     scanned('https://s1.test/', 'scam', 'BLOCK', { signals: signals({ domain_age: 'fail', clone: 'warn' }), scanMs: 8_000 }),
     scanned('https://s2.test/', 'scam', 'HOLD', { hardRules: ['cant_verify'], signals: signals({ ssl_redirects: 'unavailable' }), scanMs: 20_000 }),
     scanned('https://s3.test/', 'scam', 'SAFE', { scanMs: 12_000 }),
-    { url: 'https://s4.test/', label: 'scam', split: 'test', outcome: 'dead', deadReason: 'parked / for-sale page' },
+    { url: 'https://s4.test/', label: 'scam', split: 'holdout', outcome: 'dead', deadReason: 'parked / for-sale page' },
     scanned('https://l1.test/', 'legit', 'SAFE', { scanMs: 9_000 }),
     scanned('https://l2.test/', 'legit', 'SAFE', { scanMs: 11_000 }),
     scanned('https://l3.test/', 'legit', 'HOLD', { signals: signals({ domain_age: 'warn' }), scanMs: 30_000 }),
     scanned('https://l4.test/', 'legit', 'BLOCK', { signals: signals({ threat_list: 'fail' }), scanMs: 7_000 }),
-    { url: 'https://l5.test/', label: 'legit', split: 'test', outcome: 'dead', deadReason: 'HTTP 503' },
-    { url: 'https://l6.test/', label: 'legit', split: 'test', outcome: 'error', error: 'SsrfError: hostname did not resolve' },
+    { url: 'https://l5.test/', label: 'legit', split: 'holdout', outcome: 'dead', deadReason: 'HTTP 503' },
+    { url: 'https://l6.test/', label: 'legit', split: 'holdout', outcome: 'error', error: 'SsrfError: hostname did not resolve' },
   ];
   const m = computeMetrics(rows);
 
@@ -84,25 +84,25 @@ describe('eval metrics', () => {
       scanned('https://a.test/', 'scam', 'SAFE', { collected: facts(true, ['home', 'contact']) }),
       scanned('https://b.test/', 'scam', 'HOLD'), // bot check: nothing collected
       scanned('https://c.test/', 'legit', 'SAFE', { collected: facts(false, ['home', 'legal']) }),
-      { url: 'https://d.test/', label: 'scam', split: 'test', outcome: 'dead', deadReason: 'parked / for-sale page' },
+      { url: 'https://d.test/', label: 'scam', split: 'holdout', outcome: 'dead', deadReason: 'parked / for-sale page' },
     ]);
     const row = (name: string) => fm.facts.find((f) => f.fact === name);
     expect(row('free-mail contact email')).toEqual({ fact: 'free-mail contact email', scam: 1, legit: 0 });
     expect(row('legal notice / Impressum page')).toMatchObject({ scam: 0, legit: 1 });
     expect(row('discount of 50% or more seen')).toMatchObject({ scam: 1, legit: 0 });
-    const md = markdownReport(fm, [], { runAt: '2026-10-30T00:00:00Z', split: 'test', commit: 'abc', aiAnalysis: 'off' });
+    const md = markdownReport(fm, [], { runAt: '2026-10-30T00:00:00Z', split: 'holdout', commit: 'abc', aiAnalysis: 'off' });
     expect(md).toContain('| free-mail contact email | 1/2 | 0/1 |');
   });
 
   it('empty or all-dead sets give n/a rates, never NaN', () => {
-    const e = computeMetrics([{ url: 'https://x.test/', label: 'scam', split: 'test', outcome: 'dead', deadReason: 'HTTP 404' }]);
+    const e = computeMetrics([{ url: 'https://x.test/', label: 'scam', split: 'holdout', outcome: 'dead', deadReason: 'HTTP 404' }]);
     expect(e.catchRate).toBeNull();
     expect(e.hardFalseAlarmRate).toBeNull();
-    expect(markdownReport(e, [], { runAt: '2026-10-30T00:00:00Z', split: 'test', commit: 'abc', aiAnalysis: 'off' })).toContain('n/a');
+    expect(markdownReport(e, [], { runAt: '2026-10-30T00:00:00Z', split: 'holdout', commit: 'abc', aiAnalysis: 'off' })).toContain('n/a');
   });
 
   it('the report states sample size, AI off, and lists misses + false alarms with signal values', () => {
-    const md = markdownReport(m, rows, { runAt: '2026-10-30T12:00:00Z', split: 'test', commit: 'abc1234', aiAnalysis: 'off' });
+    const md = markdownReport(m, rows, { runAt: '2026-10-30T12:00:00Z', split: 'holdout', commit: 'abc1234', aiAnalysis: 'off' });
     expect(md).toContain('AI page analysis: OFF');
     expect(md).toContain('scored 3 scam + 4 legit');
     expect(md).toContain('2 dead');
@@ -126,8 +126,17 @@ describe('dataset', () => {
     expect(stores.every((s) => s.sourceUrl.startsWith('https://'))).toBe(true);
     expect(stores.some((s) => s.url.includes('voircheck'))).toBe(false); // no demo stores
   });
+  it('the seen test split is kept and marked; holdout scams must be first reported after 2026-10-31', () => {
+    expect(stores.filter((s) => s.split === 'seen-2026-10-31')).toHaveLength(40);
+    expect(stores.some((s) => (s.split as string) === 'test')).toBe(false);
+    const holdout = (reportedOn?: string) => ({ stores: [{ url: 'https://new-scam.test/', label: 'scam', split: 'holdout', source: 'Watchlist Internet', sourceUrl: 'https://w.test/', reportedOn }] });
+    expect(() => loadStores(holdout('2026-10-31'))).toThrow(/after 2026-10-31/);
+    expect(() => loadStores(holdout())).toThrow(/after 2026-10-31/);
+    expect(loadStores(holdout('2026-11-02'))[0]).toMatchObject({ split: 'holdout', reportedOn: '2026-11-02' });
+    expect(() => loadStores({ stores: [{ url: 'https://a.test/', label: 'legit', split: 'test', source: 's', sourceUrl: 'https://s.test/' }] })).toThrow(/split must be/);
+  });
   it('rejects entries without a source', () => {
-    expect(() => loadStores({ stores: [{ url: 'https://a.test/', label: 'scam', split: 'test', source: '', sourceUrl: '' }] })).toThrow(/named source/);
+    expect(() => loadStores({ stores: [{ url: 'https://a.test/', label: 'scam', split: 'tune', source: '', sourceUrl: '' }] })).toThrow(/named source/);
   });
   it('selects by split and limit', () => {
     expect(selectStores(stores, 'tune').every((s) => s.split === 'tune')).toBe(true);
@@ -193,7 +202,7 @@ describe('runner rows', () => {
       },
       meta: { kernelSessionSeconds: 12, kernelError: null },
     };
-    const row = toRow({ url: 'https://a.test/', label: 'legit', split: 'test', source: 's', sourceUrl: 'https://s.test', addedOn: '', notes: '' }, report, 1234.6);
+    const row = toRow({ url: 'https://a.test/', label: 'legit', split: 'holdout', source: 's', sourceUrl: 'https://s.test', addedOn: '', notes: '' }, report, 1234.6);
     const json = JSON.stringify(row);
     expect(json).not.toContain('SECRET');
     expect(json).not.toContain('sess_secret');

@@ -6,7 +6,13 @@
 import type { CollectedEvidence, HardRule, SignalId, SignalStatus, Verdict } from '@voircheck/scanner';
 
 export type Label = 'scam' | 'legit';
-export type Split = 'tune' | 'test';
+/**
+ * tune: may inform rules. seen-2026-10-31: the original test split, run once as the before-AI baseline; seen, so never
+ * a final number. holdout: final reported numbers; scams first reported after HOLDOUT_AFTER + fresh legit shops.
+ */
+export const SPLITS = ['tune', 'seen-2026-10-31', 'holdout'] as const;
+export type Split = (typeof SPLITS)[number];
+export const HOLDOUT_AFTER = '2026-10-31';
 
 export interface EvalStore {
   url: string;
@@ -15,6 +21,8 @@ export interface EvalStore {
   source: string;
   sourceUrl: string;
   addedOn: string;
+  /** Scams: the day the source first reported the shop (holdout scams must be after HOLDOUT_AFTER). */
+  reportedOn?: string;
   notes: string;
 }
 
@@ -53,11 +61,14 @@ export function loadStores(raw: unknown): EvalStore[] {
     const where = `eval/stores.json entry ${i}`;
     if (typeof e.url !== 'string' || !/^https?:\/\//.test(e.url)) throw new Error(`${where}: bad url`);
     if (e.label !== 'scam' && e.label !== 'legit') throw new Error(`${where}: label must be scam|legit`);
-    if (e.split !== 'tune' && e.split !== 'test') throw new Error(`${where}: split must be tune|test`);
+    if (!(SPLITS as readonly string[]).includes(e.split as string)) throw new Error(`${where}: split must be ${SPLITS.join('|')}`);
+    if (e.split === 'holdout' && e.label === 'scam' && !(typeof e.reportedOn === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(e.reportedOn) && e.reportedOn > HOLDOUT_AFTER)) {
+      throw new Error(`${where}: holdout scams must have reportedOn after ${HOLDOUT_AFTER}`);
+    }
     if (!e.source || !e.sourceUrl) throw new Error(`${where}: ground truth needs a named source and sourceUrl`);
     if (seen.has(e.url)) throw new Error(`${where}: duplicate url ${e.url}`);
     seen.add(e.url);
-    return { url: e.url, label: e.label, split: e.split, source: e.source, sourceUrl: e.sourceUrl, addedOn: e.addedOn ?? '', notes: e.notes ?? '' };
+    return { url: e.url, label: e.label, split: e.split as Split, source: e.source, sourceUrl: e.sourceUrl, addedOn: e.addedOn ?? '', ...(e.reportedOn ? { reportedOn: e.reportedOn } : {}), notes: e.notes ?? '' };
   });
 }
 

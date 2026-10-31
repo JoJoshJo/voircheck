@@ -1,5 +1,5 @@
 import type { ScanReport } from '@voircheck/scanner';
-import type { EvalRow, EvalStore } from './metrics';
+import type { EvalRow, EvalStore, Split } from './metrics';
 
 /** One scan → one result row. Drops the KERNEL object (session id, live-view and replay links carry tokens). */
 export function toRow(store: EvalStore, report: ScanReport, scanMs: number): EvalRow {
@@ -20,7 +20,7 @@ export function toRow(store: EvalStore, report: ScanReport, scanMs: number): Eva
   };
 }
 
-export function selectStores(stores: EvalStore[], split: 'tune' | 'test' | 'all', limit?: number): EvalStore[] {
+export function selectStores(stores: EvalStore[], split: Split | 'all', limit?: number): EvalStore[] {
   const picked = split === 'all' ? stores : stores.filter((s) => s.split === split);
   return limit ? picked.slice(0, limit) : picked;
 }

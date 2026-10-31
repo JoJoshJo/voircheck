@@ -1,14 +1,15 @@
 {
-  "description": "VoirCheck real-world evaluation set. Ground truth from named sources only (Watchlist Internet fake-shop list; Wikipedia for established retailers; the Austrian E-Commerce-Gütezeichen certified-shop list). Split fixed before any scan: stratified per label, ~1/3 tune by URL hash. Never change scoring rules based on \"test\" results.",
+  "description": "VoirCheck real-world evaluation set. Ground truth from named sources only (Watchlist Internet fake-shop list; Wikipedia for established retailers; the Austrian E-Commerce-Gütezeichen certified-shop list). Split fixed before any scan: stratified per label, ~1/3 tune by URL hash. The original \"test\" split was run once (baseline abce9b2) and is now \"seen-2026-10-31\": it may inform tuning but is never reported as a final number. Final numbers come from the \"holdout\" split: scams first reported AFTER 2026-10-31 (reportedOn) + fresh legit shops not used before. Never change scoring rules based on holdout results.",
   "createdOn": "2026-10-30",
   "stores": [
     {
       "url": "https://gruenstark.de/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/gruenstarkde/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -18,42 +19,47 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/mallelvaritarocom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://hochzeitsdekorationen.shop/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/hochzeitsdekorationenshop/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://werkaro.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werkarocom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://elveant.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/elveantcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://trailsupplypro.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/trailsupplyprocom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -63,24 +69,27 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/heizungugde/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://jekadeshop.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/jekadeshopcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://mk-kueche.de/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/mk-kuechede/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -90,24 +99,27 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/messtoolcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://official-depot.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/official-depotcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://wuerfelbedarf.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/wuerfelbedarfcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -117,24 +129,27 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/pureshoerackcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://alpkauf.de/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/alpkaufde/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://werksraeder-24.de/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werksraeder-24de/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -144,6 +159,7 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/missmodaberlinde/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -153,15 +169,17 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/rimowa-storede/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
       "url": "https://warenhauswelt.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/warenhausweltcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-29",
       "notes": "Listed as fraudulent shop since 2026-10-29."
     },
     {
@@ -171,15 +189,17 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/scandiwarmcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-08",
       "notes": "Listed as fraudulent shop since 2026-10-08."
     },
     {
       "url": "https://lunaseacoffees.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/lunaseacoffeescom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-08",
       "notes": "Listed as fraudulent shop since 2026-10-08."
     },
     {
@@ -189,6 +209,7 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/kinderschatzcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-08",
       "notes": "Listed as fraudulent shop since 2026-10-08."
     },
     {
@@ -198,15 +219,17 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/steadyhandtoolingcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-08",
       "notes": "Listed as fraudulent shop since 2026-10-08."
     },
     {
       "url": "https://denbypotteryuk.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/denbypotteryukcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-08",
       "notes": "Listed as fraudulent shop since 2026-10-08."
     },
     {
@@ -216,66 +239,73 @@
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werkstatt-teilecom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-07",
       "notes": "Listed as fraudulent shop since 2026-10-07."
     },
     {
       "url": "https://bikehelfer.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/bikehelfercom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-07",
       "notes": "Listed as fraudulent shop since 2026-10-07."
     },
     {
       "url": "https://musikinstrumentes.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/musikinstrumentescom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-10-06",
       "notes": "Listed as fraudulent shop since 2026-10-06."
     },
     {
       "url": "https://einrichtkueche.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/einrichtkuechecom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-08-21",
       "notes": "Listed as fraudulent shop since 2026-08-21."
     },
     {
       "url": "https://elektrosystemmarkt.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/elektrosystemmarktcom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-08-21",
       "notes": "Listed as fraudulent shop since 2026-08-21."
     },
     {
       "url": "https://pelletwerk.eu/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/pelletwerkeu/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-08-21",
       "notes": "Listed as fraudulent shop since 2026-08-21."
     },
     {
       "url": "https://smartphonepartner.com/",
       "label": "scam",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Watchlist Internet (fake-shop list)",
       "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/smartphonepartnercom/",
       "addedOn": "2026-10-30",
+      "reportedOn": "2026-08-20",
       "notes": "Listed as fraudulent shop since 2026-08-20."
     },
     {
       "url": "https://www.bestbuy.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Best_Buy",
       "addedOn": "2026-10-30",
@@ -284,7 +314,7 @@
     {
       "url": "https://www.target.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Target_Corporation",
       "addedOn": "2026-10-30",
@@ -302,7 +332,7 @@
     {
       "url": "https://www.bhphotovideo.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/B%26H_Photo",
       "addedOn": "2026-10-30",
@@ -320,7 +350,7 @@
     {
       "url": "https://www.argos.co.uk/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Argos_(retailer)",
       "addedOn": "2026-10-30",
@@ -338,7 +368,7 @@
     {
       "url": "https://www.otto.de/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Otto_(retailer)",
       "addedOn": "2026-10-30",
@@ -347,7 +377,7 @@
     {
       "url": "https://www.thomann.de/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Thomann_(retailer)",
       "addedOn": "2026-10-30",
@@ -356,7 +386,7 @@
     {
       "url": "https://www.zalando.de/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Zalando",
       "addedOn": "2026-10-30",
@@ -365,7 +395,7 @@
     {
       "url": "https://www.mediamarkt.de/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/MediaMarkt",
       "addedOn": "2026-10-30",
@@ -374,7 +404,7 @@
     {
       "url": "https://www.fnac.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Fnac",
       "addedOn": "2026-10-30",
@@ -383,7 +413,7 @@
     {
       "url": "https://www.boulanger.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Boulanger_(company)",
       "addedOn": "2026-10-30",
@@ -392,7 +422,7 @@
     {
       "url": "https://www.decathlon.fr/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Wikipedia (established retailer)",
       "sourceUrl": "https://en.wikipedia.org/wiki/Decathlon_(retailer)",
       "addedOn": "2026-10-30",
@@ -401,7 +431,7 @@
     {
       "url": "https://connox.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -428,7 +458,7 @@
     {
       "url": "https://cyberport.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -437,7 +467,7 @@
     {
       "url": "https://chiliwerkstatt.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -446,7 +476,7 @@
     {
       "url": "https://kernoel-resch.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -473,7 +503,7 @@
     {
       "url": "https://zirben-onlineshop.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -482,7 +512,7 @@
     {
       "url": "https://gelaenderladen.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -500,7 +530,7 @@
     {
       "url": "https://vienna-camera.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -509,7 +539,7 @@
     {
       "url": "https://rund-um-die-biene.at/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
@@ -536,7 +566,7 @@
     {
       "url": "https://haengemattenshop.com/",
       "label": "legit",
-      "split": "test",
+      "split": "seen-2026-10-31",
       "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",

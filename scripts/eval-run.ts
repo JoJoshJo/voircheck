@@ -1,7 +1,7 @@
 /**
  * Real-world eval (spec 5.5 "Eval method"): scan the source-labelled stores in eval/stores.json with the production
  * scanner and report accuracy.
- *   pnpm eval:run [--split test|tune|all] [--limit N]
+ *   pnpm eval:run [--split holdout|tune|seen-2026-10-31|all] [--limit N]   (default: holdout)
  * Scan only: no payments, forms or sign-ups. Store pages are opened only inside KERNEL; the runner itself makes a
  * plain HTTP reachability check first (no browser, no JavaScript). Concurrency 2 with polite delays.
  * Writes eval/results/<date>-<split>.json + .md. No secrets or KERNEL links in the output.
@@ -11,7 +11,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
 import { kernelVisitor, scanStore } from '@voircheck/scanner';
-import { computeMetrics, loadStores, type EvalRow } from './eval/metrics';
+import { computeMetrics, loadStores, SPLITS, type EvalRow, type Split } from './eval/metrics';
 import { checkReachability } from './eval/reachability';
 import { markdownReport, summaryLines, type RunInfo } from './eval/report';
 import { mapPool, selectStores, toRow } from './eval/run';
@@ -21,14 +21,14 @@ const SCAN_DELAY_MS = 4_000;
 const CHECK_DELAY_MS = 500;
 
 function usage(): never {
-  console.error('usage: pnpm eval:run [--split test|tune|all] [--limit N]');
+  console.error(`usage: pnpm eval:run [--split ${SPLITS.join('|')}|all] [--limit N]`);
   process.exit(2);
 }
 
 const args = process.argv.slice(2);
 const opt = (name: string) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
-const split = (opt('--split') ?? 'test') as 'tune' | 'test' | 'all';
-if (!['tune', 'test', 'all'].includes(split)) usage();
+const split = (opt('--split') ?? 'holdout') as Split | 'all';
+if (![...SPLITS, 'all'].includes(split)) usage();
 const limitRaw = opt('--limit');
 const limit = limitRaw === undefined ? undefined : Number(limitRaw);
 if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) usage();
@@ -43,6 +43,10 @@ if (!safeBrowsingKey) console.error('warning: GOOGLE_SAFE_BROWSING_API_KEY missi
 
 const stores = selectStores(loadStores(JSON.parse(readFileSync('eval/stores.json', 'utf8'))), split, limit);
 const scams = stores.filter((s) => s.label === 'scam').length;
+if (stores.length === 0) {
+  console.log(`Split "${split}" has no stores yet. Nothing scanned.`);
+  process.exit(0);
+}
 console.log(`Split "${split}"${limit ? `, limit ${limit}` : ''}: ${stores.length} stores (${scams} scam, ${stores.length - scams} legit).`);
 console.log(`Estimate: up to ${stores.length} KERNEL sessions (one per live store; dead sites are skipped) and up to ${stores.length} Safe Browsing lookups.`);
 console.log(`Concurrency ${CONCURRENCY}, ${SCAN_DELAY_MS / 1000}s between scans per lane. AI page analysis is OFF.`);
