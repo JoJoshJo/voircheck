@@ -3,7 +3,7 @@
  * Scam caught = HOLD or BLOCK. Legit HOLD = soft false alarm, legit BLOCK = hard false alarm.
  * Dead sites (unreachable / parked / redirect to an unrelated domain) and runner errors are excluded from accuracy.
  */
-import type { HardRule, SignalId, SignalStatus, Verdict } from '@voircheck/scanner';
+import type { CollectedEvidence, HardRule, SignalId, SignalStatus, Verdict } from '@voircheck/scanner';
 
 export type Label = 'scam' | 'legit';
 export type Split = 'tune' | 'test';
@@ -39,6 +39,8 @@ export type EvalRow =
       signals: EvalSignal[];
       scanMs: number;
       kernelError: string | null;
+      /** Pages + facts collected for page analysis (evidence only, not scored). */
+      collected?: CollectedEvidence;
     };
 export type ScannedRow = Extract<EvalRow, { outcome: 'scanned' }>;
 
@@ -95,7 +97,29 @@ export interface EvalMetrics {
   medianScanMs: number | null;
   misses: ScannedRow[];
   falseAlarms: ScannedRow[];
+  /** How often each collected fact was found, per label, out of the scored rows. */
+  facts: Array<{ fact: string; scam: number; legit: number }>;
 }
+
+/** Facts reported per label (Task: "free-mail contact email: scam X/8, legit Y/9"). */
+export const FACT_CHECKS: Array<[string, (c: CollectedEvidence) => boolean]> = [
+  ['extra pages read (any)', (c) => c.pages.length > 1],
+  ['legal notice / Impressum page', (c) => c.pages.some((p) => p.kind === 'legal')],
+  ['contact / about page', (c) => c.pages.some((p) => p.kind === 'contact')],
+  ['returns / shipping / terms page', (c) => c.pages.some((p) => p.kind === 'terms')],
+  ['product page', (c) => c.pages.some((p) => p.kind === 'product')],
+  ['company name with legal form', (c) => c.facts.companyNames.length > 0],
+  ['postal address', (c) => c.facts.addresses.length > 0],
+  ['phone number', (c) => c.facts.phones.length > 0],
+  ['any contact email', (c) => c.facts.emails.length > 0],
+  ['free-mail contact email', (c) => c.facts.freeMailContact],
+  ['email on the store\'s own domain', (c) => c.facts.emails.some((e) => e.matchesStoreDomain)],
+  ['VAT / company registration number', (c) => c.facts.registrationIds.length > 0],
+  ['PayPal mentioned', (c) => c.facts.paymentMethods.includes('PayPal')],
+  ['bank transfer / prepayment mentioned', (c) => c.facts.paymentMethods.includes('Bank transfer / prepayment')],
+  ['return policy mentioned', (c) => c.facts.returnPolicy],
+  ['discount of 50% or more seen', (c) => c.facts.discountsPct.some((d) => d >= 50)],
+];
 
 function signalStats(rows: ScannedRow[]): Partial<Record<SignalId, SignalStats>> {
   const out: Partial<Record<SignalId, SignalStats>> = {};
@@ -141,5 +165,10 @@ export function computeMetrics(rows: EvalRow[]): EvalMetrics {
     medianScanMs: median(scanned.map((r) => r.scanMs)),
     misses: scams.filter((r) => r.verdict === 'SAFE'),
     falseAlarms: legits.filter((r) => caught(r.verdict)),
+    facts: FACT_CHECKS.map(([fact, has]) => ({
+      fact,
+      scam: scams.filter((r) => r.collected && has(r.collected)).length,
+      legit: legits.filter((r) => r.collected && has(r.collected)).length,
+    })),
   };
 }

@@ -1,5 +1,6 @@
 import { detectBlockedPage } from './blocked-page';
 import { domainInfo } from './domain';
+import { extractFacts, keepInScope, pickEvidenceLinks, type CollectedEvidence } from './evidence-pages';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
 import { score, WEIGHTS } from './scoring';
@@ -77,7 +78,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
 
   const [visit, domainAge, tlsInput] = await Promise.all([
     deps.visitor
-      ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
+      ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession, evidenceLinks: (p) => (detectBlockedPage(p) ? [] : pickEvidenceLinks(p.links, p.finalUrl)) }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
       : Promise.resolve(new Error('no cloud browser configured')),
     domainAgeSignal(domain, now, fetchImpl).then((r) => {
       emit(r.outcome);
@@ -134,6 +135,19 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct, excludedBlocked });
   emit(price.outcome);
 
+  // Extra pages of the scanned store (same KERNEL session), and fixed-pattern facts over them: evidence only for now.
+  const evidencePages = targetPage ? keepInScope(kernel?.evidencePages ?? [], targetPage.finalUrl) : [];
+  const pageFacts = extractFacts([targetPage?.visibleText ?? '', ...evidencePages.map((p) => p.visibleText)], targetPage?.finalUrl ?? url.href);
+  const collected: CollectedEvidence | undefined = targetPage
+    ? {
+        pages: [
+          { url: targetPage.finalUrl, kind: 'home' as const, title: targetPage.title.slice(0, 300) },
+          ...evidencePages.map((p) => ({ url: p.finalUrl, kind: p.kind, title: p.title.slice(0, 300) })),
+        ],
+        facts: pageFacts,
+      }
+    : undefined;
+
   const threatUrls = [...new Set([url.href, targetPage?.finalUrl].filter((u): u is string => !!u))];
   const [threat, ai] = await Promise.all([
     threatListSignal(threatUrls, deps.safeBrowsingKey, fetchImpl).then((r) => {
@@ -141,9 +155,10 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return r;
     }),
     (deps.analyzer ?? placeholderAnalyzer)
-      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText })
+      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
       .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
+      .then((o): SignalOutcome => (collected ? { ...o, collected } : o))
       .then((o) => {
         emit(o);
         return o;

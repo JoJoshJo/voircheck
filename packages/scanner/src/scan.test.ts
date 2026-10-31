@@ -38,6 +38,7 @@ function snapshot(url: string, siteName: string, text: string): PageSnapshot {
     structure: ['body', 'div', 'header', 'a', 'nav', 'a', 'a', 'main', 'h1', 'p', 'button', 'footer'],
     aboutUrl: null,
     aboutText: null,
+    links: [],
   };
 }
 

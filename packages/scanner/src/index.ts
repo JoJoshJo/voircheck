@@ -2,8 +2,10 @@
 export * from './schema';
 export { scanStore, type ScannerDeps, type ScanReport, type ScanProgress } from './scan';
 export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, verdictForScore } from './scoring';
-export { kernelVisitor, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot } from './kernel';
+export { kernelVisitor, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot, type VisitHooks } from './kernel';
 export { placeholderAnalyzer, wrapUntrustedPageText, type PageAnalyzer, type PageForAnalysis } from './signals/ai-page';
 export { domainInfo, type DomainInfo } from './domain';
+export { CollectedEvidence, CollectedFacts, EvidencePage, extractFacts, pickEvidenceLinks, EVIDENCE_BUDGET_MS, type EvidenceKind } from './evidence-pages';
+export { detectBlockedPage, type BlockedReason } from './blocked-page';
 export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp, type Resolver } from './ssrf';
 export type { SignalOutcome, ScanFacts } from './signals/types';

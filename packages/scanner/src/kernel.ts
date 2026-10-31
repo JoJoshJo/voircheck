@@ -1,6 +1,7 @@
 import Kernel from '@onkernel/sdk';
 import { z } from 'zod';
 import { CHALLENGE_RE, MAX_CHALLENGE_TEXT } from './blocked-page';
+import { EVIDENCE_BUDGET_MS, EvidencePage, MAX_EVIDENCE_TEXT, PageLink, type EvidenceKind } from './evidence-pages';
 import { errorMessage } from './signals/types';
 
 /**
@@ -22,6 +23,8 @@ export const PageSnapshot = z.object({
   structure: z.array(z.string()).max(5000),
   aboutUrl: z.string().nullable(),
   aboutText: z.string().max(100_000).nullable(),
+  /** The page's own <a href> links (absolute), for picking evidence pages. Never taken from page text. */
+  links: z.array(PageLink).max(400),
 });
 export type PageSnapshot = z.infer<typeof PageSnapshot>;
 
@@ -35,11 +38,19 @@ export interface KernelVisit {
   pages: PageVisit[];
   /** Wall-clock seconds the browser session was open (KERNEL bills per browser-second). */
   sessionSeconds: number;
+  /** Extra pages of the first URL's store, read in the same session (spec 5.5 multi-page evidence). */
+  evidencePages?: EvidencePage[];
+}
+
+export interface VisitHooks {
+  onSession?: (s: { sessionId: string; liveViewUrl?: string }) => void;
+  /** Picks the first page's extra evidence pages from its own links; [] or absent = none. */
+  evidenceLinks?: (page: PageSnapshot) => Array<{ url: string; kind: EvidenceKind }>;
 }
 
 export interface PageVisitor {
   /** Throws only when the browser itself can't be used; per-page failures come back in `pages`. */
-  visit(urls: string[], hooks?: { onSession?: (s: { sessionId: string; liveViewUrl?: string }) => void }): Promise<KernelVisit>;
+  visit(urls: string[], hooks?: VisitHooks): Promise<KernelVisit>;
 }
 
 /**
@@ -47,7 +58,7 @@ export interface PageVisitor {
  * shows), all in parallel. URLs are embedded as a JSON literal. Per-URL errors are returned, not thrown.
  * (One executor with many tabs: separate named executors per URL timed out at 6 pages in testing.)
  */
-function snapshotCode(urls: string[], navTimeoutMs: number, wakeWaitMs: number): string {
+export function snapshotCode(urls: string[], navTimeoutMs: number, wakeWaitMs: number): string {
   return `
 const urls = ${JSON.stringify(urls)};
 // Free hosting tiers (e.g. Render) answer a sleeping service with a "waking up" holding page first.
@@ -101,6 +112,10 @@ const data = await page.evaluate(() => {
     visibleText: (document.body?.innerText || '').slice(0, 200000),
     fullText: (clone?.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 200000),
     structure,
+    links: [...new Map([...document.querySelectorAll('a[href]')]
+      .map((a) => ({ href: a.href.split('#')[0].slice(0, 2048), text: (a.innerText || a.getAttribute('aria-label') || a.title || '').replace(/\\s+/g, ' ').trim().slice(0, 200) }))
+      .filter((l) => /^https?:/i.test(l.href))
+      .map((l) => [l.href, l])).values()].slice(0, 400),
   };
 });
 // The store's own About/Contact page (same origin only): clones copy it word for word, and it's where contact info lives.
@@ -125,6 +140,41 @@ return await Promise.all(urls.map(async (u, i) => {
     return { ok: true, page: await snapshot(tab, u) };
   } catch (err) {
     return { ok: false, error: String(err && err.message || err).slice(0, 300) };
+  }
+}));
+`;
+}
+
+/**
+ * Second step in the same session: open the picked evidence pages in parallel tabs within one shared time budget.
+ * Plain navigations only (no clicks, no forms); each tab is closed after reading. Slow or missing pages are skipped.
+ */
+export function evidenceCode(targets: Array<{ url: string; kind: EvidenceKind }>, budgetMs: number): string {
+  return `
+const targets = ${JSON.stringify(targets)};
+const deadline = Date.now() + ${budgetMs};
+return await Promise.all(targets.map(async (t) => {
+  let tab = null;
+  try {
+    tab = await context.newPage();
+    const left = deadline - Date.now();
+    if (left < 1500) return { ok: false, error: 'time budget used up' };
+    await tab.goto(t.url, { waitUntil: 'domcontentloaded', timeout: left });
+    await tab.waitForLoadState('networkidle', { timeout: Math.max(0, Math.min(2000, deadline - Date.now())) }).catch(() => {});
+    const data = await tab.evaluate(() => {
+      const clone = document.body ? document.body.cloneNode(true) : null;
+      clone?.querySelectorAll('script,style,noscript,template').forEach((n) => n.remove());
+      return {
+        title: (document.title || '').slice(0, 1000),
+        visibleText: (document.body?.innerText || '').slice(0, ${MAX_EVIDENCE_TEXT}),
+        fullText: (clone?.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, ${MAX_EVIDENCE_TEXT}),
+      };
+    });
+    return { ok: true, page: { url: t.url, finalUrl: tab.url(), kind: t.kind, ...data } };
+  } catch (err) {
+    return { ok: false, error: String(err && err.message || err).slice(0, 200) };
+  } finally {
+    if (tab) await tab.close().catch(() => {});
   }
 }));
 `;
@@ -181,7 +231,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
           }
         }
 
-        const work = client.browsers.playwright
+        const homepageWork = client.browsers.playwright
           .execute(
             sessionId,
             { code: snapshotCode(urls, navTimeoutMs, wakeWaitMs), timeout_sec: execSec },
@@ -198,6 +248,24 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
               return parsed.success ? { ok: true, page: parsed.data } : { ok: false, error: 'unexpected page data from browser' };
             });
           });
+        let evidencePages: EvidencePage[] = [];
+        const work = homepageWork.then(async (pages) => {
+          const first = pages[0];
+          const targets = first?.ok && hooks?.evidenceLinks ? hooks.evidenceLinks(first.page).slice(0, 4) : [];
+          // Only if the whole-visit budget still has room for the extra pages; they're optional evidence.
+          if (targets.length && totalTimeoutMs - (Date.now() - started) > EVIDENCE_BUDGET_MS + 15_000) {
+            const sec = Math.ceil(EVIDENCE_BUDGET_MS / 1000) + 10;
+            evidencePages = await client.browsers.playwright
+              .execute(sessionId, { code: evidenceCode(targets, EVIDENCE_BUDGET_MS), timeout_sec: sec }, { timeout: (sec + 10) * 1000, maxRetries: 0 })
+              .then((res) => (res.success && Array.isArray(res.result) ? res.result : []))
+              .then((raw) => raw.flatMap((item) => {
+                const parsed = EvidencePage.safeParse((item as { ok?: boolean; page?: unknown })?.ok ? (item as { page?: unknown }).page : null);
+                return parsed.success ? [parsed.data] : [];
+              }))
+              .catch(() => []);
+          }
+          return pages;
+        });
         let timer: NodeJS.Timeout | undefined;
         const timeout = new Promise<never>((_, reject) => {
           timer = setTimeout(() => reject(new Error(`cloud browser visit timed out after ${Math.round(totalTimeoutMs / 1000)}s`)), totalTimeoutMs - (Date.now() - started));
@@ -205,7 +273,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
         const pages = await Promise.race([work, timeout])
           .catch((err): PageVisit[] => urls.map(() => ({ ok: false, error: errorMessage(err) })))
           .finally(() => clearTimeout(timer));
-        return { sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined, replayUrl, pages, sessionSeconds: (Date.now() - started) / 1000 };
+        return { sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined, replayUrl, pages, sessionSeconds: (Date.now() - started) / 1000, evidencePages };
       } finally {
         if (replayId) await client.browsers.replays.stop(replayId, { id_or_name: sessionId }).catch(() => {});
         await client.browsers.deleteByID(sessionId).catch(() => {});

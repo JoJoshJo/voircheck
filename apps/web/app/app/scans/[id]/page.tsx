@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CollectedEvidence } from '../../../../components/CollectedEvidence';
 import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
@@ -63,6 +64,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
                 </li>
               ))}
             </ul>
+            {s.id === 'ai_page' && s.collected ? <CollectedEvidence collected={s.collected} t={t.evidence} /> : null}
           </li>
         ))}
       </ul>

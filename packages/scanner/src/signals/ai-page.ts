@@ -1,3 +1,4 @@
+import type { CollectedFacts, EvidencePage } from '../evidence-pages';
 import { unavailable, type SignalOutcome } from './types';
 
 /**
@@ -11,6 +12,10 @@ export interface PageForAnalysis {
   /** Everything in the DOM, including hidden text (planted injections hide there). */
   fullText: string;
   visibleText: string;
+  /** Extra pages of the same store (legal notice, contact, terms, product). Untrusted, like the homepage text. */
+  pages: EvidencePage[];
+  /** Pattern-extracted facts over all pages (evidence only). */
+  facts: CollectedFacts;
 }
 
 export interface PageAnalyzer {

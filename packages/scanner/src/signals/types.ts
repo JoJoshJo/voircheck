@@ -1,3 +1,4 @@
+import type { CollectedEvidence } from '../evidence-pages';
 import type { SignalId, SignalStatus } from '../schema';
 
 /** What a signal reports; points are added by scoring.ts from the weights table. */
@@ -5,6 +6,7 @@ export interface SignalOutcome {
   id: SignalId;
   status: SignalStatus;
   evidence: string[];
+  collected?: CollectedEvidence;
 }
 
 /** Raw facts the hard rules need (spec 5.6); never shown to the user directly. */

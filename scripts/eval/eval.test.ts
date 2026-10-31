@@ -75,6 +75,25 @@ describe('eval metrics', () => {
     expect(median([4, 1, 3, 2])).toBe(2.5);
   });
 
+  it('counts collected facts per label over scored rows (free-mail: scam X/N, legit Y/M)', () => {
+    const facts = (freeMail: boolean, kinds: Array<'home' | 'legal' | 'contact'>) => ({
+      pages: kinds.map((kind) => ({ url: 'https://x.test/', kind, title: '' })),
+      facts: { companyNames: [], addresses: [], phones: [], emails: [], freeMailContact: freeMail, registrationIds: [], paymentMethods: [], returnPolicy: false, discountsPct: freeMail ? [70] : [] },
+    });
+    const fm = computeMetrics([
+      scanned('https://a.test/', 'scam', 'SAFE', { collected: facts(true, ['home', 'contact']) }),
+      scanned('https://b.test/', 'scam', 'HOLD'), // bot check: nothing collected
+      scanned('https://c.test/', 'legit', 'SAFE', { collected: facts(false, ['home', 'legal']) }),
+      { url: 'https://d.test/', label: 'scam', split: 'test', outcome: 'dead', deadReason: 'parked / for-sale page' },
+    ]);
+    const row = (name: string) => fm.facts.find((f) => f.fact === name);
+    expect(row('free-mail contact email')).toEqual({ fact: 'free-mail contact email', scam: 1, legit: 0 });
+    expect(row('legal notice / Impressum page')).toMatchObject({ scam: 0, legit: 1 });
+    expect(row('discount of 50% or more seen')).toMatchObject({ scam: 1, legit: 0 });
+    const md = markdownReport(fm, [], { runAt: '2026-10-30T00:00:00Z', split: 'test', commit: 'abc', aiAnalysis: 'off' });
+    expect(md).toContain('| free-mail contact email | 1/2 | 0/1 |');
+  });
+
   it('empty or all-dead sets give n/a rates, never NaN', () => {
     const e = computeMetrics([{ url: 'https://x.test/', label: 'scam', split: 'test', outcome: 'dead', deadReason: 'HTTP 404' }]);
     expect(e.catchRate).toBeNull();

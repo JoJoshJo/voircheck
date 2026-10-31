@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CollectedEvidence } from './evidence-pages';
 
 export const MAX_URL_LENGTH = 2048;
 
@@ -64,6 +65,8 @@ export const SignalResult = z.object({
   points: z.number().int().min(0).max(100),
   /** Plain text only; render as text, never HTML (spec 5.17 #6). */
   evidence: z.array(z.string().max(500)).max(20),
+  /** ai_page only: pages and facts collected for page analysis (evidence only, never scored by itself). */
+  collected: CollectedEvidence.optional(),
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 
