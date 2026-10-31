@@ -148,6 +148,12 @@ describe('fact extraction (fixed patterns, untrusted text)', () => {
     expect(f.discountsPct).toEqual([15]);
   });
 
+  it('product SKUs are not phone numbers; a trailing comma does not double up in addresses (heizungug.de rescan)', () => {
+    const f = extractFacts(['Heizung A-Z UG\nKlappergasse 4,\nD-61206 Wöllstadt\nMobil: +49 179 1526368\nArtikel 00524-00005 Brennholz\nArt.-Nr. 00524-00008'], 'https://heizung.test/');
+    expect(f.phones).toEqual(['+49 179 1526368']);
+    expect(f.addresses).toEqual(['Klappergasse 4, D-61206 Wöllstadt']);
+  });
+
   it('a page with no company info yields empty facts, not guesses', () => {
     const f = extractFacts(['Best deals! Order now. Free shipping on everything.'], 'https://x.test/');
     expect(f).toMatchObject({ companyNames: [], addresses: [], phones: [], emails: [], registrationIds: [], freeMailContact: false, returnPolicy: false });

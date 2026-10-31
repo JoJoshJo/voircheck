@@ -105,7 +105,8 @@ export const HIDDEN_TEXT_JS = `() => {
   const out = [];
   const SKIP = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEMPLATE', 'SVG', 'svg', 'SELECT', 'OPTION', 'IFRAME', 'HEAD', 'META', 'LINK']);
   const rgb = (c) => { const m = (c || '').match(/rgba?\\(([^)]+)\\)/); if (!m) return null; const p = m[1].split(',').map((x) => parseFloat(x)); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
-  const bgOf = (el) => { for (let e = el; e && e.nodeType === 1; e = e.parentElement) { const c = rgb(getComputedStyle(e).backgroundColor); if (c && c.a > 0.5) return c; } return { r: 255, g: 255, b: 255, a: 1 }; };
+  // Effective background colour; null when an image/gradient sits behind the text first (banner text over a photo is visible).
+  const bgOf = (el) => { for (let e = el; e && e.nodeType === 1; e = e.parentElement) { const s = getComputedStyle(e); if (s.backgroundImage && s.backgroundImage !== 'none') return null; const c = rgb(s.backgroundColor); if (c && c.a > 0.5) return c; } return { r: 255, g: 255, b: 255, a: 1 }; };
   const hint = (el) => { let h = el.tagName.toLowerCase(); if (el.id) h += '#' + el.id; const cls = (typeof el.className === 'string' ? el.className : '').trim().split(/\\s+/).filter(Boolean).slice(0, 2); if (cls.length) h += '.' + cls.join('.'); const data = [...el.attributes].map((a) => a.name).find((n) => n.startsWith('data-')); if (data) h += '[' + data + ']'; if (el.getAttribute('aria-hidden') === 'true') h += '[aria-hidden]'; return h.slice(0, 120); };
   const context = (el) => { const parts = []; for (let e = el, i = 0; e && e.nodeType === 1 && i < 4; e = e.parentElement, i++) { parts.push(e.tagName.toLowerCase(), e.getAttribute('role') || '', e.id || '', typeof e.className === 'string' ? e.className : '', e.getAttribute('aria-label') || ''); } return parts.join(' ').replace(/[_]/g, '-').slice(0, 400); };
   const textOf = (el) => (el.textContent || '').replace(/\\s+/g, ' ').trim();
@@ -122,7 +123,7 @@ export const HIDDEN_TEXT_JS = `() => {
     if (r.width === 0 && r.height === 0 && s.display !== 'contents' && s.display !== 'inline') return 'zero_size';
     if (el.getAttribute('aria-hidden') === 'true' && textOf(el).length >= 80) return 'aria_hidden';
     const own = [...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim().length > 0);
-    if (own) { const fg = rgb(s.color); const bg = bgOf(el); if (fg && fg.a > 0.5 && Math.abs(fg.r - bg.r) + Math.abs(fg.g - bg.g) + Math.abs(fg.b - bg.b) < 24) return 'same_color'; }
+    if (own) { const fg = rgb(s.color); const bg = bgOf(el); if (fg && bg && fg.a > 0.5 && Math.abs(fg.r - bg.r) + Math.abs(fg.g - bg.g) + Math.abs(fg.b - bg.b) < 24) return 'same_color'; }
     return null;
   };
   let visited = 0;

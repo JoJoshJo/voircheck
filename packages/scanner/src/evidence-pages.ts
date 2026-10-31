@@ -250,7 +250,7 @@ export function extractFacts(texts: string[], storeUrl: string): CollectedFacts 
     const next = lines[i + 1] ?? '';
     if (STREET_RE.test(l)) {
       if (POSTCODE_CITY_RE.test(l) || UK_POSTCODE_RE.test(l) || US_CITY_ZIP_RE.test(l)) addresses.push(l);
-      else if (next.length <= 80 && (POSTCODE_CITY_RE.test(next) || UK_POSTCODE_RE.test(next) || US_CITY_ZIP_RE.test(next))) addresses.push(`${l}, ${next}`);
+      else if (next.length <= 80 && (POSTCODE_CITY_RE.test(next) || UK_POSTCODE_RE.test(next) || US_CITY_ZIP_RE.test(next))) addresses.push(`${l.replace(/[,;]\s*$/, '')}, ${next}`);
     }
   });
 
@@ -260,7 +260,8 @@ export function extractFacts(texts: string[], storeUrl: string): CollectedFacts 
         .map((m) => clean(m[0]))
         .filter((p) => {
           const digits = p.replace(/\D/g, '').length;
-          return digits >= 8 && digits <= 15 && (/^(\+|00)/.test(p) || PHONE_LABEL_RE.test(l));
+          // A leading + is a phone number by itself; 0/00-prefixed numbers need a phone label (product SKUs like 00524-00005).
+          return digits >= 8 && digits <= 15 && (p.startsWith('+') || PHONE_LABEL_RE.test(l));
         }),
     ),
     (p) => p.replace(/\D/g, ''),
