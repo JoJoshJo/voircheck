@@ -34,9 +34,9 @@ export function pickStoresForItem(results: SearchResult[], n = STORES_PER_ITEM, 
 // ---------- demo mode ----------
 
 const DEMO_ITEM_WORDS: Array<[ProductId, RegExp]> = [
-  ['earbuds', /\b(ear ?buds?|earphones?|headphones?|in-ear|buds)\b/i],
-  ['purifier', /\b(air )?purifiers?\b|\bhepa\b/i],
-  ['watch', /\b(smart ?watch(es)?|watch(es)?|fitness tracker)\b/i],
+  ['earbuds', /\b(ear ?buds?|earphones?|headphones?|in-ear|buds)\b|(^|\s)(écouteurs?|oreillettes?)(\s|$)/i],
+  ['purifier', /\b(air )?purifiers?\b|\bhepa\b|\bpurificateurs?\b/i],
+  ['watch', /\b(smart ?watch(es)?|watch(es)?|fitness tracker)\b|\bmontres?( connectées?)?\b/i],
 ];
 
 export function demoItemFor(query: string): ProductId | null {

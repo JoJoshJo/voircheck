@@ -1,9 +1,10 @@
 import { demoPeersForUrl } from '@voircheck/agent/search';
-import { assertSafeUrlShape, kernelVisitor, scanStore, SsrfError, StoreUrl } from '@voircheck/scanner';
+import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
 import { checkScanLimits } from '../../../lib/rate-limit';
-import { canonicalUrl, findFreshScan, finishLinkRequest, latestVerdictForStore, recordLinkRequest, saveScan } from '../../../lib/scans';
+import { runStoreScan } from '../../../lib/scan-runner';
+import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } from '../../../lib/scans';
 import { toScanView, type ScanEvent } from '../../../lib/scan-view';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
@@ -14,10 +15,7 @@ export const maxDuration = 120;
 
 const Body = z.object({ url: z.string().max(2048), rescan: z.boolean().default(false) });
 
-/**
- * Check-a-link (spec 5.3 / 5.5). The store page is only ever opened inside KERNEL; this server does RDAP, DNS,
- * TLS and Safe Browsing lookups only, behind the scanner's SSRF guards. Streams NDJSON progress to the owner.
- */
+/** Check-a-link (spec 5.3 / 5.5). The scan itself runs in runStoreScan (KERNEL only). Streams NDJSON progress to the owner. */
 export async function POST(req: Request) {
   const user = await getCurrentUser();
   const encoder = new TextEncoder();
@@ -68,22 +66,16 @@ export async function POST(req: Request) {
       };
       send({ type: 'start', url });
       try {
-        const kernelKey = process.env.KERNEL_API_KEY;
-        // Each peer's own latest verdict: a BLOCK store's price must not enter this store's price comparison.
-        const peers = demo ? await Promise.all(demo.peers.map(async (p) => ({ url: p.url, productTitle: p.productTitle, verdict: await latestVerdictForStore(p.storeUrl) }))) : [];
-        const { result } = await scanStore(
-          { url, peers, productTitle: demo?.productTitle },
-          {
-            visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: true, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
-            safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
-            onProgress: (e) => {
-              // The live-view link goes to this requester only and is never stored.
-              if (e.type === 'browser') send({ type: 'browser', liveViewUrl: e.liveViewUrl ?? null });
-              else send(e);
-            },
+        const row = await runStoreScan({
+          url,
+          demoMode,
+          liveView: true,
+          onProgress: (e) => {
+            // The live-view link goes to this requester only and is never stored.
+            if (e.type === 'browser') send({ type: 'browser', liveViewUrl: e.liveViewUrl ?? null });
+            else send(e);
           },
-        );
-        const row = await saveScan(result);
+        });
         await finishLinkRequest(user.id, sessionId, 'done');
         send({ type: 'done', scan: toScanView(row), candidate });
       } catch (err) {

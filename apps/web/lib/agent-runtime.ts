@@ -1,0 +1,165 @@
+import 'server-only';
+import { AGENT_SYSTEM_PROMPT, compareStores, FakeModel, runAgentTurn, shoppingTools, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
+import { assertSafeUrlShape } from '@voircheck/scanner';
+import type { AgentEvent } from './agent-view';
+import { getPayPal } from './paypal';
+import { checkScanLimits } from './rate-limit';
+import { runStoreScan } from './scan-runner';
+import { canonicalUrl, findFreshScan, recordSearchRequest } from './scans';
+import { toScanView } from './scan-view';
+
+/**
+ * Server side of the shopping agent. Conversations live in this process's memory (spec 5.16: one web instance, like
+ * MoneyGate's lock): the model's history, and per store the URLs and scan IDs it must never be able to choose itself.
+ * Lost on restart; the chat then starts over.
+ */
+
+interface Conversation {
+  userId: string;
+  messages: AgentMessage[];
+  /** storeId (candidate ID) → what we found, including the URLs the model never sees. */
+  stores: Map<string, SearchResult>;
+  scans: Map<string, string>;
+  orders: Map<string, string>;
+  payments: Set<string>;
+  busy: boolean;
+  touchedAt: number;
+}
+
+const TTL_MS = 2 * 3_600_000;
+const MAX_CONVERSATIONS = 500;
+// On globalThis so a dev-server hot reload of this module doesn't drop live conversations.
+const g = globalThis as typeof globalThis & { __voircheckAgentConversations?: Map<string, Conversation> };
+const conversations = (g.__voircheckAgentConversations ??= new Map<string, Conversation>());
+
+function sweep(now: number) {
+  for (const [id, c] of conversations) if (now - c.touchedAt > TTL_MS) conversations.delete(id);
+  while (conversations.size >= MAX_CONVERSATIONS) conversations.delete(conversations.keys().next().value!);
+}
+
+/** The user's own conversation, or a new one (an unknown or someone else's ID never resumes anything). */
+export function openConversation(userId: string, id: string | null): { id: string; conv: Conversation } {
+  const now = Date.now();
+  sweep(now);
+  const found = id ? conversations.get(id) : undefined;
+  if (found && found.userId === userId) {
+    found.touchedAt = now;
+    return { id: id!, conv: found };
+  }
+  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), busy: false, touchedAt: now };
+  const newId = crypto.randomUUID();
+  conversations.set(newId, conv);
+  return { id: newId, conv };
+}
+
+/**
+ * The real model isn't wired yet (no Anthropic key until Nov 3, and AnthropicModel is still a stub), so the app runs
+ * the scripted FakeModel. Switching = return `new AnthropicModel(process.env.ANTHROPIC_API_KEY)` here.
+ */
+export function agentModel(): { model: ModelClient; kind: 'fake' | 'claude' } {
+  return { model: new FakeModel(), kind: 'fake' };
+}
+
+const PAYMENT_STATUSES = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
+
+function webDeps(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; send: (e: AgentEvent) => void }): AgentDeps {
+  const { conv, userId, send } = o;
+  const { gate } = getPayPal();
+  return {
+    async searchStores(query, maxPrice) {
+      const r = await compareStores(query, { apiKey: process.env.CHANNEL3_API_KEY, demoMode: o.demoMode, demoStoresBaseUrl: process.env.DEMO_STORES_BASE_URL, maxPrice });
+      if (r.status === 'unavailable') return { status: 'unavailable' };
+      if (r.status === 'no_results') return { status: 'no_results' };
+      const picks = r.stores.slice(0, 3);
+      const rows = picks.map((s) => ({
+        storeName: s.storeName.slice(0, 80),
+        storeUrl: s.storeUrl,
+        productTitle: s.title.slice(0, 120),
+        price: s.price.toFixed(2),
+        currency: s.currency.toUpperCase(),
+        source: s.source,
+      }));
+      const { candidateIds } = await recordSearchRequest({ userId, query, demoMode: o.demoMode, stores: rows });
+      const stores = rows.map((row, i) => ({ storeId: candidateIds[i]!, storeName: row.storeName, productTitle: row.productTitle, price: row.price, currency: row.currency, demo: row.source === 'demo' }));
+      candidateIds.forEach((id, i) => conv.stores.set(id, picks[i]!));
+      send({ type: 'stores', stores });
+      return { status: 'ok', stores, sameProduct: r.sameProduct };
+    },
+
+    async scanStore(storeId) {
+      const found = conv.stores.get(storeId);
+      if (!found) return { status: 'unavailable', reason: 'unknown_store' };
+      // Demo stores: their product page (the price and copycat checks compare product pages). Real retailers: the
+      // store itself (Channel3's buy link is a tracking redirect).
+      const url = canonicalUrl(assertSafeUrlShape(found.source === 'demo' ? found.productUrl : found.storeUrl).href);
+      send({ type: 'scan_start', storeId });
+      try {
+        let row = await findFreshScan(url);
+        const cached = !!row;
+        if (!row) {
+          const limit = await checkScanLimits({ userId, isGuest: o.isGuest, ip: o.ip, fresh: true });
+          if (!limit.ok) {
+            send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
+            return { status: 'unavailable', reason: 'rate_limited' };
+          }
+          row = await runStoreScan({ url, demoMode: o.demoMode, liveView: false, onProgress: (e) => e.type === 'signal' && send({ type: 'scan_signal', storeId, id: e.id, status: e.status }) });
+        }
+        conv.scans.set(storeId, row.id);
+        const view = toScanView(row);
+        send({ type: 'scan_done', storeId, scan: view, cached });
+        return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules };
+      } catch (err) {
+        console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
+        send({ type: 'scan_failed', storeId, reason: 'failed' });
+        return { status: 'unavailable', reason: 'failed' };
+      }
+    },
+
+    async createOrder(storeId) {
+      if (!conv.stores.has(storeId)) return { storeId, status: 'refused', reason: 'not_found' };
+      const existing = conv.orders.get(storeId);
+      if (existing) return { storeId, status: 'awaiting_buyer_approval', paymentId: existing };
+      const r = await gate.agentStartPurchase({
+        userId,
+        candidateId: storeId,
+        scanId: conv.scans.get(storeId) ?? null,
+        idempotencyKey: `agent-${o.convId}-${storeId}`,
+        returnUrl: `${o.origin}/app`,
+        cancelUrl: `${o.origin}/app`,
+      });
+      if (!r.ok) {
+        const reason = r.reason === 'block' || r.reason === 'unverified' || r.reason === 'no_price' || r.reason === 'not_found' ? r.reason : 'other';
+        send({ type: 'refused', storeId, reason });
+        return { storeId, status: 'refused', reason };
+      }
+      conv.orders.set(storeId, r.payment.id);
+      conv.payments.add(r.payment.id);
+      send({ type: 'order', storeId, paymentId: r.payment.id, orderId: r.payment.paypalOrderId });
+      return { storeId, status: 'awaiting_buyer_approval', paymentId: r.payment.id };
+    },
+
+    async requestPayment(paymentId) {
+      if (!conv.payments.has(paymentId)) return { paymentId, status: 'not_found' };
+      const r = await gate.completeApproval(paymentId, userId, 'agent');
+      const st = r.payment?.status;
+      const status = !r.ok || st === 'created' || !st ? 'waiting_for_buyer' : PAYMENT_STATUSES.has(st) ? (st as 'captured') : 'failed';
+      send({ type: 'payment', paymentId, status });
+      return { paymentId, status };
+    },
+  };
+}
+
+/** One chat turn for this user. Streams events through `send`; returns when the agent has answered. */
+export async function runChatTurn(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; lang: 'en' | 'fr'; text: string; send: (e: AgentEvent) => void }) {
+  const { model } = agentModel();
+  const { messages } = await runAgentTurn({
+    model,
+    tools: shoppingTools(webDeps(o)),
+    system: AGENT_SYSTEM_PROMPT,
+    history: o.conv.messages,
+    userText: o.text,
+    lang: o.lang,
+    onEvent: (e) => e.type === 'assistant_text' && o.send({ type: 'text', text: e.text }),
+  });
+  o.conv.messages = messages;
+}

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { fmt, type Dict } from '../lib/i18n';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
+import { AgentChat } from './AgentChat';
 import { Checkout } from './Checkout';
 import { DEMO_COOKIE } from '../lib/workspace';
 import { Mascot } from './Mascot';
@@ -25,7 +26,7 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
 }
 
 export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean }) {
-  const [tab, setTab] = useState<'chat' | 'results'>('results');
+  const [tab, setTab] = useState<'chat' | 'results'>('chat');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [url, setUrl] = useState('');
   const [state, setState] = useState<ScanState>({ phase: 'idle' });
@@ -87,15 +88,9 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: 
       </div>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         {/* LEFT: chat */}
-        <section className={`${card} flex min-h-[540px] flex-col p-6 ${tab === 'chat' ? '' : 'hidden lg:flex'}`} aria-label={t.workspace.chatTitle}>
+        <section className={`${card} flex max-h-[85vh] min-h-[540px] flex-col p-6 ${tab === 'chat' ? '' : 'hidden lg:flex'}`} aria-label={t.workspace.chatTitle}>
           <h2 className="text-[17px] font-medium">{t.workspace.chatTitle}</h2>
-          <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-            <Mascot mood="idle" size={72} />
-            <p className="max-w-xs text-[15px] leading-relaxed text-muted">{t.workspace.chatPlaceholder}</p>
-          </div>
-          <div className="mt-4 rounded-control border border-line bg-surface px-4 py-3 text-[14px] text-faint" aria-disabled="true">
-            …
-          </div>
+          <AgentChat t={t} lang={lang} clientId={clientId} />
         </section>
 
         {/* RIGHT: results */}

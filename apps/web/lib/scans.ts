@@ -1,5 +1,6 @@
 import 'server-only';
 import { candidates, scans, shoppingSessions } from '@voircheck/db/schema';
+import { scanCoversStore } from '@voircheck/paypal';
 import type { ScanResult } from '@voircheck/scanner';
 import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq, gt, like, or } from 'drizzle-orm';
@@ -91,11 +92,38 @@ export async function recordLinkRequest(opts: {
   return { sessionId: session!.id, candidateId: candidate!.id };
 }
 
+/**
+ * A shopping-agent search: a chat session + one candidate per store, in rank order. Prices come from Channel3 or our
+ * demo config, never from the model.
+ */
+export async function recordSearchRequest(opts: {
+  userId: string;
+  query: string;
+  demoMode: boolean;
+  stores: Array<{ storeName: string; storeUrl: string; productTitle: string; price: string | null; currency: string; source: 'demo' | 'channel3' }>;
+}): Promise<{ sessionId: string; candidateIds: string[] }> {
+  const db = getDb();
+  const [session] = await db
+    .insert(shoppingSessions)
+    .values({ userId: opts.userId, entryType: 'chat', queryOrUrl: opts.query, demoMode: opts.demoMode, status: 'done' })
+    .returning({ id: shoppingSessions.id });
+  const rows = opts.stores.length
+    ? await db
+        .insert(candidates)
+        .values(opts.stores.map((st, i) => ({ sessionId: session!.id, ...st, rank: i + 1 })))
+        .returning({ id: candidates.id, rank: candidates.rank })
+    : [];
+  return { sessionId: session!.id, candidateIds: rows.sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0)).map((r) => r.id) };
+}
+
 export async function finishLinkRequest(userId: string, sessionId: string, status: 'done' | 'failed') {
   await getDb().update(shoppingSessions).set({ status }).where(ownedBy(shoppingSessions, userId, eq(shoppingSessions.id, sessionId)));
 }
 
-/** A scan is visible to a user who asked for that URL (scans are a shared cache, sessions are private). */
+/**
+ * A scan is visible to a user who asked for that URL, or whose shopping agent found that store (scans are a shared
+ * cache, sessions are private).
+ */
 export async function getScanForUser(scanId: string, userId: string): Promise<ScanRecord | null> {
   const db = getDb();
   const [scan] = await db.select().from(scans).where(eq(scans.id, scanId)).limit(1);
@@ -105,5 +133,13 @@ export async function getScanForUser(scanId: string, userId: string): Promise<Sc
     .from(shoppingSessions)
     .where(ownedBy(shoppingSessions, userId, eq(shoppingSessions.queryOrUrl, scan.url)))
     .limit(1);
-  return mine ? scan : null;
+  if (mine) return scan;
+  const found = await db
+    .select({ storeUrl: candidates.storeUrl })
+    .from(candidates)
+    .innerJoin(shoppingSessions, eq(candidates.sessionId, shoppingSessions.id))
+    .where(ownedBy(shoppingSessions, userId, eq(shoppingSessions.entryType, 'chat')))
+    .orderBy(desc(shoppingSessions.createdAt))
+    .limit(60);
+  return found.some((c) => scanCoversStore(scan.url, c.storeUrl)) ? scan : null;
 }

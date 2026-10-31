@@ -131,6 +131,8 @@ describe('demo mode', () => {
   it('maps queries to the 3-item demo catalog', () => {
     expect(demoItemFor('wireless earbuds under $60')).toBe('earbuds');
     expect(demoItemFor('HEPA air purifier')).toBe('purifier');
+    expect(demoItemFor('écouteurs sans fil')).toBe('earbuds');
+    expect(demoItemFor('une montre connectée')).toBe('watch');
     expect(demoItemFor('smartwatch for running')).toBe('watch');
     expect(demoItemFor('hiking boots')).toBeNull();
   });

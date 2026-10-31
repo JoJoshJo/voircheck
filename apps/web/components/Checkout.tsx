@@ -24,6 +24,7 @@ export function Checkout({
   scanId,
   autopay,
   override = false,
+  existingOrder,
 }: {
   t: Dict;
   lang: string;
@@ -32,12 +33,15 @@ export function Checkout({
   scanId: string;
   autopay: boolean;
   override?: boolean;
+  /** An order the shopping agent already prepared through MoneyGate: the first click opens it instead of a new one. */
+  existingOrder?: { paymentId: string; orderId: string };
 }) {
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
   const paymentId = useRef<string | null>(null);
   const key = useRef(newKey());
   const busy = useRef(false);
+  const prepared = useRef(existingOrder ?? null);
   const [phase, setPhase] = useState<Phase>('loading');
   const [note, setNote] = useState<string | null>(null);
 
@@ -107,6 +111,14 @@ export function Checkout({
       busy.current = true;
       setNote(null);
       setPhase('waiting');
+      const ready = prepared.current;
+      if (ready) {
+        // Used once: after a cancel, the next click starts a fresh order like any checkout.
+        prepared.current = null;
+        paymentId.current = ready.paymentId;
+        session.start({ presentationMode: 'auto' }, Promise.resolve({ orderId: ready.orderId })).catch(() => reset(t.pay.error));
+        return;
+      }
       // Not awaited before start(): the popup must open inside the click (transient activation).
       const order = postJson<{ paymentId?: string; orderId?: string; reason?: string }>('/api/pay/start', { candidateId, scanId, idempotencyKey: key.current, override }).then((r) => {
         if (!r.ok || !r.data.orderId || !r.data.paymentId) throw new Error(r.data.reason ?? 'start failed');
