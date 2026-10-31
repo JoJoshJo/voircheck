@@ -1,0 +1,3470 @@
+{
+  "runAt": "2026-10-31T01:35:22.851Z",
+  "split": "test",
+  "commit": "a88cf9e",
+  "aiAnalysis": "off",
+  "limit": null,
+  "rows": [
+    {
+      "url": "https://gruenstark.de/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 15,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of gruenstark.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 64 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects across domains: gruenstark.de → depressively.com.",
+            "Couldn't verify this store: the page showed no content (empty shell), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the page showed no content (empty shell), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the page showed no content (empty shell).",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 10497,
+      "kernelError": "the page showed no content (empty shell)"
+    },
+    {
+      "url": "https://hochzeitsdekorationen.shop/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://werkaro.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "werkaro.com was registered on 2025-11-12 (about 12 months ago).",
+            "Registrar: Spaceship, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 56 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on werkaro.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 26373,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.werkaro.com/",
+            "kind": "home",
+            "title": "Heim - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/about-us/",
+            "kind": "contact",
+            "title": "Über uns - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/return-shipping/",
+            "kind": "terms",
+            "title": "Rückgabe & Versand - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/products/150-m-solarkabel-25-mm2-schwarz-photovoltaik-kabel-fur-pv-anlagen-gunstig-online-kaufen/",
+            "kind": "product",
+            "title": "150 m Solarkabel 25 mm² schwarz Photovoltaik Kabel für PV Anlagen günstig online kaufen"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Gedore 4101-G02 Torcofix SE"
+          ],
+          "addresses": [
+            "Address:Schneidmühlweg 2, 63741 Aschaffenburg"
+          ],
+          "phones": [
+            "0052 103070"
+          ],
+          "emails": [
+            {
+              "address": "sales@werkaro.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            80,
+            75,
+            70
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://elveant.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 10,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "elveant.com was registered on 2026-09-07 (53 days ago).",
+            "Registrar: NameSilo, LLC."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 53 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"elveant\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14724,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://elveant.com/",
+            "kind": "home",
+            "title": "elveant"
+          },
+          {
+            "url": "https://elveant.com/pages/contact",
+            "kind": "contact",
+            "title": "Contact Us"
+          },
+          {
+            "url": "https://elveant.com/pages/delivery",
+            "kind": "terms",
+            "title": "elveant"
+          },
+          {
+            "url": "https://elveant.com/products/2er-pack-sitzerhoehung-groesse-xl",
+            "kind": "product",
+            "title": "2er Pack – Sitzerhöhung (Größe XL) | Zubehör/Ersatzteile | elveant"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "support@elveant.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            30,
+            28,
+            27,
+            26,
+            25,
+            24,
+            23,
+            22,
+            21,
+            20
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://trailsupplypro.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "trailsupplypro.com was registered on 2026-09-21 (39 days ago).",
+            "Registrar: Spaceship, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 39 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on trailsupplypro.com (2 hops).",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 11424,
+      "kernelError": "blocked by a bot check (HTTP 403)"
+    },
+    {
+      "url": "https://jekadeshop.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 10,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "jekadeshop.com was registered on 2026-06-25 (about 4 months ago).",
+            "Registrar: NameMart Pte. Ltd."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 9 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Startseite\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 11248,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://jekadeshop.com/",
+            "kind": "home",
+            "title": "Jeka Geschenke & Spielzeug - Ihr Geschäft für exzellente Kerzen, Tattoos & Mehr"
+          },
+          {
+            "url": "https://jekadeshop.com/contact/",
+            "kind": "contact",
+            "title": "contact"
+          },
+          {
+            "url": "https://jekadeshop.com/terms-condition/",
+            "kind": "terms",
+            "title": "terms condition"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Damaschkestr. 5 51373 Leverkusen GERMANY"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "customer@jekadeshop.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://mk-kueche.de/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of mk-kueche.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 44 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on mk-kueche.de (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Moderne Küche, klar vorbereitet.\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 21261,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.mk-kueche.de/",
+            "kind": "home",
+            "title": "Moderne Küche, klar vorbereitet. bei MK Cook & Dine"
+          },
+          {
+            "url": "https://www.mk-kueche.de/impressum/",
+            "kind": "legal",
+            "title": "Impressum von MK Cook & Dine – rechtliche Angaben und Kontakt"
+          },
+          {
+            "url": "https://www.mk-kueche.de/service-hilfecenter/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt bei MK Cook & Dine"
+          },
+          {
+            "url": "https://www.mk-kueche.de/informationen/rueckgabe-reklamation/",
+            "kind": "terms",
+            "title": "Rückgabe & Reklamation bei MK Cook & Dine"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [
+            "+4989322096307"
+          ],
+          "emails": [
+            {
+              "address": "info@mk-kueche.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE457383726"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 305872"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://official-depot.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 25,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "fail",
+          "points": 25,
+          "evidence": [
+            "official-depot.com was registered on 2026-10-06 (24 days ago).",
+            "Registrar: Dominet (HK) Limited."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 24 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15355,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://official-depot.com/",
+            "kind": "home",
+            "title": "DEPOT Clearance Sale | Up to 80% off"
+          },
+          {
+            "url": "https://official-depot.com/pages/contact-us",
+            "kind": "contact",
+            "title": "Contact & Customer Service | Quick Help & Support"
+          },
+          {
+            "url": "https://official-depot.com/pages/return-policy",
+            "kind": "terms",
+            "title": "Right of withdrawal & returns: Simple processing & deadlines"
+          },
+          {
+            "url": "https://official-depot.com/collections/bestseller/products/dessertteller-lucy-hjc0079279?data_from=index_index&spm=index_index..block_collection_slides-11172299.1.",
+            "kind": "product",
+            "title": "Dessert plate Lucy Cream, ⌀ 20.5 cm, H 15 mm - DEPOT"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "support@jupiterpay.org",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            80,
+            70
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://wuerfelbedarf.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 25,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "fail",
+          "points": 25,
+          "evidence": [
+            "wuerfelbedarf.com was registered on 2026-10-10 (20 days ago).",
+            "Registrar: GMO Internet Group, Inc. d/b/a Onamae.com."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 19 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 33212,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://wuerfelbedarf.com/",
+            "kind": "home",
+            "title": "Wuerfelbedarf | Würfel, Brettspiele & Zubehör"
+          },
+          {
+            "url": "https://wuerfelbedarf.com/impressum/",
+            "kind": "legal",
+            "title": "Impressum Wuerfelbedarf"
+          },
+          {
+            "url": "https://wuerfelbedarf.com/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt Wuerfelbedarf"
+          },
+          {
+            "url": "https://wuerfelbedarf.com/widerrufsbelehrung/",
+            "kind": "terms",
+            "title": "Widerrufsbelehrung Wuerfelbedarf"
+          },
+          {
+            "url": "https://wuerfelbedarf.com/product/playmobil-grunflache-mit-baum-und-farn-a2511/",
+            "kind": "product",
+            "title": "Playmobil Grünfläche mit Baum und Farn - A2511 Wuerfelbedarf"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Wuerfelbedarf GmbH"
+          ],
+          "addresses": [],
+          "phones": [
+            "+4916286232"
+          ],
+          "emails": [
+            {
+              "address": "sale@wuerfelbedarf.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://alpkauf.de/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of alpkauf.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 5 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Alpkauf\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 18708,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://alpkauf.de/",
+            "kind": "home",
+            "title": "Alpkauf"
+          },
+          {
+            "url": "https://alpkauf.de/pages/impressum",
+            "kind": "legal",
+            "title": "Impressum – Alpkauf"
+          },
+          {
+            "url": "https://alpkauf.de/pages/kontakt",
+            "kind": "contact",
+            "title": "Kontakt – Alpkauf"
+          },
+          {
+            "url": "https://alpkauf.de/pages/rueckgabe",
+            "kind": "terms",
+            "title": "Rückgabe und Widerruf – Alpkauf"
+          },
+          {
+            "url": "https://alpkauf.de/products/teakholz-kuechenhelfer-set-12-teilig",
+            "kind": "product",
+            "title": "Teakholz Küchenhelfer-Set, 12-teilig – Alpkauf"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Novalda Brands LLC"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "info@alpkauf.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://werksraeder-24.de/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of werksraeder-24.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 11 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Gebaut für\nden nächsten\nAuftritt.\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14727,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://werksraeder-24.de/",
+            "kind": "home",
+            "title": "Werksräder24 – Originale Radsätze für Ihr Fahrzeug"
+          },
+          {
+            "url": "https://werksraeder-24.de/impressum",
+            "kind": "legal",
+            "title": "Impressum | Werksräder24"
+          },
+          {
+            "url": "https://werksraeder-24.de/kontakt",
+            "kind": "contact",
+            "title": "Kontakt | Werksräder24"
+          },
+          {
+            "url": "https://werksraeder-24.de/widerruf",
+            "kind": "terms",
+            "title": "Widerrufsrecht | Werksräder24"
+          },
+          {
+            "url": "https://werksraeder-24.de/produkte/bmw-sommerkomplettraeder-m2-f87-19-zoll-styling-763-m-performance-y-speiche-wr240029252",
+            "kind": "product",
+            "title": "BMW M2 F87 Sommerradsatz 19 Zoll Styling 763 M-Performance | Werksräder24 · WR240029252"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Werksräder24 GmbH"
+          ],
+          "addresses": [],
+          "phones": [
+            "+49 (0) 2273 604 9005",
+            "+49 2273 604 9005"
+          ],
+          "emails": [
+            {
+              "address": "info@werksraeder-24.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE288455825"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 78179"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://warenhauswelt.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "warenhauswelt.com was registered on 2026-09-22 (38 days ago).",
+            "Registrar: Spaceship, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 38 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on warenhauswelt.com (2 hops).",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15422,
+      "kernelError": "blocked by a bot check (HTTP 403)"
+    },
+    {
+      "url": "https://lunaseacoffees.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://denbypotteryuk.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "redirects to unrelated domain closingonlinesale.com"
+    },
+    {
+      "url": "https://bikehelfer.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 10,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "bikehelfer.com was registered on 2026-08-31 (about 2 months ago).",
+            "Registrar: TuringSign Inc. d/b/a Cosmotown."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 58 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Bikehelfer\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 34701,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://bikehelfer.com/",
+            "kind": "home",
+            "title": "Bikehelfer | Fahrradzubehör online kaufen"
+          },
+          {
+            "url": "https://bikehelfer.com/impressum/",
+            "kind": "legal",
+            "title": "Impressum Bikehelfer"
+          },
+          {
+            "url": "https://bikehelfer.com/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt Bikehelfer"
+          },
+          {
+            "url": "https://bikehelfer.com/widerrufsbelehrung/",
+            "kind": "terms",
+            "title": "Widerrufsbelehrung Bikehelfer"
+          },
+          {
+            "url": "https://bikehelfer.com/product/duffle-1/",
+            "kind": "product",
+            "title": "Duffle Bikehelfer"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Bikehelfer GmbH",
+            "An Bikehelfer GmbH"
+          ],
+          "addresses": [
+            "Jägerweg 5a, Wittislingen, DE-BE, 89426, Deutschland, © 2026 Bikehelfer. |Datenschutzerklärung |AGB |Impressum"
+          ],
+          "phones": [
+            "+4917973753"
+          ],
+          "emails": [
+            {
+              "address": "sale@bikehelfer.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal",
+            "Sofort",
+            "SEPA direct debit",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://musikinstrumentes.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "musikinstrumentes.com was registered on 2025-04-12 (about 19 months ago).",
+            "Registrar: Chengdu West Dimension Digital Technology Co., Ltd."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 35 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on musikinstrumentes.com (1 hop).",
+            "Couldn't verify this store: blocked by a bot check, so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check, so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check.",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 25728,
+      "kernelError": "blocked by a bot check"
+    },
+    {
+      "url": "https://einrichtkueche.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://elektrosystemmarkt.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://pelletwerk.eu/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://smartphonepartner.com/",
+      "label": "scam",
+      "split": "test",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://www.bestbuy.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bestbuy.com was registered on 1994-03-03 (about 32 years ago).",
+            "Registrar: MarkMonitor Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 262 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 21890,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bestbuy.com/",
+            "kind": "home",
+            "title": "Best Buy | Official Online Store | Shop Now & Save"
+          },
+          {
+            "url": "https://www.bestbuy.com/contact-us",
+            "kind": "contact",
+            "title": "Contact Us"
+          },
+          {
+            "url": "https://www.bestbuy.com/site/help-topics/return-exchange-policy/pcmcat260800050014.c?id=pcmcat260800050014",
+            "kind": "terms",
+            "title": "Best Buy Return & Exchange Policy - Best Buy"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Sunday. Limited"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.target.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "target.com was registered on 1997-01-02 (about 29 years ago).",
+            "Registrar: GoDaddy Corporate Domains, LLC."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by GlobalSign nv-sa.",
+            "Certificate is 67 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"Homepage\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 19964,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.target.com/",
+            "kind": "home",
+            "title": "Target : Expect More. Pay Less."
+          },
+          {
+            "url": "https://www.target.com/c/order-pickup/-/N-ng0a0?l1_nid=5xt1a&prehydrateClick=true",
+            "kind": "terms",
+            "title": "Order Pickup : Target"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            50,
+            40,
+            25,
+            20
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.bhphotovideo.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bhphotovideo.com was registered on 1996-05-14 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 5 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12768,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bhphotovideo.com/",
+            "kind": "home",
+            "title": "B&H Photo Video Digital Cameras, Photography, Computers"
+          },
+          {
+            "url": "https://www.bhphotovideo.com/a/pages/aboutus",
+            "kind": "contact",
+            "title": "About Us | B&H Photo Video"
+          },
+          {
+            "url": "https://www.bhphotovideo.com/find/HelpCenter/ReturnExchange.jsp",
+            "kind": "terms",
+            "title": "Returns & Exchanges Policy | Hassle-Free Returns at B&H"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "B&H Photo Video Inc."
+          ],
+          "addresses": [
+            "290 Daniels Way, Burlington, NJ 08016-2141"
+          ],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://www.argos.co.uk/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "argos.co.uk was registered on 1995-07-09 (about 31 years ago).",
+            "Registrar: CSC Corporate Domains, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Sectigo Limited.",
+            "Certificate is 23 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 11707,
+      "kernelError": "blocked by a bot check (HTTP 403)"
+    },
+    {
+      "url": "https://www.otto.de/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of otto.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 261 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Willkommen bei OTTO\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 17163,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.otto.de/",
+            "kind": "home",
+            "title": "OTTO - Mode, Möbel & Technik » Zum Online-Shop"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Meta Platforms Ireland Limited",
+            "Google Ireland Limited",
+            "Pinterest Europe Limited",
+            "Microsoft Ireland Operations Limited",
+            "TikTok Information Technologies UK Limited"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Bank transfer / prepayment",
+            "Invoice"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.thomann.de/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of thomann.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 28 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on thomann.de (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Willkommen bei Thomann\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 17435,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.thomann.de/de/index.html",
+            "kind": "home",
+            "title": "Musikinstrumente online kaufen beim Marktführer – Musikhaus Thomann"
+          },
+          {
+            "url": "https://www.thomann.de/de/compinfo_imprint.html",
+            "kind": "legal",
+            "title": "Impressum und rechtliche Hinweise – Musikhaus Thomann"
+          },
+          {
+            "url": "https://www.thomann.de/de/compinfo_contact.html",
+            "kind": "contact",
+            "title": "Kontakt – Musikhaus Thomann"
+          },
+          {
+            "url": "https://www.thomann.de/de/compinfo_cancellation.html",
+            "kind": "terms",
+            "title": "Widerrufsrecht / Musterwiderrufsformular – Musikhaus Thomann"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Thomann GmbH"
+          ],
+          "addresses": [],
+          "phones": [
+            "+49 (0)9546 9223",
+            "+49 (0)9546 9223-66",
+            "+49 (0)9546 9223-24",
+            "+49-9546-9223-66",
+            "09546-9223-66"
+          ],
+          "emails": [
+            {
+              "address": "kundenservice@thomann.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "hans@thomann.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE 257375233"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 5862"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Klarna",
+            "Sofort",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            43,
+            36,
+            35,
+            28,
+            27,
+            23,
+            18,
+            17,
+            16,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.zalando.de/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of zalando.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 59 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on zalando.de (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 20476,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://en.zalando.de/?_rfl=de",
+            "kind": "home",
+            "title": "Shop Shoes, Fashion & Accessories Online | Zalando"
+          },
+          {
+            "url": "https://en.zalando.de/legal-notice/",
+            "kind": "legal",
+            "title": "Shop Shoes, Fashion & Accessories Online | Zalando"
+          },
+          {
+            "url": "https://en.zalando.de/faq/gift-cards-and-vouchers-general-info.html",
+            "kind": "contact",
+            "title": "Faq | Gift card and Voucher | Gift cards and voucher codes general info"
+          },
+          {
+            "url": "https://en.zalando.de/faq",
+            "kind": "terms",
+            "title": "Self Help - Browse by FAQ categories"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Zalando SE",
+            "Zalando Payments GmbH"
+          ],
+          "addresses": [],
+          "phones": [
+            "+49 (0)30 2759 46 93",
+            "00200123010101"
+          ],
+          "emails": [
+            {
+              "address": "legalnotice@zalando.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "authorities-dsa@zalando.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE 260543043"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 158855 B"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://www.mediamarkt.de/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of mediamarkt.de (no RDAP server listed for .de)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 250 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on mediamarkt.de (1 hop).",
+            "Couldn't verify this store: blocked by a bot check, so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check, so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check.",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 21616,
+      "kernelError": "blocked by a bot check"
+    },
+    {
+      "url": "https://www.fnac.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "fnac.com was registered on 1997-10-29 (about 29 years ago).",
+            "Registrar: CSC Corporate Domains, Inc."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Sectigo Limited.",
+            "Certificate is 150 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"fnac.com\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 23047,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.fnac.com/",
+            "kind": "home",
+            "title": "Fnac : Informatique, Smartphones, livres, jeux vidéo, photos, jouets, électroménager neuf et occasion."
+          },
+          {
+            "url": "https://www.fnac.com/a22987800/Agnes-Martin-Lugand-Retour-a-Folegandros",
+            "kind": "terms",
+            "title": "Retour à Folegandros - broché - Agnès Martin-Lugand - Achat Livre ou ebook | fnac"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Apple Watch SE"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            30,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.boulanger.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "boulanger.com was registered on 1996-05-30 (about 30 years ago).",
+            "Registrar: SafeBrands SAS."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 150 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Boulanger\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 20090,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.boulanger.com/",
+            "kind": "home",
+            "title": "Boulanger © - Électroménager & Multimédia"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "APPLE WATCH SE"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            55,
+            33,
+            31,
+            30,
+            29,
+            27,
+            25,
+            24,
+            23,
+            21
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://www.decathlon.fr/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "decathlon.fr was registered on 1995-06-29 (about 31 years ago).",
+            "Registrar: CSC CORPORATE DOMAINS INC."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 31 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Decathlon\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13030,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.decathlon.fr/",
+            "kind": "home",
+            "title": "Decathlon | Chaussures de sport, équipements et matériel sportif"
+          },
+          {
+            "url": "https://www.decathlon.fr/lp/i/mentions-legales",
+            "kind": "legal",
+            "title": "Mentions légales - Decathlon | Decathlon"
+          },
+          {
+            "url": "https://www.decathlon.fr/help/app/home",
+            "kind": "contact",
+            "title": "Aide - Decathlon"
+          },
+          {
+            "url": "https://www.decathlon.fr/lp/i/retour-echange",
+            "kind": "terms",
+            "title": "Retours et échanges | Decathlon"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "DECATHLON SAS",
+            "NTT France SAS",
+            "Legroupe DECATHLON SE"
+          ],
+          "addresses": [],
+          "phones": [
+            "00569405",
+            "09 69 36 32 10",
+            "09 69 32 33 22",
+            "+33 9 70 01 35 00"
+          ],
+          "emails": [
+            {
+              "address": "contacts@decathlon.com",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            },
+            {
+              "address": "dsa.contact@decathlon.com",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            },
+            {
+              "address": "gpsr.product.safety@decathlon.com",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "FR11500569405"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://connox.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of connox.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 51 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on connox.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Connox Design-Shop | Möbel, Wohnaccessoires & Leuchten\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14499,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.connox.at/",
+            "kind": "home",
+            "title": "Connox Design-Shop | Möbel, Wohnaccessoires & Leuchten"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [
+            "01 205 636 7189"
+          ],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            30,
+            20,
+            15
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://cyberport.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of cyberport.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 8 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on cyberport.at (3 hops).",
+            "Couldn't verify this store: blocked by a bot check, so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check, so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check.",
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 19898,
+      "kernelError": "blocked by a bot check"
+    },
+    {
+      "url": "https://chiliwerkstatt.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "chiliwerkstatt.com was registered on 2020-04-28 (about 6 years ago).",
+            "Registrar: RegistryGate GmbH."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 8 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Chili-Shopping in\nder Wiener Chili-Werkstatt\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13137,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://chiliwerkstatt.com/",
+            "kind": "home",
+            "title": "Chili-Shopping von mild bis wild | Chili-Werkstatt"
+          },
+          {
+            "url": "https://chiliwerkstatt.com/impressum/",
+            "kind": "legal",
+            "title": "Impressum | Chili-Werkstatt"
+          },
+          {
+            "url": "https://chiliwerkstatt.com/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt | Chili-Werkstatt"
+          },
+          {
+            "url": "https://chiliwerkstatt.com/widerruf/",
+            "kind": "terms",
+            "title": "Widerruf | Chili-Werkstatt"
+          },
+          {
+            "url": "https://chiliwerkstatt.com/produkt/chili-adventkalender-2026/",
+            "kind": "product",
+            "title": "Chili-Adventkalender 2026 | Chili-Werkstatt"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "A-1050 Wien | Pilgramgasse 16",
+            "Schönbrunner Straße 38 / Pilgramgasse 16, 1050 Wien / Österreich",
+            "Medieninhaber, Herausgeber und Verleger: Würz-Werkstatt e.U., Schönbrunner Straße 38 / Pilgramgasse 16, 1050 Wien / Österreich"
+          ],
+          "phones": [
+            "+43 1 961 01 04"
+          ],
+          "emails": [
+            {
+              "address": "hot@chiliwerkstatt.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "shop@chiliwerkstatt.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU 72050718"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 465231p"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://kernoel-resch.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of kernoel-resch.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 0 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on kernoel-resch.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 22571,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.kernoel-resch.at/",
+            "kind": "home",
+            "title": "Kernölpresse Resch - Kernölpresse Resch"
+          },
+          {
+            "url": "https://www.kernoel-resch.at/service/about/",
+            "kind": "legal",
+            "title": "Impressum - Kernölpresse Resch"
+          },
+          {
+            "url": "https://www.kernoel-resch.at/service/",
+            "kind": "contact",
+            "title": "Kontakt - Kernölpresse Resch"
+          },
+          {
+            "url": "https://www.kernoel-resch.at/service/shipping-returns/",
+            "kind": "terms",
+            "title": "Versandkosten - Kernölpresse Resch"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [
+            "+43 3454 258",
+            "(0043) 03454/258",
+            "000 0703 5678"
+          ],
+          "emails": [
+            {
+              "address": "bernd@kernoel-resch.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU71137913"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://zirben-onlineshop.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of zirben-onlineshop.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 24 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on zirben-onlineshop.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Zirben Onlineshop ist demnächst verfügbar\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 22012,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.zirben-onlineshop.at/",
+            "kind": "home",
+            "title": "Zirben Onlineshop - Natur für Zuhause"
+          },
+          {
+            "url": "https://www.zirben-onlineshop.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Zirben Onlineshop"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://gelaenderladen.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of gelaenderladen.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 16 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on gelaenderladen.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Geländer und Handläufe für alle Umgebungen\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14268,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.gelaenderladen.at/",
+            "kind": "home",
+            "title": "Glasgeländer aus Aluminium, Edelstahl & Ganzglas | Geländerladen.at"
+          },
+          {
+            "url": "https://www.gelaenderladen.at/kundenservice/impressum/",
+            "kind": "legal",
+            "title": "Impressum | Geländerladen"
+          },
+          {
+            "url": "https://www.gelaenderladen.at/kundenservice/agb/",
+            "kind": "terms",
+            "title": "AGB | Geländerladen"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [
+            "+43 (0) 720-88 19 22"
+          ],
+          "emails": [
+            {
+              "address": "info@gelaenderladen.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal",
+            "Apple Pay",
+            "Klarna",
+            "Sofort",
+            "EPS",
+            "Bank transfer / prepayment",
+            "Invoice"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://vienna-camera.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "vienna-camera.com was registered on 2002-04-22 (about 24 years ago).",
+            "Registrar: RegistryGate GmbH."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 37 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"UNSERE BELIEBTESTEN PRODUKTKATEGORIEN AUS DEM BEREICH FOTO & VIDEO\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 17764,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://vienna-camera.com/",
+            "kind": "home",
+            "title": "Vienna Camera | Ihr Fotofachgeschäft im Internet"
+          },
+          {
+            "url": "https://vienna-camera.com/Rechtliches/Impressum/",
+            "kind": "legal",
+            "title": "Impressum"
+          },
+          {
+            "url": "https://vienna-camera.com/Dein-Service/UEber-uns/Kontakt/",
+            "kind": "contact",
+            "title": "Kontakt"
+          },
+          {
+            "url": "https://vienna-camera.com/Dein-Service/Bestellinformationen/Retouren/",
+            "kind": "terms",
+            "title": "Retouren"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Ricoh GR IV 30th Anniversary Limited",
+            "VIE-Camera Handels GmbH",
+            "TRADE Software-Systeme GmbH"
+          ],
+          "addresses": [],
+          "phones": [
+            "+43 (0)5 9311 4010",
+            "0000000108636",
+            "0000000107883",
+            "+43 (0)5 9311 2091"
+          ],
+          "emails": [
+            {
+              "address": "kundenservice@vienna-camera.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "office@trade-software.de",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU 31713802"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 49466 w"
+            }
+          ],
+          "paymentMethods": [
+            "Sofort",
+            "Bank transfer / prepayment",
+            "Cash on delivery"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            20
+          ]
+        }
+      }
+    },
+    {
+      "url": "https://rund-um-die-biene.at/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of rund-um-die-biene.at (no RDAP server listed for .at)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 17 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on rund-um-die-biene.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Ihr Onlineshop für Bienenprodukte & Imkereibedarf\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15130,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.rund-um-die-biene.at/",
+            "kind": "home",
+            "title": "Bienenprodukte & Imkereibedarf | Rund um die Biene"
+          },
+          {
+            "url": "https://www.rund-um-die-biene.at/page/shop-imprint",
+            "kind": "legal",
+            "title": "Impressum | Rund um die Biene"
+          },
+          {
+            "url": "https://www.rund-um-die-biene.at/contactus",
+            "kind": "contact",
+            "title": "Kontakt | Rund um die Biene"
+          },
+          {
+            "url": "https://www.rund-um-die-biene.at/page/shop-recovation",
+            "kind": "terms",
+            "title": "Widerrufserklärung | Rund um die Biene"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [
+            "+43 676 4826592"
+          ],
+          "emails": [
+            {
+              "address": "info@rund-um-die-biene.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU74234848"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 509259 k"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    },
+    {
+      "url": "https://haengemattenshop.com/",
+      "label": "legit",
+      "split": "test",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "haengemattenshop.com was registered on 2007-11-26 (about 18 years ago).",
+            "Registrar: Gandi SAS."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 44 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI analysis not yet enabled"
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 17892,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://haengemattenshop.com/",
+            "kind": "home",
+            "title": "HängemattenShop.com Deine Hängematte | Hängesessel ✔Versandkostenfrei*"
+          },
+          {
+            "url": "https://haengemattenshop.com/imprint",
+            "kind": "legal",
+            "title": "Impressum | Hängemattenshop.com"
+          },
+          {
+            "url": "https://haengemattenshop.com/about-us",
+            "kind": "contact",
+            "title": "Haengemattenshop.com | Hängemattenshop.com"
+          },
+          {
+            "url": "https://haengemattenshop.com/withdrawal",
+            "kind": "terms",
+            "title": "Withdrawal | Hängemattenshop.com"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Outfitters.io GmbH"
+          ],
+          "addresses": [
+            "Königstetterstrasse 165, 3430 Tulln"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "info@haengemattenshop.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU71871708"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 463618t"
+            }
+          ],
+          "paymentMethods": [
+            "Sofort"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      }
+    }
+  ]
+}
