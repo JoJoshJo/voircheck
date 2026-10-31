@@ -2,7 +2,7 @@
 export * from './schema';
 export { scanStore, type ScannerDeps, type ScanReport, type ScanProgress } from './scan';
 export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, verdictForScore } from './scoring';
-export { kernelVisitor, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot, type VisitHooks } from './kernel';
+export { kernelVisitor, browserCreateParams, ensureIspProxy, ISP_PROXY_COUNTRIES, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot, type VisitHooks } from './kernel';
 export { placeholderAnalyzer, wrapUntrustedPageText, buildUntrustedPageInput, type PageAnalyzer, type PageForAnalysis } from './signals/ai-page';
 export { filterHiddenText, INJECTION_RE, HiddenText, HiddenCandidate, type HiddenReason } from './hidden-text';
 export { domainInfo, type DomainInfo } from './domain';

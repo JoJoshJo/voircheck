@@ -58,7 +58,7 @@ if (answer !== 'y' && answer !== 'yes') {
   process.exit(0);
 }
 
-const visitor = kernelVisitor({ apiKey: kernelKey });
+const visitor = kernelVisitor({ apiKey: kernelKey, proxyId: process.env.KERNEL_PROXY_ID || undefined });
 let done = 0;
 const rows: EvalRow[] = await mapPool(stores, CONCURRENCY, CHECK_DELAY_MS, async (store): Promise<EvalRow> => {
   const base = { url: store.url, label: store.label, split: store.split };

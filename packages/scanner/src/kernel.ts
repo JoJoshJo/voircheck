@@ -203,6 +203,41 @@ export interface KernelVisitorOptions {
   navTimeoutMs?: number;
   /** How long to wait for a sleeping store to wake up before the visit counts as failed. */
   wakeWaitMs?: number;
+  /**
+   * KERNEL ISP proxy id (KERNEL_PROXY_ID) to route page visits through; cuts bot walls that block data-center IPs.
+   * Unset = direct egress. The browser is never in stealth mode, whatever the proxy (see browserCreateParams).
+   */
+  proxyId?: string;
+}
+
+/**
+ * Browser settings. stealth is ALWAYS false: KERNEL's stealth mode always loads its automatic CAPTCHA solver, and a
+ * safety scanner must never defeat a site's CAPTCHA. A configured proxy only changes egress (KERNEL docs), so an ISP
+ * proxy on a non-stealth browser means: residential-looking IP, no CAPTCHA solving. A wall that remains stays a
+ * "couldn't verify".
+ */
+export function browserCreateParams(opts: Pick<KernelVisitorOptions, 'liveView' | 'proxyId' | 'totalTimeoutMs'>) {
+  const totalTimeoutMs = opts.totalTimeoutMs ?? 180_000;
+  return {
+    headless: !(opts.liveView ?? true),
+    stealth: false as const,
+    ...(opts.proxyId ? { proxy: { id: opts.proxyId } } : {}),
+    // Inactivity backstop in case our delete below never runs (process crash).
+    timeout_seconds: Math.ceil(totalTimeoutMs / 1000) + 30,
+  };
+}
+
+export const ISP_PROXY_COUNTRIES = ['DE', 'GB', 'FR', 'US', 'SG'] as const;
+
+/** Create (or reuse, by name) the ISP proxy the scanner routes through. Returns its id for KERNEL_PROXY_ID. */
+export async function ensureIspProxy(apiKey: string, country: (typeof ISP_PROXY_COUNTRIES)[number]): Promise<{ id: string; name: string; created: boolean }> {
+  const client = new Kernel({ apiKey, timeout: 20_000, maxRetries: 1 });
+  const name = `voircheck-isp-${country.toLowerCase()}`;
+  for await (const p of client.proxies.list()) {
+    if (p.name === name && p.type === 'isp' && p.id) return { id: p.id, name, created: false };
+  }
+  const proxy = await client.proxies.create({ type: 'isp', name, config: { country } });
+  return { id: proxy.id!, name, created: true };
 }
 
 export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
@@ -216,12 +251,7 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
   return {
     async visit(urls, hooks) {
       const started = Date.now();
-      const browser = await client.browsers.create({
-        headless: !(opts.liveView ?? true),
-        stealth: false,
-        // Inactivity backstop in case our delete below never runs (process crash).
-        timeout_seconds: Math.ceil(totalTimeoutMs / 1000) + 30,
-      }, { timeout: 20_000, maxRetries: 0 });
+      const browser = await client.browsers.create(browserCreateParams({ ...opts, totalTimeoutMs }), { timeout: 20_000, maxRetries: 0 });
       const sessionId = browser.session_id;
       hooks?.onSession?.({ sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined });
       let replayId: string | undefined;

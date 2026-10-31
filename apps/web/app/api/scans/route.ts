@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         const { result } = await scanStore(
           { url, peers, productTitle: demo?.productTitle },
           {
-            visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: true, replay: true }) : null,
+            visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: true, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
             safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
             onProgress: (e) => {
               // The live-view link goes to this requester only and is never stored.

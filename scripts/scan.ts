@@ -26,7 +26,7 @@ const stripQuery = (u?: string) => (u ? u.split('?')[0] + (u.includes('?') ? '?<
 const { result, meta } = await scanStore(
   { url, peers },
   {
-    visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey }) : null,
+    visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
     safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
   },
 );
