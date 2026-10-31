@@ -1,2 +1,6 @@
-// @voircheck/agent — agent tools + prompts (spec 5.13). Today: Channel3 product search only (no LLM code yet).
+// @voircheck/agent — the shopping agent (spec 5.3 / 5.13): model interface, loop, tools, prompts, Channel3 search.
 export * from './search';
+export * from './model';
+export * from './fake-model';
+export * from './loop';
+export * from './prompt';
