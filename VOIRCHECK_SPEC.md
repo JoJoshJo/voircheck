@@ -492,6 +492,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-29 — Magic link via Neon Auth + Resend SMTP
 - 2026-10-30 — Real-world eval set, tune/test split, scam caught = HOLD|BLOCK
 - 2026-10-31 — Test split seen (baseline abce9b2) → renamed `seen-2026-10-31`; final numbers from a new `holdout` split (scams reported after Oct 31 + fresh legit shops)
+- 2026-10-31 — EU VIES VAT check **skipped**: the VIES disclaimer limits use to intra-Community suppliers verifying VAT numbers and forbids other use and retransmission, so a consumer scam check can't use it. VAT/registration numbers stay pattern-extracted evidence only.
 - 2026-10-27 — Anthropic setup deferred: key + ~$30–40 credit by Nov 3 (hard stop Nov 4); AI-dependent work scheduled last; Neon + Better Auth setup completed.
 - 2026-10-27 — Database switched: Supabase → **Neon + Neon Auth** (J's Supabase free project slots are all in use). Data model unchanged; guest demo accounts created server-side; no keep-alive needed. PayPal sandbox setup completed.
 - 2026-10-27 — Piece 21 locked: 16-day timeline, 8+ h/day; spike Oct 28; checkpoint Nov 6; security day Nov 10; video Nov 11; submit by noon ET Nov 12. Planning phase complete except narration/on-camera.
