@@ -33,6 +33,7 @@ const T = {
     pick: (s: Store, others: string) => `${s.storeName} looks safe and has ${s.productTitle} for ${money(s, 'en')}.${others} I've prepared the order; approve it in PayPal when you're ready.`,
     skip: (s: Store, v: Verdict) => ` I'd skip ${s.storeName} (${v.verdict}${reasonEn(v)}), even though it's ${money(s, 'en')}.`,
     injection: ' Its page also hid text aimed at AI shopping agents.',
+    alt: (s: Store) => ` ${s.storeName} also looks safe, with a different product: ${s.productTitle} for ${money(s, 'en')}.`,
     noSafe: 'None of these stores checked out as safe, so I haven\'t prepared an order. You can see the evidence on each card.',
     holdOnly: (s: Store) => `${s.storeName} is on hold: some checks were unclear. Look at the evidence and decide; I won't buy there on my own.`,
     refused: (s: string, r: string) => `VoirCheck won't let me buy from ${s}: ${r}. That's the server's rule, not mine to change.`,
@@ -52,6 +53,7 @@ const T = {
     pick: (s: Store, others: string) => `${s.storeName} semble fiable et propose ${s.productTitle} à ${money(s, 'fr')}.${others} J’ai préparé la commande ; validez-la dans PayPal quand vous voulez.`,
     skip: (s: Store, v: Verdict) => ` J’éviterais ${s.storeName} (${v.verdict}), même à ${money(s, 'fr')}.`,
     injection: ' Sa page cachait aussi du texte destiné aux agents d’achat IA.',
+    alt: (s: Store) => ` ${s.storeName} semble fiable aussi, avec un autre produit : ${s.productTitle} à ${money(s, 'fr')}.`,
     noSafe: 'Aucune de ces boutiques n’est jugée sûre, donc je n’ai pas préparé de commande. Les preuves sont sur chaque carte.',
     holdOnly: (s: Store) => `${s.storeName} est en attente : certains contrôles sont incertains. Regardez les preuves et décidez ; je n’achèterai pas seul.`,
     refused: (s: string, r: string) => `VoirCheck refuse que j’achète chez ${s} : ${r}. C’est la règle du serveur, je ne peux pas la changer.`,
@@ -77,6 +79,7 @@ function reasonEn(v: Verdict): string {
 const PRICE_RE = /(?:\s(?:for|à)\s+)?\b(?:under|below|less than|max(?:imum)?|up to|moins de|sous|max\.?|jusqu['’]à)\s*(?:\$|€|usd\s*)?(\d+(?:[.,]\d+)?)\s*(?:\$|€|dollars?|euros?)?/i;
 const LEAD_RE = /^(?:please\s+)?(?:can you\s+|could you\s+)?(?:find|search(?: for)?|look(?:ing)? for|buy|get|show)(?:\s+me)?\s+|^(?:trouve|cherche|achète)(?:[- ]moi)?\s+(?:des\s+|un\s+|une\s+)?/i;
 const BUY_OTHER_RE = /\b(buy|order|pay|get it|achète|commande|paye)\b.*\b(from|at|chez|à)\b|\b(cheaper|cheapest|moins cher)\b/i;
+const FOLLOW_UP_RE = /\b(cheaper|cheapest|instead|that one|this one|moins cher|plutôt|celle-ci|celle-là)\b/i;
 const APPROVED_RE = /\b(approved|i paid|paid it|done|j['’]ai (payé|validé|approuvé)|c['’]est validé)\b/i;
 
 export function parseShoppingRequest(text: string): { query: string; maxPrice: number | null } | null {
@@ -132,6 +135,8 @@ export class FakeModel implements ModelClient {
         const order = latest<{ status: string; paymentId?: string }>('create_order');
         return order?.paymentId ? { text: '', toolCalls: [call('request_payment', { paymentId: order.paymentId })] } : say(t.noOrder);
       }
+      // A follow-up about earlier results ("the cheaper one", "instead") with no results in this chat: ask, don't search.
+      if (!stores.length && FOLLOW_UP_RE.test(text)) return say(t.unknownStore);
       if (stores.length && BUY_OTHER_RE.test(text)) {
         const named = stores.find((s) => text.toLowerCase().includes(s.storeName.toLowerCase()));
         const cheapest = [...stores].filter((s) => s.price).sort((a, b) => Number(a.price) - Number(b.price))[0];
@@ -162,9 +167,16 @@ export class FakeModel implements ModelClient {
         .map((v) => ({ v, s: stores.find((s) => s.storeId === v.storeId)! }))
         .filter((x) => x.s)
         .sort((a, b) => VERDICT_RANK[a.v.verdict!] - VERDICT_RANK[b.v.verdict!] || Number(a.s.price ?? Infinity) - Number(b.s.price ?? Infinity));
-      const best = ranked.find((x) => x.v.verdict === 'SAFE' && x.s.price);
+      // Compare stores for ONE item (spec 5.3): the product most stores sell (first result breaks a tie). A SAFE store
+      // with a different product is mentioned as an alternative, never ranked against it on price.
+      const key = (s: Store) => s.productTitle.trim().toLowerCase();
+      const count = (k: string) => stores.filter((s) => key(s) === k).length;
+      const item = stores.map(key).reduce((a, k) => (count(k) > count(a) ? k : a), stores[0] ? key(stores[0]) : '');
+      const safe = ranked.filter((x) => x.v.verdict === 'SAFE' && x.s.price);
+      const best = safe.find((x) => key(x.s) === item) ?? safe[0];
       const blocked = ranked.filter((x) => x.v.verdict === 'BLOCK');
-      const notes = blocked.map((x) => t.skip(x.s, x.v) + (x.v.pageTriedToInstructAgents ? t.injection : '')).join('');
+      const alts = best ? safe.filter((x) => x !== best && key(x.s) !== key(best.s)).map((x) => t.alt(x.s)) : [];
+      const notes = blocked.map((x) => t.skip(x.s, x.v) + (x.v.pageTriedToInstructAgents ? t.injection : '')).join('') + alts.join('');
       if (best) return { text: t.pick(best.s, notes), toolCalls: [call('create_order', { storeId: best.s.storeId })] };
       const hold = ranked.find((x) => x.v.verdict === 'HOLD');
       return say(hold ? t.holdOnly(hold.s) + notes : t.noSafe + notes);
