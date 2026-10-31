@@ -4,5 +4,6 @@ export { scanStore, type ScannerDeps, type ScanReport, type ScanProgress } from 
 export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, verdictForScore } from './scoring';
 export { kernelVisitor, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot } from './kernel';
 export { placeholderAnalyzer, wrapUntrustedPageText, type PageAnalyzer, type PageForAnalysis } from './signals/ai-page';
-export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp } from './ssrf';
+export { domainInfo, type DomainInfo } from './domain';
+export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp, type Resolver } from './ssrf';
 export type { SignalOutcome, ScanFacts } from './signals/types';

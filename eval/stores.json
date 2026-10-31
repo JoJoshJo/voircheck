@@ -1,0 +1,546 @@
+{
+  "description": "VoirCheck real-world evaluation set. Ground truth from named sources only (Watchlist Internet fake-shop list; Wikipedia for established retailers; the Austrian E-Commerce-Gütezeichen certified-shop list). Split fixed before any scan: stratified per label, ~1/3 tune by URL hash. Never change scoring rules based on \"test\" results.",
+  "createdOn": "2026-10-30",
+  "stores": [
+    {
+      "url": "https://gruenstark.de/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/gruenstarkde/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/mallelvaritarocom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://hochzeitsdekorationen.shop/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/hochzeitsdekorationenshop/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://werkaro.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werkarocom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://elveant.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/elveantcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://trailsupplypro.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/trailsupplyprocom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/heizungugde/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://jekadeshop.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/jekadeshopcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://mk-kueche.de/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/mk-kuechede/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/messtoolcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://official-depot.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/official-depotcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://wuerfelbedarf.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/wuerfelbedarfcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://pureshoerack.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/pureshoerackcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://alpkauf.de/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/alpkaufde/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://werksraeder-24.de/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werksraeder-24de/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://missmodaberlin.de/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/missmodaberlinde/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://rimowa-store.de/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/rimowa-storede/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://warenhauswelt.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/warenhausweltcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-29."
+    },
+    {
+      "url": "https://scandiwarm.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/scandiwarmcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-08."
+    },
+    {
+      "url": "https://lunaseacoffees.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/lunaseacoffeescom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-08."
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/kinderschatzcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-08."
+    },
+    {
+      "url": "https://steadyhandtooling.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/steadyhandtoolingcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-08."
+    },
+    {
+      "url": "https://denbypotteryuk.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/denbypotteryukcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-08."
+    },
+    {
+      "url": "https://werkstatt-teile.com/",
+      "label": "scam",
+      "split": "tune",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/werkstatt-teilecom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-07."
+    },
+    {
+      "url": "https://bikehelfer.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/bikehelfercom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-07."
+    },
+    {
+      "url": "https://musikinstrumentes.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/musikinstrumentescom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-10-06."
+    },
+    {
+      "url": "https://einrichtkueche.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/einrichtkuechecom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-08-21."
+    },
+    {
+      "url": "https://elektrosystemmarkt.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/elektrosystemmarktcom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-08-21."
+    },
+    {
+      "url": "https://pelletwerk.eu/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/pelletwerkeu/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-08-21."
+    },
+    {
+      "url": "https://smartphonepartner.com/",
+      "label": "scam",
+      "split": "test",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/smartphonepartnercom/",
+      "addedOn": "2026-10-30",
+      "notes": "Listed as fraudulent shop since 2026-08-20."
+    },
+    {
+      "url": "https://www.bestbuy.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Best_Buy",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: US electronics retailer."
+    },
+    {
+      "url": "https://www.target.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Target_Corporation",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: US general retailer."
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/REI",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: US outdoor co-op."
+    },
+    {
+      "url": "https://www.bhphotovideo.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/B%26H_Photo",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: US photo/electronics retailer."
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/John_Lewis_%26_Partners",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: UK department store."
+    },
+    {
+      "url": "https://www.argos.co.uk/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Argos_(retailer)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: UK catalogue retailer."
+    },
+    {
+      "url": "https://www.currys.co.uk/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Currys_(retailer)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: UK electronics retailer."
+    },
+    {
+      "url": "https://www.otto.de/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Otto_(retailer)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: DE online retailer."
+    },
+    {
+      "url": "https://www.thomann.de/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Thomann_(retailer)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: DE music retailer."
+    },
+    {
+      "url": "https://www.zalando.de/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Zalando",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: DE fashion retailer."
+    },
+    {
+      "url": "https://www.mediamarkt.de/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/MediaMarkt",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: DE electronics retailer."
+    },
+    {
+      "url": "https://www.fnac.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Fnac",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: FR books/electronics retailer."
+    },
+    {
+      "url": "https://www.boulanger.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Boulanger_(company)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: FR electronics retailer."
+    },
+    {
+      "url": "https://www.decathlon.fr/",
+      "label": "legit",
+      "split": "test",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Decathlon_(retailer)",
+      "addedOn": "2026-10-30",
+      "notes": "Big retailer: FR sports retailer."
+    },
+    {
+      "url": "https://connox.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Mid-size certified shop: design/furniture shop."
+    },
+    {
+      "url": "https://bettenreiter.at/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Mid-size certified shop: bedding retailer."
+    },
+    {
+      "url": "https://bikepalast.com/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Mid-size certified shop: bike shop."
+    },
+    {
+      "url": "https://cyberport.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Mid-size certified shop: electronics shop."
+    },
+    {
+      "url": "https://chiliwerkstatt.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: chili products."
+    },
+    {
+      "url": "https://kernoel-resch.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: pumpkin-seed-oil producer."
+    },
+    {
+      "url": "https://messerkoenig.at/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: knife shop."
+    },
+    {
+      "url": "https://tee-shop.at/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: tea shop."
+    },
+    {
+      "url": "https://zirben-onlineshop.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: stone-pine products."
+    },
+    {
+      "url": "https://gelaenderladen.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: railing parts."
+    },
+    {
+      "url": "https://tauchversand.com/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: diving equipment."
+    },
+    {
+      "url": "https://vienna-camera.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: camera shop."
+    },
+    {
+      "url": "https://rund-um-die-biene.at/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: beekeeping supplies."
+    },
+    {
+      "url": "https://dieroester.at/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: coffee roaster."
+    },
+    {
+      "url": "https://naehprinz.at/",
+      "label": "legit",
+      "split": "tune",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: sewing shop."
+    },
+    {
+      "url": "https://haengemattenshop.com/",
+      "label": "legit",
+      "split": "test",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-10-30",
+      "notes": "Small independent certified shop: hammock shop."
+    }
+  ]
+}

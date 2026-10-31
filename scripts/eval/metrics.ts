@@ -1,0 +1,145 @@
+/**
+ * Real-world eval (spec 5.5 "Eval method"): pure metric math over scan rows, so it can be unit tested.
+ * Scam caught = HOLD or BLOCK. Legit HOLD = soft false alarm, legit BLOCK = hard false alarm.
+ * Dead sites (unreachable / parked / redirect to an unrelated domain) and runner errors are excluded from accuracy.
+ */
+import type { HardRule, SignalId, SignalStatus, Verdict } from '@voircheck/scanner';
+
+export type Label = 'scam' | 'legit';
+export type Split = 'tune' | 'test';
+
+export interface EvalStore {
+  url: string;
+  label: Label;
+  split: Split;
+  source: string;
+  sourceUrl: string;
+  addedOn: string;
+  notes: string;
+}
+
+export interface EvalSignal {
+  id: SignalId;
+  status: SignalStatus;
+  points: number;
+  evidence: string[];
+}
+
+export type EvalRow =
+  | { url: string; label: Label; split: Split; outcome: 'dead'; deadReason: string }
+  | { url: string; label: Label; split: Split; outcome: 'error'; error: string }
+  | {
+      url: string;
+      label: Label;
+      split: Split;
+      outcome: 'scanned';
+      verdict: Verdict;
+      score: number;
+      hardRules: HardRule[];
+      signals: EvalSignal[];
+      scanMs: number;
+      kernelError: string | null;
+    };
+export type ScannedRow = Extract<EvalRow, { outcome: 'scanned' }>;
+
+export function loadStores(raw: unknown): EvalStore[] {
+  const stores = (raw as { stores?: unknown })?.stores;
+  if (!Array.isArray(stores)) throw new Error('eval/stores.json: missing "stores" array');
+  const seen = new Set<string>();
+  return stores.map((s, i) => {
+    const e = s as Partial<EvalStore>;
+    const where = `eval/stores.json entry ${i}`;
+    if (typeof e.url !== 'string' || !/^https?:\/\//.test(e.url)) throw new Error(`${where}: bad url`);
+    if (e.label !== 'scam' && e.label !== 'legit') throw new Error(`${where}: label must be scam|legit`);
+    if (e.split !== 'tune' && e.split !== 'test') throw new Error(`${where}: split must be tune|test`);
+    if (!e.source || !e.sourceUrl) throw new Error(`${where}: ground truth needs a named source and sourceUrl`);
+    if (seen.has(e.url)) throw new Error(`${where}: duplicate url ${e.url}`);
+    seen.add(e.url);
+    return { url: e.url, label: e.label, split: e.split, source: e.source, sourceUrl: e.sourceUrl, addedOn: e.addedOn ?? '', notes: e.notes ?? '' };
+  });
+}
+
+export function median(xs: number[]): number | null {
+  if (xs.length === 0) return null;
+  const s = [...xs].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid]! : (s[mid - 1]! + s[mid]!) / 2;
+}
+
+const rate = (n: number, d: number) => (d === 0 ? null : n / d);
+const zero = (): Record<Verdict, number> => ({ SAFE: 0, HOLD: 0, BLOCK: 0 });
+const STATUSES: SignalStatus[] = ['fail', 'warn', 'pass', 'unavailable'];
+
+export interface SignalStats {
+  counts: Record<SignalStatus, number>;
+  /** fail or warn, out of the rows where the signal was available (null if never available). */
+  hitRate: number | null;
+  /** Share of rows where the signal produced a result at all. */
+  coverage: number | null;
+}
+
+export interface EvalMetrics {
+  total: number;
+  dead: number;
+  deadByLabel: Record<Label, number>;
+  errors: number;
+  scored: Record<Label, number>;
+  scam: Record<Verdict, number>;
+  legit: Record<Verdict, number>;
+  catchRate: number | null;
+  /** Scams caught only because the scan couldn't verify the store (cant_verify), not by a red flag. */
+  scamCaughtByCantVerifyOnly: number;
+  softFalseAlarmRate: number | null;
+  hardFalseAlarmRate: number | null;
+  perSignal: Record<Label, Partial<Record<SignalId, SignalStats>>>;
+  medianScanMs: number | null;
+  misses: ScannedRow[];
+  falseAlarms: ScannedRow[];
+}
+
+function signalStats(rows: ScannedRow[]): Partial<Record<SignalId, SignalStats>> {
+  const out: Partial<Record<SignalId, SignalStats>> = {};
+  for (const r of rows) {
+    for (const s of r.signals) {
+      const st = (out[s.id] ??= { counts: { fail: 0, warn: 0, pass: 0, unavailable: 0 }, hitRate: null, coverage: null });
+      st.counts[s.status]++;
+    }
+  }
+  for (const st of Object.values(out)) {
+    const total = STATUSES.reduce((a, k) => a + st.counts[k], 0);
+    const available = total - st.counts.unavailable;
+    st.hitRate = rate(st.counts.fail + st.counts.warn, available);
+    st.coverage = rate(available, total);
+  }
+  return out;
+}
+
+const caught = (v: Verdict) => v === 'HOLD' || v === 'BLOCK';
+
+export function computeMetrics(rows: EvalRow[]): EvalMetrics {
+  const scanned = rows.filter((r): r is ScannedRow => r.outcome === 'scanned');
+  const scams = scanned.filter((r) => r.label === 'scam');
+  const legits = scanned.filter((r) => r.label === 'legit');
+  const scam = zero();
+  const legit = zero();
+  for (const r of scams) scam[r.verdict]++;
+  for (const r of legits) legit[r.verdict]++;
+  const dead = rows.filter((r) => r.outcome === 'dead');
+  return {
+    total: rows.length,
+    dead: dead.length,
+    deadByLabel: { scam: dead.filter((r) => r.label === 'scam').length, legit: dead.filter((r) => r.label === 'legit').length },
+    errors: rows.filter((r) => r.outcome === 'error').length,
+    scored: { scam: scams.length, legit: legits.length },
+    scam,
+    legit,
+    catchRate: rate(scam.HOLD + scam.BLOCK, scams.length),
+    scamCaughtByCantVerifyOnly: scams.filter((r) => caught(r.verdict) && r.hardRules.includes('cant_verify') && !r.signals.some((s) => s.status === 'fail' || s.status === 'warn')).length,
+    softFalseAlarmRate: rate(legit.HOLD, legits.length),
+    hardFalseAlarmRate: rate(legit.BLOCK, legits.length),
+    perSignal: { scam: signalStats(scams), legit: signalStats(legits) },
+    medianScanMs: median(scanned.map((r) => r.scanMs)),
+    misses: scams.filter((r) => r.verdict === 'SAFE'),
+    falseAlarms: legits.filter((r) => caught(r.verdict)),
+  };
+}

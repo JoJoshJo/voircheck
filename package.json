@@ -17,7 +17,8 @@
     "search": "tsx scripts/search.ts",
     "paypal-check": "tsx scripts/paypal-check.ts",
     "webhooks:redact": "tsx scripts/redact-webhook-events.ts",
-    "retention:run": "tsx scripts/retention.ts"
+    "retention:run": "tsx scripts/retention.ts",
+    "eval:run": "tsx scripts/eval-run.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
