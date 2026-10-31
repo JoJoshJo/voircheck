@@ -63,6 +63,7 @@ const rows: EvalRow[] = await mapPool(stores, CONCURRENCY, CHECK_DELAY_MS, async
     console.log(`[${++done}/${stores.length}] ${store.url}: dead (${reach.reason})`);
     return { ...base, outcome: 'dead', deadReason: reach.reason };
   }
+  if (reach.note) console.log(`    ${store.url}: ${reach.note}`);
   await new Promise((r) => setTimeout(r, SCAN_DELAY_MS));
   const t0 = performance.now();
   try {

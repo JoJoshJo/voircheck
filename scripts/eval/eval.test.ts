@@ -117,12 +117,27 @@ describe('dataset', () => {
 });
 
 describe('reachability (dead-site detection)', () => {
-  it('classifies unreachable, 404/410/5xx, parked and unrelated redirects as dead', () => {
+  it('dead = DNS failure, refused/timed-out connection, parked page, or unrelated redirect', () => {
     expect(classify({ startUrl: 'https://a.test/', error: 'ENOTFOUND' })).toEqual({ alive: false, reason: 'unreachable: ENOTFOUND' });
-    expect(classify({ startUrl: 'https://a.test/', status: 404 }).alive).toBe(false);
-    expect(classify({ startUrl: 'https://a.test/', status: 503 }).alive).toBe(false);
+    for (const error of ['EAI_AGAIN', 'ECONNREFUSED', 'ETIMEDOUT', 'TimeoutError', 'UND_ERR_CONNECT_TIMEOUT']) expect(classify({ startUrl: 'https://a.test/', error }).alive).toBe(false);
     expect(classify({ startUrl: 'https://shop.de/', status: 200, body: '<h1>Diese Domain kaufen</h1> sedo' })).toEqual({ alive: false, reason: 'parked / for-sale page' });
     expect(classify({ startUrl: 'https://shop.de/', finalUrl: 'https://other-thing.com/', status: 200 }).alive).toBe(false);
+  });
+  it('certificate problems and HTTP errors are NOT dead: they are scanned and judged', () => {
+    for (const error of ['CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'ERR_TLS_CERT_ALTNAME_INVALID', 'ECONNRESET']) {
+      expect(classify({ startUrl: 'https://dieroester.at/', error })).toMatchObject({ alive: true, finalUrl: 'https://dieroester.at/' });
+    }
+    for (const status of [404, 410, 502, 503]) expect(classify({ startUrl: 'https://a.test/', status })).toEqual({ alive: true, finalUrl: 'https://a.test/', note: `HTTP ${status}` });
+  });
+  it('an expired certificate from fetch (error.cause.code) is scanned, not dead', async () => {
+    const fetchMock = vi.fn(async () => {
+      throw Object.assign(new TypeError('fetch failed'), { cause: { code: 'CERT_HAS_EXPIRED' } });
+    });
+    expect(await checkReachability('https://a.example/', { fetch: fetchMock as typeof fetch, resolve: async () => ['93.184.216.34'] })).toMatchObject({ alive: true });
+    const dns = vi.fn(async () => {
+      throw Object.assign(new TypeError('fetch failed'), { cause: { code: 'ENOTFOUND' } });
+    });
+    expect(await checkReachability('https://a.example/', { fetch: dns as typeof fetch, resolve: async () => ['93.184.216.34'] })).toMatchObject({ alive: false });
   });
   it('keeps bot-protected and same-site redirects alive', () => {
     expect(classify({ startUrl: 'https://www.shop.de/', status: 403 }).alive).toBe(true);
