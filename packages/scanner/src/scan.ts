@@ -2,6 +2,7 @@ import { detectBlockedPage } from './blocked-page';
 import { domainInfo } from './domain';
 import { extractFacts, keepInScope, pickEvidenceLinks, type CollectedEvidence } from './evidence-pages';
 import { filterHiddenText } from './hidden-text';
+import { popularity, trancoLookup, type RankLookup } from './reputation';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
 import { score, WEIGHTS } from './scoring';
@@ -23,6 +24,8 @@ export interface ScannerDeps {
   resolve?: Resolver;
   tlsCheck?: TlsChecker;
   now?: () => Date;
+  /** Well-known-site lookup (registrable domain → rank). Default: the pinned Tranco list; null = don't check. */
+  popularity?: RankLookup | null;
   /** Live progress for the scan UI: the browser session as soon as it opens, then each signal as it finishes. */
   onProgress?: (event: ScanProgress) => void;
 }
@@ -61,6 +64,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   const peerUrls = input.peers.map((p) => assertSafeUrlShape(p.url));
   await Promise.all([url, ...peerUrls].map((u) => resolvePublicHost(u.hostname, deps.resolve)));
   const domain = domainInfo(url.href);
+  const pop = popularity(domain, deps.popularity === undefined ? trancoLookup : deps.popularity);
 
   const emit = (o: SignalOutcome) => {
     try {
@@ -82,6 +86,8 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession, evidenceLinks: (p) => (detectBlockedPage(p) ? [] : pickEvidenceLinks(p.links, p.finalUrl)) }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
       : Promise.resolve(new Error('no cloud browser configured')),
     domainAgeSignal(domain, now, fetchImpl).then((r) => {
+      // Reputation is evidence only (no points): it rides along with domain age.
+      r.outcome.evidence.push(pop.evidence);
       emit(r.outcome);
       return r;
     }),
@@ -194,6 +200,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     priceBelowPeersPct: price.belowPct,
     threatHit: threat.hit,
     kernelOk: !!targetPage,
+    wellKnownRank: pop.rank,
   };
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {

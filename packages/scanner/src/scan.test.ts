@@ -264,6 +264,18 @@ describe('scanStore', () => {
     expect(signal(result, 'ssl_redirects').status).toBe('pass');
   });
 
+  it('well-known-site rank is evidence only: same points and verdict, shown under domain age', async () => {
+    const famous = await scanStore({ url: 'https://velbrook.com/' }, deps({ popularity: () => 1302 }));
+    const unknown = await scanStore({ url: 'https://velbrook.com/' }, deps({ popularity: () => null }));
+    expect(famous.result.score).toBe(unknown.result.score);
+    expect(famous.result.verdict).toBe(unknown.result.verdict);
+    expect(signal(famous.result, 'domain_age').evidence.join(' ')).toContain('Well-known site: velbrook.com is #1,302');
+    expect(signal(famous.result, 'domain_age').points).toBe(signal(unknown.result, 'domain_age').points);
+    // A bot wall on a well-known site is still "couldn't verify" this round.
+    const walled = await scanStore({ url: 'https://velbrook.com/' }, deps({ popularity: () => 1302, visitor: fakeVisitor('timeout') }));
+    expect(walled.result.verdict).toBe('HOLD');
+  });
+
   it('no KERNEL configured → HOLD', async () => {
     const { result } = await scanStore({ url: 'https://velbrook.com/' }, deps({ visitor: null }));
     expect(result.verdict).toBe('HOLD');

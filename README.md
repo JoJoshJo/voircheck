@@ -23,3 +23,6 @@ pnpm retention:run --apply    # deletes, in one transaction; refused before 2026
 pnpm webhooks:redact          # dry run: counts rows with payer details
 pnpm webhooks:redact --apply  # rewrite them to payment status details only
 ```
+
+## Data sources and attribution
+- **Tranco** top-sites research list (well-known-site evidence), pinned list [746VX](https://tranco-list.eu/list/746VX) of 2026-10-30. Le Pochat et al., "Tranco: A Research-Oriented Top Sites Ranking Hardened Against Manipulation", NDSS 2019. Built from Chrome UX Report (CC BY-SA 4.0), Majestic (CC BY 3.0), Cisco Umbrella, Farsight and Cloudflare Radar (CC BY-NC 4.0). Used non-commercially.

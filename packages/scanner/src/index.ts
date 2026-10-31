@@ -8,5 +8,6 @@ export { filterHiddenText, INJECTION_RE, HiddenText, HiddenCandidate, type Hidde
 export { domainInfo, type DomainInfo } from './domain';
 export { CollectedEvidence, CollectedFacts, EvidencePage, extractFacts, pickEvidenceLinks, EVIDENCE_BUDGET_MS, type EvidenceKind } from './evidence-pages';
 export { detectBlockedPage, type BlockedReason } from './blocked-page';
+export { TRANCO, trancoLookup, trancoRanks, popularity, type RankLookup } from './reputation';
 export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp, type Resolver } from './ssrf';
 export type { SignalOutcome, ScanFacts } from './signals/types';

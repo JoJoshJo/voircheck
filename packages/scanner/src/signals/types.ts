@@ -18,6 +18,8 @@ export interface ScanFacts {
   threatHit: boolean;
   /** False when the KERNEL page visit failed or timed out ("can't verify"). */
   kernelOk: boolean;
+  /** Tranco rank of the store's own registrable domain (top 100k), else null. Recorded only; no rule uses it yet. */
+  wellKnownRank?: number | null;
 }
 
 export type Fetch = typeof fetch;
