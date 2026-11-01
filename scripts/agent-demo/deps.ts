@@ -3,7 +3,7 @@
  * PayPal sandbox (no network), the real demo catalog, and fixed scan results that match what KERNEL found live on
  * Oct 31 (Velbrook Supply SAFE 0; Velbrook-Outlet Deals BLOCK 70 with the planted hidden instruction).
  */
-import { demoItemFor, demoResults, type AgentDeps, type SearchResult } from '@voircheck/agent';
+import { agentOrderStatus, demoItemFor, demoResults, type AgentDeps, type SearchResult } from '@voircheck/agent';
 import { MemoryGateStore, MoneyGate, PayPalClient } from '@voircheck/paypal';
 import { score, type SignalOutcome, type SignalResult } from '@voircheck/scanner';
 
@@ -59,7 +59,7 @@ export function fakePayPalSandbox() {
     return json(404, { name: 'RESOURCE_NOT_FOUND' });
   };
   const client = new PayPalClient({ clientId: 'demo', clientSecret: 'demo', fetch: fetchImpl as typeof fetch });
-  return { client, calls, approveAll: () => (approved = true) };
+  return { client, calls, approveAll: () => (approved = true), isApproved: () => approved };
 }
 
 export const DEMO_USER = 'demo-user';
@@ -73,6 +73,7 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
   const found = new Map<string, SearchResult>();
   const scanIds = new Map<string, string>();
   const scanStoreCalls: string[] = [];
+  const approved = paypal.isApproved;
 
   const deps: AgentDeps = {
     async searchStores(query, maxPrice) {
@@ -108,6 +109,14 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
       const st = r.payment?.status;
       if (!st) return { paymentId, status: 'not_found' };
       return { paymentId, status: st === 'created' ? 'waiting_for_buyer' : st === 'authorized' || st === 'captured' || st === 'voided' || st === 'failed' ? st : 'failed' };
+    },
+    async getOrder(paymentId) {
+      // Offline stand-in for the Agent Toolkit's get_order: the same reduced view, built from our own row.
+      const row = await store.getPaymentForUser(paymentId, DEMO_USER);
+      if (!row) return { paymentId, status: 'not_found' };
+      const orderStatus = row.status === 'created' ? (approved() ? 'APPROVED' : 'PAYER_ACTION_REQUIRED') : 'COMPLETED';
+      const auth = row.status === 'authorized' ? 'CREATED' : row.status === 'captured' ? 'CAPTURED' : row.status === 'voided' ? 'VOIDED' : null;
+      return agentOrderStatus(paymentId, { orderId: row.paypalOrderId, status: orderStatus, intent: 'AUTHORIZE', amount: { value: row.amount, currency: row.currency }, authorizationStatus: auth, captureStatus: row.status === 'captured' ? 'COMPLETED' : null });
     },
   };
   return { deps, gate, store, paypal, scanStoreCalls };

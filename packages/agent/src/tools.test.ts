@@ -32,6 +32,7 @@ function deps(over: Partial<AgentDeps> = {}): AgentDeps {
     scanStore: vi.fn(async () => scanWithPageText()),
     createOrder: vi.fn(async (storeId: string) => ({ storeId, status: 'refused' as const, reason: 'block' as const })),
     requestPayment: vi.fn(async (paymentId: string) => ({ paymentId, status: 'waiting_for_buyer' as const })),
+    getOrder: vi.fn(async (paymentId: string) => ({ paymentId, status: 'not_found' as const })),
     ...over,
   };
 }
@@ -75,7 +76,7 @@ describe('scan summary for the agent', () => {
 });
 
 describe('agent tools', () => {
-  it('are exactly search, scan verdict, create order, request payment (no capture, void, override or auto-pay tool)', () => {
+  it('are exactly search, scan verdict, create order, request payment, read-only get_order (no capture, void, override, pay or auto-pay tool)', () => {
     expect(shoppingTools(deps()).map((t) => t.name)).toEqual([...TOOL_NAMES]);
   });
 

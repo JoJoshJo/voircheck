@@ -5,3 +5,4 @@ export * from './fake-model';
 export * from './loop';
 export * from './prompt';
 export * from './tools';
+export * from './paypal-toolkit';

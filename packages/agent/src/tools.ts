@@ -10,6 +10,8 @@ import type { AgentTool, AnyAgentTool } from './loop';
  *   one injection flag). Never evidence strings, page text, titles or hidden text: those can carry page content.
  * - Money: create_order prepares an AUTHORIZE order through MoneyGate (which refuses BLOCK / unverified stores);
  *   request_payment asks MoneyGate to settle an approved order. There is no capture, void or override tool.
+ * - get_order reads an order's status through the PayPal Agent Toolkit's read-only get_order (spec 5.7). Read only:
+ *   the agent names one of its own payments, never a PayPal order ID, and gets status fields back, never payer data.
  */
 
 const Id = z.string().min(1).max(100);
@@ -93,6 +95,20 @@ export type CreateOrderOutput = z.infer<typeof CreateOrderOutput>;
 export const PaymentOutcome = z.enum(['waiting_for_buyer', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'not_found']);
 export const RequestPaymentOutput = z.object({ paymentId: Id, status: PaymentOutcome });
 export type RequestPaymentOutput = z.infer<typeof RequestPaymentOutput>;
+const PayPalStatus = z.string().regex(/^[A-Z_]{2,40}$/);
+export const GetOrderOutput = z.discriminatedUnion('status', [
+  z.object({
+    paymentId: Id,
+    status: z.literal('ok'),
+    orderStatus: PayPalStatus,
+    intent: PayPalStatus.nullable(),
+    amount: z.object({ value: z.string().regex(/^\d+(\.\d{1,2})?$/), currency: z.string().regex(/^[A-Z]{3}$/) }).nullable(),
+    authorizationStatus: PayPalStatus.nullable(),
+    captureStatus: PayPalStatus.nullable(),
+  }),
+  z.object({ paymentId: Id, status: z.enum(['not_found', 'unavailable']) }),
+]);
+export type GetOrderOutput = z.infer<typeof GetOrderOutput>;
 
 /** What the server provides. Each call is already scoped to the signed-in user and this conversation. */
 export interface AgentDeps {
@@ -103,6 +119,8 @@ export interface AgentDeps {
   createOrder(storeId: string): Promise<CreateOrderOutput>;
   /** MoneyGate.completeApproval: settles an approved order by verdict. */
   requestPayment(paymentId: string): Promise<RequestPaymentOutput>;
+  /** Agent Toolkit get_order (read only) on one of this conversation's payments. */
+  getOrder(paymentId: string): Promise<GetOrderOutput>;
 }
 
 export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
@@ -137,7 +155,14 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     output: RequestPaymentOutput,
     run: ({ paymentId }) => deps.requestPayment(paymentId),
   };
-  return [search, verdict, order, pay];
+  const status: AgentTool<{ paymentId: string }, GetOrderOutput> = {
+    name: 'get_order',
+    description: "Look up an order's current status in PayPal (read only; it changes nothing). Pass the paymentId from create_order. Returns PayPal's order status, the amount and the authorization / capture status.",
+    input: z.object({ paymentId: Id }),
+    output: GetOrderOutput,
+    run: ({ paymentId }) => deps.getOrder(paymentId),
+  };
+  return [search, verdict, order, pay, status];
 }
 
-export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment'] as const;
+export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order'] as const;

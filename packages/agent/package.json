@@ -6,10 +6,9 @@
     ".": "./src/index.ts",
     "./search": "./src/search/index.ts"
   },
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  },
+  "scripts": { "typecheck": "tsc --noEmit" },
   "dependencies": {
+    "@paypal/agent-toolkit": "1.11.0",
     "@voircheck/scanner": "workspace:*",
     "@voircheck/shared": "workspace:*",
     "zod": "4.6.7"

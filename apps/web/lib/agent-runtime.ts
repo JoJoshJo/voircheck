@@ -1,5 +1,5 @@
 import 'server-only';
-import { AGENT_SYSTEM_PROMPT, compareStores, FakeModel, runAgentTurn, shoppingTools, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
+import { AGENT_SYSTEM_PROMPT, agentOrderStatus, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
 import { assertSafeUrlShape } from '@voircheck/scanner';
 import type { AgentEvent } from './agent-view';
 import { getPayPal } from './paypal';
@@ -60,11 +60,17 @@ export function agentModel(): { model: ModelClient; kind: 'fake' | 'claude' } {
   return { model: new FakeModel(), kind: 'fake' };
 }
 
+// One Agent Toolkit reader per process (it caches its token for an hour). Read-only get_order, sandbox forced.
+const gr = globalThis as typeof globalThis & { __voircheckOrderReader?: ReturnType<typeof toolkitOrderReader> };
+function orderReader() {
+  return (gr.__voircheckOrderReader ??= toolkitOrderReader({ clientId: process.env.PAYPAL_CLIENT_ID ?? '', clientSecret: process.env.PAYPAL_CLIENT_SECRET ?? '' }));
+}
+
 const PAYMENT_STATUSES = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
 
 function webDeps(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; send: (e: AgentEvent) => void }): AgentDeps {
   const { conv, userId, send } = o;
-  const { gate } = getPayPal();
+  const { gate, store } = getPayPal();
   return {
     async searchStores(query, maxPrice) {
       const r = await compareStores(query, { apiKey: process.env.CHANNEL3_API_KEY, demoMode: o.demoMode, demoStoresBaseUrl: process.env.DEMO_STORES_BASE_URL, maxPrice });
@@ -145,6 +151,19 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
       const status = !r.ok || st === 'created' || !st ? 'waiting_for_buyer' : PAYMENT_STATUSES.has(st) ? (st as 'captured') : 'failed';
       send({ type: 'payment', paymentId, status });
       return { paymentId, status };
+    },
+
+    async getOrder(paymentId) {
+      // Only this conversation's payments, and the row must be the signed-in user's: the order ID comes from it.
+      if (!conv.payments.has(paymentId)) return { paymentId, status: 'not_found' };
+      const row = await store.getPaymentForUser(paymentId, userId);
+      if (!row) return { paymentId, status: 'not_found' };
+      try {
+        return agentOrderStatus(paymentId, await orderReader()(row.paypalOrderId));
+      } catch (err) {
+        console.error('agent get_order failed:', err instanceof Error ? err.message : 'unknown error');
+        return { paymentId, status: 'unavailable' };
+      }
     },
   };
 }

@@ -150,6 +150,34 @@ describe('the agent cannot bypass MoneyGate', () => {
   });
 });
 
+describe('get_order (Agent Toolkit, read only)', () => {
+  it("reads the status of the conversation's own order, changes nothing, and finds no one else's", async () => {
+    const s = session(
+      new Hostile([
+        { text: '', toolCalls: [{ id: 's', name: 'search_products', input: { query: 'wireless earbuds', maxPrice: 60 } }] },
+        { text: '', toolCalls: [{ id: 'v', name: 'get_scan_verdict', input: { storeId: 'cand-velbrook-supply' } }] },
+        { text: '', toolCalls: [{ id: 'o', name: 'create_order', input: { storeId: 'cand-velbrook-supply' } }] },
+        {
+          text: '',
+          toolCalls: [
+            { id: 'g1', name: 'get_order', input: { paymentId: 'pay_1', capture: true } },
+            { id: 'g2', name: 'get_order', input: { paymentId: 'pay_999' } },
+            { id: 'g3', name: 'pay_order', input: { id: 'ORDER1' } },
+          ],
+        },
+      ]),
+    );
+    await s.say('go');
+    expect(s.lastResults()).toEqual([
+      { paymentId: 'pay_1', status: 'ok', orderStatus: 'PAYER_ACTION_REQUIRED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: null, captureStatus: null },
+      { paymentId: 'pay_999', status: 'not_found' },
+      { error: 'unknown tool: pay_order' },
+    ]);
+    expect(s.paypal.calls).toEqual(['POST /v2/checkout/orders']); // only create_order's AUTHORIZE order
+    expect(s.store.payments.get('pay_1')!.status).toBe('created');
+  });
+});
+
 describe('the agent never receives page text', () => {
   it('over the whole flow, the model sees verdicts and the injection flag, never page text, hidden text or evidence strings', async () => {
     const model = new Recording(new FakeModel());
