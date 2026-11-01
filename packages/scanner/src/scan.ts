@@ -6,7 +6,7 @@ import { popularity, trancoLookup, type RankLookup } from './reputation';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
 import { score, WEIGHTS } from './scoring';
-import { placeholderAnalyzer, type PageAnalyzer } from './signals/ai-page';
+import { confirmedInjection, placeholderAnalyzer, type PageAnalyzer } from './signals/ai-page';
 import { evaluateClone, type CloneSubject } from './signals/clone';
 import { domainAgeSignal } from './signals/domain-age';
 import { evaluatePrice, findPriceNear, normalizeTitle } from './signals/price';
@@ -201,7 +201,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     threatHit: threat.hit,
     kernelOk: !!targetPage,
     wellKnownRank: pop.rank,
-    aiInjection: ai.findings?.some((f) => f.kind === 'prompt_injection_attempt') ?? false,
+    aiInjection: confirmedInjection(ai.findings),
   };
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {

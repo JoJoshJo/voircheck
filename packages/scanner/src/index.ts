@@ -6,6 +6,7 @@ export { kernelVisitor, browserCreateParams, ensureIspProxy, ISP_PROXY_COUNTRIES
 export {
   placeholderAnalyzer,
   anthropicAnalyzer,
+  confirmedInjection,
   memoryAiCache,
   aiCacheKey,
   buildAnalysisInput,

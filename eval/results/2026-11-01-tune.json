@@ -1,0 +1,3127 @@
+{
+  "runAt": "2026-11-01T05:09:27.335Z",
+  "split": "tune",
+  "commit": "4cf22a7",
+  "aiAnalysis": "on",
+  "aiModel": "claude-haiku-5-5",
+  "limit": null,
+  "rows": [
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "elvaritaro.com was registered on 2026-08-18 (about 2 months ago).",
+            "Registrar: TuringSign Inc. d/b/a Cosmotown.",
+            "elvaritaro.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 14 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: the store returned an error page (HTTP 502), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 502), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 502).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 4678,
+      "kernelError": "the store returned an error page (HTTP 502)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 15,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of heizungug.de (no RDAP server listed for .de).",
+            "heizungug.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 1 day old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 42/100, 7 findings.",
+            "Tried to instruct AI agents (high, home): \"Hidden text on home and product pages contains marketing copy (e.g. \"Hochwertiges Brennholz für wohlige Wärme\", \"Schneller Temperaturanstieg dank Pinikay\") invisible to visitors, with product descriptions that contradict the visible listing (e.g. 5,2 kWh/kg vs >4,8 kWh/kg, Eiche vs Buche)\"",
+            "Copied or generic text (med, product): \"Sehr langer Abbrand durch dichte Pressung aus 100% Buchenholz / Sehr geringer Feuchtigkeitsgehalt (<5%) for the same product, while hidden product text claims \"Hoher Heizwert von 5,2 kWh/kg\" and \"Geringer Feuchtigkeitsgehalt (<10%)\"\"",
+            "Unrealistic discounts (med, home): \"Giant Flames Holzbriketts 190 Packungen x 4,8 kg (912kg) €439.00 vs 95 Packungen x 4,8 kg (456 kg) €239.00; bulk pallets of 960 kg at €439 with \"Große Palette 912kg zum besten Preis pro Kilogramm\"\"",
+            "Fake scarcity or urgency (med, home): \"Zeitlich begrenztes Sonderangebot für Sie / Verbleibende Zeit bis zum Ende des Angebots; Beeilen Sie sich\"",
+            "Copied or generic text (med, home): \"Das Brennholz kam pünktlich und war hervorragend getrocknet... (14 near-identical five-star reviews with generic wording, no product reviews on product page: \"Rezensionen (0)\")\"",
+            "Company details inconsistent (low, legal): \"Heizung A-Z UG, Klappergasse 4, D-61206 Wöllstadt; phone +49 179 1526368 is a mobile number; \"Kontakt\" page shows no contact form address beyond info@heizungug.de\"",
+            "Payment red flags (low, terms): \"Vorkasse / Banküberweisung : Gutschrift direkt auf Ihr Bankkonto.\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 20692,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://heizungug.de/",
+            "kind": "home",
+            "title": "Heizung A-Z UG – Wärme, auf die Sie zählen können.",
+            "hiddenText": [
+              {
+                "text": "Hochwertiges Brennholz für wohlige Wärme",
+                "reason": "same_color",
+                "hint": "h2.entry-title.font-banner-xlg",
+                "possibleInjection": false
+              },
+              {
+                "text": "Trockenes, ofenfertiges Brennholz aus nachhaltiger Forstwirtschaft. Hohe Heizleistung, schnelle Lieferung und beste Qualität.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              },
+              {
+                "text": "ENplus-zertifizierte Holzpellets mit hoher Energiedichte und geringem Ascheanteil. Jetzt bequem online bestellen.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              },
+              {
+                "text": "Entdecken Sie hochwertiges Brennholz, Pellets, Holzbriketts und mehr – starke Qualität für eine zuverlässige Wärmeversorgung.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://heizungug.de/impressum/",
+            "kind": "legal",
+            "title": "Impressum – Heizung A-Z UG"
+          },
+          {
+            "url": "https://heizungug.de/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt – Heizung A-Z UG"
+          },
+          {
+            "url": "https://heizungug.de/ruckgabe-erstattung/",
+            "kind": "terms",
+            "title": "Rückgabe & Erstattung – Heizung A-Z UG"
+          },
+          {
+            "url": "https://heizungug.de/product/runde-buche-briketts-pallet-96-packungen-x-10-kg-960-kg/",
+            "kind": "product",
+            "title": "Runde Buche Briketts pallet 96 Packungen x 10 kg (960 kg) – Heizung A-Z UG",
+            "hiddenText": [
+              {
+                "text": "Runde Buche Briketts pallet 96 Packungen x 10 kg (960 kg) quantity",
+                "reason": "clipped",
+                "hint": "label.screen-reader-text",
+                "possibleInjection": false
+              },
+              {
+                "text": "Sehr niedriger Aschegehalt (<0,6%) für minimalen Wartungsaufwand Hoher Heizwert (>4,8 kWh/kg) für kraftvolle Wärmeleistung PEFC zertifiziertes Holz aus nachhaltig bewirtschafteten Wäldern In den Warenkorb",
+                "reason": "visibility_hidden",
+                "hint": "div.product-footer",
+                "possibleInjection": false
+              },
+              {
+                "text": "Sehr niedriger Aschegehalt (<0,6%) für minimalen Wartungsaufwand Hoher Heizwert (>4,8 kWh/kg) für kraftvolle Wärmeleistung Große Palette 912kg zum besten Preis pro Kilogramm In den Warenkorb",
+                "reason": "visibility_hidden",
+                "hint": "div.product-footer",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schneller Temperaturanstieg dank Pinikay Langanhaltende Verbrennung mit NestroMix Ausgewogene Mischung für maximale Leistung Ideal zum schnellen Aufwärmen am Ende des Tages Hohe Wärmeleistung Eine saubere und praktische Alternative zu traditionellem Holz Kompatibel mit den meisten Herden und Backöfen In den Warenkorb",
+                "reason": "visibility_hidden",
+                "hint": "div.product-footer",
+                "possibleInjection": false
+              },
+              {
+                "text": "100 % natürliche Eiche für hohe Wärmeleistung Sehr lange und intensive Verbrennung Langsame Wärmediffusion bei stabiler Flamme RUF Kompaktformat, geeignet für kleine Öfen und Einsätze Einfache Lagerung und saubere Handhabung Praktisch verpackt in 10-kg-Säcken In den Warenkorb",
+                "reason": "visibility_hidden",
+                "hint": "div.product-footer",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hoher Heizwert von 5,2 kWh/kg für effiziente Wärmeabgabe Geringer Feuchtigkeitsgehalt (<10%) für direkten Einsatz ohne Nachtrocknen Voller Saisonvorrat von 960 kg mit ausgezeichnetem Preis-Leistungs-Verhältnis In den Warenkorb",
+                "reason": "visibility_hidden",
+                "hint": "div.product-footer",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Heizung A-Z UG"
+          ],
+          "addresses": [
+            "Klappergasse 4, D-61206 Wöllstadt"
+          ],
+          "phones": [
+            "+49 179 1526368"
+          ],
+          "emails": [
+            {
+              "address": "info@heizungug.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 10064"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Visa",
+            "Mastercard",
+            "American Express",
+            "Klarna",
+            "Sofort",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 11885,
+        "outputTokens": 858,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001635,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 15,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "messtool.com was registered on 2026-02-13 (about 9 months ago).",
+            "Registrar: Ultahost, Inc.",
+            "messtool.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 9 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on messtool.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"FREE\nSHIPPING\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 62/100, 7 findings.",
+            "Tried to instruct AI agents (high, product): \"Text present in the page but hidden from human visitors... div.lg:hidden.space-y-6 hidden display_none containing Parkside product FAQ and reviews\"",
+            "Fake scarcity or urgency (med, home): \"VALID THROUGH November / MINIMUM ORDER €0.00 / DELIVERY TIME 3-5 Days\"",
+            "Unrealistic discounts (med, home): \"Parkside PKLLP 360 B3 5.0 (131) €25.59; Makita SK700GDZ green Laser 5.0 (147) €424.00; Milwaukee 4932459096 €8.69\"",
+            "Copied or generic text (med, product): \"Fantastic quality, unbeatable price! / Very happy indeed 👍 / Fantastic value / Very pleased with this — generic reviews dated Oct-Nov 2026, all 5.0\"",
+            "Company details inconsistent (low, contact): \"Our Address MessTool GmbH Luisenstraße 21 10117 Berlin; no registration or VAT number shown on any page read\"",
+            "Payment red flags (low, product): \"We accept credit cards, debit cards, and bank transfers for your convenience.\"",
+            "Language mismatch (low, home): \"Nivelliergeräte; Stay Updated / Subscribe ... page header mixes German category names with English; Reviewer emails from .es, .co.uk and .de domains\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12771,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://messtool.com/en",
+            "kind": "home",
+            "title": "Construction Lasers, Rangefinders | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/contact",
+            "kind": "contact",
+            "title": "Contact Us | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/returns",
+            "kind": "terms",
+            "title": "Return & Exchange Policy | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/product/parkside-pkllp-360-b3",
+            "kind": "product",
+            "title": "Parkside PKLLP 360 B3 | MessTool",
+            "hiddenText": [
+              {
+                "text": "1 / 13Parkside PKLLP 360 B3Buy new Parkside PKLLP 360 B3Parkside5.0 (131)€25.59Price includes VATIn Stock • Ships from Germany warehouse within 1 business dayNew original unopened productFree delivery to GermanyFree returns within 14 days2-year warrantyQuantity:1Buy NowDescriptionProduct TypeCross Line LaserLaser Class2Max. Range (without receiver)20 mMeasuring FunctionsAngular Degree, Vertical, HorizontalSelf-levellingyesSelf-Levelling Range (±)3 °DisplayLEDTripod Thread1/4 InchIncluded in Deli",
+                "reason": "display_none",
+                "hint": "div.lg:hidden.space-y-6",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "MessTool GmbH"
+          ],
+          "addresses": [
+            "Luisenstraße 21, 10117 Berlin, Deutschland"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "email@messtool.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 6295,
+        "outputTokens": 599,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000947,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://pureshoerack.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 10,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "pureshoerack.com was registered on 2026-09-23 (39 days ago).",
+            "Registrar: TuringSign Inc. d/b/a Cosmotown.",
+            "pureshoerack.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 38 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Votre entrée, enfin ordonnée\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 0/100, 4 findings.",
+            "Unrealistic discounts (med, home): \"87,95 € 48,46 € (about 45% off across the promotion section)\"",
+            "Company details inconsistent (med, legal): \"Numéro d'enregistrement: FR72506975 (France)\"",
+            "Missing legal information (low, legal): \"No hosting provider name or publication director named on the legal page; the company is described only as 'Pureshoerack EURL' with no capital or RCS city\"",
+            "Copied or generic text (low, home): \"Collection en vedette / Entryway Furniture, Shoe Cabinets, Cabinets, Shoe Storage listed as duplicate categories in the footer\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 27359,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://pureshoerack.com/",
+            "kind": "home",
+            "title": "Pureshoerack — Rangement d'entrée et mobilier fonctionnel"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/mentions-legales",
+            "kind": "legal",
+            "title": "Mentions légales — Pureshoerack"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/a-propos",
+            "kind": "contact",
+            "title": "À propos de Pureshoerack — Mobilier d'entrée et rangement"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/livraison-et-retours",
+            "kind": "terms",
+            "title": "Livraison et retours — Pureshoerack"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Pureshoerack EURL"
+          ],
+          "addresses": [],
+          "phones": [
+            "+33 7 41 20 39 67"
+          ],
+          "emails": [
+            {
+              "address": "support@pureshoerack.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 4221,
+        "outputTokens": 291,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000585,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://missmodaberlin.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of missmodaberlin.de (no RDAP server listed for .de).",
+            "missmodaberlin.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 19 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"MISS MODA Berlin\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis returned an answer in the wrong format, so it was ignored."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16981,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://missmodaberlin.de/",
+            "kind": "home",
+            "title": "MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Flache Sandalen Zehenschlinge Gold Schwarz",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jeanshose Hochtailliert Umlegbar Hellblau",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kniestiefel Umlegbar Wildleder-Imitat Beige",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Minikleid Metallic Rüschendetail Schwarz",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Abholung derzeit nicht verfügbar Shop-Informationen anzeigen",
+                "reason": "display_none",
+                "hint": "local-pickup.spacing-style.product__pickup-availabilities[data-section-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/impressum",
+            "kind": "legal",
+            "title": "Impressum – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/kontakt",
+            "kind": "contact",
+            "title": "Kontakt – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/ruckgaberecht",
+            "kind": "terms",
+            "title": "Rückgaberecht – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/products/flache-sandalen-zehenschlinge-gold-schwarz",
+            "kind": "product",
+            "title": "Flache Sandalen Zehenschlinge Gold Schwarz – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Deutschland",
+            "Adresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Deutschland",
+            "Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Germany"
+          ],
+          "phones": [
+            "+49 176 6499 1301"
+          ],
+          "emails": [
+            {
+              "address": "info@missmodaberlin.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 8690,
+        "outputTokens": 419,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001096,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://rimowa-store.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of rimowa-store.de (no RDAP server listed for .de).",
+            "rimowa-store.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 21 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Für die Reise gemacht. Für das Leben unterwegs.\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 12/100, 2 findings.",
+            "Payment red flags (low, terms): \"Im Checkout ist derzeit Vorkasse verfügbar.\"",
+            "Company details inconsistent (low, legal): \"Amtsgericht Köln Registernummer: AG Köln HRB 14213\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13724,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://rimowa-store.de/",
+            "kind": "home",
+            "title": "RIMOWA Koffer mit bis zu 450 € Rabatt | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/impressum/",
+            "kind": "legal",
+            "title": "Impressum | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/faq/rueckgabe-und-umtausch/",
+            "kind": "terms",
+            "title": "Rückgabe und Umtausch | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/produkte/classic-twelve-bottle-case-97390001/",
+            "kind": "product",
+            "title": "Classic Twelve Bottle Case #97390001 | RIMOWA.DE"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "RIMOWA GmbH",
+            "Google Inc.",
+            "Twitter Inc.",
+            "Hotjar Ltd."
+          ],
+          "addresses": [
+            "Auf unseren Seiten sind Plugins des sozialen Netzwerks Facebook, 1601 South California Avenue, Palo Alto, CA 94304, USA integriert."
+          ],
+          "phones": [
+            "+49 221-967 5910"
+          ],
+          "emails": [
+            {
+              "address": "info@rimowa-store.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 14213"
+            }
+          ],
+          "paymentMethods": [
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 10349,
+        "outputTokens": 131,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001118,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://scandiwarm.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "kinderschatz.com was registered on 2026-09-21 (41 days ago).",
+            "Registrar: Porkbun LLC.",
+            "kinderschatz.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 13 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on kinderschatz.com (1 hop).",
+            "Couldn't verify this store: the page showed no content (empty shell), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the page showed no content (empty shell), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the page showed no content (empty shell).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 10768,
+      "kernelError": "the page showed no content (empty shell)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://steadyhandtooling.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "steadyhandtooling.com was registered on 2025-11-03 (about 12 months ago).",
+            "Registrar: Web Commerce Communications Limited dba WebNic.cc.",
+            "steadyhandtooling.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 8 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on steadyhandtooling.com (2 hops)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Home\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 78/100, 6 findings.",
+            "Company details inconsistent (high, contact): \"TheodoreKratzim@outlook.com\"",
+            "Missing legal information (high, home): \"No company name, legal form, physical address, imprint or VAT number on any page read\"",
+            "Unrealistic discounts (high, home): \"Ursprünglicher Preis war: €560.08 ... Aktueller Preis ist: €100.28.\"",
+            "Unrealistic discounts (med, home): \"Ursprünglicher Preis war: €48.02 ... Aktueller Preis ist: €13.09.\"",
+            "Copied or generic text (med, contact): \"Kuratierte Exzellenz. Kein Zufall. ... Präzision, die verbindet. Qualität, die überzeugt.\"",
+            "Language mismatch (med, home): \"Découvrir\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 24414,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.steadyhandtooling.com/",
+            "kind": "home",
+            "title": "Befestigung, Elektrik & Werkzeug | Technischer Bedarf | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/uber-uns/",
+            "kind": "contact",
+            "title": "Über uns | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/ruckgaberichtlinie/",
+            "kind": "terms",
+            "title": "Rückgaberichtlinie | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/product/eaton-sicherungseinsatz-200d200r-fuse-200a-dv-500vac-type-gr/",
+            "kind": "product",
+            "title": "Eaton Sicherungseinsatz 200D200R FUSE 200A DV 500VAC TYPE GR | Steady Hand Tooling",
+            "hiddenText": [
+              {
+                "text": "Eaton Sicherungseinsatz 200D200R FUSE 200A DV 500VAC TYPE GR Menge",
+                "reason": "clipped",
+                "hint": "label.screen-reader-text",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "theodorekratzim@outlook.com",
+              "freeMail": true,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": true,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Sofort"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 5981,
+        "outputTokens": 371,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000801,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://werkstatt-teile.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "werkstatt-teile.com was registered on 2026-05-22 (about 5 months ago).",
+            "Registrar: Spaceship, Inc.",
+            "werkstatt-teile.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 44 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on werkstatt-teile.com (2 hops).",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 10099,
+      "kernelError": "blocked by a bot check (HTTP 403)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "rei.com was registered on 1996-03-13 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: rei.com is #4,772 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 130 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"REI Homepage: Outdoor Gear and Clothing\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 12/100, 2 findings.",
+            "Tried to instruct AI agents (high, home): \"div.ugc-gallery__item-overlay (opacity_0): hidden social-media captions with \"Shop now\" and like counts, hidden from human visitors\"",
+            "Fake scarcity or urgency (low, home): \"Limited time sale! Save up to 50% on selected cold weather gear and apparel at REI Outlet, thru 11/2.\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15327,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.rei.com/",
+            "kind": "home",
+            "title": "REI: A Life Outdoors is a Life Well Lived | REI Co-op",
+            "hiddenText": [
+              {
+                "text": "@melanietaryn's instagram image of REI Co-op Women's Trail 40 Pack Shop now@melanietaryn 99 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@cher_lucas's instagram image of Cotopaxi Women's Abrazo Fleece Full-Zip Jacket Cotopaxi Black S and New Balance Women's Fresh Foam X 880v15 Road-Running Shoes Black Cement/Sea Salt 6 Shop now@cher_lucas 110 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@niiiinaaa.__'s instagram image of Osprey Sportlite 25 Pack Shop now@niiiinaaa.__ 8251 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@zjshafereviews's instagram image of REI Co-op Men's Swiftland Thermal Running Hoodie Shop now@zjshafereviews 3 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@e_wa_trails's instagram image of REI Co-op Women's Campwell Down Jacket Shop now@e_wa_trails 52 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@annes_treks's instagram image of REI Co-op Trailmade 2 Tent with Footprint Rei Yellow Shop now@annes_treks",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@tracy_wv's instagram image of REI Co-op Women's 650 Down Full-Loft Jacket and Arc'teryx Bird Head Toque Beanie Solitude/Arctic Silk Shop now@tracy_wv 290 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@mels_outhiking's instagram image of Cotopaxi Kapai 1.5 L Del Dia Hip Pack Multi Shop now@mels_outhiking 166 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@alexandra_caitlyn's instagram image of Rumpl Original Puffy Blanket Seascape 1 Person and Teva Women's ReEmber Terrain Slip-Ons Shop now@alexandra_caitlyn 50 likes",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              },
+              {
+                "text": "@chenelleroams's instagram image of Osprey Women's Kyte 58 Pack Shop now@chenelleroams",
+                "reason": "opacity_0",
+                "hint": "div.ugc-gallery__item-overlay",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Mastercard"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50,
+            40,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5014,
+        "outputTokens": 177,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000608,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "johnlewis.com was registered on 1997-12-31 (about 28 years ago).",
+            "Registrar: Ascio Technologies, Inc. Danmark - Filial af Ascio technologies, Inc. USA.",
+            "Well-known site: johnlewis.com is #4,937 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 262 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"Create a space you love\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 5/100, 2 findings.",
+            "Tried to instruct AI agents (high, home): \"All you need to deck the halls this season\"",
+            "Tried to instruct AI agents (high, home): \"Designed in collaboration with care-experienced architectural designer Peter Dyer\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 29759,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.johnlewis.com/",
+            "kind": "home",
+            "title": "John Lewis & Partners | Never Knowingly Undersold",
+            "hiddenText": [
+              {
+                "text": "All you need to deck the halls this season",
+                "reason": "same_color",
+                "hint": "div.full-bleed-text-block-textBlock_subCopy--5eb23.full-bleed-text-block-textBlock_subCopy__isLightText--ca463",
+                "possibleInjection": false
+              },
+              {
+                "text": "Designed in collaboration with care-experienced architectural designer Peter Dyer",
+                "reason": "same_color",
+                "hint": "div.full-bleed-text-block-textBlock_subCopy--5eb23.full-bleed-text-block-textBlock_subCopy__isLightText--ca463",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/contact-us",
+            "kind": "contact",
+            "title": "Contact Us | Customer Services | John Lewis & Partners"
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/returns",
+            "kind": "terms",
+            "title": "Returns & Refunds | Customer Services | John Lewis & Partners"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "John Lewis Finance Limited",
+            "Creation Consumer Finance Limited",
+            "Creation Consumer Finance Ltd",
+            "General Insurance PLC",
+            "JOHN LEWIS PLC"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Company number",
+              "value": "15785347"
+            },
+            {
+              "type": "Company number",
+              "value": "NI032565"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            25,
+            20,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5742,
+        "outputTokens": 127,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000655,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://www.currys.co.uk/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "currys.co.uk was registered on 1996-11-13 (about 29 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: currys.co.uk is #6,254 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 94 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 12/100, 2 findings.",
+            "Tried to instruct AI agents (high, contact): \"We’ll secure its doors, so it doesn't leak water in our van.\"",
+            "Company details inconsistent (low, home): \"Currys Group Limited is a credit broker and offers the flexpay account under exclusive arrangement with the lender Creation Consumer Finance Ltd.\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 17778,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.currys.co.uk/",
+            "kind": "home",
+            "title": "Currys | Washing Machines, Laptops, TVs, Consoles",
+            "hiddenText": [
+              {
+                "text": "Sign up Subscribe to our newsletter for the latest news & unmissable offers",
+                "reason": "display_none",
+                "hint": "div.home-email-signup.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "Saved items limit reached (20/20) To save this item, try removing something else from your Saved items.",
+                "reason": "display_none",
+                "hint": "div.max-limit-reached-container.d-none",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.currys.co.uk/help-and-support.html",
+            "kind": "contact",
+            "title": "Help & Support | Currys",
+            "hiddenText": [
+              {
+                "text": "With Care & Repair, if your tech breaks down due to a fault or electrical problem, we'll fix it. Care & Repair is available for most of our products, except mobile phones. You must be over 16 years old to take out a Care & Repair plan. Your item must be in fully functioning condition to add a Care & Repair plan. Please call us on 0344 800 6080 to find out more about Care & Repair and discuss your options.",
+                "reason": "display_none",
+                "hint": "div.panel",
+                "possibleInjection": true
+              },
+              {
+                "text": "With Instant Replacement you get 3 years of unlimited replacements if your tech breaks down. We offer Instant Replacement for most of our products between £20-£150. You must be over 16 years old to take out an Instant Replacement plan. We can offer Instant Replacement in-store for products up to 12 months old, as long as they're in fully functioning condition. Find out more about our fantastic Instant Replacement service.",
+                "reason": "display_none",
+                "hint": "div.panel",
+                "possibleInjection": true
+              },
+              {
+                "text": "Yes, we do! Do you want us to recycle a large appliance, such as a washing machine, dishwasher or a large-screen TV? No problem! You can add our recycling service to your basket when you buy your new appliance. Please note, we recycle items on a like-for-like basis. The item we remove should be roughly the same size as the new one we deliver. Sometimes, we can remove a larger appliance, if we have room in our delivery van. You should disconnect your old appliance before we arrive. You don't need",
+                "reason": "display_none",
+                "hint": "div.panel",
+                "possibleInjection": true
+              }
+            ]
+          },
+          {
+            "url": "https://www.currys.co.uk/services/shopping-with-us/returns-refunds.html",
+            "kind": "terms",
+            "title": "Returns & Refunds | Currys",
+            "hiddenText": [
+              {
+                "text": "Faulty items* If your item is faulty, we're happy to offer you an exchange or a refund. You can do this within 30 days from when you bought it or had it delivered. If more than 30 days have passed since you bought or received your item, we might be able to repair it as long as it’s still within its guarantee period (usually 12 months from when you bought it). We can’t exchange, refund, or repair items that are faulty due to accidental damage, neglect, misuse, or normal wear and tear. Changed you",
+                "reason": "display_none",
+                "hint": "div.panel",
+                "possibleInjection": true
+              },
+              {
+                "text": "Need help with a tech problem? Our RepairLive experts will help diagnose and fix your problem over a call or arrange a repair or return if needed Call a RepairLive expert Welcome to RepairLive! Video call Need help with something? Let us diagnose & fix your issue over a video call. What do you need help with? Computing TV Mobile/Tablet White goods Need help with something else? Speak to our Webchat team. By clicking “Computing”, “TV” or “Mobile”, you agree to the Terms of Service, Privacy Policy",
+                "reason": "zero_size",
+                "hint": "div.repairLive",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.currys.co.uk/products/beko-bw1o3841bw-8-kg-1400-spin-washing-machine-white-10306274.html",
+            "kind": "product",
+            "title": "Buy BEKO BW1O3841BW 8 kg 1400 Spin Washing Machine - White | Currys",
+            "hiddenText": [
+              {
+                "text": "BEKO BW1O3841BW 8 kg 1400 Spin Washing Machine - White Add to basket Add to basket",
+                "reason": "display_none",
+                "hint": "div.pdp-sticky-header-wrapper.js-pdp-sticky-header-container",
+                "possibleInjection": false
+              },
+              {
+                "text": ".promise-price { line-height: 21px; text-align: left; } .promise-price div { color: #213038; } .promise-price .price-match-link { margin: 0; color: #4c12a1; text-decoration: underline; } .promise-price a { font-weight: 500; font-stretch: normal; font-style: normal; line-height: 1.5; letter-spacing: normal; color: #4c12a1 !important; } Found it cheaper? We’ll match it. We’ll price match against any other UK retailer, online or in-store. Exclusions (eg. ink) and conditions apply. Claim within 7 da",
+                "reason": "display_none",
+                "hint": "div.pdp-price-promise-copy-text.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "Free standard delivery on orders over £40 Save 25% on this when you buy with any large appliances Save 25% on this when you buy with any large appliances Buy any computing item & save £50 on McAfee LiveSafe Buy any computing item & save £50 on McAfee LiveSafe",
+                "reason": "display_none",
+                "hint": "div.col-12.promotions",
+                "possibleInjection": false
+              },
+              {
+                "text": "Available for delivery Get it tomorrow from £30 (order by 7pm) Standard delivery: £20 Choose your delivery day (Monday-Sunday) Morning, afternoon and evening slots",
+                "reason": "display_none",
+                "hint": "div.delivery-with-postcode.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "Add Care & Repair Breakdown support when you need it.",
+                "reason": "display_none",
+                "hint": "div.amp-min-hero-content",
+                "possibleInjection": false
+              },
+              {
+                "text": "Get breakdown support Join over 9 million Currys support plan customers. If your tech breaks down, we’ll fix it fast. If not we’ll replace it on request. That’s our 7 Day Fix Promise.",
+                "reason": "display_none",
+                "hint": "div.amp-breakdown-support",
+                "possibleInjection": false
+              },
+              {
+                "text": "Want Installation? Please choose delivery",
+                "reason": "display_none",
+                "hint": "div.installtion-recycling-warning.position-relative",
+                "possibleInjection": false
+              },
+              {
+                "text": "If you want Installation, please choose a deliverable item",
+                "reason": "display_none",
+                "hint": "div.delivery-unavailable-warning.position-relative",
+                "possibleInjection": false
+              },
+              {
+                "text": "If you want Recycling, please choose a deliverable item",
+                "reason": "display_none",
+                "hint": "div.delivery-unavailable-warning.position-relative",
+                "possibleInjection": false
+              },
+              {
+                "text": "Saved items limit reached (20/20) To save this item, try removing something else from your Saved items.",
+                "reason": "display_none",
+                "hint": "div.max-limit-reached-container.d-none",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Currys Group Limited",
+            "Creation Consumer Finance Ltd.",
+            "Wales No.07105905. Currys Retail Limited",
+            "Wales No.2142673. Currys Group Limited"
+          ],
+          "addresses": [
+            "LG Series 4 AI Direct Drive F4Y513WWLN1 13 kg 1400 Spin Washing Machine - White",
+            "LG Series 2 Direct Drive F4X1009NNK WiFi-enabled 9 kg 1400 Spin Washing Machine - Onyx Black"
+          ],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            25,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 9947,
+        "outputTokens": 156,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.00109,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://bettenreiter.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of bettenreiter.at (no RDAP server listed for .at).",
+            "bettenreiter.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 18 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on bettenreiter.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 25/100, 1 finding.",
+            "Tried to instruct AI agents (high, home): \"Die richtige Bettwäsche für ausgezeichnetes Schlafgefühl ... Seit mehr als 60 Jahren steht Bettenreiter für hochwertigen Schlafkomfort\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16875,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bettenreiter.at/",
+            "kind": "home",
+            "title": "Betten Reiter Online-Shop » Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Die richtige Bettwäsche für ausgezeichnetes Schlafgefühl Seit mehr als 60 Jahren steht Bettenreiter für hochwertigen Schlafkomfort und stilvolle Wohntextilien. Als österreichisches Familienunternehmen legen wir besonderen Wert auf Qualität, unsere Umwelt und persönliche Beratung – online wie in unseren Filialen. Unsere Produkte sind sorgfältig ausgewählt und verbinden Tradition mit modernem Design. Große Auswahl an Bettwäsche, Heimtextilien und Wohnaccessoires Hochwertige Materialien – von Baumw",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hochwertige Materialien Unsere Bettwäsche wird aus sorgfältig ausgewählten Materialien gefertigt – langlebig, hautfreundlich und mit viel Liebe zum Detail verarbeitet. Für traumhaften Schlaf, Nacht für Nacht. Große Auswahl Ob Baumwolle, Satin, Leinen oder Flanell – bei Bettenreiter findest du Bettwäsche für jede Jahreszeit und jeden Stil. Von zeitlos schlicht bis modern gemustert ist für jeden Geschmack etwas dabei. Geprüfte Qualität Viele unserer Produkte tragen das OEKO-TEX® Standard 100 Siege",
+                "reason": "opacity_0",
+                "hint": "section.usps.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Bewusst wohnen Bettenreiter steht für Qualität mit gutem Gewissen. Ausgezeichnet als Green Brand, mit regionaler Manufaktur in Oberösterreich, Fairtrade Cotton und unsere veganen Produkten verbinden wir bewusstes Handeln mit erholsamem Schlaf.",
+                "reason": "opacity_0",
+                "hint": "section.text-picture.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Deine Vorteile mit der Reiter Vorteilscard Profitiere von exklusiven Rabatten, besonderen Aktionen und attraktiven Bonusvorteilen. Mit der Reiter Vorteilscard sparst du bei jedem Einkauf – online und in unseren Filialen. Alle Infos zur Vorteilscard",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Betten Reiter. Hier liegen Sie richtig! Wir möchten, dass Sie gut schlafen! Weil jeder Mensch anders schläft, beraten wir Sie individuell zu Matratzen, Pölstern, Decken, Bettwäsche und Co. Unsere ausgebildeten SchlafberaterInnen berücksichtigen Ihre natürliche Liegeposition und fertigen maßgeschneiderte Matratzen für Sie an. Kurzum, wir legen uns ins Zeug, damit Sie jeden Morgen frisch und ausgeruht aufstehen können! Zusätzlich finden Sie bei uns eine große Auswahl an Vorhängen, Wohndecken, Zier",
+                "reason": "opacity_0",
+                "hint": "section.text-picture.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Newsletter abonnieren Mit diesem Newsletter liegen Sie richtig:Abonnieren Sie unseren kostenlosen Newsletter und sichern Sie sich einen € 7,77 Gutschein! „*“ zeigt erforderliche Felder an CompanyDieses Feld dient zur Validierung und sollte nicht verändert werden.Anrede* Frau Herr Divers Vorname*Nachname*E-Mail* Datenschutz* Ich möchte aktuelle Informationen über Angebote, Aktionen und Neuheiten per E-Mail erhalten (siehe Datenschutzhinweis). Diese Einwilligung kann jederzeit widerrufen werden. *",
+                "reason": "opacity_0",
+                "hint": "section.newsletter.aos-init[data-aos]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bettenreiter.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Betten Reiter Online-Shop – Hier liegen Sie richtig!"
+          },
+          {
+            "url": "https://www.bettenreiter.at/ueber-uns/",
+            "kind": "contact",
+            "title": "Über uns - Betten Reiter Online-Shop – Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Wir stellen uns vor Was als kleines Familienunternehmen 1953 begann, wuchs über die Jahrzehnte zu einem österreichischen Traditionsunternehmen, das aus der heimischen Textil- und Bettenszene nicht mehr wegzudenken ist. Wer sich eine neue Decke gönnt, der geht zum Reiter. Wer für sein Wohnzimmer neue Vorhänge sucht, der geht zum Reiter. Der Spezialist ist Profi auf diesen Gebieten und bietet seinen Kunden viele weitere hochwertige Textilien, die das Zuhause ein Stückchen gemütlicher machen.",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wer sind wir? Wir sind ein österreichisches Familienunternehmen mit Sitz in Leonding/Oberösterreich. Seit 1953 schlägt unser ganzes Herz für gesundes Schlafen und trendiges Wohnen. Zunächst nur im Raum Linz vertreten, sind wir mittlerweile in 18 Filialen für unsere Kunden da. Diese Dinge sind uns dabei von Anfang an wichtig: Kundennähe und persönliche Beratung, Top-Qualität zu besten Preisen und eine Firmenphilosophie, die den Mensch und unsere Umwelt in den Mittelpunkt stellt. Wohnen und Schlaf",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Was ist uns wichtig? Ein respektvoller Umgang mit Mensch und Natur: Dafür steht Betten Reiter. Das zeigt sich in unserem Handeln und Tun. Nicht nur was Produkte angeht, auch was die Unternehmensführung betrifft. Langjährige Mitarbeiter, ein stabiles Wachstum aus eigener Kraft zählen ebenso dazu, wie hochwertig produzierte Ware, Fairtrade oder Strom aus Wasserkraft. Wir versuchen stets Vorreiter zu sein und neue Trends zu setzen. So waren wir zum Beispiel die ersten, die Plastikverpackungen, wo m",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wer sind die führenden Köpfe? Cornelia Hildebrand und ihr Ehemann DI Peter Hildebrand halten 66,6% der Firmengruppe. 33,3% sind im Eigentum der Familie Dibelka. Die Führung der Unternehmensgruppe bilden Monika Zechmeister und DI Peter Hildebrand, welche Modernisierung und Expansion der Firma erfolgreich vorantreiben. Die Firma Reiter ist zu 100 % in österreichischem Besitz.",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bettenreiter.at/sortiment/",
+            "kind": "terms",
+            "title": "Sortiment - Betten Reiter Online-Shop – Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Entdecken Sie das vielfältige Olfactory Sortiment von Betten-Reiter und finden Sie hochwertige Raumdüfte, Duftkerzen und Home-Fr... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jetzt coole Bettwaren zu heißen Preisen shoppen! Damit Sie auch in heißen Nächten erholsamen Schlaf finden und gut erholt aufwac... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schmücken Sie Ihre Oase! Ein entspannendes Bad, die Dusche nach dem Sport oder das tägliche Frischmachen – das Bad ist ein Refug... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schöner essen Der Esstisch ist ein besonderer Ort: Hier kommt die Familie zusammen und man empfängt Freunde und Gäste. Wenn Sie ... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schlaf Kindlein, schlaf &#8230; Für Kinder ist das Leben ein Abenteuer. Sie wollen spielen, sich bewegen und etwas erleben. Dami... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hoppeln Sie zu Betten Reiter! Bald ist Ostern und damit DIE Gelegenheit, um frischen Frühlingswind in Ihr Zuhause zu bringen. Ob... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Der Schlaf ist die wichtigste Erholungsphase. Hier gönnen wir uns eine Auszeit und schöpfen Kraft für den nächsten Tag. Hochwert... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Neue Vorhänge schaffen Atmosphäre, schützen vor neugierigen Blicken und lassen genau so viel Licht herein, wie Sie möchten. Ob f... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ideen für ein weihnachtliches Zuhause Mit edler Tischwäsche, stimmungsvoller Beleuchtung und Dekoelementen entsteht im Handumdre... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Willkommen zu Hause! Nach einem langen Tag heimkommen und den Stress wie einen Mantel abstreifen – ein schönes Gefühl oder? Ein... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Vorhänge GmbH",
+            "Lemontec GmbH"
+          ],
+          "addresses": [
+            "Straße: Kornstraße 14, PLZ: 4060 Leonding, Österreich"
+          ],
+          "phones": [
+            "050 810 777",
+            "+43 50 810 777",
+            "+43 732 6799 7701"
+          ],
+          "emails": [
+            {
+              "address": "office@bettenreiter.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU 65118106"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 256860 k"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 11427,
+        "outputTokens": 122,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001221,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://bikepalast.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 15,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bikepalast.com was registered on 1997-04-14 (about 29 years ago).",
+            "Registrar: Ascio Technologies, Inc. Danmark - Filial af Ascio technologies, Inc. USA.",
+            "bikepalast.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 38 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on bikepalast.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 35/100, 5 findings.",
+            "Tried to instruct AI agents (high, legal): \"Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.\"",
+            "Copied or generic text (med, legal): \"{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}}\"",
+            "Company details inconsistent (med, contact): \"Bike & Style GmbH, Marktstraße 10, 5061 Elsbethen; phones +43 (0) 662 633 030 30 and +43(0)5224/21211\"",
+            "Unrealistic discounts (med, home): \"Hose Shimano Trail Shorts, Einzelstück -88% UVP 82,95 EUR Nur 10,00 EUR\"",
+            "Fake scarcity or urgency (low, home): \"Hose Pearl Izumi W Sugar Thermal Tight, Einzelstück -79%\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16362,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bikepalast.com/",
+            "kind": "home",
+            "title": "Bikepalast - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Aluminium Superlite, Gravity Casting Technology, Efficient Comfort Geometry, Boost148, Fully Integrated Battery, Integrated Carrier 3.0, Advanced Internal Cable Routing, 1.5 Headtube",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Gravity Casting Technology, Efficient Comfort Geometry, Boost148, UDH™, Fully Integrated Battery, Semi Integrated Carrier 2.1, Advanced Internal Cable Routing, Integrated Seatclamp",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Lieferzeit: von 4-7 Werktage bis Verfügbar ab: 26.05.2027",
+                "reason": "display_none",
+                "hint": "div.shipping.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "C:62® Monocoque Advanced Twin Mold Technology, Aluminium 6061 T6 Rear Triangle, Efficient Trail Control, FSP 4-Link, Agile Trail Geometry, Boost 148, UDH™, Full Integrated Battery, Advanced Internal Cable Routing",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Gravity Casting Technology, Agile Ride Geometry, Boost148, Fully Integrated Battery, Advanced Internal Cable Routing, 1.5 Headtube, Kickstand/Fender/Carrier Mounting Points",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "C:62® Advanced Twin Mold, Gravel Endurance Geometry, Advanced Internal Cable Routing, Flat Mount Disc, Fender/Rack & Kickstand Option, Boost 148, UDH™, Fixed Integrated Battery",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Lieferzeit: von 4-7 Werktage bis Verfügbar ab: 21.04.2027",
+                "reason": "display_none",
+                "hint": "div.shipping.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Comfort Ride Geometry, Premium Comfort And Safety, Semi-Integrated Carrier, Fully Integrated Battery, Advanced Internal Cable Routing",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "C:68X® Monocoque Advanced Twin Mold Technology, FSP 4-Link, Boost 148, UDH™",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Casting, Comfort Ride Geometry, Oversized Headtube, Premium Durability And Safety, Suspended Carrier, Downtube Carrier",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/impressum.html",
+            "kind": "legal",
+            "title": "Impressum - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/mein-kontakt.html",
+            "kind": "contact",
+            "title": "Kontakt - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/Widerrufsrecht-und-Muster-Widerrufsformular.html",
+            "kind": "terms",
+            "title": "Widerrufsrecht & Muster-Widerrufsformular - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Style GmbH"
+          ],
+          "addresses": [
+            "Marktstraße 10, 5061 Elsbethen"
+          ],
+          "phones": [
+            "+43 (0) 662 633 030 30",
+            "+43(0)5224/21211"
+          ],
+          "emails": [
+            {
+              "address": "info@bikepalast.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU71319708"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 458406b"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            88,
+            87,
+            79,
+            67,
+            56,
+            42,
+            38,
+            35,
+            30,
+            25
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 11146,
+        "outputTokens": 432,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001348,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://messerkoenig.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of messerkoenig.at (no RDAP server listed for .at).",
+            "messerkoenig.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 2 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on messerkoenig.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"PRÄZISE. GEDIEGEN.\nSCHARF.\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 0/100, 1 finding.",
+            "Tried to instruct AI agents (high, home): \"Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15832,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.messerkoenig.at/",
+            "kind": "home",
+            "title": "Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "aria_hidden",
+                "hint": "header.elementor.elementor-5683[data-elementor-type][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Home Shop Know how Über uns Kontakt FAQ Messer Schwerter Scheren Maniküre Zubehör Dienstleistungen Wissenswertes Workshops Mein Konto Wunschliste Impressum Datenschutzerklärung Widerrufsbelehrung Vertrag widerrufen AGB AGB - Online Shop Zahlung im WebshopZahlung vor Ort – Diese Zahlungsart ist nur bei Abholung möglich.Rechnung – Sie erhalten eine Rechnung, mit der Bitte um sofortige Überweisungper Kreditkarte – Bei der Kreditkartenzahlung gibt der Kunde folgende Daten an: Karteninhaber, Kartennu",
+                "reason": "aria_hidden",
+                "hint": "footer.elementor.elementor-3205[data-elementor-type][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es folgt eine Liste der Service-Gruppen, für die eine Einwilligung erteilt werden kann. Die erste Service-Gruppe ist essenziell und kann nicht abgewählt werden.",
+                "reason": "clipped",
+                "hint": "legend.brlbs-sr-only",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/widerrufsbelehrung/",
+            "kind": "terms",
+            "title": "Widerrufs­belehrung - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Vorgartenstraße 213, 1020 Wien"
+          ],
+          "phones": [
+            "+43 1 893 4172",
+            "+43 1 893 41 72 20"
+          ],
+          "emails": [
+            {
+              "address": "knifeking@messerkoenig.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "office@messerkoenig.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU12141902"
+            }
+          ],
+          "paymentMethods": [
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 8395,
+        "outputTokens": 137,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000926,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://tee-shop.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "prompt_injection_attempt"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of tee-shop.at (no RDAP server listed for .at).",
+            "tee-shop.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 33 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Moses Tee Shop:\nIhr Tee-Experte in Österreich\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 12/100, 1 finding.",
+            "Tried to instruct AI agents (high, home): \"Tee-Raritäten & Klassiker. Persönlich ausgewählt. Mit Liebe verpackt. (hidden same_color on home page, with other hidden text on the page asserting trust and authority in a hidden div)\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16669,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://tee-shop.at/",
+            "kind": "home",
+            "title": "Matcha, japanischer Tee & Ronnefeldt – Moses Tee Shop Österreich",
+            "hiddenText": [
+              {
+                "text": "Tee-Raritäten & Klassiker. Persönlich ausgewählt. Mit Liebe verpackt.",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Moses Tee Shop: Ihr Tee-Experte in Österreich",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Goldene Herbsttage – Zeit für eine Tasse Tee",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Tee, wie wir ihn lieben - seit fünf GenerationenDer Moses Tee Shop ist ein familiengeführtes Fachgeschäft in Dornbirn – seit fünf Generationen vor Ort verwurzelt und seit über 25 Jahren mit echter Leidenschaft dem hochwertigen Tee verschrieben. Was finden Sie bei uns? Neben einem großen Ronnefeldt Sortiment führen wir edlen Matcha, sorgfältig ausgewählte japanische Tees, aromatischen Chai, Mate und ausgesuchtes Zubehör für Ihre persönliche Teeauszeit.Wir legen Wert auf Herkunft, traditionelle Ve",
+                "reason": "opacity_0",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Matcha, japanischer Tee & Ronnefeldt – Moses Tee Shop Österreich",
+                "reason": "display_none",
+                "hint": "tool-tip[data-tool-tip]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Das perfekte Geschenk für jemanden, der schon alles hat? 🎁 Die Antwort ist einfach: Verschenke Ruhe und Entspannung. Im Moses Tea Shop in Dornbirn haben wir für jeden Anlass die passende Lösung. Von kleinen Aufmerksamkeiten wie feinem Chai über liebevolle Sets mit Tasse und Tee bis hin zur großen, individuell zusammengestellten Geschenkbox. Wir verpacken alles direkt bei uns im Laden mit viel Liebe zum Detail – so ist die Freude beim Auspacken garantiert. Komm bei uns in Dornbi",
+                "reason": "display_none",
+                "hint": "div#18452561188132621-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Schon unzählige Male an unserem Schaufenster in der Dornbirner Innenstadt vorbeigeschlendert und dich gefragt, was dich drinnen erwartet? 🍵✨ Ich bin Nan, Tee-Sommelier hier bei Moses, und ich lade dich auf eine kleine Entdeckungsreise in die Welt des Tees ein. Komm vorbei, lass dich beraten und entdecke deinen neuen Lieblingstee! 👇 📍 Moses Tee-Shop, Dornbirn 🔗 Mehr Infos auf www.tee-shop.at #teeliebe #dornbirn #teesommelier #teeliebe #teegenuss October 23",
+                "reason": "display_none",
+                "hint": "div#17983905858121120-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Ruhe in einer hektischen Welt finden. Mit der Moses tea selection bringen wir besondere Teekultur in deinen Alltag. 🌿✨ Entdecke unsere drei liebsten Kompositionen für deine Teeauszeit – natürlich, rein und komplett plastikfrei verpackt: 1️⃣ Griechischer Bergtee: Ein aromatischer Kräutertee mit würzigen Zitrus-Noten und Honig-Salbei-Nuancen. 2️⃣ China Tie Guan Yin: Ein hochwertiger Oolong-Tee mit blumigem Aroma und langanhaltendem Nachgeschmack. 3️⃣ Holunder mit Orange & Vanille",
+                "reason": "display_none",
+                "hint": "div#18038042501841583-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Japanische Teekultur für Zuhause: Entdecke die außergewöhnlichen Bio-Grüntees der Familie Morimoto aus Miyazaki. 🍃 Morimoto Sencha – Minami Sayaka: Ein feiner, charakterstarker Bio-Sencha mit erfrischender Eleganz. 🍃 Morimoto Yanagicha Bancha: Mild, bekömmlich und herrlich harmonisch – der ideale Begleiter für jeden Tag. Komm vorbei, lass dich beraten und hol dir deine persönliche Auszeit in der Tasse! 📍 Moses Tea Shop Marktstraße 11, 6850 Dornbirn #Dornbirn #Teeliebe #Grünte",
+                "reason": "display_none",
+                "hint": "div#18081046628382301-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop 🌿 Unser Tee der Woche: Der absolute Klassiker! 🌿 Kennt ihr schon den berühmten „Morgentau“ von Ronnefeldt? ✨ 🥭 Fruchtige Mango trifft auf erfrischende Zitrone 🍋 Eine cremig-säuerliche Komposition für den perfekten Frischekick Habt ihr den Morgentau schon probiert oder seid ihr eher Team Schwarztee? Schreibt es uns in die Kommentare oder kommt direkt bei uns in Dornbirn vorbei und schnuppert selbst! 👇🍵 #teederwoche #morgentau #ronnefeldt #tealife #dornbirn October 15",
+                "reason": "display_none",
+                "hint": "div#17914894566532078-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://tee-shop.at/policies/legal-notice",
+            "kind": "legal",
+            "title": "Impressum – Moses Tee Shop"
+          },
+          {
+            "url": "https://tee-shop.at/policies/refund-policy",
+            "kind": "terms",
+            "title": "Widerrufsrecht – Moses Tee Shop"
+          },
+          {
+            "url": "https://tee-shop.at/products/sparkling-tea",
+            "kind": "product",
+            "title": "Sparkling Tea bio aus Dänemark – Moses Tee Shop",
+            "hiddenText": [
+              {
+                "text": "Vielen Dank für Ihr Interesse. Wir benachrichtigen Sie, sobald der Artikel wieder verfügbar ist. Etwas ging schief. Bitte versuchen Sie es nochmals. Bei Verfügbarkeit benachrichtigen: Senden",
+                "reason": "display_none",
+                "hint": "div#da-restock-alerts-container-v1.da-restock-alerts-container-v1[data-daeligiblevariants]",
+                "possibleInjection": false
+              },
+              {
+                "text": "[{\"id\":39394675621962,\"title\":\"Lyserod alkoholfrei\",\"option1\":\"Lyserod alkoholfrei\",\"option2\":null,\"option3\":null,\"sku\":\"810-0001\",\"requires_shipping\":true,\"taxable\":true,\"featured_image\":{\"id\":28190207377482,\"product_id\":6660274356298,\"position\":1,\"created_at\":\"2021-09-12T11:38:42+02:00\",\"updated_at\":\"2021-09-12T11:39:16+02:00\",\"alt\":\"Sparkling Tea Lyserod bio#flasche_lyserod-alkoholfrei\",\"width\":1000,\"height\":1000,\"src\":\"\\/\\/tee-shop.at\\/cdn\\/shop\\/products\\/lyserod_sparkling_tea.pro.jpg?v=163",
+                "reason": "display_none",
+                "hint": "textarea.hide[data-variant-json][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Durchschnittliche Nährwerte pro 100ml Brennwert [kJ/kcal] 83/20 Fett [g] 0 davon gesättigte Fettsäuren [g] 0 Kohlenhydrate [g] 5 davon Zucker [g] 5 Eiweiß [g] 0 Salz [g] 0",
+                "reason": "display_none",
+                "hint": "li#tab2",
+                "possibleInjection": false
+              },
+              {
+                "text": "Verantwortliches Lebensmittelunternehmen: Copenhagen Sparkling Tea CompanyKAdmiralgade 21DK-1066 Kopenhagen",
+                "reason": "display_none",
+                "hint": "li#tab3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Filter löschenSortieren nachNeuesteÄltesteAm BeliebtestenAm Besten BewertetAufschlüsselung141000",
+                "reason": "display_none",
+                "hint": "div.R-DropUpDownMenu.R-DropUpDownMenu--md",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "CHA Ye GmbH",
+            "J.T. Ronnefeldt KG"
+          ],
+          "addresses": [
+            "A-6850 Dornbirn, Marktstraße 14"
+          ],
+          "phones": [
+            "+43 664 2584578",
+            "+43 5572 35114"
+          ],
+          "emails": [
+            {
+              "address": "kontakt@tee-shop.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU83246569"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            15,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 12979,
+        "outputTokens": 127,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001379,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://tauchversand.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "tauchversand.com was registered on 2000-02-09 (about 26 years ago).",
+            "Registrar: INWX GmbH.",
+            "tauchversand.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 62 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on tauchversand.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of \"Ihr online Tauchshop : Alles, was Sie fürs Tauchen brauchen\" on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 22/100, 3 findings.",
+            "Fake scarcity or urgency (med, legal): \"10% EXTRA-RABATT auf Ihren gesamten Warenkorbwert - NUR HEUTE!! 23Std. 50Min. 46Sek.\"",
+            "Unrealistic discounts (low, home): \"Bis zu 50% Rabatt auf ausgewählte Produkte! ANGEBOTE\"",
+            "Company details inconsistent (low, legal): \"Mailorder u. Service GmbH\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14523,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.tauchversand.com/",
+            "kind": "home",
+            "title": "Tauchen & Schnorcheln mit der passenden Tauchausrüstung | Divestore"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/impressum/",
+            "kind": "legal",
+            "title": "Impressum | Divestore & tauchversand.com"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/widerrufsrecht/",
+            "kind": "terms",
+            "title": "Widerrufsrecht bei Divestore & tauchversand.com"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Service GmbH",
+            "PORTICA GmbH"
+          ],
+          "addresses": [
+            "Beethovenstr. 9, 78234 Engen"
+          ],
+          "phones": [
+            "07733-996950"
+          ],
+          "emails": [
+            {
+              "address": "info@divestore.de",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE812841203"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 706714"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Sofort",
+            "Invoice",
+            "Cash on delivery"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 11733,
+        "outputTokens": 234,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.001308,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://dieroester.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of dieroester.at (no RDAP server listed for .at).",
+            "dieroester.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "The browser accepted the HTTPS certificate, but our own check didn't (CERT_HAS_EXPIRED).",
+            "Certificate issued by catchall.",
+            "Certificate is 768 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: the store returned an error page (HTTP 500), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 500), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 500).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 5230,
+      "kernelError": "the store returned an error page (HTTP 500)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://naehprinz.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of naehprinz.at (no RDAP server listed for .at).",
+            "naehprinz.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 38 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on naehprinz.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find the price of this item on this store."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-haiku-5-5): risk 8/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13540,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.naehprinz.at/",
+            "kind": "home",
+            "title": ""
+          },
+          {
+            "url": "https://www.naehprinz.at/Impressum",
+            "kind": "legal",
+            "title": "Impressum"
+          },
+          {
+            "url": "https://www.naehprinz.at/Wir-ueber-uns",
+            "kind": "contact",
+            "title": "Wir über uns"
+          },
+          {
+            "url": "https://www.naehprinz.at/Widerrufsrecht",
+            "kind": "terms",
+            "title": ""
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "F. Pflänzel GmbH"
+          ],
+          "addresses": [
+            "Gumpendorferstraße 151, A - 1060 Wien"
+          ],
+          "phones": [
+            "+43 1 597 41 65",
+            "+43 1 597 41 65 16"
+          ],
+          "emails": [
+            {
+              "address": "info@naehprinz.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU62531148"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 7869,
+        "outputTokens": 14,
+        "cacheReadTokens": 1763,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.000812,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    }
+  ]
+}
