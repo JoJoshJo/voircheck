@@ -1,8 +1,9 @@
 import type { Theme } from './types';
 
+// Palettes picked by J on Nov 1 (Velbrook "Glacier blue", Ondaya "Sage", Nyuie "Green & gold"); all pass WCAG AA.
 const velbrook: Theme = {
   layout: 'classic',
-  colors: { bg: '#F7F3EA', surface: '#FFFDF8', ink: '#1C2620', muted: '#5E6B62', accent: '#1F4D35', accentInk: '#FFFFFF', border: '#E3DCCB' },
+  colors: { bg: '#EEF3F6', surface: '#FFFFFF', ink: '#10222E', muted: '#52666F', accent: '#0F5E86', accentInk: '#FFFFFF', border: '#D5E0E6' },
   headingFont: 'Georgia, "Iowan Old Style", "Times New Roman", serif',
   bodyFont: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   radius: '4px',
@@ -10,7 +11,7 @@ const velbrook: Theme = {
 
 const ondaya: Theme = {
   layout: 'split',
-  colors: { bg: '#FBF7F4', surface: '#FFFFFF', ink: '#2B1E19', muted: '#7A675E', accent: '#B4532A', accentInk: '#FFFFFF', border: '#EFE3DB' },
+  colors: { bg: '#F3F5F0', surface: '#FFFFFF', ink: '#1F2A24', muted: '#5F6C63', accent: '#4E6E57', accentInk: '#FFFFFF', border: '#DFE5DC' },
   headingFont: '"Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif',
   bodyFont: '"Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif',
   radius: '18px',
@@ -18,7 +19,7 @@ const ondaya: Theme = {
 
 const nyuie: Theme = {
   layout: 'bold',
-  colors: { bg: '#FFFFFF', surface: '#F4F3FF', ink: '#16153A', muted: '#55537A', accent: '#2D2A8C', accentInk: '#FFD45C', border: '#E2E0F5' },
+  colors: { bg: '#FFFCF5', surface: '#FFF6DE', ink: '#1D1A10', muted: '#655E4A', accent: '#0E6B3F', accentInk: '#FFD23F', border: '#F0E6C8' },
   headingFont: '"Trebuchet MS", "Segoe UI", system-ui, sans-serif',
   bodyFont: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   radius: '10px',

@@ -463,7 +463,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - ✅ Fixed (Oct 30): a bot-check page ("Checking your browser…", heizungug.de in the eval) scored SAFE. Cause: the scanner judged the challenge page as if it were the shop. Now KERNEL waits up to 10 s for a challenge to clear; if a Cloudflare / DDoS-Guard / Imperva / PerimeterX / captcha wall (EN/DE/FR), a short 4xx/5xx error page or an empty shell remains, the page-based signals are "unavailable" ("blocked by a bot check") and the existing can't-verify rule applies (≥ HOLD). HTTPS/redirect facts from the real navigation still count.
 - ✅ Fixed (Oct 29): verdict label indentation.
 - ✅ Fixed (Oct 29): "No special rule applied. The score set the verdict." (EN + FR).
-- Demo store colors (J dislikes the current palette).
+- ✅ Fixed (Nov 1): demo store colors. J picked Velbrook "Glacier blue", Ondaya "Sage", Nyuie "Green & gold" (3 options each, all WCAG AA); scam twins copy them automatically.
 - Legit demo-store addresses: use clearly fictional ones; contact emails on domains we don't own.
 - "Pay anyway" link on the BLOCK screen is easy to miss next to "View the receipt" (keep it secondary, but more visible).
 - PayPal's own button is yellow (SDK default); check v6 styling options for a black/white button to fit Mono ink.
