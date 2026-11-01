@@ -464,7 +464,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - ✅ Fixed (Oct 29): verdict label indentation.
 - ✅ Fixed (Oct 29): "No special rule applied. The score set the verdict." (EN + FR).
 - ✅ Fixed (Nov 1): demo store colors. J picked Velbrook "Glacier blue", Ondaya "Sage", Nyuie "Green & gold" (3 options each, all WCAG AA); scam twins copy them automatically.
-- Legit demo-store addresses: use clearly fictional ones; contact emails on domains we don't own.
+- ✅ Fixed (Nov 1): legit demo-store contact emails were on domains we don't own (velbrooksupply.com etc.), so mail could reach real strangers. They now use `*.demo.voircheck.com` (we own voircheck.com). Addresses use invented towns with unassigned xx000 ZIPs; phones stay in the fictional 555-01xx range. Scam-store emails stay `example.com` until J's own addresses replace them (by Nov 10).
 - "Pay anyway" link on the BLOCK screen is easy to miss next to "View the receipt" (keep it secondary, but more visible).
 - PayPal's own button is yellow (SDK default); check v6 styling options for a black/white button to fit Mono ink.
 

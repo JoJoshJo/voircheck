@@ -66,4 +66,14 @@ describe('demo store config', () => {
   it('host routing returns nothing until domains are configured', () => {
     expect(storeSlugForHost('localhost:3001')).toBeUndefined();
   });
+
+  it('contact details are fictional: 555-01xx phones, invented towns, legit emails on demo.voircheck.com, scam emails on example.com', () => {
+    for (const store of STORES) {
+      const { email, phone, address } = store.contact;
+      if (phone) expect(phone).toMatch(/\b555-01\d{2}$/);
+      if (address) expect(address).toMatch(/, (Velbrook Falls|Ondaya Springs|Nyuie Crossing|Port Fennick), [A-Z]{2} \d{2}000$/);
+      if (store.role === 'legit') expect(email).toMatch(/^[a-z]+@[a-z]+\.demo\.voircheck\.com$/);
+      else expect(email).toMatch(/@example\.com$/);
+    }
+  });
 });

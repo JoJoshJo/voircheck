@@ -1,6 +1,8 @@
 /**
  * The six fictional demo stores (spec 5.8). Every name, address, phone number and product here
- * is made up; phone numbers use the reserved fictional 555-01xx range.
+ * is made up; phone numbers use the reserved fictional 555-01xx range, addresses use invented towns and
+ * unassigned xx000 ZIP codes, and legit-store emails are on demo.voircheck.com (a domain we own, so no
+ * stranger can receive them). Scam-store emails stay example.com until J's own addresses replace them.
  *
  * Legit stores are written by hand. Each scam/borderline store is built with cloneStore() from
  * its legit twin, so layout, copy and theme really are copied and clone detection fires for real.
@@ -100,8 +102,8 @@ const VELBROOK_SUPPLY: StoreConfig = {
     'If something is not right, write to us. A real person answers, usually the same day.',
   ],
   contact: {
-    email: 'help@velbrooksupply.com',
-    address: '418 Larkspur Avenue, Suite 200, Portland, OR 97205',
+    email: 'help@velbrook.demo.voircheck.com',
+    address: '418 Larkspur Trail, Suite 200, Velbrook Falls, OR 97000',
     phone: '(503) 555-0142',
     hours: 'Monday to Friday, 9 am – 5 pm Pacific',
   },
@@ -160,8 +162,8 @@ const ONDAYA_HOME: StoreConfig = {
     'Questions before you buy? Call or email us and we will give you a straight answer, even if that answer is "this is not the right product for you".',
   ],
   contact: {
-    email: 'hello@ondayahome.com',
-    address: '2207 Mesquite Lane, Austin, TX 78704',
+    email: 'hello@ondaya.demo.voircheck.com',
+    address: '2207 Quietwater Lane, Ondaya Springs, TX 75000',
     phone: '(512) 555-0117',
     hours: 'Monday to Saturday, 10 am – 6 pm Central',
   },
@@ -222,8 +224,8 @@ const NYUIE_MARKET: StoreConfig = {
     'Our team answers every message within one business day.',
   ],
   contact: {
-    email: 'care@nyuiemarket.com',
-    address: '75 Marigold Street, Columbus, OH 43215',
+    email: 'care@nyuie.demo.voircheck.com',
+    address: '75 Marigold Row, Nyuie Crossing, OH 43000',
     phone: '(614) 555-0163',
     hours: 'Monday to Friday, 9 am – 6 pm Eastern',
   },
@@ -273,7 +275,7 @@ const NYUIE_MARKET_CLEARANCE: StoreConfig = {
   // Fictional, on the reserved example domain so no real person can be affected.
   contact: {
     email: 'nyuie-clearance@example.com',
-    address: '1840 Harbor Drive, Unit 4, Toledo, OH 43604',
+    address: '1840 Lowtide Wharf, Unit 4, Port Fennick, OH 44000',
     phone: '(419) 555-0128',
     hours: 'Monday to Thursday, 10 am – 4 pm Eastern',
   },
