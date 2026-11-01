@@ -9,3 +9,5 @@ dist/
 *.local.json
 *.tsbuildinfo
 next-env.d.ts
+.claude/
+.vitest/
