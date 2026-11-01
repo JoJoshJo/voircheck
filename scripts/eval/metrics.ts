@@ -49,6 +49,10 @@ export type EvalRow =
       kernelError: string | null;
       /** Pages + facts collected for page analysis (evidence only, not scored). */
       collected?: CollectedEvidence;
+      /** AI page analysis tokens and cost for this scan (null when it was off or didn't call the model). */
+      ai?: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; costUsd: number; cached: boolean } | null;
+      /** The same scan scored without the AI signal (and its hard rule): the "before AI" comparison. */
+      withoutAi?: { verdict: Verdict; score: number };
     };
 export type ScannedRow = Extract<EvalRow, { outcome: 'scanned' }>;
 

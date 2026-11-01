@@ -59,6 +59,30 @@ export type SignalId = z.infer<typeof SignalId>;
 export const SignalStatus = z.enum(['pass', 'warn', 'fail', 'unavailable']);
 export type SignalStatus = z.infer<typeof SignalStatus>;
 
+/** What the AI page analysis (signal 4) can report. Fixed list; anything else is rejected. */
+export const AI_FINDING_KINDS = [
+  'prompt_injection_attempt',
+  'company_details_inconsistent',
+  'unrealistic_discounts',
+  'fake_scarcity_urgency',
+  'missing_legal_info',
+  'copied_or_generic_text',
+  'payment_red_flags',
+  'language_mismatch',
+] as const;
+export const AiFindingKind = z.enum(AI_FINDING_KINDS);
+export type AiFindingKind = z.infer<typeof AiFindingKind>;
+
+/** One AI finding. `quote` is copied from the page: untrusted text, rendered as plain text only. */
+export const AiFinding = z.object({
+  kind: AiFindingKind,
+  severity: z.enum(['low', 'med', 'high']),
+  quote: z.string().max(300),
+  /** Which page it was seen on (our page label, e.g. "home", "legal"), never a link. */
+  page: z.string().max(40),
+});
+export type AiFinding = z.infer<typeof AiFinding>;
+
 export const SignalResult = z.object({
   id: SignalId,
   status: SignalStatus,
@@ -67,13 +91,15 @@ export const SignalResult = z.object({
   evidence: z.array(z.string().max(500)).max(20),
   /** ai_page only: pages and facts collected for page analysis (evidence only, never scored by itself). */
   collected: CollectedEvidence.optional(),
+  /** ai_page only: the model's findings (validated; quotes are untrusted page text). */
+  findings: z.array(AiFinding).max(12).optional(),
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 
 export const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
 export type Verdict = z.infer<typeof Verdict>;
 
-export const HARD_RULES = ['threat_list_hit', 'no_valid_https', 'young_domain_cheap_price', 'cant_verify'] as const;
+export const HARD_RULES = ['threat_list_hit', 'no_valid_https', 'young_domain_cheap_price', 'cant_verify', 'prompt_injection_attempt'] as const;
 export const HardRule = z.enum(HARD_RULES);
 export type HardRule = z.infer<typeof HardRule>;
 

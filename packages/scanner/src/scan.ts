@@ -12,7 +12,7 @@ import { domainAgeSignal } from './signals/domain-age';
 import { evaluatePrice, findPriceNear, normalizeTitle } from './signals/price';
 import { evaluateSsl, makeTlsChecker, safeTlsCheck, type TlsChecker } from './signals/ssl';
 import { threatListSignal } from './signals/threat-list';
-import { errorMessage, unavailable, type Fetch, type ScanFacts, type SignalOutcome } from './signals/types';
+import { errorMessage, unavailable, type AiUsage, type Fetch, type ScanFacts, type SignalOutcome } from './signals/types';
 import { assertSafeUrlShape, resolvePublicHost, SsrfError, type Resolver } from './ssrf';
 
 export interface ScannerDeps {
@@ -37,7 +37,7 @@ export type ScanProgress =
 export interface ScanReport {
   result: ScanResult;
   /** Operational info for logs/cost tracking; not part of the user-facing result. */
-  meta: { kernelSessionSeconds: number | null; kernelError: string | null };
+  meta: { kernelSessionSeconds: number | null; kernelError: string | null; ai: AiUsage | null };
 }
 
 const okPage = (v: PageVisit | undefined): PageSnapshot | null => (v?.ok ? v.page : null);
@@ -172,7 +172,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return r;
     }),
     (deps.analyzer ?? placeholderAnalyzer)
-      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText })
+      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText, wellKnownRank: pop.rank })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
       .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
       .then((o): SignalOutcome => (collected ? { ...o, collected } : o))
@@ -201,6 +201,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     threatHit: threat.hit,
     kernelOk: !!targetPage,
     wellKnownRank: pop.rank,
+    aiInjection: ai.findings?.some((f) => f.kind === 'prompt_injection_attempt') ?? false,
   };
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {
@@ -216,5 +217,5 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     kernel: { sessionId: kernel?.sessionId ?? null, liveViewUrl: kernel?.liveViewUrl, replayUrl: kernel?.replayUrl },
     scannedAt: now.toISOString(),
   });
-  return { result, meta: { kernelSessionSeconds: kernel?.sessionSeconds ?? null, kernelError } };
+  return { result, meta: { kernelSessionSeconds: kernel?.sessionSeconds ?? null, kernelError, ai: ai.usage ?? null } };
 }

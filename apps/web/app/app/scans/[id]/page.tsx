@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { CollectedEvidence } from '../../../../components/CollectedEvidence';
+import { AiFindings, CollectedEvidence } from '../../../../components/CollectedEvidence';
 import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
@@ -58,12 +58,13 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
               </span>
             </div>
             <ul className="mt-3 space-y-1.5">
-              {s.evidence.map((e, i) => (
+              {(s.id === 'ai_page' && s.findings ? s.evidence.slice(0, 1) : s.evidence).map((e, i) => (
                 <li key={i} className="text-[14px] leading-relaxed text-muted">
                   {e}
                 </li>
               ))}
             </ul>
+            {s.id === 'ai_page' && s.findings ? <AiFindings findings={s.findings} t={t.evidence} /> : null}
             {s.id === 'ai_page' && s.collected ? <CollectedEvidence collected={s.collected} t={t.evidence} /> : null}
           </li>
         ))}

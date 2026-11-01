@@ -139,7 +139,7 @@ describe('scanStore', () => {
     );
     expect(signal(result, 'price').status).toBe('fail');
     expect(signal(result, 'clone').status).toBe('fail');
-    expect(signal(result, 'ai_page')).toMatchObject({ status: 'unavailable', points: 0, evidence: ['AI analysis not yet enabled'] });
+    expect(signal(result, 'ai_page')).toMatchObject({ status: 'unavailable', points: 0, evidence: ['AI page analysis is off (no Anthropic API key).'] });
     expect(result.verdict).toBe('BLOCK');
     expect(result.kernel).toEqual({ sessionId: 'sess_test', liveViewUrl: 'https://live.example.test/sess_test' });
   });

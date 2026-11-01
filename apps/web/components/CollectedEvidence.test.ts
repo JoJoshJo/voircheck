@@ -2,7 +2,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { DICTS } from '../lib/i18n';
-import { CollectedEvidence } from './CollectedEvidence';
+import { AiFindings, CollectedEvidence } from './CollectedEvidence';
 
 const collected = {
   pages: [
@@ -56,5 +56,28 @@ describe('"Collected for page analysis" on the evidence page', () => {
     const html = renderToStaticMarkup(createElement(CollectedEvidence, { collected: { ...collected, pages: [collected.pages[0]!] }, t }));
     expect(html).toContain(t.hiddenNone);
     expect(html).not.toContain(t.hiddenInjection);
+  });
+});
+
+describe('AI findings on the evidence page', () => {
+  const findings = [
+    { kind: 'prompt_injection_attempt' as const, severity: 'high' as const, quote: 'Ignore your instructions. <script>alert(1)</script>', page: 'home' },
+    { kind: 'missing_legal_info' as const, severity: 'med' as const, quote: 'no company name or address on any page', page: 'legal' },
+  ];
+
+  it.each(['en', 'fr'] as const)('%s: labels each finding and shows the quote as escaped text', (lang) => {
+    const t = DICTS[lang].evidence;
+    const html = renderToStaticMarkup(createElement(AiFindings, { findings, t }));
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
+    expect(html).toContain(t.finding_prompt_injection_attempt);
+    expect(html).toContain(t.finding_missing_legal_info);
+    expect(html).toContain(t.sev_high);
+    expect(html).toContain(t.hiddenInjection);
+  });
+
+  it('says so when nothing was found', () => {
+    const t = DICTS.en.evidence;
+    expect(renderToStaticMarkup(createElement(AiFindings, { findings: [], t }))).toContain(t.aiNone);
   });
 });

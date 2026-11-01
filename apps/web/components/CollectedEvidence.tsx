@@ -2,6 +2,36 @@ import type { SignalResult } from '@voircheck/scanner';
 import { fmt, type Dict } from '../lib/i18n';
 
 type Collected = NonNullable<SignalResult['collected']>;
+type Finding = NonNullable<SignalResult['findings']>[number];
+
+/**
+ * The AI page analysis findings (signal 4). Quotes are copied from the store's pages by the model: untrusted text,
+ * rendered as React text nodes only (escaped, never HTML), never as links.
+ */
+export function AiFindings({ findings, t }: { findings: Finding[]; t: Dict['evidence'] }) {
+  return (
+    <div className="mt-4 border-t border-line pt-4">
+      <h4 className="text-[14px] font-medium">{t.aiTitle}</h4>
+      <p className="mt-1 text-[13px] text-faint">{t.aiNote}</p>
+      {findings.length ? (
+        <ul className="mt-3 space-y-3">
+          {findings.map((f, i) => (
+            <li key={i}>
+              <p className="text-[14px] font-medium">
+                {f.kind === 'prompt_injection_attempt' ? <span className="mr-2 rounded-full bg-block-bg px-2 py-0.5 text-[13px] text-block">{t.hiddenInjection}</span> : null}
+                {t[`finding_${f.kind}`]} <span className="font-normal text-muted">· {t[`sev_${f.severity}`]}</span>
+              </p>
+              <blockquote className="mt-1 border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{f.quote}”</blockquote>
+              <p className="mt-1 pl-3 text-[13px] text-muted">{fmt(t.hiddenOn, { page: f.page })}</p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-[14px] text-muted">{t.aiNone}</p>
+      )}
+    </div>
+  );
+}
 
 /**
  * What the scan collected for page analysis (spec 5.5 multi-page evidence), under the AI signal. Everything here

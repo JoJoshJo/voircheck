@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { SIGNAL_IDS, type ScanReport, type SignalStatus, type Verdict } from '@voircheck/scanner';
 import { computeMetrics, loadStores, median, type EvalRow, type Label } from './metrics';
 import { checkReachability, classify, relatedDomains } from './reachability';
-import { markdownReport } from './report';
-import { mapPool, selectStores, toRow } from './run';
+import { aiCost, aiLines, markdownReport } from './report';
+import { mapPool, scoreWithoutAi, selectStores, toRow } from './run';
 
 const signals = (over: Partial<Record<(typeof SIGNAL_IDS)[number], SignalStatus>> = {}) =>
   SIGNAL_IDS.map((id) => ({ id, status: over[id] ?? (id === 'ai_page' ? 'unavailable' : 'pass'), points: 0, evidence: [`${id} evidence`] }));
@@ -200,7 +200,7 @@ describe('runner rows', () => {
         kernel: { sessionId: 'sess_secret', liveViewUrl: 'https://live.kernel.example/x?jwt=SECRET', replayUrl: 'https://replay.kernel.example/y?token=SECRET' },
         scannedAt: '2026-10-30T00:00:00.000Z',
       },
-      meta: { kernelSessionSeconds: 12, kernelError: null },
+      meta: { kernelSessionSeconds: 12, kernelError: null, ai: null },
     };
     const row = toRow({ url: 'https://a.test/', label: 'legit', split: 'holdout', source: 's', sourceUrl: 'https://s.test', addedOn: '', notes: '' }, report, 1234.6);
     const json = JSON.stringify(row);
@@ -219,5 +219,38 @@ describe('runner rows', () => {
     });
     expect(out).toEqual([2, 4, 6, 8, 10]);
     expect(peak).toBe(2);
+  });
+});
+
+describe('before vs after AI', () => {
+  const pts = (ai: number, rest: number) => [
+    { id: 'ai_page' as const, points: ai },
+    { id: 'price' as const, points: rest },
+  ];
+
+  it('re-scores without the AI points and without the prompt-injection floor; other floors stay', () => {
+    expect(scoreWithoutAi(pts(35, 40), ['prompt_injection_attempt'])).toEqual({ verdict: 'HOLD', score: 40 });
+    expect(scoreWithoutAi(pts(15, 0), ['prompt_injection_attempt'])).toEqual({ verdict: 'SAFE', score: 0 });
+    expect(scoreWithoutAi(pts(0, 0), ['threat_list_hit'])).toEqual({ verdict: 'BLOCK', score: 0 });
+    expect(scoreWithoutAi(pts(35, 70), [])).toEqual({ verdict: 'BLOCK', score: 70 });
+  });
+
+  it('shows both confusion lines and the AI cost (cached scans cost $0)', () => {
+    const ai = (costUsd: number, cached = false) => ({ inputTokens: cached ? 0 : 3000, outputTokens: cached ? 0 : 100, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd, cached });
+    const rows = [
+      scanned('https://s.test/', 'scam', 'HOLD', { withoutAi: { verdict: 'SAFE', score: 10 }, ai: ai(0.0004) }),
+      scanned('https://l.test/', 'legit', 'SAFE', { withoutAi: { verdict: 'SAFE', score: 0 }, ai: ai(0.0002) }),
+      scanned('https://c.test/', 'legit', 'SAFE', { withoutAi: { verdict: 'SAFE', score: 0 }, ai: ai(0, true) }),
+    ];
+    const c = aiCost(rows);
+    expect(c).toMatchObject({ scans: 3, calls: 2, cachedHits: 1, inputTokens: 6000 });
+    expect(c.totalUsd).toBeCloseTo(0.0006);
+    expect(c.perCallUsd).toBeCloseTo(0.0003);
+    const lines = aiLines(rows, { runAt: '', split: 'tune', commit: 'abc', aiAnalysis: 'on', aiModel: 'claude-haiku-5-5' });
+    expect(lines[0]).toContain('Without AI: scams caught 0/1');
+    expect(lines[1]).toContain('With AI (claude-haiku-5-5): scams caught 1/1');
+    expect(lines[2]).toContain('$0.0003 per scan');
+    expect(aiLines(rows, { runAt: '', split: 'tune', commit: 'abc', aiAnalysis: 'off' })).toEqual([]);
+    expect(markdownReport(computeMetrics(rows), rows, { runAt: '2026-11-01T00:00:00Z', split: 'tune', commit: 'abc', aiAnalysis: 'on', aiModel: 'claude-haiku-5-5' })).toContain('## Before vs after AI');
   });
 });

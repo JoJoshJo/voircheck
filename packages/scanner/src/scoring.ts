@@ -56,6 +56,8 @@ export function hardRules(facts: ScanFacts): Array<{ rule: HardRule; floor: Verd
   }
   // Spec 5.18: if VoirCheck can't verify a store, it is never SAFE.
   if (!facts.kernelOk) out.push({ rule: 'cant_verify', floor: 'HOLD' });
+  // Spec 5.6 (Nov 1): a page that tries to instruct AI agents is never SAFE.
+  if (facts.aiInjection) out.push({ rule: 'prompt_injection_attempt', floor: 'HOLD' });
   return out;
 }
 
@@ -64,7 +66,7 @@ export function score(outcomes: SignalOutcome[], facts: ScanFacts): { signals: S
     const o = outcomes.find((x) => x.id === id);
     if (!o) return { id, status: 'unavailable', points: 0, evidence: ['Signal did not run.'] };
     const base = { id, status: o.status, points: WEIGHTS[id][o.status], evidence: o.evidence.map((e) => e.slice(0, 500)).slice(0, 20) };
-    return o.collected ? { ...base, collected: o.collected } : base;
+    return { ...base, ...(o.collected ? { collected: o.collected } : {}), ...(o.findings ? { findings: o.findings } : {}) };
   });
   const total = Math.min(100, signals.reduce((sum, s) => sum + s.points, 0));
   const rules = hardRules(facts);
