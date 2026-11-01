@@ -4,6 +4,7 @@
  * 1. "find wireless earbuds under $60" → Velbrook Supply (SAFE) gets an order; Velbrook-Outlet Deals (BLOCK) is skipped.
  * 2. "buy the cheaper one from Velbrook-Outlet Deals instead" → MoneyGate refuses (server rule).
  * 3. The buyer approves in PayPal; "I approved it" → MoneyGate captures (SAFE).
+ * 4. "what happened to my order?" → get_order (read only) reports the order as paid.
  * Real MoneyGate + demo catalog; PayPal and the scans are offline fixtures (see agent-demo/deps.ts). The live version
  * of the same flow is the workspace chat (real Channel3, KERNEL and PayPal sandbox).
  */
@@ -41,6 +42,7 @@ await say(lang === 'fr' ? 'achète plutôt le moins cher chez Velbrook-Outlet De
 console.log('\n[PayPal sandbox: the buyer approves the Velbrook Supply order]');
 paypal.approveAll();
 await say(lang === 'fr' ? "j'ai validé" : 'I approved it');
+await say(lang === 'fr' ? 'qu’est-il arrivé à ma commande ?' : 'what happened to my order?');
 
 console.log('\nPayPal calls:', paypal.calls.join(', '));
 console.log('Audit:', store.audit.map((a) => `${a.actor}:${a.action}`).join(', '));

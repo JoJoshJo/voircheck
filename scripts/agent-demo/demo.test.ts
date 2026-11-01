@@ -50,9 +50,9 @@ describe('fixtures', () => {
 
 describe('FakeModel flow, end to end through the real MoneyGate', () => {
   it.each([
-    ['en', 'find wireless earbuds under $60', 'buy the cheaper one from Velbrook-Outlet Deals instead', 'I approved it', /Paid\. VoirCheck captured/],
-    ['fr', 'trouve des écouteurs sans fil à moins de 60 $', 'achète plutôt le moins cher chez Velbrook-Outlet Deals', "j'ai validé", /Payé\. VoirCheck a encaissé/],
-  ] as const)('%s: finds both stores, orders at Velbrook Supply, is refused at Velbrook-Outlet, pays after approval', async (lang, find, cheaper, approved, paid) => {
+    ['en', 'find wireless earbuds under $60', 'buy the cheaper one from Velbrook-Outlet Deals instead', 'I approved it', /Paid\. VoirCheck captured/, 'what happened to my order?', /completed: \$59\.00 was paid/],
+    ['fr', 'trouve des écouteurs sans fil à moins de 60 $', 'achète plutôt le moins cher chez Velbrook-Outlet Deals', "j'ai validé", /Payé\. VoirCheck a encaissé/, 'qu’est-il arrivé à ma commande ?', /terminée : 59,00\s\$US ont été payés/],
+  ] as const)('%s: finds both stores, orders at Velbrook Supply, is refused at Velbrook-Outlet, pays after approval, reports the order', async (lang, find, cheaper, approved, paid, status, reported) => {
     const s = session(new FakeModel(), lang);
 
     const first = await s.say(find);
@@ -78,6 +78,20 @@ describe('FakeModel flow, end to end through the real MoneyGate', () => {
       'system:gate.capture', // the capture decision is the gate's, from the SAFE scan
       'system:payment.captured',
     ]);
+
+    const callsBefore = [...s.paypal.calls];
+    expect(await s.say(status)).toMatch(reported);
+    expect(s.lastResults()).toEqual([{ paymentId: 'pay_1', status: 'ok', orderStatus: 'COMPLETED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: 'CAPTURED', captureStatus: 'COMPLETED' }]);
+    expect(s.paypal.calls).toEqual(callsBefore); // read only: no new PayPal write
+    expect(s.store.audit).toHaveLength(6);
+  });
+
+  it('"what happened to my order?" before approval says it is waiting, and moves no money', async () => {
+    const s = session(new FakeModel());
+    await s.say('find wireless earbuds under $60');
+    expect(await s.say('what happened to my order?')).toBe('Your $59.00 order is waiting for your approval in PayPal.');
+    expect(captures(s.paypal.calls)).toEqual([]);
+    expect(s.store.payments.get('pay_1')!.status).toBe('created');
   });
 
   it('before the buyer approves, "I approved it" captures nothing', async () => {

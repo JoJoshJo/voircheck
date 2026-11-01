@@ -4,6 +4,7 @@ import type { AgentMessage, ModelClient, ModelRequest, ModelTurn, ToolCall } fro
  * Scripted, deterministic stand-in for the real model (no Anthropic key yet). It reads only what the real model would
  * read (the user's words and our tool results as JSON) and follows the system prompt's rules in code:
  * search → check every store → trust first, then price → prepare the order at the best SAFE store → let the gate decide.
+ * "What happened to my order?" reads the latest order's status with get_order (read only).
  * Same conversation in, same turn out. Tool-call IDs are numbered from the conversation length, never random.
  */
 
@@ -14,6 +15,13 @@ interface Store {
   productTitle: string;
   price: string | null;
   currency: string;
+}
+interface OrderStatus {
+  status?: string;
+  orderStatus?: string;
+  amount?: { value: string; currency: string } | null;
+  authorizationStatus?: string | null;
+  captureStatus?: string | null;
 }
 interface Verdict {
   storeId: string;
@@ -43,6 +51,16 @@ const T = {
     settled: (st: string) => (st === 'captured' ? 'Paid. VoirCheck captured the payment.' : st === 'authorized' ? 'The money is held, not taken. You decide on the store card.' : st === 'voided' ? 'VoirCheck released the hold; nothing was charged.' : `The payment is ${st}.`),
     noOrder: "There's no order waiting yet.",
     failed: "That didn't work. Try again in a moment.",
+    orderState: (o: OrderStatus) => {
+      const amt = orderMoney(o, 'en');
+      if (o.captureStatus === 'COMPLETED') return `PayPal shows your order as completed: ${amt} was paid.`;
+      if (o.authorizationStatus === 'VOIDED') return `PayPal shows the hold on ${amt} was released; nothing was charged.`;
+      if (o.authorizationStatus === 'CREATED') return `PayPal shows ${amt} held, not taken yet.`;
+      if (o.orderStatus === 'APPROVED') return `You approved the ${amt} order in PayPal; it isn't settled yet. Tell me when you're done and I'll ask VoirCheck to settle it.`;
+      if (o.orderStatus === 'PAYER_ACTION_REQUIRED' || o.orderStatus === 'CREATED') return `Your ${amt} order is waiting for your approval in PayPal.`;
+      return `PayPal shows the order as ${o.orderStatus}.`;
+    },
+    orderUnknown: "I couldn't look up that order right now.",
   },
   fr: {
     ask: 'Que cherchez-vous ? Dites-moi l’article et, si vous voulez, un budget.',
@@ -63,12 +81,27 @@ const T = {
     settled: (st: string) => (st === 'captured' ? 'Payé. VoirCheck a encaissé le paiement.' : st === 'authorized' ? 'L’argent est bloqué, pas prélevé. Vous décidez sur la carte de la boutique.' : st === 'voided' ? 'VoirCheck a libéré le blocage ; rien n’a été prélevé.' : `Le paiement est : ${st}.`),
     noOrder: 'Aucune commande n’attend pour l’instant.',
     failed: 'Ça n’a pas marché. Réessayez dans un instant.',
+    orderState: (o: OrderStatus) => {
+      const amt = orderMoney(o, 'fr');
+      if (o.captureStatus === 'COMPLETED') return `PayPal indique que votre commande est terminée : ${amt} ont été payés.`;
+      if (o.authorizationStatus === 'VOIDED') return `PayPal indique que le blocage de ${amt} a été libéré ; rien n’a été prélevé.`;
+      if (o.authorizationStatus === 'CREATED') return `PayPal indique que ${amt} sont bloqués, pas encore prélevés.`;
+      if (o.orderStatus === 'APPROVED') return `Vous avez validé la commande de ${amt} dans PayPal ; elle n’est pas encore réglée. Dites-moi quand c’est fait et je demanderai à VoirCheck de la régler.`;
+      if (o.orderStatus === 'PAYER_ACTION_REQUIRED' || o.orderStatus === 'CREATED') return `Votre commande de ${amt} attend votre validation dans PayPal.`;
+      return `PayPal indique le statut : ${o.orderStatus}.`;
+    },
+    orderUnknown: 'Je n’ai pas pu consulter cette commande pour l’instant.',
   },
 } as const;
 
 function money(s: Store, lang: Lang): string {
   if (!s.price) return lang === 'fr' ? 'un prix inconnu' : 'an unknown price';
   return new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: s.currency }).format(Number(s.price));
+}
+
+function orderMoney(o: OrderStatus, lang: Lang): string {
+  if (!o.amount) return lang === 'fr' ? 'la commande' : 'the order';
+  return new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: o.amount.currency }).format(Number(o.amount.value));
 }
 
 function reasonEn(v: Verdict): string {
@@ -82,6 +115,8 @@ const BUY_OTHER_RE = /\b(buy|order|pay|get it|achète|commande|paye)\b.*\b(from|
 const FOLLOW_UP_RE = /\b(cheaper|cheapest|instead|that one|this one|moins cher|plutôt|celle-ci|celle-là)\b/i;
 // No trailing \b: it never matches after an accented letter ("validé").
 const APPROVED_RE = /\b(approved|i paid|paid it|done|j['’]ai (payé|validé|approuvé)|c['’]est validé)(?=$|[\s.,;:!?])/i;
+
+const STATUS_RE = /\b(what happened to my order|where(?: is|'s) my order|order status|status of my order|où en est ma commande|qu['’]est-il arrivé à ma commande|statut de (?:ma|la) commande)/i;
 
 export function parseShoppingRequest(text: string): { query: string; maxPrice: number | null } | null {
   const m = text.match(PRICE_RE);
@@ -127,14 +162,19 @@ export class FakeModel implements ModelClient {
     const history = toolHistory(messages);
     const latest = <R>(name: string) => [...history].reverse().find((h) => h.name === name && !h.isError)?.result as R | undefined;
     const stores = latest<{ status: string; stores?: Store[] }>('search_products')?.stores ?? [];
+    // The latest order that exists (a later refusal doesn't replace it).
+    const latestOrder = () => [...history].reverse().find((h) => h.name === 'create_order' && !h.isError && (h.result as { paymentId?: string } | null)?.paymentId)?.result as { paymentId?: string } | undefined;
 
     if (!last) return say(t.ask);
 
     if (last.role === 'user') {
       const text = last.text;
+      if (STATUS_RE.test(text)) {
+        const order = latestOrder();
+        return order?.paymentId ? { text: '', toolCalls: [call('get_order', { paymentId: order.paymentId })] } : say(t.noOrder);
+      }
       if (APPROVED_RE.test(text)) {
-        // The latest order that exists (a later refusal doesn't replace it).
-        const order = [...history].reverse().find((h) => h.name === 'create_order' && !h.isError && (h.result as { paymentId?: string } | null)?.paymentId)?.result as { paymentId?: string } | undefined;
+        const order = latestOrder();
         return order?.paymentId ? { text: '', toolCalls: [call('request_payment', { paymentId: order.paymentId })] } : say(t.noOrder);
       }
       // A follow-up about earlier results ("the cheaper one", "instead") with no results in this chat: ask, don't search.
@@ -197,6 +237,11 @@ export class FakeModel implements ModelClient {
       const r = results[0]?.data as { status?: string } | null;
       if (results[0]?.isError || !r?.status) return say(t.failed);
       return say(r.status === 'waiting_for_buyer' ? t.waiting : t.settled(r.status));
+    }
+
+    if (names[0] === 'get_order') {
+      const r = results[0]?.data as OrderStatus | null;
+      return say(!results[0]?.isError && r?.status === 'ok' && r.orderStatus ? t.orderState(r) : t.orderUnknown);
     }
     return say(t.ask);
   }

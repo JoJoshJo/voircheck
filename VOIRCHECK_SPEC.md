@@ -110,7 +110,7 @@
   - Four tools: `search_products` (Channel3 via `compareStores`, budget filter, demo pair when Demo mode is ON), `get_scan_verdict` (structured summary only, see 5.13), `create_order` (MoneyGate `agentStartPurchase`), `request_payment` (MoneyGate `completeApproval`). No capture, void, override or auto-pay tool exists.
   - The model names stores by our candidate IDs only. URLs, prices and scan IDs stay server-side in the conversation (process memory, 2h TTL; one web instance, spec 5.16). A restart starts the chat over.
   - Web: `/api/agent` streams NDJSON to the workspace chat (EN + FR): store cards, live scan checklist, verdicts, evidence links, refusals, and a pay step that opens the agent's prepared order with the PayPal JS SDK. Agent scans share `runStoreScan` with check-a-link (KERNEL only, 24h cache, scan limits).
-  - `pnpm agent:demo [--fr]`: the earbuds demo offline (real MoneyGate + demo catalog; fake PayPal and fixture scans matching the Oct 31 live scans).
+  - `pnpm agent:demo [--fr]`: the earbuds demo offline (real MoneyGate + demo catalog; fake PayPal and fixture scans matching the Oct 31 live scans). Steps: find earbuds → order at the SAFE store; buy from the BLOCK store → refused; "I approved it" → captured; "what happened to my order?" → `get_order` reports it paid (read only).
 
 ### 5.4 Product search ✅
 - **Source:** Channel3 API (real retailers; promo credits). Must be called for real, since the sponsor prize requires actual API calls.
