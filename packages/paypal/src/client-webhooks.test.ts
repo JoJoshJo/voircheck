@@ -183,4 +183,14 @@ describe('webhooks', () => {
     const pp = fakePayPal();
     expect(await handleWebhook({ headers: SIG, rawBody: 'not json' }, { paypal: pp.client, webhookId: 'WH-1', store })).toMatchObject({ httpStatus: 400 });
   });
+
+  it('wrong shape (zod) → 400 before PayPal is asked; unknown fields still reach the signature check unchanged', async () => {
+    const { pp, send } = await withPayment();
+    expect(await send({ id: 42, event_type: 'PAYMENT.AUTHORIZATION.CREATED' })).toMatchObject({ httpStatus: 400, outcome: 'invalid' });
+    expect(await send({ ...authCreated, resource: { ...authCreated.resource, status: { not: 'a string' } } })).toMatchObject({ httpStatus: 400 });
+    expect(pp.callsTo(/verify-webhook-signature/)).toHaveLength(0);
+    const extra = { ...authCreated, id: 'WH-EVT-X', create_time: '2026-11-02T00:00:00Z', links: [{ rel: 'self' }] };
+    await send(extra);
+    expect((pp.callsTo(/verify-webhook-signature/)[0]!.body as Record<string, unknown>).webhook_event).toEqual(extra);
+  });
 });

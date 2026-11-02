@@ -1,7 +1,8 @@
 // @voircheck/paypal — PayPal REST (sandbox only), server-side money gate, verified webhooks (spec 5.7 / 5.17).
-// captureAuthorization and chargeVaultedWallet are deliberately NOT exported: money only moves through MoneyGate.
+// captureAuthorization, voidAuthorization, reauthorizeAuthorization and chargeVaultedWallet are deliberately NOT exported:
+// money only moves through MoneyGate.
 export { PayPalClient, PayPalApiError, PAYPAL_SANDBOX_BASE_URL, TOKEN_REFRESH_MARGIN_MS, type PayPalClientOptions } from './client';
-export { createOrder, getOrder, authorizeOrder, voidAuthorization, approvalLink, firstAuthorization, firstCapture, toMoney, type Order, type CreateOrderInput, type Money } from './orders';
+export { createOrder, getOrder, authorizeOrder, approvalLink, firstAuthorization, firstCapture, toMoney, type Order, type CreateOrderInput, type Money } from './orders';
 export {
   MoneyGate,
   decideCapture,

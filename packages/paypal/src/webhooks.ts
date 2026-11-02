@@ -2,6 +2,7 @@ import type { PayPalClient } from './client';
 import { requestIdFor } from './gate';
 import type { GateStore, PaymentRow, PaymentStatus } from './store';
 import { redactWebhookPayload } from './webhook-redact';
+import { z } from 'zod';
 
 /**
  * PayPal webhooks (spec 5.7 / 5.17 #4): verify every signature with PayPal, record each event once keyed on
@@ -11,16 +12,21 @@ import { redactWebhookPayload } from './webhook-redact';
 
 const SIG_HEADERS = ['paypal-auth-algo', 'paypal-cert-url', 'paypal-transmission-id', 'paypal-transmission-sig', 'paypal-transmission-time'] as const;
 
-export interface WebhookEvent {
-  id: string;
-  event_type: string;
-  resource?: {
-    id?: string;
-    status?: string;
-    supplementary_data?: { related_ids?: { order_id?: string; authorization_id?: string } };
-    metadata?: { order_id?: string };
-  };
-}
+/** The fields we read. Loose: PayPal's signature check needs the event exactly as sent, unknown fields included. */
+const Id = z.string().min(1).max(200);
+export const WebhookEvent = z.looseObject({
+  id: Id,
+  event_type: Id,
+  resource: z
+    .looseObject({
+      id: Id.optional(),
+      status: z.string().max(100).optional(),
+      supplementary_data: z.looseObject({ related_ids: z.looseObject({ order_id: Id.optional(), authorization_id: Id.optional() }).optional() }).optional(),
+      metadata: z.looseObject({ order_id: Id.optional() }).optional(),
+    })
+    .optional(),
+});
+export type WebhookEvent = z.infer<typeof WebhookEvent>;
 
 export async function verifyWebhookSignature(paypal: PayPalClient, webhookId: string, headers: Record<string, string | undefined>, event: unknown): Promise<boolean> {
   const h = Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
@@ -57,13 +63,15 @@ export interface WebhookDeps {
 }
 
 export async function handleWebhook(req: { headers: Record<string, string | undefined>; rawBody: string }, deps: WebhookDeps): Promise<WebhookOutcome> {
-  let event: WebhookEvent;
+  let json: unknown;
   try {
-    event = JSON.parse(req.rawBody) as WebhookEvent;
+    json = JSON.parse(req.rawBody);
   } catch {
     return { httpStatus: 400, outcome: 'invalid', reason: 'body is not JSON' };
   }
-  if (typeof event?.id !== 'string' || typeof event.event_type !== 'string') return { httpStatus: 400, outcome: 'invalid', reason: 'missing event id/type' };
+  const parsed = WebhookEvent.safeParse(json);
+  if (!parsed.success) return { httpStatus: 400, outcome: 'invalid', reason: 'missing event id/type' };
+  const event = parsed.data;
 
   let verified = false;
   try {
