@@ -2,6 +2,7 @@ import { demoPeersForUrl } from '@voircheck/agent/search';
 import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
+import { clientIp } from '../../../lib/client-ip';
 import { checkScanLimits } from '../../../lib/rate-limit';
 import { runStoreScan } from '../../../lib/scan-runner';
 import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } from '../../../lib/scans';
@@ -34,7 +35,7 @@ export async function POST(req: Request) {
 
   const demoMode = demoModeFrom((await cookies()).get(DEMO_COOKIE)?.value);
   const cached = parsed.data.rescan ? null : await findFreshScan(url);
-  const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+  const ip = clientIp(await headers());
   const limit = await checkScanLimits({ userId: user.id, isGuest: user.isGuest, ip, fresh: !cached });
   if (!limit.ok) return oneShot({ type: 'error', code: 'rate' }, 429);
 

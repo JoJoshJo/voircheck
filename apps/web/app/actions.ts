@@ -5,6 +5,7 @@ import { randomBytes } from 'node:crypto';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getAuth } from '../lib/auth/server';
+import { clientIp } from '../lib/client-ip';
 import { getDb } from '../lib/db';
 import { GUEST_EMAIL_DOMAIN } from '../lib/guest';
 import { allowDemoCreation } from '../lib/rate-limit';
@@ -17,7 +18,7 @@ import { DEMO_COOKIE } from '../lib/workspace';
  * Preset: English, Demo mode ON, Auto-pay OFF. Onboarding is skipped.
  */
 export async function startDemo(): Promise<{ error: string } | never> {
-  const ip = (await headers()).get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+  const ip = clientIp(await headers());
   if (!allowDemoCreation(ip)) return { error: 'rate' };
 
   const id = randomBytes(9).toString('base64url').toLowerCase().replace(/[^a-z0-9]/g, 'x');

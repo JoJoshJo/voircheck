@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { agentModel, ConversationBudgetError, openConversation, runChatTurn } from '../../../lib/agent-runtime';
 import type { AgentEvent } from '../../../lib/agent-view';
 import { isLang } from '../../../lib/i18n';
+import { clientIp } from '../../../lib/client-ip';
 import { allowAgentRequest } from '../../../lib/rate-limit';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
   conv.busy = true;
 
   const h = await headers();
-  const ip = h.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+  const ip = clientIp(h);
   const origin = process.env.APP_URL?.replace(/\/$/, '') ?? `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
   const demoMode = demoModeFrom((await cookies()).get(DEMO_COOKIE)?.value);
   const lang = isLang(profile.language) ? profile.language : 'en';
