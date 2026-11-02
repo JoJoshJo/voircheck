@@ -571,6 +571,266 @@
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-10-30",
       "notes": "Small independent certified shop: hammock shop."
+    },
+    {
+      "url": "https://anhangerkloock-de.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/anhangerkloock-decom/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://anhangerholz.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/anhangerholzde/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://emelies-worlo.shop/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/emelies-worloshop/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://emyeliesworldgoods.shop/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/emyeliesworldgoodsshop/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://feuerholzadler.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/feuerholzadlerde/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://holz-warme.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/holz-warmede/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://leevitox.shop/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/leevitoxshop/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://solarloesungen-shop-de.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Watchlist Internet (fake-shop list)",
+      "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/solarloesungen-shop-decom/",
+      "addedOn": "2026-11-02",
+      "reportedOn": "2026-11-01",
+      "notes": "Listed as fraudulent shop since 2026-11-01; not on the Verbraucherzentrale warning list (checked 2026-11-02)."
+    },
+    {
+      "url": "https://www.walmart.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Walmart",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: US general retailer."
+    },
+    {
+      "url": "https://www.homedepot.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Home_Depot",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: US home improvement retailer."
+    },
+    {
+      "url": "https://www.newegg.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Newegg",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: US online electronics retailer."
+    },
+    {
+      "url": "https://www.boots.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Boots_(company)",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: UK pharmacy and beauty retailer."
+    },
+    {
+      "url": "https://www.waterstones.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Waterstones",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: UK bookseller."
+    },
+    {
+      "url": "https://www.leroymerlin.fr/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Leroy_Merlin",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: French home improvement retailer."
+    },
+    {
+      "url": "https://www.cdiscount.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Cdiscount",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: French online retailer."
+    },
+    {
+      "url": "https://www.laredoute.fr/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/La_Redoute",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: French fashion and home retailer."
+    },
+    {
+      "url": "https://www.maisonsdumonde.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Maisons_du_Monde",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: French furniture and decor retailer."
+    },
+    {
+      "url": "https://www.conrad.de/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Conrad_Electronic",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: German electronics retailer."
+    },
+    {
+      "url": "https://www.galaxus.de/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Digitec_Galaxus",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: Swiss online retailer (German shop)."
+    },
+    {
+      "url": "https://www.douglas.de/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Wikipedia (established retailer)",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Douglas_(company)",
+      "addedOn": "2026-11-02",
+      "notes": "Big retailer: German perfume and cosmetics retailer."
+    },
+    {
+      "url": "https://al-holz.at/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://aureperlia.at/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://funstasy.at/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://www.heysimeon.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://lottacurls.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://maluch.at/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2026 (hard case: new and small)."
+    },
+    {
+      "url": "https://dorascheesecake.com/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2025 (hard case: new and small)."
+    },
+    {
+      "url": "https://natur-versand.at/",
+      "label": "legit",
+      "split": "holdout",
+      "source": "Österreichisches E-Commerce-Gütezeichen (certified shop list)",
+      "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
+      "addedOn": "2026-11-02",
+      "notes": "Small certified shop, certified since 2024 (hard case: new and small)."
     }
   ]
 }

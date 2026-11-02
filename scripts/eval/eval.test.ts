@@ -115,9 +115,9 @@ describe('eval metrics', () => {
 
 describe('dataset', () => {
   const stores = loadStores(JSON.parse(readFileSync(new URL('../../eval/stores.json', import.meta.url), 'utf8')));
-  it('every entry has a named source; split is ~1/3 tune per label', () => {
+  it('every entry has a named source; outside holdout, split is ~1/3 tune per label', () => {
     for (const label of ['scam', 'legit'] as const) {
-      const xs = stores.filter((s) => s.label === label);
+      const xs = stores.filter((s) => s.label === label && s.split !== 'holdout');
       expect(xs.length).toBeGreaterThanOrEqual(25);
       const tune = xs.filter((s) => s.split === 'tune').length / xs.length;
       expect(tune).toBeGreaterThan(0.25);
@@ -134,6 +134,11 @@ describe('dataset', () => {
     expect(() => loadStores(holdout())).toThrow(/after 2026-10-31/);
     expect(loadStores(holdout('2026-11-02'))[0]).toMatchObject({ split: 'holdout', reportedOn: '2026-11-02' });
     expect(() => loadStores({ stores: [{ url: 'https://a.test/', label: 'legit', split: 'test', source: 's', sourceUrl: 'https://s.test/' }] })).toThrow(/split must be/);
+  });
+  it('holdout stores are new: no shop appears twice in the dataset', () => {
+    const hosts = stores.map((s) => new URL(s.url).hostname.replace(/^www\./, ''));
+    expect(new Set(hosts).size).toBe(hosts.length);
+    expect(stores.filter((s) => s.split === 'holdout' && s.label === 'scam').every((s) => s.reportedOn && s.reportedOn > '2026-10-31')).toBe(true);
   });
   it('rejects entries without a source', () => {
     expect(() => loadStores({ stores: [{ url: 'https://a.test/', label: 'scam', split: 'tune', source: '', sourceUrl: '' }] })).toThrow(/named source/);
