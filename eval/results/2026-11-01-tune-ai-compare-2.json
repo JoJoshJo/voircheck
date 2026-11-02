@@ -1,0 +1,497 @@
+{
+  "day": "2026-11-01",
+  "promptVersion": "v2",
+  "models": [
+    "claude-haiku-5-5",
+    "claude-sonnet-5-5"
+  ],
+  "rows": [
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "results": {},
+      "note": "dead (unreachable: ENOTFOUND)"
+    },
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 35,
+          "status": "warn",
+          "kinds": [
+            "copied_or_generic_text",
+            "copied_or_generic_text",
+            "company_details_inconsistent",
+            "unrealistic_discounts"
+          ],
+          "costUsd": 0.001579,
+          "inputTokens": 11885,
+          "outputTokens": 301
+        },
+        "claude-sonnet-5-5": {
+          "risk": 50,
+          "status": "warn",
+          "kinds": [
+            "copied_or_generic_text",
+            "fake_scarcity_urgency",
+            "copied_or_generic_text",
+            "unrealistic_discounts",
+            "company_details_inconsistent",
+            "payment_red_flags"
+          ],
+          "costUsd": 0.033953,
+          "inputTokens": 11885,
+          "outputTokens": 538
+        }
+      }
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 35,
+          "status": "warn",
+          "kinds": [
+            "prompt_injection_attempt",
+            "payment_red_flags",
+            "copied_or_generic_text",
+            "company_details_inconsistent",
+            "unrealistic_discounts"
+          ],
+          "costUsd": 0.001031,
+          "inputTokens": 6295,
+          "outputTokens": 323
+        },
+        "claude-sonnet-5-5": {
+          "risk": 58,
+          "status": "warn",
+          "kinds": [
+            "missing_legal_info",
+            "copied_or_generic_text",
+            "unrealistic_discounts",
+            "payment_red_flags",
+            "company_details_inconsistent",
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.016514,
+          "inputTokens": 6295,
+          "outputTokens": 354
+        }
+      }
+    },
+    {
+      "url": "https://pureshoerack.com/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 22,
+          "status": "pass",
+          "kinds": [
+            "unrealistic_discounts",
+            "company_details_inconsistent",
+            "language_mismatch"
+          ],
+          "costUsd": 0.000944,
+          "inputTokens": 5779,
+          "outputTokens": 251
+        },
+        "claude-sonnet-5-5": {
+          "risk": 62,
+          "status": "warn",
+          "kinds": [
+            "copied_or_generic_text",
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "language_mismatch",
+            "copied_or_generic_text",
+            "missing_legal_info"
+          ],
+          "costUsd": 0.020851,
+          "inputTokens": 5779,
+          "outputTokens": 449
+        }
+      }
+    },
+    {
+      "url": "https://missmodaberlin.de/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 22,
+          "status": "pass",
+          "kinds": [
+            "company_details_inconsistent",
+            "missing_legal_info",
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.001212,
+          "inputTokens": 8690,
+          "outputTokens": 205
+        },
+        "claude-sonnet-5-5": {
+          "risk": 58,
+          "status": "warn",
+          "kinds": [
+            "unrealistic_discounts",
+            "missing_legal_info",
+            "company_details_inconsistent",
+            "copied_or_generic_text",
+            "language_mismatch"
+          ],
+          "costUsd": 0.026013,
+          "inputTokens": 8690,
+          "outputTokens": 383
+        }
+      }
+    },
+    {
+      "url": "https://rimowa-store.de/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 12,
+          "status": "pass",
+          "kinds": [
+            "payment_red_flags",
+            "company_details_inconsistent"
+          ],
+          "costUsd": 0.001134,
+          "inputTokens": 10349,
+          "outputTokens": 160
+        },
+        "claude-sonnet-5-5": {
+          "risk": 82,
+          "status": "fail",
+          "kinds": [
+            "payment_red_flags",
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "copied_or_generic_text",
+            "unrealistic_discounts"
+          ],
+          "costUsd": 0.025322,
+          "inputTokens": 10349,
+          "outputTokens": 424
+        }
+      }
+    },
+    {
+      "url": "https://scandiwarm.com/",
+      "label": "scam",
+      "results": {},
+      "note": "dead (unreachable: ENOTFOUND)"
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 35,
+          "status": "warn",
+          "kinds": [
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "payment_red_flags",
+            "language_mismatch"
+          ],
+          "costUsd": 0.001498,
+          "inputTokens": 12947,
+          "outputTokens": 369
+        },
+        "claude-sonnet-5-5": {
+          "risk": 30,
+          "status": "warn",
+          "kinds": [
+            "payment_red_flags",
+            "company_details_inconsistent",
+            "missing_legal_info",
+            "language_mismatch",
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.030468,
+          "inputTokens": 12947,
+          "outputTokens": 419
+        }
+      }
+    },
+    {
+      "url": "https://steadyhandtooling.com/",
+      "label": "scam",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 82,
+          "status": "fail",
+          "kinds": [
+            "unrealistic_discounts",
+            "unrealistic_discounts",
+            "company_details_inconsistent",
+            "missing_legal_info",
+            "missing_legal_info",
+            "payment_red_flags",
+            "copied_or_generic_text",
+            "language_mismatch"
+          ],
+          "costUsd": 0.00087,
+          "inputTokens": 5947,
+          "outputTokens": 512
+        },
+        "claude-sonnet-5-5": {
+          "risk": 88,
+          "status": "fail",
+          "kinds": [
+            "unrealistic_discounts",
+            "unrealistic_discounts",
+            "missing_legal_info",
+            "company_details_inconsistent",
+            "copied_or_generic_text",
+            "copied_or_generic_text",
+            "language_mismatch"
+          ],
+          "costUsd": 0.021457,
+          "inputTokens": 5947,
+          "outputTokens": 476
+        }
+      }
+    },
+    {
+      "url": "https://werkstatt-teile.com/",
+      "label": "scam",
+      "results": {},
+      "note": "no page read (blocked / error page)"
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 6,
+          "status": "pass",
+          "kinds": [
+            "fake_scarcity_urgency"
+          ],
+          "costUsd": 0.000811,
+          "inputTokens": 5235,
+          "outputTokens": 95
+        },
+        "claude-sonnet-5-5": {
+          "risk": 3,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.010994,
+          "inputTokens": 5235,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 5,
+          "status": "pass",
+          "kinds": [
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.000622,
+          "inputTokens": 5742,
+          "outputTokens": 58
+        },
+        "claude-sonnet-5-5": {
+          "risk": 3,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.016427,
+          "inputTokens": 5742,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://www.currys.co.uk/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 12,
+          "status": "pass",
+          "kinds": [
+            "missing_legal_info",
+            "payment_red_flags"
+          ],
+          "costUsd": 0.00127,
+          "inputTokens": 9702,
+          "outputTokens": 120
+        },
+        "claude-sonnet-5-5": {
+          "risk": 3,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.019928,
+          "inputTokens": 9702,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://bettenreiter.at/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.001098,
+          "inputTokens": 10717,
+          "outputTokens": 14
+        },
+        "claude-sonnet-5-5": {
+          "risk": 3,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.026377,
+          "inputTokens": 10717,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://bikepalast.com/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 30,
+          "status": "warn",
+          "kinds": [
+            "unrealistic_discounts",
+            "unrealistic_discounts",
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "copied_or_generic_text",
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.001682,
+          "inputTokens": 11729,
+          "outputTokens": 537
+        },
+        "claude-sonnet-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [
+            "unrealistic_discounts",
+            "unrealistic_discounts"
+          ],
+          "costUsd": 0.030131,
+          "inputTokens": 11729,
+          "outputTokens": 187
+        }
+      }
+    },
+    {
+      "url": "https://messerkoenig.at/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.001087,
+          "inputTokens": 8395,
+          "outputTokens": 14
+        },
+        "claude-sonnet-5-5": {
+          "risk": 4,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.021733,
+          "inputTokens": 8395,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://tee-shop.at/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.001324,
+          "inputTokens": 12971,
+          "outputTokens": 15
+        },
+        "claude-sonnet-5-5": {
+          "risk": 4,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.026466,
+          "inputTokens": 12971,
+          "outputTokens": 14
+        }
+      }
+    },
+    {
+      "url": "https://tauchversand.com/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 22,
+          "status": "pass",
+          "kinds": [
+            "company_details_inconsistent",
+            "company_details_inconsistent",
+            "fake_scarcity_urgency",
+            "unrealistic_discounts"
+          ],
+          "costUsd": 0.001324,
+          "inputTokens": 11694,
+          "outputTokens": 271
+        },
+        "claude-sonnet-5-5": {
+          "risk": 12,
+          "status": "pass",
+          "kinds": [
+            "fake_scarcity_urgency",
+            "company_details_inconsistent"
+          ],
+          "costUsd": 0.025722,
+          "inputTokens": 11694,
+          "outputTokens": 195
+        }
+      }
+    },
+    {
+      "url": "https://dieroester.at/",
+      "label": "legit",
+      "results": {},
+      "note": "no page read (blocked / error page)"
+    },
+    {
+      "url": "https://naehprinz.at/",
+      "label": "legit",
+      "results": {
+        "claude-haiku-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [],
+          "costUsd": 0.000814,
+          "inputTokens": 7873,
+          "outputTokens": 15
+        },
+        "claude-sonnet-5-5": {
+          "risk": 8,
+          "status": "pass",
+          "kinds": [
+            "copied_or_generic_text"
+          ],
+          "costUsd": 0.01705,
+          "inputTokens": 7873,
+          "outputTokens": 92
+        }
+      }
+    }
+  ]
+}
