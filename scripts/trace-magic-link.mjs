@@ -15,11 +15,16 @@ if (!link) {
   console.error('usage: node scripts/trace-magic-link.mjs "<link>" [appOrigin]');
   process.exit(2);
 }
-const red = (u) => u.replace(/(token|neon_auth_session_verifier|state|code)=([^&]+)/g, (_, k, v) => `${k}=<${v.length} chars>`);
+// Query secrets, and any long path segment (some providers put the token in the path).
+const redPath = (p) => p.replace(/[^/]{24,}/g, (v) => `<${v.length} chars>`);
+const red = (u) => {
+  const url = new URL(u);
+  return `${url.origin}${redPath(url.pathname)}${url.search}`.replace(/(token|neon_auth_session_verifier|state|code)=([^&]+)/g, (_, k, v) => `${k}=<${v.length} chars>`);
+};
 const jar = new Map();
 const cookieHeader = () => [...jar].map(([k, v]) => `${k}=${v}`).join('; ');
 let url = link;
-console.log(`link host: ${new URL(link).host}  path: ${new URL(link).pathname}`);
+console.log(`link host: ${new URL(link).host}  path: ${redPath(new URL(link).pathname)}`);
 if (exchange) {
   const res = await fetch(link, { redirect: 'manual' });
   const loc = res.headers.get('location');

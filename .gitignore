@@ -12,3 +12,5 @@ next-env.d.ts
 .claude/
 .vitest/
 .cache/
+# Written by `next dev` (agent instructions for Next.js); not part of the project.
+apps/web/AGENTS.md
