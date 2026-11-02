@@ -19,7 +19,8 @@ export interface ToolResult {
 
 export type AgentMessage =
   | { role: 'user'; text: string }
-  | { role: 'assistant'; text: string; toolCalls: ToolCall[] }
+  /** `raw` = the provider's own content blocks for this turn (thinking blocks included), replayed unchanged. */
+  | { role: 'assistant'; text: string; toolCalls: ToolCall[]; raw?: unknown }
   | { role: 'tool'; results: ToolResult[] };
 
 export interface ToolSpec {
@@ -37,9 +38,19 @@ export interface ModelRequest {
   lang: 'en' | 'fr';
 }
 
+export interface ModelUsage {
+  inputTokens: number;
+  outputTokens: number;
+  cacheReadTokens: number;
+  cacheWriteTokens: number;
+  costUsd: number;
+}
+
 export interface ModelTurn {
   text: string;
   toolCalls: ToolCall[];
+  raw?: unknown;
+  usage?: ModelUsage;
 }
 
 export interface ModelClient {
@@ -47,7 +58,7 @@ export interface ModelClient {
   respond(req: ModelRequest): Promise<ModelTurn>;
 }
 
-/** Spec 5.13: Sonnet 5.5 runs the agent. (🟡 proposed, not built: AGENT_MODEL to develop on Haiku 5.5.) */
+/** Spec 5.13: Sonnet 5.5 runs the agent (env AGENT_MODEL overrides). */
 export const AGENT_MODEL_ID = 'claude-sonnet-5-5';
 
 export class MissingModelKeyError extends Error {
@@ -57,16 +68,13 @@ export class MissingModelKeyError extends Error {
   }
 }
 
-/**
- * The real model, not wired yet: the Anthropic key arrives by Nov 3 (spec 5.13). Without a key it throws "no key".
- * With a key it still refuses until the SDK call is written, so a key alone never sends anything to the API.
- */
-export class AnthropicModel implements ModelClient {
-  readonly id = AGENT_MODEL_ID;
-  constructor(private readonly apiKey: string | undefined) {}
-
-  respond(): Promise<ModelTurn> {
-    if (!this.apiKey) return Promise.reject(new MissingModelKeyError());
-    return Promise.reject(new Error('AnthropicModel is a stub: the Messages API call is not written yet'));
+/** The model API can't be used right now (out of credit, bad key, overloaded, network). The chat says so calmly. */
+export class ModelUnavailableError extends Error {
+  constructor(
+    readonly reason: 'credit' | 'auth' | 'overloaded' | 'network' | 'other',
+    detail: string,
+  ) {
+    super(`agent model unavailable (${reason}): ${detail.slice(0, 200)}`);
+    this.name = 'ModelUnavailableError';
   }
 }

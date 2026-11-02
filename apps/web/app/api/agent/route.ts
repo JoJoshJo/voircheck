@@ -1,7 +1,7 @@
-import { MissingModelKeyError } from '@voircheck/agent';
+import { MissingModelKeyError, ModelUnavailableError } from '@voircheck/agent';
 import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
-import { agentModel, openConversation, runChatTurn } from '../../../lib/agent-runtime';
+import { agentModel, ConversationBudgetError, openConversation, runChatTurn } from '../../../lib/agent-runtime';
 import type { AgentEvent } from '../../../lib/agent-view';
 import { isLang } from '../../../lib/i18n';
 import { allowAgentRequest } from '../../../lib/rate-limit';
@@ -54,7 +54,8 @@ export async function POST(req: Request) {
         await runChatTurn({ convId, conv, userId: user.id, isGuest: user.isGuest, ip, demoMode, origin, lang, text: parsed.data.message, send });
         send({ type: 'done' });
       } catch (err) {
-        send({ type: 'error', code: err instanceof MissingModelKeyError ? 'model' : 'failed' });
+        // Out of credit, bad key, overloaded: a calm "not available" (the link check still works); a budget hit = limit.
+        send({ type: 'error', code: err instanceof MissingModelKeyError || err instanceof ModelUnavailableError ? 'model' : err instanceof ConversationBudgetError ? 'rate' : 'failed' });
         console.error('agent turn failed:', err instanceof Error ? err.message : 'unknown error');
       } finally {
         conv.busy = false;

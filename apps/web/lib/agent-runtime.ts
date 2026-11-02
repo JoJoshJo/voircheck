@@ -1,5 +1,5 @@
 import 'server-only';
-import { AGENT_SYSTEM_PROMPT, agentOrderStatus, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
+import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
 import { assertSafeUrlShape } from '@voircheck/scanner';
 import type { AgentEvent } from './agent-view';
 import { getPayPal } from './paypal';
@@ -24,7 +24,12 @@ interface Conversation {
   payments: Set<string>;
   busy: boolean;
   touchedAt: number;
+  /** Model spend so far (logged per turn; the conversation stops at MAX_CONVERSATION_USD). */
+  costUsd: number;
 }
+
+/** Cost guard on top of the per-user hourly limit: one conversation never spends more than this on the model. */
+export const MAX_CONVERSATION_USD = 0.5;
 
 const TTL_MS = 2 * 3_600_000;
 const MAX_CONVERSATIONS = 500;
@@ -46,18 +51,33 @@ export function openConversation(userId: string, id: string | null): { id: strin
     found.touchedAt = now;
     return { id: id!, conv: found };
   }
-  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), busy: false, touchedAt: now };
+  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), busy: false, touchedAt: now, costUsd: 0 };
   const newId = crypto.randomUUID();
   conversations.set(newId, conv);
   return { id: newId, conv };
 }
 
 /**
- * The real model isn't wired yet (no Anthropic key until Nov 3, and AnthropicModel is still a stub), so the app runs
- * the scripted FakeModel. Switching = return `new AnthropicModel(process.env.ANTHROPIC_API_KEY)` here.
+ * Claude (AGENT_MODEL, default Sonnet 5.5) when ANTHROPIC_API_KEY is set; the scripted FakeModel without a key or with
+ * AGENT_MODEL=fake (offline demo). One client per process.
  */
+const gm = globalThis as typeof globalThis & { __voircheckAgentModel?: AnthropicModel };
 export function agentModel(): { model: ModelClient; kind: 'fake' | 'claude' } {
-  return { model: new FakeModel(), kind: 'fake' };
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || process.env.AGENT_MODEL === 'fake') return { model: new FakeModel(), kind: 'fake' };
+  return { model: (gm.__voircheckAgentModel ??= new AnthropicModel({ apiKey, model: process.env.AGENT_MODEL || undefined })), kind: 'claude' };
+}
+
+const STOPPED = {
+  en: 'I stopped here to keep this short. Tell me what you’d like to do next.',
+  fr: 'Je m’arrête ici pour rester bref. Dites-moi ce que vous voulez faire ensuite.',
+} as const;
+
+export class ConversationBudgetError extends Error {
+  constructor() {
+    super('this conversation reached its model budget');
+    this.name = 'ConversationBudgetError';
+  }
 }
 
 // One Agent Toolkit reader per process (it caches its token for an hour). Read-only get_order, sandbox forced.
@@ -171,7 +191,8 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
 /** One chat turn for this user. Streams events through `send`; returns when the agent has answered. */
 export async function runChatTurn(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; lang: 'en' | 'fr'; text: string; send: (e: AgentEvent) => void }) {
   const { model } = agentModel();
-  const { messages } = await runAgentTurn({
+  if (o.conv.costUsd >= MAX_CONVERSATION_USD) throw new ConversationBudgetError();
+  const { messages, stopped, usage, modelCalls } = await runAgentTurn({
     model,
     tools: shoppingTools(webDeps(o)),
     system: AGENT_SYSTEM_PROMPT,
@@ -181,4 +202,10 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
     onEvent: (e) => e.type === 'assistant_text' && o.send({ type: 'text', text: e.text }),
   });
   o.conv.messages = messages;
+  o.conv.costUsd += usage.costUsd;
+  if (stopped === 'max_steps') o.send({ type: 'text', text: STOPPED[o.lang] });
+  if (modelCalls && usage.costUsd)
+    console.log(
+      `[agent] ${model.id} conv ${o.convId.slice(0, 8)}: ${modelCalls} calls, in ${usage.inputTokens} (cache read ${usage.cacheReadTokens}, write ${usage.cacheWriteTokens}), out ${usage.outputTokens}, $${usage.costUsd.toFixed(4)}; conversation $${o.conv.costUsd.toFixed(4)}`,
+    );
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { FakeModel, parseShoppingRequest } from './fake-model';
 import { runAgentTurn, type AnyAgentTool } from './loop';
-import { AnthropicModel, MissingModelKeyError, type AgentMessage, type ModelClient, type ModelRequest, type ModelTurn } from './model';
+import { type AgentMessage, type ModelClient, type ModelRequest, type ModelTurn } from './model';
 
 /** Replays fixed turns and records every request it got. */
 class ScriptedModel implements ModelClient {
@@ -71,13 +71,6 @@ describe('agent loop', () => {
 });
 
 describe('models', () => {
-  it('AnthropicModel throws "no key" without ANTHROPIC_API_KEY, and is still a stub with one', async () => {
-    const req = { system: '', messages: [], tools: [], lang: 'en' as const };
-    await expect((new AnthropicModel(undefined) as ModelClient).respond(req)).rejects.toBeInstanceOf(MissingModelKeyError);
-    await expect((new AnthropicModel('') as ModelClient).respond(req)).rejects.toBeInstanceOf(MissingModelKeyError);
-    await expect((new AnthropicModel('sk-test') as ModelClient).respond(req)).rejects.toThrow(/stub/);
-  });
-
   it('FakeModel is deterministic', async () => {
     const req: ModelRequest = { system: '', messages: [{ role: 'user', text: 'find wireless earbuds under $60' }], tools: [], lang: 'en' };
     expect(await new FakeModel().respond(req)).toEqual(await new FakeModel().respond(req));

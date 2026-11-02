@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { AgentMessage, ModelClient, ToolCall, ToolResult, ToolSpec } from './model';
+import type { AgentMessage, ModelClient, ModelUsage, ToolCall, ToolResult, ToolSpec } from './model';
 
 /**
  * One agent tool. `output` is a strict schema: the loop parses every result with it, so only the fields it names
@@ -65,21 +65,25 @@ export async function runAgentTurn(opts: {
   lang: 'en' | 'fr';
   maxSteps?: number;
   onEvent?: (e: LoopEvent) => void;
-}): Promise<{ messages: AgentMessage[]; stopped: 'done' | 'max_steps' }> {
+}): Promise<{ messages: AgentMessage[]; stopped: 'done' | 'max_steps'; usage: ModelUsage; modelCalls: number }> {
   const messages: AgentMessage[] = [...opts.history, { role: 'user', text: opts.userText }];
   const byName = new Map(opts.tools.map((t) => [t.name, t]));
   const specs = toolSpecs(opts.tools);
   const emit = opts.onEvent ?? (() => {});
+  const usage: ModelUsage = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };
+  let modelCalls = 0;
 
   for (let step = 0; step < (opts.maxSteps ?? MAX_STEPS); step++) {
     const turn = await opts.model.respond({ system: opts.system, messages, tools: specs, lang: opts.lang });
-    messages.push({ role: 'assistant', text: turn.text, toolCalls: turn.toolCalls });
+    modelCalls++;
+    if (turn.usage) for (const k of Object.keys(usage) as (keyof ModelUsage)[]) usage[k] += turn.usage[k];
+    messages.push({ role: 'assistant', text: turn.text, toolCalls: turn.toolCalls, ...(turn.raw !== undefined ? { raw: turn.raw } : {}) });
     if (turn.text) emit({ type: 'assistant_text', text: turn.text });
-    if (!turn.toolCalls.length) return { messages, stopped: 'done' };
+    if (!turn.toolCalls.length) return { messages, stopped: 'done', usage, modelCalls };
     for (const c of turn.toolCalls) emit({ type: 'tool_call', id: c.id, name: c.name });
     const results = await Promise.all(turn.toolCalls.map((c) => runTool(byName, c)));
     results.forEach((r, i) => emit({ type: 'tool_result', id: r.toolCallId, name: turn.toolCalls[i]!.name, isError: !!r.isError }));
     messages.push({ role: 'tool', results });
   }
-  return { messages, stopped: 'max_steps' };
+  return { messages, stopped: 'max_steps', usage, modelCalls };
 }
