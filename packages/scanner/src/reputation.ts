@@ -37,9 +37,9 @@ export function parseRanks(text: string): Map<string, number> {
  * Where the data file is, by working directory: the repo root (scripts, tests) or apps/web (the Next.js server).
  * Deliberately not `new URL(..., import.meta.url)`: the bundler would then publish the list as a public static asset.
  */
-function dataFileCandidates(): string[] {
-  const rel = ['packages', 'scanner', 'data', TRANCO.file];
-  return [process.env.TRANCO_FILE, join(process.cwd(), ...rel), join(process.cwd(), '..', '..', ...rel)].filter((p): p is string => !!p);
+export function dataFileCandidates(file: string = TRANCO.file, envOverride: string | undefined = process.env.TRANCO_FILE): string[] {
+  const rel = ['packages', 'scanner', 'data', file];
+  return [envOverride, join(process.cwd(), ...rel), join(process.cwd(), '..', '..', ...rel)].filter((p): p is string => !!p);
 }
 
 let cached: Map<string, number> | null | undefined;

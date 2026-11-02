@@ -7,6 +7,7 @@ import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel
 import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
 import { score, WEIGHTS } from './scoring';
 import { confirmedInjection, placeholderAnalyzer, type PageAnalyzer } from './signals/ai-page';
+import { brandInDomain, defaultBrandLookup, withBrandHit, type BrandLookup } from './signals/brand-domain';
 import { evaluateClone, type CloneSubject } from './signals/clone';
 import { domainAgeSignal } from './signals/domain-age';
 import { evaluatePrice, findPriceNear, normalizeTitle } from './signals/price';
@@ -26,6 +27,8 @@ export interface ScannerDeps {
   now?: () => Date;
   /** Well-known-site lookup (registrable domain → rank). Default: the pinned Tranco list; null = don't check. */
   popularity?: RankLookup | null;
+  /** Brand-in-domain lookup (clone signal). Default: built from the pinned Tranco list; null = don't check. */
+  brands?: BrandLookup | null;
   /** Live progress for the scan UI: the browser session as soon as it opens, then each signal as it finishes. */
   onProgress?: (event: ScanProgress) => void;
 }
@@ -187,11 +190,12 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     siteName: page?.siteName ?? null,
     page: page ? { visibleText: [page.visibleText, page.aboutText].filter(Boolean).join('\n'), structure: page.structure } : undefined,
   });
-  const clone = evaluateClone(
+  const compared = evaluateClone(
     subject(url.href, targetPage),
     peerUrls.map((u, i) => subject(u.href, peerPages[i] ?? null)),
   );
-  if (blocked && input.peers.length) clone.evidence.unshift(`Couldn't read the store page: ${blocked.message}; only the web addresses were compared.`);
+  if (blocked && input.peers.length) compared.evidence.unshift(`Couldn't read the store page: ${blocked.message}; only the web addresses were compared.`);
+  const clone = withBrandHit(compared, brandInDomain(url.href, deps.brands === undefined ? defaultBrandLookup() : deps.brands, pop.rank));
   emit(clone);
 
   const facts: ScanFacts = {

@@ -32,3 +32,4 @@ export { detectBlockedPage, type BlockedReason } from './blocked-page';
 export { TRANCO, trancoLookup, trancoRanks, popularity, type RankLookup } from './reputation';
 export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp, type Resolver } from './ssrf';
 export type { SignalOutcome, ScanFacts, AiUsage } from './signals/types';
+export { BRAND, SHOP_WORDS, brandIndex, brandInDomain, brandOf, defaultBrandLookup, withBrandHit, type Brand, type BrandHit, type BrandLookup } from './signals/brand-domain';
