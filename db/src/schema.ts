@@ -12,6 +12,7 @@ import {
   boolean,
   char,
   check,
+  date,
   index,
   integer,
   jsonb,
@@ -207,4 +208,12 @@ export const testSetResults = pgTable('test_set_results', {
   verdict: verdict('verdict').notNull(),
   riskScore: smallint('risk_score').notNull(),
   runAt: timestamp('run_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Global daily spend across all users (spec 5.17 #3): one row per UTC day. The public demo's caps on Anthropic dollars
+// and KERNEL scans are checked against it before each agent turn and each fresh scan.
+export const dailySpend = pgTable('daily_spend', {
+  day: date('day').primaryKey(),
+  anthropicUsd: numeric('anthropic_usd', { precision: 12, scale: 6 }).notNull().default('0'),
+  kernelScans: integer('kernel_scans').notNull().default(0),
 });

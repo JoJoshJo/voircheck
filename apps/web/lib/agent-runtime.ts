@@ -4,6 +4,7 @@ import { assertSafeUrlShape } from '@voircheck/scanner';
 import type { AgentEvent } from './agent-view';
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
+import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend';
 import { runStoreScan } from './scan-runner';
 import { canonicalUrl, findFreshScan, recordSearchRequest } from './scans';
 import { toScanView } from './scan-view';
@@ -190,8 +191,9 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
 
 /** One chat turn for this user. Streams events through `send`; returns when the agent has answered. */
 export async function runChatTurn(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; lang: 'en' | 'fr'; text: string; send: (e: AgentEvent) => void }) {
-  const { model } = agentModel();
+  const { model, kind } = agentModel();
   if (o.conv.costUsd >= MAX_CONVERSATION_USD) throw new ConversationBudgetError();
+  if (kind === 'claude' && (await anthropicCapReached())) throw new DailyCapError();
   const { messages, stopped, usage, modelCalls } = await runAgentTurn({
     model,
     tools: shoppingTools(webDeps(o)),
@@ -203,6 +205,7 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
   });
   o.conv.messages = messages;
   o.conv.costUsd += usage.costUsd;
+  await recordSpendQuietly({ anthropicUsd: usage.costUsd });
   if (stopped === 'max_steps') o.send({ type: 'text', text: STOPPED[o.lang] });
   if (modelCalls && usage.costUsd)
     console.log(

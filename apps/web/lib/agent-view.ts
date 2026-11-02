@@ -19,5 +19,5 @@ export type AgentEvent =
   | { type: 'order'; storeId: string; paymentId: string; orderId: string }
   | { type: 'refused'; storeId: string; reason: z.infer<typeof RefusalReason> }
   | { type: 'payment'; paymentId: string; status: string }
-  | { type: 'error'; code: 'auth' | 'rate' | 'busy' | 'bad_request' | 'model' | 'failed' }
+  | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'busy' | 'bad_request' | 'model' | 'failed' }
   | { type: 'done' };

@@ -2,6 +2,7 @@ import 'server-only';
 import { demoPeersForUrl } from '@voircheck/agent/search';
 import { anthropicAnalyzer, kernelVisitor, placeholderAnalyzer, scanStore, type PageAnalyzer, type ScanProgress } from '@voircheck/scanner';
 import { latestVerdictForStore, saveScan, type ScanRecord } from './scans';
+import { anthropicCapReached, recordSpendQuietly } from './spend';
 
 // One analyzer per process: it holds the 24h per-URL AI result cache (on globalThis so a dev hot reload keeps it).
 const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: PageAnalyzer };
@@ -21,14 +22,23 @@ export async function runStoreScan(opts: { url: string; demoMode: boolean; liveV
   const kernelKey = process.env.KERNEL_API_KEY;
   // Each peer's own latest verdict: a BLOCK store's price must not enter this store's price comparison.
   const peers = demo ? await Promise.all(demo.peers.map(async (p) => ({ url: p.url, productTitle: p.productTitle, verdict: await latestVerdictForStore(p.storeUrl) }))) : [];
-  const { result } = await scanStore(
-    { url: opts.url, peers, productTitle: demo?.productTitle },
-    {
-      visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: opts.liveView, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
-      safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
-      analyzer: pageAnalyzer(),
-      onProgress: opts.onProgress,
-    },
-  );
-  return saveScan(result);
+  // Past today's Anthropic cap the scan still runs; page analysis just says "unavailable".
+  const analyzer = (await anthropicCapReached()) ? placeholderAnalyzer : pageAnalyzer();
+  let aiUsd = 0;
+  try {
+    const { result, meta } = await scanStore(
+      { url: opts.url, peers, productTitle: demo?.productTitle },
+      {
+        visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: opts.liveView, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
+        safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
+        analyzer,
+        onProgress: opts.onProgress,
+      },
+    );
+    aiUsd = meta.ai?.costUsd ?? 0;
+    return await saveScan(result);
+  } finally {
+    // Counted even when the scan fails: KERNEL was used either way.
+    void recordSpendQuietly({ anthropicUsd: aiUsd, kernelScans: kernelKey ? 1 : 0 });
+  }
 }

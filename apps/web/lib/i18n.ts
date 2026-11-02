@@ -90,6 +90,7 @@ const en = {
     score: 'Risk score',
     errorGeneric: 'The check didn’t finish. Try again.',
     errorRate: 'You’ve reached the scan limit for now. Try again later.',
+    errorCap: 'VoirCheck has reached today’s scan limit for this public demo. Scans are back tomorrow. Stores checked in the last 24 hours still show their result.',
     errorUrl: 'That address can’t be checked. Use a public http or https link.',
   },
   agent: {
@@ -119,6 +120,7 @@ const en = {
     newChat: 'New chat',
     errorGeneric: 'The agent didn’t finish. Try again.',
     errorRate: 'You’ve reached the agent limit for now. Try again later.',
+    errorCap: 'The shopping agent has reached today’s limit for this public demo. It’s back tomorrow. You can still check any store yourself with “Check a store link”.',
     errorBusy: 'The agent is still working on your last message.',
     errorModel: 'The shopping agent isn’t available right now. You can still check any store yourself with “Check a store link”.',
   },
@@ -422,6 +424,7 @@ const fr: Dict = {
     score: 'Score de risque',
     errorGeneric: 'La vérification n’a pas abouti. Réessayez.',
     errorRate: 'Vous avez atteint la limite d’analyses pour le moment. Réessayez plus tard.',
+    errorCap: 'VoirCheck a atteint la limite d’analyses du jour pour cette démo publique. Les analyses reviennent demain. Les boutiques vérifiées ces dernières 24 heures affichent toujours leur résultat.',
     errorUrl: 'Cette adresse ne peut pas être vérifiée. Utilisez un lien public en http ou https.',
   },
   agent: {
@@ -451,6 +454,7 @@ const fr: Dict = {
     newChat: 'Nouvelle discussion',
     errorGeneric: 'L’agent n’a pas terminé. Réessayez.',
     errorRate: 'Vous avez atteint la limite de l’agent pour l’instant. Réessayez plus tard.',
+    errorCap: 'L’agent d’achat a atteint la limite du jour pour cette démo publique. Il revient demain. Vous pouvez toujours vérifier une boutique vous-même avec « Vérifier le lien d’une boutique ».',
     errorBusy: 'L’agent travaille encore sur votre dernier message.',
     errorModel: 'L’agent d’achat n’est pas disponible pour l’instant. Vous pouvez toujours vérifier une boutique vous-même avec « Vérifier le lien d’une boutique ».',
   },

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
   const cached = parsed.data.rescan ? null : await findFreshScan(url);
   const ip = clientIp(await headers());
   const limit = await checkScanLimits({ userId: user.id, isGuest: user.isGuest, ip, fresh: !cached });
-  if (!limit.ok) return oneShot({ type: 'error', code: 'rate' }, 429);
+  if (!limit.ok) return oneShot({ type: 'error', code: limit.reason === 'global' ? 'cap' : 'rate' }, 429);
 
   const demo = demoMode ? demoPeersForUrl(url, process.env.DEMO_STORES_BASE_URL) : null;
   const host = new URL(url).hostname;

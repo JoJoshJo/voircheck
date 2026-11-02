@@ -27,7 +27,7 @@ export type ScanEvent =
   | { type: 'signal'; id: SignalResult['id']; status: SignalResult['status']; points: number }
   | { type: 'done'; scan: ScanView; candidate: CandidateView }
   | { type: 'cached'; scan: ScanView; candidate: CandidateView }
-  | { type: 'error'; code: 'auth' | 'rate' | 'url' | 'failed' };
+  | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'url' | 'failed' };
 
 export function toScanView(row: { id: string; url: string; storeDomain: string; verdict: Verdict; riskScore: number; signals: unknown; hardRulesTriggered: string[]; scannedAt: Date }): ScanView {
   return {

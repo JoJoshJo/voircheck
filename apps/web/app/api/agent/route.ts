@@ -5,6 +5,7 @@ import { agentModel, ConversationBudgetError, openConversation, runChatTurn } fr
 import type { AgentEvent } from '../../../lib/agent-view';
 import { isLang } from '../../../lib/i18n';
 import { clientIp } from '../../../lib/client-ip';
+import { DailyCapError } from '../../../lib/spend';
 import { allowAgentRequest } from '../../../lib/rate-limit';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
@@ -55,8 +56,9 @@ export async function POST(req: Request) {
         await runChatTurn({ convId, conv, userId: user.id, isGuest: user.isGuest, ip, demoMode, origin, lang, text: parsed.data.message, send });
         send({ type: 'done' });
       } catch (err) {
-        // Out of credit, bad key, overloaded: a calm "not available" (the link check still works); a budget hit = limit.
-        send({ type: 'error', code: err instanceof MissingModelKeyError || err instanceof ModelUnavailableError ? 'model' : err instanceof ConversationBudgetError ? 'rate' : 'failed' });
+        // Out of credit, bad key, overloaded: a calm "not available" (the link check still works); a budget hit = limit;
+        // today's global cap = "back tomorrow".
+        send({ type: 'error', code: err instanceof MissingModelKeyError || err instanceof ModelUnavailableError ? 'model' : err instanceof ConversationBudgetError ? 'rate' : err instanceof DailyCapError ? 'cap' : 'failed' });
         console.error('agent turn failed:', err instanceof Error ? err.message : 'unknown error');
       } finally {
         conv.busy = false;

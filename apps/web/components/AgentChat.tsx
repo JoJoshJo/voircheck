@@ -77,7 +77,7 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
     if (list.current) list.current.scrollTop = list.current.scrollHeight;
   }, [chat]);
 
-  const errorText = (code: string) => ({ rate: t.agent.errorRate, busy: t.agent.errorBusy, model: t.agent.errorModel })[code] ?? t.agent.errorGeneric;
+  const errorText = (code: string) => ({ rate: t.agent.errorRate, cap: t.agent.errorCap, busy: t.agent.errorBusy, model: t.agent.errorModel })[code] ?? t.agent.errorGeneric;
 
   async function send(message: string) {
     if (busy || !message.trim()) return;

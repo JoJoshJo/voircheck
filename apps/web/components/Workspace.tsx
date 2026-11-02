@@ -139,7 +139,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: 
           )}
           {state.phase === 'error' && (
             <div className={`${card} p-5 text-[15px] text-muted`}>
-              {state.code === 'rate' ? t.workspace.errorRate : state.code === 'url' ? t.workspace.errorUrl : t.workspace.errorGeneric}
+              {state.code === 'rate' ? t.workspace.errorRate : state.code === 'cap' ? t.workspace.errorCap : state.code === 'url' ? t.workspace.errorUrl : t.workspace.errorGeneric}
             </div>
           )}
         </section>

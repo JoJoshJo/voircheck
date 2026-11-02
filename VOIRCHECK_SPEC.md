@@ -377,7 +377,7 @@ voircheck/
 ### 5.17 Security ✅
 1. **Secrets:** env vars only; `.env` never committed; pre-commit secret scan (e.g., gitleaks) + GitHub secret scanning on.
 2. **SSRF:** user URLs are only ever opened inside KERNEL. Our server only does RDAP/WHOIS, DNS and TLS checks on the hostname, and **blocks localhost, private/link-local IP ranges and cloud metadata addresses**; resolve-then-check to stop DNS rebinding; `http`/`https` only; URL length limit.
-3. **Rate limits (balanced):** guests 5 agent requests + 15 store scans per hour; signed-in users double that; per-IP limits; **global cap 500 scans/day** to protect credits.
+3. **Rate limits (balanced):** guests 5 agent requests + 15 store scans per hour; signed-in users double that; per-IP limits; **global daily caps across all users (UTC day, `daily_spend` table): 300 KERNEL scans and $3 of Anthropic** (agent + scan analysis; under the $5 workspace cap). Past the Anthropic cap the agent says it's back tomorrow and scans run with page analysis unavailable; past the KERNEL cap only cached scans are served. Per-IP limits use Cloudflare's client IP (CF-Connecting-IP), never the forgeable first X-Forwarded-For entry.
 4. **Webhooks:** verify every PayPal webhook signature; idempotency via unique `paypal_event_id`.
 5. **Money integrity:** the server takes price/store (`store_slug` → `custom_id`) from its own stored `candidates` row, **never from the browser**; money gate enforced server-side (5.7).
 6. **XSS:** AI explanations and page quotes always rendered as **plain text**, never HTML.
@@ -531,6 +531,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-10-27 — Piece 19 locked: 11-section README with judge quick-start; MIT license.
 - 2026-10-27 — Piece 18 locked: unit + sandbox integration + 3 Playwright journeys; failure table; "can't verify = never SAFE"; GitHub Actions CI with badge.
 - 2026-10-27 — Piece 17 locked: 10-item security checklist; balanced rate limits (guests 5 req + 15 scans/h, users ×2, 500 scans/day global); self-audit ~Nov 10 + SECURITY.md.
+- 2026-11-02 — Security pass before the repo goes public: security headers (CSP, HSTS, no framing); per-IP limits on Cloudflare's client IP; global daily caps replace the 500 scans/day count ($3 Anthropic + 300 KERNEL scans, `daily_spend`).
 - 2026-10-27 — Piece 16 locked: Render always-on via credits (web + stores + workflows); Supabase free + daily keep-alive; free uptime monitor with alerts; deploy freeze after Nov 12.
 - 2026-10-27 — Piece 15 locked: Next.js + TS, Tailwind, Vercel AI SDK, Supabase, PayPal v6 + Orders REST + Toolkit, Channel3, KERNEL, Render Workflows, Resend, Render hosting, Zod, Vitest + Playwright; pnpm monorepo.
 - 2026-10-27 — Piece 14 locked: eligible for Channel3, APIMatic, AG Grid; Channel3 = primary polish (search + enrichment + MCP); APIMatic free via plugin; AG Grid risk dashboard = stretch.
