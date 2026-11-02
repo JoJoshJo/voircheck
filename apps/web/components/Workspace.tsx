@@ -33,7 +33,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: 
   const abort = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    document.cookie = `${DEMO_COOKIE}=${demoMode ? '1' : '0'}; path=/; max-age=31536000; samesite=lax`;
+    document.cookie = `${DEMO_COOKIE}=${demoMode ? '1' : '0'}; path=/; max-age=31536000; samesite=lax${location.protocol === 'https:' ? '; secure' : ''}`;
   }, [demoMode]);
 
   async function run(target: string, rescan = false) {

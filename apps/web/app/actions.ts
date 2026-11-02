@@ -10,7 +10,7 @@ import { getDb } from '../lib/db';
 import { GUEST_EMAIL_DOMAIN } from '../lib/guest';
 import { allowDemoCreation } from '../lib/rate-limit';
 import { LANG_COOKIE } from '../lib/user';
-import { DEMO_COOKIE } from '../lib/workspace';
+import { DEMO_COOKIE, PREF_COOKIE } from '../lib/workspace';
 
 /**
  * "Try the demo" (spec 5.10): a real, private, temporary account per visitor. Random email on the reserved guest
@@ -32,8 +32,8 @@ export async function startDemo(): Promise<{ error: string } | never> {
 
   await getDb().insert(profiles).values({ userId, displayName: 'Demo shopper', language: 'en', autopayEnabled: false, autopayLimit: null }).onConflictDoNothing();
   const jar = await cookies();
-  jar.set(LANG_COOKIE, 'en', { path: '/', sameSite: 'lax', httpOnly: false, maxAge: 60 * 60 * 24 * 365 });
-  jar.set(DEMO_COOKIE, '1', { path: '/', sameSite: 'lax', httpOnly: false, maxAge: 60 * 60 * 24 * 365 });
+  jar.set(LANG_COOKIE, 'en', PREF_COOKIE);
+  jar.set(DEMO_COOKIE, '1', PREF_COOKIE);
   redirect('/app');
 }
 

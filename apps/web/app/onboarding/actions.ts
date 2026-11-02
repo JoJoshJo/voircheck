@@ -6,13 +6,14 @@ import { redirect } from 'next/navigation';
 import { getDb } from '../../lib/db';
 import { AutopayForm, LangForm } from '../../lib/profile-input';
 import { getCurrentUser, LANG_COOKIE } from '../../lib/user';
+import { PREF_COOKIE } from '../../lib/workspace';
 
 export async function chooseLanguage(form: FormData) {
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const parsed = LangForm.safeParse({ language: form.get('language') });
   if (!parsed.success) redirect('/onboarding');
-  (await cookies()).set(LANG_COOKIE, parsed.data.language, { path: '/', sameSite: 'lax', maxAge: 60 * 60 * 24 * 365 });
+  (await cookies()).set(LANG_COOKIE, parsed.data.language, PREF_COOKIE);
   redirect('/onboarding?step=autopay');
 }
 
