@@ -143,7 +143,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   };
   const order: AgentTool<{ storeId: string }, CreateOrderOutput> = {
     name: 'create_order',
-    description: 'Prepare a PayPal order (funds held, not taken) for the item at this store, at the price from the search. The person approves it in PayPal. VoirCheck refuses BLOCK stores and stores it cannot verify.',
+    description: 'Prepare a PayPal order for the item at this store, at the price from the search. Nothing is held until the person approves it in PayPal; then the funds are held, not taken. VoirCheck refuses BLOCK stores and stores it cannot verify.',
     input: z.object({ storeId: Id }),
     output: CreateOrderOutput,
     run: ({ storeId }) => deps.createOrder(storeId),

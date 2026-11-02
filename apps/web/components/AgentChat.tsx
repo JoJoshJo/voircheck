@@ -140,7 +140,7 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
                 {item.text}
               </p>
             ) : item.kind === 'agent' ? (
-              <p key={i} className="max-w-[92%] text-[15px] leading-relaxed">
+              <p key={i} className="max-w-[92%] whitespace-pre-line text-[15px] leading-relaxed">
                 <span className="sr-only">{t.agent.agent}: </span>
                 {item.text}
               </p>

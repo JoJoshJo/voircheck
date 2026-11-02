@@ -45,7 +45,7 @@ describe('AnthropicModel: request', () => {
     expect(p.cache_control).toEqual({ type: 'ephemeral' });
     expect(p.system).toEqual([
       { type: 'text', text: AGENT_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
-      { type: 'text', text: 'The person’s app language is French: reply in French.' },
+      { type: 'text', text: 'The person’s app language is French: reply in French, and call the verdicts Fiable, En attente and Bloquée (never SAFE, HOLD or BLOCK).' },
     ]);
     expect(p).not.toHaveProperty('temperature');
     expect(p).not.toHaveProperty('tool_choice');

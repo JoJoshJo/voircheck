@@ -20,7 +20,7 @@ export interface MessagesCreator {
   messages: { create(params: Anthropic.MessageCreateParamsNonStreaming): PromiseLike<Pick<Anthropic.Message, 'content' | 'stop_reason' | 'usage'>> };
 }
 
-const LANG_LINE = { en: 'The person’s app language is English: reply in English.', fr: 'The person’s app language is French: reply in French.' } as const;
+const LANG_LINE = { en: 'The person’s app language is English: reply in English.', fr: 'The person’s app language is French: reply in French, and call the verdicts Fiable, En attente and Bloquée (never SAFE, HOLD or BLOCK).' } as const;
 const REFUSAL = { en: 'I can’t help with that one. I can find an item and check the stores that sell it.', fr: 'Je ne peux pas vous aider sur ce point. Je peux chercher un article et vérifier les boutiques qui le vendent.' } as const;
 
 /** Our tool specs as API tools: z.toJSONSchema adds a `$schema` key the API doesn't need. */
