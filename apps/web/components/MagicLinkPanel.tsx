@@ -17,7 +17,7 @@ export function MagicLinkPanel({ t, initialSentTo = null, initialCooldown = 0 }:
   const [sentTo, setSentTo] = useState<string | null>(initialSentTo);
   const [cooldown, setCooldown] = useState(initialCooldown);
   const [pending, setPending] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failed, setFailed] = useState<false | 'failed' | 'rate'>(false);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -31,11 +31,14 @@ export function MagicLinkPanel({ t, initialSentTo = null, initialCooldown = 0 }:
     try {
       const { authClient } = await import('../lib/auth/client');
       const { error } = await authClient.signIn.magicLink({ email: address.trim(), ...magicLinkRedirectUrls(window.location.origin) });
-      if (error) throw new Error(error.message);
+      if (error) {
+        setFailed(error.status === 429 ? 'rate' : 'failed');
+        return;
+      }
       setSentTo(address.trim());
       setCooldown(RESEND_COOLDOWN_S);
     } catch {
-      setFailed(true);
+      setFailed('failed');
     } finally {
       setPending(false);
     }
@@ -62,7 +65,7 @@ export function MagicLinkPanel({ t, initialSentTo = null, initialCooldown = 0 }:
             {t.auth.magicDifferent}
           </button>
         </div>
-        {failed && <p className="text-[14px] text-muted">{t.auth.magicFailed}</p>}
+        {failed && <p className="text-[14px] text-muted">{failed === 'rate' ? t.auth.magicRate : t.auth.magicFailed}</p>}
       </div>
     );
   }
@@ -82,7 +85,7 @@ export function MagicLinkPanel({ t, initialSentTo = null, initialCooldown = 0 }:
         </label>
         <input id="magic-email" name="magic-email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={input} />
       </div>
-      {failed && <p className="text-[14px] text-muted">{t.auth.magicFailed}</p>}
+      {failed && <p className="text-[14px] text-muted">{failed === 'rate' ? t.auth.magicRate : t.auth.magicFailed}</p>}
       <button type="submit" disabled={pending} className={`${btnPrimary} w-full`}>
         {pending ? t.auth.working : t.auth.magicSend}
       </button>
