@@ -8,7 +8,7 @@ import { AI_FINDING_KINDS, AiFinding, type AiFindingKind, type SignalStatus } fr
 import { errorMessage, unavailable, type AiUsage, type SignalOutcome } from './types';
 
 /**
- * Signal 4: AI page analysis (spec 5.13), Claude Haiku 5.5. Prompt-injection defenses 1 and 2:
+ * Signal 4: AI page analysis (spec 5.13), Claude Sonnet 5.5 (SCAN_MODEL). Prompt-injection defenses 1 and 2:
  * - the model gets page text ONLY through `buildUntrustedPageInput` (hidden text first, then page text), each in a
  *   labelled untrusted block, plus our own facts as context; the system prompt says page content is data, never
  *   instructions, and that instructions in it are a finding;
@@ -83,9 +83,10 @@ export const placeholderAnalyzer: PageAnalyzer = {
   analyze: async () => unavailable('ai_page', 'AI page analysis is off (no Anthropic API key).'),
 };
 
-// ---------- Haiku 5.5 analyzer ----------
+// ---------- Claude analyzer ----------
 
-export const DEFAULT_SCAN_MODEL = 'claude-haiku-5-5';
+/** Sonnet 5.5 since Nov 1: on the tune split Haiku 5.5 scored real fake shops 12–35 (legit up to 30), Sonnet 30–88 (legit ≤ 12). */
+export const DEFAULT_SCAN_MODEL = 'claude-sonnet-5-5';
 /** Bump when the prompt or mapping changes: it is part of the cache key, so old cached results are not reused. */
 export const AI_PROMPT_VERSION = 'v2';
 /** Haiku 5.5, prompts ≤100K tokens (our input cap keeps us there): $ per million tokens. Cache write 1.25×, read 0.1×. */
@@ -104,7 +105,8 @@ const CACHE_TTL_MS = 24 * 3_600_000;
 
 /** Overall risk → signal status, on the verdict scale (spec 5.6): <30 pass, 30–64 warn, ≥65 fail. */
 export function riskToStatus(risk: number): Exclude<SignalStatus, 'unavailable'> {
-  return risk >= 65 ? 'fail' : risk >= 30 ? 'warn' : 'pass';
+  // Cutoffs picked on the tune split (Sonnet 5.5, prompt v2): legit ≤ 12, scams 30–88. The honest number is holdout's.
+  return risk >= 50 ? 'fail' : risk >= 25 ? 'warn' : 'pass';
 }
 
 /** What the model must return (structured outputs). Bounds are re-checked by `AiAnalysis` after parsing. */

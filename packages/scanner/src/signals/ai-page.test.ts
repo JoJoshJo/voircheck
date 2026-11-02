@@ -52,23 +52,29 @@ const quiet = () => {};
 describe('AI page analysis: risk mapping and cost', () => {
   it.each([
     [0, 'pass'],
-    [29, 'pass'],
-    [30, 'warn'],
-    [64, 'warn'],
-    [65, 'fail'],
+    [24, 'pass'],
+    [25, 'warn'],
+    [49, 'warn'],
+    [50, 'fail'],
     [100, 'fail'],
   ] as const)('risk %i → %s', (risk, status) => expect(riskToStatus(risk)).toBe(status));
 
   it('prices Haiku 5.5 tokens (input, output, cache read 0.1×, cache write 1.25×)', () => {
-    expect(costUsd({ inputTokens: 1_000_000, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 })).toBeCloseTo(0.1);
-    expect(costUsd({ inputTokens: 0, outputTokens: 1_000_000, cacheReadTokens: 0, cacheWriteTokens: 0 })).toBeCloseTo(0.5);
-    expect(costUsd({ inputTokens: 0, outputTokens: 0, cacheReadTokens: 1_000_000, cacheWriteTokens: 1_000_000 })).toBeCloseTo(0.135);
+    expect(costUsd({ inputTokens: 1_000_000, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0 }, 'claude-haiku-5-5')).toBeCloseTo(0.1);
+    expect(costUsd({ inputTokens: 0, outputTokens: 1_000_000, cacheReadTokens: 0, cacheWriteTokens: 0 }, 'claude-haiku-5-5')).toBeCloseTo(0.5);
+    expect(costUsd({ inputTokens: 0, outputTokens: 0, cacheReadTokens: 1_000_000, cacheWriteTokens: 1_000_000 }, 'claude-haiku-5-5')).toBeCloseTo(0.135);
   });
 
   it('prices Sonnet 5.5 by its own table; unknown models are priced as Sonnet (never understated)', () => {
     const u = { inputTokens: 1_000_000, outputTokens: 1_000_000, cacheReadTokens: 1_000_000, cacheWriteTokens: 0 };
     expect(costUsd(u, 'claude-sonnet-5-5')).toBeCloseTo(12.2);
     expect(costUsd(u, 'claude-new-model')).toBeCloseTo(12.2);
+  });
+
+  it('Haiku 5.5 (SCAN_MODEL) turns thinking off with disabled', async () => {
+    const { client, calls } = fakeClient({ parsed_output: injection });
+    await anthropicAnalyzer({ client, model: 'claude-haiku-5-5', log: quiet }).analyze(page());
+    expect(calls[0]!.thinking).toEqual({ type: 'disabled' });
   });
 
   it('Sonnet 5.5 turns thinking off with between_tools (disabled 400s there)', async () => {
@@ -106,10 +112,10 @@ describe('AI page analysis: model call', () => {
     await anthropicAnalyzer({ client, log: quiet }).analyze(page());
     expect(calls).toHaveLength(1);
     const p = calls[0]!;
-    expect(p.model).toBe('claude-haiku-5-5');
+    expect(p.model).toBe('claude-sonnet-5-5');
     expect(p).not.toHaveProperty('tools');
     expect(p.system).toEqual([{ type: 'text', text: AI_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }]);
-    expect(p.thinking).toEqual({ type: 'disabled' });
+    expect(p.thinking).toEqual({ type: 'between_tools' });
     expect(p.max_tokens).toBeLessThanOrEqual(1_200);
     expect(p.output_config?.format?.type).toBe('json_schema');
     expect(AI_SYSTEM_PROMPT).toMatch(/untrusted/i);
@@ -123,7 +129,7 @@ describe('AI page analysis: model call', () => {
     expect(r.evidence[0]).toContain('risk 80/100, 1 finding');
     expect(r.evidence[1]).toBe(`Tried to instruct AI agents (high, home): "${PLANTED}"`);
     expect(r.usage).toMatchObject({ inputTokens: 2_000, outputTokens: 150, cacheReadTokens: 700, cached: false });
-    expect(r.usage!.costUsd).toBeCloseTo((2_000 * 0.1 + 150 * 0.5 + 700 * 0.01) / 1e6, 8);
+    expect(r.usage!.costUsd).toBeCloseTo((2_000 * 2 + 150 * 10 + 700 * 0.2) / 1e6, 8);
   });
 
   it.each([

@@ -10,7 +10,7 @@ import 'dotenv/config';
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
-import { anthropicAnalyzer, DEFAULT_SCAN_MODEL, kernelVisitor, scanStore } from '@voircheck/scanner';
+import { anthropicAnalyzer, costUsd, DEFAULT_SCAN_MODEL, kernelVisitor, scanStore } from '@voircheck/scanner';
 import { fileAiCache } from './ai-cache';
 import { computeMetrics, loadStores, SPLITS, type EvalRow, type Split } from './eval/metrics';
 import { checkReachability } from './eval/reachability';
@@ -19,8 +19,8 @@ import { mapPool, selectStores, toRow } from './eval/run';
 
 const CONCURRENCY = 2;
 const SCAN_DELAY_MS = 4_000;
-/** Upper bound per AI call at the input cap (~9k input tokens incl. system prompt, 1.2k output) on Haiku 5.5. */
-const AI_MAX_USD_PER_SCAN = 0.0015;
+/** Upper bound per AI call at the input caps: ~11.5k input tokens (incl. system prompt) + 1.2k output. */
+const AI_MAX_CALL = { inputTokens: 11_500, outputTokens: 1_200, cacheReadTokens: 0, cacheWriteTokens: 0 };
 const CHECK_DELAY_MS = 500;
 
 function usage(): never {
@@ -54,9 +54,10 @@ console.log(`Split "${split}"${limit ? `, limit ${limit}` : ''}: ${stores.length
 console.log(`Estimate: up to ${stores.length} KERNEL sessions (one per live store; dead sites are skipped) and up to ${stores.length} Safe Browsing lookups.`);
 const anthropicKey = process.env.ANTHROPIC_API_KEY;
 const aiModel = process.env.SCAN_MODEL || DEFAULT_SCAN_MODEL;
+const aiMaxPerScan = costUsd(AI_MAX_CALL, aiModel);
 console.log(
   anthropicKey
-    ? `AI page analysis is ON (${aiModel}): up to ${stores.length} model calls, at most ~$${(stores.length * AI_MAX_USD_PER_SCAN).toFixed(3)} (≤ $${AI_MAX_USD_PER_SCAN} per scan; URLs analyzed in the last 24h cost $0).`
+    ? `AI page analysis is ON (${aiModel}): up to ${stores.length} model calls, at most ~$${(stores.length * aiMaxPerScan).toFixed(3)} (≤ $${aiMaxPerScan.toFixed(4)} per scan; URLs analyzed in the last 24h cost $0).`
     : 'AI page analysis is OFF (no ANTHROPIC_API_KEY).',
 );
 console.log(`Concurrency ${CONCURRENCY}, ${SCAN_DELAY_MS / 1000}s between scans per lane.`);
