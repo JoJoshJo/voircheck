@@ -1,6 +1,7 @@
 import { PayPalApiError } from '@voircheck/paypal';
 import { headers } from 'next/headers';
 import { z } from 'zod';
+import { publicOrigin } from '../../../../lib/app-origin';
 import { getPaymentView } from '../../../../lib/payment-view';
 import { getPayPal } from '../../../../lib/paypal';
 import { upsertPaymentReceipt } from '../../../../lib/receipts';
@@ -31,12 +32,8 @@ const bodies = {
 } as const;
 type Action = keyof typeof bodies;
 
-/** Public app URL for links (receipt emails): APP_URL, else the request's own origin. */
-async function appOrigin(): Promise<string> {
-  if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, '');
-  const h = await headers();
-  return `${h.get('x-forwarded-proto') ?? 'http'}://${h.get('x-forwarded-host') ?? h.get('host')}`;
-}
+/** Public app URL for links (PayPal return URL, receipt emails): APP_URL in production (lib/app-origin.ts). */
+const appOrigin = async () => publicOrigin(await headers());
 
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'cache-control': 'no-store' } });
 

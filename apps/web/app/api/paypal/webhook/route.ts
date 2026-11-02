@@ -1,4 +1,5 @@
 import { handleWebhook } from '@voircheck/paypal';
+import { publicOrigin } from '../../../../lib/app-origin';
 import { getProfile } from '../../../../lib/user';
 import { isLang } from '../../../../lib/i18n';
 import { getPayPal } from '../../../../lib/paypal';
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
       await gate.completeApproval(paymentId, userId, 'webhook');
       // Receipt + email even if the buyer closed the tab (the browser path does the same; the email is sent once).
       const profile = await getProfile(userId);
-      const origin = process.env.APP_URL ?? new URL(req.url).origin;
+      const origin = publicOrigin(req.headers);
       await upsertPaymentReceipt(paymentId, profile && isLang(profile.language) ? profile.language : 'en', origin).catch(() => null);
     }
     return Response.json({ outcome: out.outcome }, { status: out.httpStatus });
