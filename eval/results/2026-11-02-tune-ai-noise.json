@@ -1,0 +1,37 @@
+{
+  "day": "2026-11-02",
+  "promptVersion": "v2",
+  "repeat": 2,
+  "rows": [
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "model": "claude-sonnet-5-5",
+      "risks": [
+        48,
+        30
+      ],
+      "costUsd": 0.059798
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "model": "claude-sonnet-5-5",
+      "risks": [
+        58,
+        62
+      ],
+      "costUsd": 0.034227999999999995
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "model": "claude-sonnet-5-5",
+      "risks": [
+        30,
+        38
+      ],
+      "costUsd": 0.060885999999999996
+    }
+  ]
+}
