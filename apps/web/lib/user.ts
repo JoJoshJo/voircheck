@@ -2,8 +2,8 @@ import 'server-only';
 import { profiles } from '@voircheck/db/schema';
 import { ownedBy } from '@voircheck/shared';
 import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { getAuth } from './auth/server';
+import { redirect, unstable_rethrow } from 'next/navigation';
+import { AuthConfigError, getAuth } from './auth/server';
 import { getDb } from './db';
 import { isGuestEmail } from './guest';
 import { DICTS, isLang, type Lang } from './i18n';
@@ -18,7 +18,17 @@ export interface CurrentUser {
 }
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-  const { data: session } = await getAuth().getSession();
+  let session;
+  try {
+    ({ data: session } = await getAuth().getSession());
+  } catch (err) {
+    unstable_rethrow(err);
+    if (err instanceof AuthConfigError) throw err;
+    // Safety net: proxy.ts refreshes the session before pages render. If the SDK still tries to write a cookie here
+    // (Next.js forbids that in a page) or the read fails, the visitor is treated as signed out, never a 500.
+    console.warn(`[auth] session read failed while rendering; treating as signed out: ${err instanceof Error ? err.message : String(err)}`);
+    return null;
+  }
   const u = session?.user;
   if (!u?.id) return null;
   return { id: u.id, email: u.email ?? '', name: u.name ?? '', isGuest: isGuestEmail(u.email) };

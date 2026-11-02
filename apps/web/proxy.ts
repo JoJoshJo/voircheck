@@ -2,10 +2,12 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { authHandlers } from './lib/auth/handlers';
 import { pendingCookie, verifierAction, VERIFIER_PARAM, withoutVerifier } from './lib/auth/magic-link-exchange';
 import { getAuth } from './lib/auth/server';
+import { forwardSession, SESSION_COOKIE } from './lib/auth/session-refresh';
 
 /**
  * Neon Auth session check on signed-in areas (pages re-check and load the profile themselves). Built per request.
- * Also completes magic-link sign-in, which the SDK middleware can't (see lib/auth/magic-link-exchange.ts).
+ * Also refreshes the session before any page that reads it renders (see lib/auth/session-refresh.ts), and completes
+ * magic-link sign-in, which the SDK middleware can't (see lib/auth/magic-link-exchange.ts).
  */
 export default async function proxy(request: NextRequest) {
   const url = new URL(request.url);
@@ -26,9 +28,16 @@ export default async function proxy(request: NextRequest) {
     out.headers.append('set-cookie', pendingCookie(secure, true));
     return out;
   }
-  return getAuth().middleware({ loginUrl: '/auth/sign-in' })(request);
+  const protectedRoute = PROTECTED.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`));
+  // Public pages: anonymous visitors cost nothing; signed-in ones get the same refresh, never a sign-in redirect.
+  if (!protectedRoute && !request.cookies.has(SESSION_COOKIE)) return NextResponse.next();
+  const sdk = await getAuth().middleware({ loginUrl: '/auth/sign-in' })(request);
+  return forwardSession(request, sdk, { protectedRoute });
 }
 
+const PROTECTED = ['/app', '/onboarding'];
+
 export const config = {
-  matcher: ['/app/:path*', '/onboarding/:path*', '/onboarding'],
+  // Signed-in areas, plus the public pages that read the session (landing redirect, header, page language).
+  matcher: ['/app/:path*', '/onboarding/:path*', '/onboarding', '/', '/how-it-works', '/privacy', '/terms'],
 };
