@@ -7,3 +7,15 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - '@tailwindcss/oxide'
+
+# Security overrides (Nov 2 audit). better-auth family: @neondatabase/auth 0.7.0-beta pins 1.7.6 (critical/high
+# advisories, fixed in 1.7.7). The rest: patched versions that stay inside the ranges @paypal/agent-toolkit allows.
+overrides:
+  better-auth: 1.7.15
+  '@better-auth/core': 1.7.15
+  '@better-auth/oauth-provider': 1.7.15
+  '@better-auth/drizzle-adapter': 1.7.15
+  '@neondatabase/auth>zod': 4.6.7
+  '@langchain/core': 0.3.80
+  'uuid@<11.1.1': 11.1.1
+  'jsondiffpatch@<0.7.6': 0.7.7
