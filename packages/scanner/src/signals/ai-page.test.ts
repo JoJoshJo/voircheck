@@ -64,6 +64,18 @@ describe('AI page analysis: risk mapping and cost', () => {
     expect(costUsd({ inputTokens: 0, outputTokens: 1_000_000, cacheReadTokens: 0, cacheWriteTokens: 0 })).toBeCloseTo(0.5);
     expect(costUsd({ inputTokens: 0, outputTokens: 0, cacheReadTokens: 1_000_000, cacheWriteTokens: 1_000_000 })).toBeCloseTo(0.135);
   });
+
+  it('prices Sonnet 5.5 by its own table; unknown models are priced as Sonnet (never understated)', () => {
+    const u = { inputTokens: 1_000_000, outputTokens: 1_000_000, cacheReadTokens: 1_000_000, cacheWriteTokens: 0 };
+    expect(costUsd(u, 'claude-sonnet-5-5')).toBeCloseTo(12.2);
+    expect(costUsd(u, 'claude-new-model')).toBeCloseTo(12.2);
+  });
+
+  it('Sonnet 5.5 turns thinking off with between_tools (disabled 400s there)', async () => {
+    const { client, calls } = fakeClient({ parsed_output: injection });
+    await anthropicAnalyzer({ client, model: 'claude-sonnet-5-5', log: quiet }).analyze(page());
+    expect(calls[0]!.thinking).toEqual({ type: 'between_tools' });
+  });
 });
 
 describe('AI page analysis: input', () => {

@@ -90,6 +90,11 @@ export const DEFAULT_SCAN_MODEL = 'claude-haiku-5-5';
 export const AI_PROMPT_VERSION = 'v2';
 /** Haiku 5.5, prompts ≤100K tokens (our input cap keeps us there): $ per million tokens. Cache write 1.25×, read 0.1×. */
 export const HAIKU_PRICE = { input: 0.1, output: 0.5, cacheWrite: 0.125, cacheRead: 0.01 } as const;
+/** $ per MTok (prompts under 100K tokens). Cache write 1.25×, read 0.1× of input. Unknown models are priced as Sonnet. */
+export const MODEL_PRICES: Record<string, { input: number; output: number; cacheWrite: number; cacheRead: number }> = {
+  'claude-haiku-5-5': HAIKU_PRICE,
+  'claude-sonnet-5-5': { input: 2, output: 10, cacheWrite: 2.5, cacheRead: 0.2 },
+};
 const MAX_HOME_CHARS = 10_000;
 const MAX_EXTRA_PAGE_CHARS = 4_000;
 const MAX_PAGE_CHARS = 20_000;
@@ -175,8 +180,9 @@ export function buildAnalysisInput(page: PageForAnalysis): string {
   return `${untrusted}\n<voircheck_context>\n${json}\n</voircheck_context>\n\nAnalyze this shop and return the JSON.`;
 }
 
-export function costUsd(u: Pick<AiUsage, 'inputTokens' | 'outputTokens' | 'cacheReadTokens' | 'cacheWriteTokens'>): number {
-  const usd = (u.inputTokens * HAIKU_PRICE.input + u.outputTokens * HAIKU_PRICE.output + u.cacheWriteTokens * HAIKU_PRICE.cacheWrite + u.cacheReadTokens * HAIKU_PRICE.cacheRead) / 1e6;
+export function costUsd(u: Pick<AiUsage, 'inputTokens' | 'outputTokens' | 'cacheReadTokens' | 'cacheWriteTokens'>, model: string = DEFAULT_SCAN_MODEL): number {
+  const p = MODEL_PRICES[model] ?? MODEL_PRICES['claude-sonnet-5-5']!;
+  const usd = (u.inputTokens * p.input + u.outputTokens * p.output + u.cacheWriteTokens * p.cacheWrite + u.cacheReadTokens * p.cacheRead) / 1e6;
   return Math.round(usd * 1e6) / 1e6;
 }
 
@@ -270,8 +276,9 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
         res = await client.messages.parse({
           model,
           max_tokens: MAX_OUTPUT_TOKENS,
-          // A fixed classification task: no thinking, low effort (cheapest, steadiest).
-          thinking: { type: 'disabled' },
+          // A fixed classification task: no thinking, low effort (cheapest, steadiest). Sonnet 5.5 rejects "disabled";
+          // "between_tools" is its no-thinking setting.
+          thinking: model.startsWith('claude-sonnet-5-5') ? { type: 'between_tools' } : { type: 'disabled' },
           output_config: { effort: 'low', format: zodOutputFormat(ModelOutput) },
           system: [{ type: 'text', text: AI_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
           messages: [{ role: 'user', content: buildAnalysisInput(page) }],
@@ -290,7 +297,7 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
         costUsd: 0,
         cached: false,
       };
-      usage.costUsd = costUsd(usage);
+      usage.costUsd = costUsd(usage, model);
       log(`[ai_page] ${page.url}: in ${usage.inputTokens} (cache read ${usage.cacheReadTokens}, write ${usage.cacheWriteTokens}), out ${usage.outputTokens}, $${usage.costUsd.toFixed(5)}`);
       if (res.stop_reason !== 'end_turn') return { ...unavailable('ai_page', `AI page analysis returned no usable answer (${res.stop_reason ?? 'no stop reason'}).`), usage };
       const parsed = AiAnalysis.safeParse(trimPageLabels(res.parsed_output));

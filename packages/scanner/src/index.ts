@@ -20,6 +20,7 @@ export {
   AI_PROMPT_VERSION,
   DEFAULT_SCAN_MODEL,
   HAIKU_PRICE,
+  MODEL_PRICES,
   type AiResultCache,
   type MessagesParser,
   type PageAnalyzer,
