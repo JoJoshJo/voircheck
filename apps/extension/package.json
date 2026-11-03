@@ -1,0 +1,9 @@
+{
+  "name": "@voircheck/extension",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
