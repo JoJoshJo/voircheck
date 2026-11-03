@@ -84,6 +84,21 @@ describe('AI findings on the evidence page', () => {
     expect(html).toContain(t.hiddenInjection);
   });
 
+  it('notes are in the reader’s language; quotes stay verbatim in the page’s language', () => {
+    const noted = [
+      { kind: 'company_details_inconsistent' as const, severity: 'med' as const, quote: 'Velbrook Handels GmbH, Berlin', page: 'legal', quoteVerified: true, note: { en: 'The company on the legal page does not match the shop.', fr: 'La société des mentions légales ne correspond pas à la boutique.' } },
+      { kind: 'missing_legal_info' as const, severity: 'high' as const, quote: 'No address on any page', page: 'home', quoteVerified: false, note: { en: 'No address or company name on any page.', fr: 'Aucune adresse ni société sur aucune page.' } },
+    ];
+    const fr = DICTS.fr.evidence;
+    const html = renderToStaticMarkup(createElement(AiFindings, { findings: noted, t: fr, lang: 'fr' }));
+    expect(html).toContain('“Velbrook Handels GmbH, Berlin”');
+    expect(html).toContain('La société des mentions légales ne correspond pas à la boutique.');
+    expect(html).toContain(`${fr.aiOwnNote}\u00a0:</span> Aucune adresse ni société sur aucune page.`);
+    expect(html).not.toMatch(/does not match|No address/);
+    const en = renderToStaticMarkup(createElement(AiFindings, { findings: noted, t: DICTS.en.evidence, lang: 'en' }));
+    expect(en).toContain('No address or company name on any page.');
+  });
+
   it('says so when nothing was found', () => {
     const t = DICTS.en.evidence;
     expect(renderToStaticMarkup(createElement(AiFindings, { findings: [], t }))).toContain(t.aiNone);

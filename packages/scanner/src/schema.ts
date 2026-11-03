@@ -85,6 +85,8 @@ export const AiFinding = z.object({
    * Otherwise it is shown as the AI's own note, without quote marks. Missing on scans from before Nov 2 = not checked.
    */
   quoteVerified: z.boolean().optional(),
+  /** The model's one-line explanation for the shopper, per UI language (plain text). Missing on scans before prompt v5. */
+  note: z.object({ en: z.string().max(200), fr: z.string().max(200) }).optional(),
 });
 export type AiFinding = z.infer<typeof AiFinding>;
 

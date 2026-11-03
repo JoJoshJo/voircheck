@@ -118,7 +118,7 @@ describe('AI page analysis: model call', () => {
     expect(p).not.toHaveProperty('tools');
     expect(p.system).toEqual([{ type: 'text', text: AI_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }]);
     expect(p.thinking).toEqual({ type: 'between_tools' });
-    expect(p.max_tokens).toBeLessThanOrEqual(1_200);
+    expect(p.max_tokens).toBeLessThanOrEqual(1_800);
     expect(p.output_config?.format?.type).toBe('json_schema');
     expect(AI_SYSTEM_PROMPT).toMatch(/untrusted/i);
   });
@@ -219,6 +219,19 @@ describe('AI page analysis: plain-language summary', () => {
     const kept = scored.signals.find((x) => x.id === 'ai_page')?.summary?.fr;
     expect(kept).toBe(fr);
     expect(JSON.parse(JSON.stringify({ kept })).kept).toBe(fr); // what the jsonb column stores and gives back
+  });
+});
+
+describe('AI page analysis: finding notes', () => {
+  it('asks for an EN + FR note per finding and keeps quotes verbatim; notes pass through, long ones are cut', async () => {
+    expect(AI_SYSTEM_PROMPT).toMatch(/"note": \{"en", "fr"\}/);
+    expect(AI_SYSTEM_PROMPT).toMatch(/The quote stays exactly as written on the page/);
+    const note = { en: 'No address or company name on any page.', fr: 'Aucune adresse ni nom de société sur aucune page.' };
+    const { client } = fakeClient({ parsed_output: { findings: [{ kind: 'missing_legal_info', severity: 'high', quote: 'No address on any page read', page: 'home', note }, { kind: 'fake_scarcity_urgency', severity: 'low', quote: 'x', page: 'home', note: { en: 'y'.repeat(300), fr: 'é'.repeat(300) } }], risk: 40 } });
+    const r = await anthropicAnalyzer({ client, log: quiet }).analyze(page());
+    expect(r.findings?.[0]?.note).toEqual(note);
+    expect(r.findings?.[1]?.note?.fr).toBe('é'.repeat(200));
+    expect(r.evidence).toContain('Missing legal information (high, home), AI note: No address or company name on any page.');
   });
 });
 

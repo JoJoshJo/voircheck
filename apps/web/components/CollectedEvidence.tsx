@@ -24,11 +24,14 @@ export function AiFindings({ findings, t, lang = 'en' }: { findings: Finding[]; 
                 {t[`finding_${f.kind}`]} <span className="font-normal text-muted">· {t[`sev_${f.severity}`]}</span>
               </p>
               {f.quoteVerified ? (
-                <blockquote className="mt-1 border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{f.quote}”</blockquote>
+                <>
+                  <blockquote className="mt-1 border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{f.quote}”</blockquote>
+                  {f.note ? <p className="mt-1 pl-3 text-[14px] leading-relaxed break-words text-muted">{f.note[lang]}</p> : null}
+                </>
               ) : (
                 // Not found on the page (a description, a paraphrase or made up): the AI's own words, never shown as a quote.
                 <p className="mt-1 pl-3 text-[14px] leading-relaxed break-words text-muted">
-                  <span className="font-medium text-ink">{t.aiOwnNote}{t.colon}</span> {f.quote}
+                  <span className="font-medium text-ink">{t.aiOwnNote}{t.colon}</span> {f.note?.[lang] ?? f.quote}
                 </p>
               )}
               <p className="mt-1 pl-3 text-[13px] text-muted">{fmt(t.hiddenOn, { page: pageLabel(f.page, lang) })}</p>
