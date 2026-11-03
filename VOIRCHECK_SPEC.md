@@ -80,6 +80,7 @@
 19. ✅ README, license, judge instructions (see 5.19)
 20. 🟡 Video script & Devpost submission (structure locked; narration + on-camera open; see 5.20)
 21. ✅ Day-by-day timeline (see 5.21)
+22. ✅ Chrome extension, check only (see 5.23)
 
 ### 5.1 Core product decisions ✅
 - **Audience:** product is open to anyone whose AI agent shops for them. The demo video follows **one everyday shopper** (character picked in piece 20) so the impact feels concrete; the video closes on "this protects anyone whose agent shops for them."
@@ -352,7 +353,8 @@ Eligible for three sponsor prizes; only one can be won.
 voircheck/
 ├─ apps/
 │  ├─ web/            # main VoirCheck app (Next.js)
-│  └─ stores/         # one store template, 6 themes via config (Next.js)
+│  ├─ stores/         # one store template, 6 themes via config (Next.js)
+│  └─ extension/      # Chrome extension (MV3): "Check this store" → /check (5.23)
 ├─ packages/
 │  ├─ scanner/        # six signals + scoring + hard rules
 │  ├─ paypal/         # REST wrappers (authorize/capture/void/reauthorize), webhook verify, money gate
@@ -463,6 +465,17 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 
 **Rules:** if a day slips, cut from the stretch list first, then email, then auto-pay; never cut the core SAFE/HOLD/BLOCK flow, the PayPal integration, the video, or the security day. Sleep counts: tired builders ship bugs on submission day.
 
+### 5.23 Chrome extension ✅
+**Locked Nov 3 (option A, "simple").** `apps/extension/`, Manifest V3, check only.
+- **Flow:** toolbar ghost → popup shows the current tab's store host → **Check this store** opens `https://voircheck.com/check?url=<tab link>` in a new tab and closes. That's the existing `/check` route (5.8): it validates the link again, keeps it through sign-in / onboarding / "Try the demo", and the workspace opens with it in the check box. The person presses **Check** (never auto-scanned), so per-user/guest/IP limits, the daily KERNEL and AI caps and the 24 h cache apply unchanged. No new API surface and no web-app change.
+- **Permissions:** `activeTab` only (the tab's link after the click). No host permissions, `<all_urls>`, content scripts, background worker, `storage`, web-accessible resources or `externally_connectable`. Chrome shows no install warning.
+- **Never:** pays, handles payment data, reads page content, or calls any API (no `fetch` at all). The scan stays server-side through KERNEL.
+- **Link rules (`link.js`):** http(s) only, no username/password, ≤ 2048 characters (same as `pendingCheckUrl`), not voircheck.com / voircheck-web.onrender.com, `#fragment` dropped; built with `URL` + `searchParams` against the hard-coded origin `https://voircheck.com`. Browser pages (`chrome://`, `file:`, new tab…) → button disabled, "Open a store page first."
+- **Security:** no remote code; CSP `script-src 'self'; object-src 'none'; base-uri 'none'`; no inline scripts or handlers; text via `textContent` only; no secrets. Tests pin the manifest (permissions exactly `["activeTab"]`, forbidden keys absent, CSP), a source guard (no network calls, dynamic code or HTML strings; only voircheck.com links; only `tabs.query`, `tabs.create`, `i18n`), EN/FR key parity, icon sizes, and that the package holds exactly what Chrome loads.
+- **Design:** Mono ink popup (320 px; ink button, stone host box); no verdict colours in the popup (the verdict shows in the app). Ghost icons 16/32/48/128 rendered from `apps/web/app/icon.svg` (bolder strokes at 16 px). EN/FR through `_locales` + `chrome.i18n` (browser language); the French verdict words match the app (Fiable / En attente / Bloquée).
+- **Distribution:** load unpacked. `pnpm --filter @voircheck/extension zip` → `apps/extension/dist/voircheck-extension-v0.1.0.zip` (gitignored); README has the install steps. ⬜ GitHub release with the zip: after J tests it unpacked. Chrome Web Store: optional, later (fee, privacy-policy URL, listing).
+- **Not built (option B):** verdict inside the popup via an API call (needs host permissions, cookie/CSRF work for the extension origin, a worker to survive the popup closing).
+
 ### 5.22 Backlog
 **Deployment**
 - voircheck-web is LIVE at https://voircheck-web.onrender.com (Neon trusted domain added).
@@ -542,6 +555,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-11-03 — Scan prompt v4: the French summary is written with its accents (seen without them in live scans; the cause was the model, not our code).
 - 2026-11-03 — Scan prompt v5: a short EN + FR note per AI finding, so AI notes read in the user's language; quotes unchanged.
 - 2026-11-03 — Unapproved orders older than PayPal's 6-hour window show as expired (nothing charged), not "waiting for approval".
+- 2026-11-03 — Chrome extension locked and built (5.23): MV3, `activeTab` only, popup opens `voircheck.com/check?url=<tab>`; check only, no API calls, no page reading; EN/FR; distributed as a load-unpacked zip (release after J's test).
 - 2026-11-03 — Refunds confirmed live in sandbox (VC-GVLZ) through the Toolkit's `create_refund`.
 - 2026-11-03 — Refunds through the PayPal Agent Toolkit's `create_refund`, gated by MoneyGate: the agent only proposes (`request_refund`), the person's button refunds (chat or History, never the public receipt); one full refund per capture, within 180 days; refund webhooks; "Refunded" in History, receipts and a separate total; the agent offers a refund when a store the person paid scans BLOCK. Details in 5.7.
 - 2026-11-03 — AG Grid Community History risk log + AG Charts: History opens with a risk log of the signed-in person's own rows (owned through shopping_sessions): one row per purchase attempt plus one per link check not bought; date in the viewer's zone, VC ref, store, item, amount, verdict pill, risk score, six signal marks, outcome (Paid / Paid after override / Held / Voided / Expired / Waiting / Not paid / Checked only), Receipt or Payment + Evidence links; sort, quick search, verdict/outcome/date-range filters. Totals: stores checked, scams blocked, money protected (= voided payment amounts, per currency). AG Charts stacked SAFE/HOLD/BLOCK per local day. Community packages only (MIT, no Enterprise, no key), pinned: ag-grid-community/ag-grid-react/@ag-grid-community/locale 36.2.0, ag-charts-community/ag-charts-react 14.2.0; only the modules used are registered. Styled through the Theming API (themeQuartz.withParams, Mono ink; verdict colors only); EN + FR incl. the grid locale; under 768px a plain list, under 1200px no item/score columns. Lazy-loaded (next/dynamic, ssr off) so only History downloads it (one ~670 KB gzipped chunk). Rows carry signal statuses only, never evidence text. Limit 200 newest per kind.

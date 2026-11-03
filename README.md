@@ -162,6 +162,26 @@ The demo stores are on a free Render plan until Nov 11, so the first load may ta
 5. **French.** Settings → Français. The app, the agent's replies, the evidence and the receipts switch to French
    (quotes from store pages stay as written).
 
+## Chrome extension
+
+A check-only shortcut: on any store page, click the VoirCheck ghost in Chrome's toolbar, then **Check this store**.
+VoirCheck opens in a new tab with that store's link in the check box (through sign-in or "Try the demo" if needed);
+press **Check** to see Safe, Hold or Block. The extension never pays, never handles payment details and never reads
+the page: its only permission is `activeTab` (the current tab's link, after your click), it makes no network calls,
+and the scan runs on VoirCheck's servers through KERNEL as usual. English or French, following Chrome's language.
+
+**Install (unpacked, Chrome or another Chromium browser):**
+
+1. Get `voircheck-extension-v0.1.0.zip` (or build it: `pnpm --filter @voircheck/extension zip`, which writes
+   `apps/extension/dist/voircheck-extension-v0.1.0.zip` and the folder `apps/extension/dist/voircheck-extension/`).
+2. Unzip it. You get a folder named `voircheck-extension`.
+3. Open `chrome://extensions` and turn on **Developer mode** (top right).
+4. Click **Load unpacked** and pick the `voircheck-extension` folder.
+5. Pin it: puzzle-piece icon in the toolbar → pin **VoirCheck**.
+
+Chrome may show a "developer mode extensions" notice; that's expected for unpacked extensions. To remove it, click
+**Remove** on its card in `chrome://extensions`. It isn't on the Chrome Web Store (yet).
+
 ## Tech stack
 
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
@@ -179,6 +199,7 @@ The demo stores are on a free Render plan until Nov 11, so the first load may ta
 ```
 apps/web/          VoirCheck app: workspace, agent chat, pay pages, receipts, API routes
 apps/stores/       the six fictional demo stores: one template, themed by config
+apps/extension/    Chrome extension (MV3): "Check this store" opens the current tab in VoirCheck
 packages/scanner/  six signals, scoring and hard rules, KERNEL visits, SSRF guards, AI page analysis
 packages/paypal/   PayPal REST client (sandbox only), MoneyGate, webhooks
 packages/agent/    shopping agent: tools, prompt, model loop, product search, Agent Toolkit get_order + create_refund
@@ -217,7 +238,7 @@ catalog, with a fake PayPal and saved scan results. No keys needed.
 ## Tests
 
 ```bash
-pnpm test        # Vitest: 654 tests
+pnpm test        # Vitest: 691 tests
 pnpm typecheck
 pnpm lint
 ```
