@@ -22,12 +22,13 @@ import { AgGridProvider, AgGridReact } from 'ag-grid-react';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Dict, Lang } from '../lib/i18n';
-import { OUTCOMES, passesFilters, SIGNAL_ORDER, type Outcome, type RiskFilters, type RiskRow, type Verdict } from '../lib/risk-log-map';
+import { OUTCOMES, passesFilters, SIGNAL_ORDER, summarize, type Outcome, type RiskFilters, type RiskRow, type Verdict } from '../lib/risk-log-map';
 import { formatWhen } from '../lib/when';
+import { Summary, VerdictChart } from './RiskCharts';
 import { input, label as labelClass } from './ui';
 
 /**
- * History risk log (AG Grid Community, MIT; no Enterprise modules, no licence key). Loaded only on the History page,
+ * History risk log (AG Grid Community + AG Charts Community in RiskCharts, MIT; no Enterprise modules, no licence key). Loaded only on the History page,
  * in the browser (RiskLogLazy). Everything shown comes from our own rows, as plain text.
  */
 
@@ -161,6 +162,7 @@ export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; l
 
   const money = (amount: number | null, currency: string) => (amount == null ? '–' : new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount));
   const outcomeLabel = (o: Outcome) => t.riskLog[`out_${o}`];
+  const summary = useMemo(() => summarize(rows), [rows]);
 
   const columnDefs = useMemo<ColDef<RiskRow>[]>(
     () => [
@@ -244,6 +246,9 @@ export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; l
 
   return (
     <div className="mt-6 space-y-6">
+      <Summary t={t} summary={summary} money={money} />
+      <VerdictChart rows={rows} t={t} lang={lang} />
+
       <div className="flex flex-wrap items-end gap-3">
         <div className="min-w-[200px] flex-1">
           <label className={labelClass} htmlFor="risk-search">
