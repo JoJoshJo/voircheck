@@ -86,6 +86,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@ag-grid-community/locale':
+        specifier: 36.2.0
+        version: 36.2.0
       '@neondatabase/auth':
         specifier: 0.7.0-beta
         version: 0.7.0-beta(5f0345fcef47d2af0b2345ae8347e862)
@@ -104,6 +107,18 @@ importers:
       '@voircheck/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      ag-charts-community:
+        specifier: 14.2.0
+        version: 14.2.0
+      ag-charts-react:
+        specifier: 14.2.0
+        version: 14.2.0(react@19.3.1)
+      ag-grid-community:
+        specifier: 36.2.0
+        version: 36.2.0
+      ag-grid-react:
+        specifier: 36.2.0
+        version: 36.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1
@@ -219,6 +234,9 @@ importers:
         version: 0.45.4(@neondatabase/serverless@1.2.0)(@opentelemetry/api@1.9.0)(kysely@0.29.7)
 
 packages:
+
+  '@ag-grid-community/locale@36.2.0':
+    resolution: {integrity: sha512-N1sBNSa6z/TzSsN/YdXmfP4Gsdl+7JAmQosTPOfGA9C5pVeOV0y4lcK6rOLfkzaL4D84AZIDSItWXA4XmuBbdg==}
 
   '@ai-sdk/provider-utils@2.2.8':
     resolution: {integrity: sha512-fqhG+4sCVv8x7nFzYnFo19ryhAa3w096Kmc3hWxMQfW/TubPOmt3A6tYZhl4mUfQWWQMsuSkLrtjlWuXBVSGQA==}
@@ -2437,6 +2455,35 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
 
+  ag-charts-community@14.2.0:
+    resolution: {integrity: sha512-AQ9u5jJGjCGWY19XMehZFhC5db6e9J5DGCurSGjm1h9MUkfTQfj9KMDHLhTQqdNhVvTXI7J4OB8ZNbWMh3TJug==}
+
+  ag-charts-core@14.2.0:
+    resolution: {integrity: sha512-te4u0sFYMNuzfZMU/uh3nVEctIFpsAfLFBJIJtlMqBKI8otYdB3y4M5Ax8KAAg888X6G1lDaBW8FoNGzX3caSg==}
+
+  ag-charts-locale@14.2.0:
+    resolution: {integrity: sha512-zoG9yxh193FKc7jvx9FFp8oWUTcYIzHJLNmq1+54KCIe0us9Ay5odkp31y7WJX5gDtty8hKq+uyOEBPXtE9GHw==}
+
+  ag-charts-react@14.2.0:
+    resolution: {integrity: sha512-AdhcRhyW6N7YuYCwnNfCe4ozbcsrMsMGK00VjeaFRNDZTU9PjbSSu0BKyZJFbCPgE0FhrTgDN2fBN0BKQsIx1w==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+
+  ag-charts-types@14.2.0:
+    resolution: {integrity: sha512-4pDV6/4zbzPN7t607Gr1o6DO9RhmPafQGr+hIpTJBaerbaMoC+WOO3v/wkxFbvCNrHKOexEKSfNTH7PaAR4UzA==}
+
+  ag-grid-community@36.2.0:
+    resolution: {integrity: sha512-tK0Toj7t0fV/OMLPnDc0xlYKAqDbnCT3iJodYSn2TJ541caU8jPdYwWhMdW+AP2+pUNwFiJVgc04eJNfvBPsWw==}
+
+  ag-grid-react@36.2.0:
+    resolution: {integrity: sha512-7dsaR4Ga8/bJAOov7XJqxsDc1JAjUU5Bmh9+s4U9+/TKIdSsaVo53SuZb2yEFSB1elv3eh6aZP8a1fqGZehXwA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  ag-stack@36.2.0:
+    resolution: {integrity: sha512-f3XT2htFs9dUPcHni2z9ak69QNta5ODEpooHuuNvbjN98JkokpEqRQ9YLQHQJFdCcgi9Ybs/j3zkkvmNRamIPg==}
+
   agent-base@6.0.2:
     resolution: {integrity: sha512-RZNwNclF7+MS/8bDg70amg32dyeZGZxiDuQmZxKLAlQjr3jGyLx+4Kkk58UO7D2QdgFIQCovuSuZESne6RG6XQ==}
     engines: {node: '>= 6.0.0'}
@@ -4470,6 +4517,8 @@ packages:
 
 snapshots:
 
+  '@ag-grid-community/locale@36.2.0': {}
+
   '@ai-sdk/provider-utils@2.2.8(zod@3.25.76)':
     dependencies:
       '@ai-sdk/provider': 1.1.3
@@ -5295,14 +5344,14 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@3.25.76))':
+  '@langchain/core@0.3.80(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@4.6.7))':
     dependencies:
       '@cfworker/json-schema': 4.1.4
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.21
-      langsmith: 0.3.87(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@3.25.76))
+      langsmith: 0.3.87(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@4.6.7))
       mustache: 4.2.0
       p-queue: 6.6.2
       p-retry: 4.6.2
@@ -5551,7 +5600,7 @@ snapshots:
     dependencies:
       os: 0.1.2
       '@dotenvx/dotenvx': 1.75.1
-      '@langchain/core': 0.3.80(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@3.25.76))
+      '@langchain/core': 0.3.80(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@4.6.7))
       '@modelcontextprotocol/sdk': 1.32.2(@cfworker/json-schema@4.1.4)(zod@3.25.76)
       '@paypal/paypal-server-sdk': 1.1.0(debug@4.4.3)
       ai: 4.3.19(react@19.3.1)(zod@3.25.76)
@@ -6557,6 +6606,39 @@ snapshots:
 
   acorn@8.19.0: {}
 
+  ag-charts-community@14.2.0:
+    dependencies:
+      ag-charts-core: 14.2.0
+      ag-charts-locale: 14.2.0
+      ag-charts-types: 14.2.0
+
+  ag-charts-core@14.2.0:
+    dependencies:
+      ag-charts-types: 14.2.0
+
+  ag-charts-locale@14.2.0: {}
+
+  ag-charts-react@14.2.0(react@19.3.1):
+    dependencies:
+      ag-charts-community: 14.2.0
+      react: 19.3.1
+
+  ag-charts-types@14.2.0: {}
+
+  ag-grid-community@36.2.0:
+    dependencies:
+      ag-charts-types: 14.2.0
+      ag-stack: 36.2.0
+
+  ag-grid-react@36.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
+    dependencies:
+      ag-grid-community: 36.2.0
+      prop-types: 15.8.1
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  ag-stack@36.2.0: {}
+
   agent-base@6.0.2:
     dependencies:
       debug: 4.4.3
@@ -7453,7 +7535,7 @@ snapshots:
 
   kysely@0.29.7: {}
 
-  langsmith@0.3.87(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@3.25.76)):
+  langsmith@0.3.87(@opentelemetry/api@1.9.0)(openai@4.86.1(zod@4.6.7)):
     dependencies:
       '@types/uuid': 10.0.0
       chalk: 4.1.2

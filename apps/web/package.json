@@ -9,12 +9,17 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ag-grid-community/locale": "36.2.0",
     "@neondatabase/auth": "0.7.0-beta",
     "@voircheck/agent": "workspace:*",
     "@voircheck/db": "workspace:*",
     "@voircheck/paypal": "workspace:*",
     "@voircheck/scanner": "workspace:*",
     "@voircheck/shared": "workspace:*",
+    "ag-charts-community": "14.2.0",
+    "ag-charts-react": "14.2.0",
+    "ag-grid-community": "36.2.0",
+    "ag-grid-react": "36.2.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.45.4",
     "next": "16.4.3",

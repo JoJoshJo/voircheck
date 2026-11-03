@@ -201,3 +201,22 @@ export function verdictsPerDay(rows: readonly RiskRow[], dayOf: (iso: string) =>
 export function localDay(iso: string, timeZone?: string): string {
   return new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone }).format(new Date(iso));
 }
+
+/** The History filters (verdict, outcome, local date range YYYY-MM-DD, both ends included). Shared by grid and list. */
+export interface RiskFilters {
+  verdict: Verdict | null;
+  outcome: Outcome | null;
+  from: string | null;
+  to: string | null;
+}
+
+export function passesFilters(r: RiskRow, f: RiskFilters, dayOf: (iso: string) => string = (iso) => localDay(iso)): boolean {
+  if (f.verdict && r.verdict !== f.verdict) return false;
+  if (f.outcome && r.outcome !== f.outcome) return false;
+  if (f.from || f.to) {
+    const day = dayOf(r.at);
+    if (f.from && day < f.from) return false;
+    if (f.to && day > f.to) return false;
+  }
+  return true;
+}

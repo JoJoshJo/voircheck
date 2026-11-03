@@ -4,10 +4,12 @@ import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { LocalTime } from '../../../components/LocalTime';
+import { RiskLogLazy } from '../../../components/RiskLogLazy';
 import { card } from '../../../components/ui';
 import { VerdictBadge } from '../../../components/Verdict';
 import { getDb } from '../../../lib/db';
 import { DICTS } from '../../../lib/i18n';
+import { loadRiskLog } from '../../../lib/risk-log';
 import { requireOnboardedUser } from '../../../lib/user';
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +18,7 @@ export default async function HistoryPage() {
   const { user, lang } = await requireOnboardedUser();
   const t = DICTS[lang];
   const db = getDb();
+  const riskRows = await loadRiskLog(user.id);
   const sessions = await db.select().from(shoppingSessions).where(ownedBy(shoppingSessions, user.id)).orderBy(desc(shoppingSessions.createdAt)).limit(50);
   // The latest scan of each URL at or before the request (scans are a shared cache keyed by URL).
   const rows = await Promise.all(
@@ -37,12 +40,20 @@ export default async function HistoryPage() {
   );
 
   return (
-    <main className="mx-auto max-w-3xl px-4 pb-20 sm:px-6">
+    <main className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
       <h1 className="text-[28px] font-medium tracking-tight">{t.history.title}</h1>
+      <section className="mt-6" aria-labelledby="risk-log-title">
+        <h2 id="risk-log-title" className="text-[20px] font-medium tracking-tight">
+          {t.riskLog.title}
+        </h2>
+        <p className="mt-1 text-[15px] text-muted">{t.riskLog.intro}</p>
+        <RiskLogLazy rows={riskRows} t={t} lang={lang} />
+      </section>
+      <h2 className="mt-12 text-[20px] font-medium tracking-tight">{t.history.allRequests}</h2>
       {rows.length === 0 ? (
         <p className="mt-6 text-[15px] text-muted">{t.history.empty}</p>
       ) : (
-        <ul className={`${card} mt-6 divide-y divide-line`}>
+        <ul className={`${card} mt-4 max-w-3xl divide-y divide-line`}>
           {rows.map(({ s, scan, receipts, open }) => (
             <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0">

@@ -1,7 +1,7 @@
 import { createDb } from '@voircheck/db';
 import { describe, expect, it, vi } from 'vitest';
 import { linkChecksQuery, paymentRecordsQuery } from './risk-log';
-import { localDay, outcomeFor, signalStatuses, summarize, toRiskRows, verdictsPerDay, type LinkCheckRecord, type PaymentRecord } from './risk-log-map';
+import { localDay, outcomeFor, passesFilters, signalStatuses, summarize, toRiskRows, verdictsPerDay, type LinkCheckRecord, type PaymentRecord } from './risk-log-map';
 
 vi.mock('server-only', () => ({}));
 
@@ -108,6 +108,21 @@ describe('risk log: summary and chart', () => {
       { day: '2026-11-02', SAFE: 0, HOLD: 0, BLOCK: 1 },
       { day: '2026-11-03', SAFE: 1, HOLD: 1, BLOCK: 2 },
     ]);
+  });
+});
+
+describe('risk log: filters', () => {
+  const rows = toRiskRows([payment(), payment({ paymentId: 'p2', sessionId: 's2', verdict: 'BLOCK', status: 'voided', createdAt: hoursAgo(30) })], [check()], NOW);
+  const ny = (iso: string) => localDay(iso, 'America/New_York');
+  const none = { verdict: null, outcome: null, from: null, to: null };
+  const ids = (f: Parameters<typeof passesFilters>[1]) => rows.filter((r) => passesFilters(r, f, ny)).map((r) => r.id);
+  it('by verdict, outcome and local date range (both ends included)', () => {
+    expect(ids(none)).toEqual(['pay:p1', 'check:s9', 'pay:p2']);
+    expect(ids({ ...none, verdict: 'BLOCK' })).toEqual(['check:s9', 'pay:p2']);
+    expect(ids({ ...none, outcome: 'voided' })).toEqual(['pay:p2']);
+    expect(ids({ ...none, from: '2026-11-03', to: '2026-11-03' })).toEqual(['pay:p1', 'check:s9']);
+    expect(ids({ ...none, to: '2026-11-02' })).toEqual(['pay:p2']);
+    expect(ids({ ...none, verdict: 'SAFE', outcome: 'voided' })).toEqual([]);
   });
 });
 
