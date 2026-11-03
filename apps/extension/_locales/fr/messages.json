@@ -1,0 +1,11 @@
+{
+  "extName": { "message": "VoirCheck", "description": "Extension name" },
+  "extDescription": { "message": "Vérifiez la boutique avant de payer : VoirCheck répond Fiable, En attente ou Bloquée. Ne paie jamais, ne lit jamais la page.", "description": "Store listing and chrome://extensions description, at most 132 characters" },
+  "actionTitle": { "message": "Vérifier cette boutique avec VoirCheck", "description": "Toolbar icon tooltip" },
+  "storeLabel": { "message": "Boutique de cet onglet", "description": "Label above the store's host" },
+  "checkButton": { "message": "Vérifier cette boutique", "description": "Popup button" },
+  "checkNote": { "message": "Ouvre VoirCheck dans un nouvel onglet avec cette boutique. Appuyez sur Vérifier pour voir Fiable, En attente ou Bloquée.", "description": "Under the button when the tab is a store page" },
+  "notAStore": { "message": "Ouvrez d’abord la page d’une boutique. VoirCheck vérifie les boutiques en ligne, pas les pages du navigateur ni les fichiers.", "description": "When the tab can't be checked" },
+  "checkOnly": { "message": "Vérification seulement : ne paie jamais et ne lit jamais la page.", "description": "Footer promise" },
+  "howLink": { "message": "Comment VoirCheck vérifie", "description": "Footer link to the how-it-works page" }
+}

@@ -1,0 +1,11 @@
+{
+  "extName": { "message": "VoirCheck", "description": "Extension name" },
+  "extDescription": { "message": "Check the store you're on before you pay: VoirCheck says Safe, Hold or Block. Check only: it never pays and never reads the page.", "description": "Store listing and chrome://extensions description, at most 132 characters" },
+  "actionTitle": { "message": "Check this store with VoirCheck", "description": "Toolbar icon tooltip" },
+  "storeLabel": { "message": "Store on this tab", "description": "Label above the store's host" },
+  "checkButton": { "message": "Check this store", "description": "Popup button" },
+  "checkNote": { "message": "Opens VoirCheck in a new tab with this store ready. Press Check there to see Safe, Hold or Block.", "description": "Under the button when the tab is a store page" },
+  "notAStore": { "message": "Open a store page first. VoirCheck checks web shops, not browser pages or files.", "description": "When the tab can't be checked" },
+  "checkOnly": { "message": "Check only: this never pays and never reads the page.", "description": "Footer promise" },
+  "howLink": { "message": "How VoirCheck checks", "description": "Footer link to the how-it-works page" }
+}
