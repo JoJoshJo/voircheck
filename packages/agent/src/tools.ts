@@ -122,7 +122,8 @@ export const OrderSummary = z.object({
   item: z.string().max(120),
   amount: z.string().regex(/^\d+\.\d{2}$/),
   currency: z.string().length(3),
-  status: z.enum(['waiting_for_buyer', 'approved', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']),
+  /** expired: never approved and past PayPal's 6-hour order window; nothing was charged or held. */
+  status: z.enum(['waiting_for_buyer', 'expired', 'approved', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 export const RecentOrdersOutput = z.object({ orders: z.array(OrderSummary).max(10) });
@@ -186,7 +187,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   const recent: AgentTool<Record<string, never>, RecentOrdersOutput> = {
     name: 'list_my_recent_orders',
     description:
-      "List the signed-in person's own most recent orders (up to 10, newest first): VoirCheck reference, store, item, amount, VoirCheck's payment status and date. Use it when they ask about an order that isn't in this chat. Read only.",
+      "List the signed-in person's own most recent orders (up to 10, newest first): VoirCheck reference, store, item, amount, VoirCheck's payment status (\"expired\" = never approved in time, nothing charged) and date. Use it when they ask about an order that isn't in this chat. Read only.",
     input: z.object({}),
     output: RecentOrdersOutput,
     run: () => deps.listRecentOrders(),

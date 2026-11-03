@@ -30,3 +30,4 @@ export { handleWebhook, verifyWebhookSignature, type WebhookOutcome, type Webhoo
 export { MemoryGateStore, type GateStore, type CandidateRow, type ScanRow, type PaymentRow, type PaymentStatus, type Verdict } from './store';
 export { drizzleGateStore } from './drizzle-store';
 export { redactWebhookPayload, piiKeysPresent, PII_KEYS } from './webhook-redact';
+export { ORDER_APPROVAL_WINDOW_MS, shownPaymentStatus, type ShownPaymentStatus } from './order-expiry';

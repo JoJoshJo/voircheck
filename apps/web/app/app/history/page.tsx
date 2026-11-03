@@ -1,4 +1,5 @@
 import { payments, scans, shoppingSessions, trustReceipts } from '@voircheck/db/schema';
+import { shownPaymentStatus } from '@voircheck/paypal';
 import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import Link from 'next/link';
@@ -27,7 +28,11 @@ export default async function HistoryPage() {
         .innerJoin(payments, eq(trustReceipts.paymentId, payments.id))
         .where(eq(payments.sessionId, s.id))
         .orderBy(desc(trustReceipts.createdAt));
-      return { s, scan, receipts };
+      // Orders still without a receipt: waiting for approval, or expired after PayPal's window (nothing charged).
+      const open = (await db.select({ id: payments.id, status: payments.status, createdAt: payments.createdAt }).from(payments).where(eq(payments.sessionId, s.id)).orderBy(desc(payments.createdAt)))
+        .map((p) => ({ id: p.id, shown: shownPaymentStatus(p) }))
+        .filter((p) => p.shown === 'created' || p.shown === 'expired');
+      return { s, scan, receipts, open };
     }),
   );
 
@@ -38,7 +43,7 @@ export default async function HistoryPage() {
         <p className="mt-6 text-[15px] text-muted">{t.history.empty}</p>
       ) : (
         <ul className={`${card} mt-6 divide-y divide-line`}>
-          {rows.map(({ s, scan, receipts }) => (
+          {rows.map(({ s, scan, receipts, open }) => (
             <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0">
                 <p className="truncate text-[15px]">{s.queryOrUrl}</p>
@@ -47,6 +52,17 @@ export default async function HistoryPage() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3">
+                {open.map((p) =>
+                  p.shown === 'expired' ? (
+                    <span key={p.id} className="text-[13px] text-faint">
+                      {t.agent.st_expired}
+                    </span>
+                  ) : (
+                    <Link key={p.id} href={`/app/pay/${p.id}`} className="text-[13px] text-muted underline underline-offset-4 hover:text-ink">
+                      {t.agent.st_created}
+                    </Link>
+                  ),
+                )}
                 {receipts.map((r) => (
                   <Link key={r.slug} href={`/r/${r.slug}`} className="text-[13px] text-muted underline underline-offset-4 hover:text-ink">
                     {t.history.receipt}

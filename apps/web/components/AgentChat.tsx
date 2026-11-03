@@ -66,7 +66,7 @@ const EMPTY = { items: [] as Item[], stores: {} as Record<string, StoreState>, p
 type ChatState = typeof EMPTY;
 
 /** Payment states after which the chat shows the outcome instead of the PayPal button. */
-const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
+const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'expired']);
 
 /**
  * The chat survives a trip to the payment page and back (same browser tab): what's on screen plus the conversation ID,
@@ -117,9 +117,9 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
       .filter((id): id is string => !!id && !SETTLED.has(saved.chat.payments[id] ?? ''));
     for (const paymentId of open) {
       void fetch('/api/pay/status', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ paymentId }) })
-        .then((r) => (r.ok ? (r.json() as Promise<{ payment?: { status?: string } }>) : null))
+        .then((r) => (r.ok ? (r.json() as Promise<{ payment?: { status?: string; expired?: boolean } }>) : null))
         .then((b) => {
-          const status = b?.payment?.status;
+          const status = b?.payment?.expired ? 'expired' : b?.payment?.status;
           if (status) setChat((c) => ({ ...c, payments: { ...c.payments, [paymentId]: status } }));
         })
         .catch(() => {});

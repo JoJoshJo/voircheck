@@ -1,6 +1,7 @@
 import 'server-only';
 import { candidates, payments, shoppingSessions } from '@voircheck/db/schema';
 import type { RecentOrdersOutput } from '@voircheck/agent';
+import { shownPaymentStatus } from '@voircheck/paypal';
 import { ownedBy } from '@voircheck/shared';
 import { desc, eq } from 'drizzle-orm';
 import { getDb } from './db';
@@ -33,8 +34,10 @@ export async function recentOrdersForUser(userId: string): Promise<RecentOrdersO
       item: r.item.slice(0, 120),
       amount: Number(r.amount).toFixed(2),
       currency: r.currency,
-      status: (r.status === 'created' ? 'waiting_for_buyer' : r.status) as RecentOrdersOutput['orders'][number]['status'],
+      status: statusForAgent(shownPaymentStatus(r)),
       date: r.createdAt.toISOString().slice(0, 10),
     })),
   };
 }
+
+const statusForAgent = (s: string) => (s === 'created' ? 'waiting_for_buyer' : s) as RecentOrdersOutput['orders'][number]['status'];

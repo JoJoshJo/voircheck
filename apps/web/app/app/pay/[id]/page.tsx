@@ -23,7 +23,7 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
   const p = await getPaymentView(id, user.id);
   if (!p) notFound();
 
-  const key = TITLE[p.status];
+  const key = p.expired ? 'expired' : TITLE[p.status];
   const mood: MascotMood = p.verdict ?? 'idle';
   const band = p.verdict ? VERDICT_CLASSES[p.verdict] : 'bg-surface text-ink';
   const money = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: p.currency }).format(Number(p.amount));
@@ -67,7 +67,7 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
 
       <section className="mt-6 space-y-5">
         {p.status === 'authorized' && <HoldActions t={t} payment={p} />}
-        {(p.status === 'created' || p.status === 'approved') && <AwaitApproval t={t} paymentId={p.id} />}
+        {((p.status === 'created' && !p.expired) || p.status === 'approved') && <AwaitApproval t={t} paymentId={p.id} />}
         <div className="flex flex-wrap items-center gap-2">
           {fromChat && (
             <Link href="/app" className={btnSecondary}>

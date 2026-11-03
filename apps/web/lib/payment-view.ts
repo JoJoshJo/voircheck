@@ -1,6 +1,6 @@
 import 'server-only';
 import { scans } from '@voircheck/db/schema';
-import type { PaymentStatus, Verdict } from '@voircheck/paypal';
+import { shownPaymentStatus, type PaymentStatus, type Verdict } from '@voircheck/paypal';
 import { eq } from 'drizzle-orm';
 import { getDb } from './db';
 import { getPayPal } from './paypal';
@@ -14,6 +14,8 @@ export interface PaymentView {
   /** VoirCheck's own short reference (VC-7K2F), safe to show; not a PayPal ID. */
   ref: string;
   status: PaymentStatus;
+  /** Never approved and past PayPal's order window (6 h): nothing was charged or held, and it can't be approved now. */
+  expired: boolean;
   mode: 'approve' | 'auto';
   overrideUsed: boolean;
   amount: string;
@@ -51,6 +53,7 @@ export async function getPaymentView(paymentId: string, userId: string): Promise
     id: payment.id,
     ref: payment.ref,
     status: payment.status,
+    expired: shownPaymentStatus(payment) === 'expired',
     mode: payment.mode,
     overrideUsed: payment.overrideUsed,
     amount: payment.amount,

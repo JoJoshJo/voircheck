@@ -208,6 +208,21 @@ describe('get_order (Agent Toolkit, read only)', () => {
     expect(unknown).toEqual({ status: 'not_found' });
     expect(captures(s.paypal.calls)).toEqual([]);
   });
+
+  it('an order never approved within PayPal’s 6-hour window lists as expired (nothing charged)', async () => {
+    const steps: ModelTurn[] = [
+      { text: '', toolCalls: [{ id: 's', name: 'search_products', input: { query: 'wireless earbuds', maxPrice: 60 } }] },
+      { text: '', toolCalls: [{ id: 'v', name: 'get_scan_verdict', input: { storeId: 'cand-velbrook-supply' } }] },
+      { text: '', toolCalls: [{ id: 'o', name: 'create_order', input: { storeId: 'cand-velbrook-supply' } }] },
+    ];
+    const s = session(new Hostile(steps));
+    await s.say('go');
+    s.store.payments.get('pay_1')!.createdAt = new Date(Date.now() - 7 * 3_600_000);
+    steps.push({ text: '', toolCalls: [{ id: 'r', name: 'list_my_recent_orders', input: {} }] });
+    await s.say('my orders?');
+    expect((s.lastResults()[0] as { orders: Array<{ status: string }> }).orders.map((o) => o.status)).toEqual(['expired']);
+    expect(s.store.payments.get('pay_1')!.status).toBe('created'); // display only: the row itself is unchanged
+  });
 });
 
 describe('the agent never receives page text', () => {
