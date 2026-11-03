@@ -36,9 +36,26 @@ export default async function HowItWorks() {
         </ol>
         <p className="mt-10 text-[17px] font-medium">{t.how.thresholds}</p>
         <p className="mt-4 text-[15px] leading-relaxed text-muted">{t.how.rules}</p>
+        {([
+          ['agentTitle', 'agentBody'],
+          ['moneyTitle', 'moneyBody'],
+          ['extTitle', 'extBody'],
+        ] as const).map(([title, body]) => (
+          <section key={title} className="mt-12">
+            <h2 className="text-[20px] font-medium">{t.how[title]}</h2>
+            <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how[body]}</p>
+          </section>
+        ))}
         <section className="mt-14 rounded-card bg-surface p-7">
           <h2 className="text-[20px] font-medium">{t.how.accuracyTitle}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.accuracyBody}</p>
+          <p className="mt-4 text-[15px] font-medium">{t.how.tuneTitle}</p>
+          <ul className="mt-2 list-disc space-y-1.5 pl-5 text-[15px] leading-relaxed text-muted">
+            <li>{t.how.tune1}</li>
+            <li>{t.how.tune2}</li>
+            <li>{t.how.tune3}</li>
+          </ul>
+          <p className="mt-4 text-[15px] leading-relaxed text-muted">{t.how.holdout}</p>
         </section>
       </main>
     </>
