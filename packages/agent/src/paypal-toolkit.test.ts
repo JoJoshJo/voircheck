@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { agentOrderStatus, orderStatusView, TOOLKIT_CONFIGURATION, toolkitOrderReader, type ToolkitLike } from './paypal-toolkit';
+import { agentOrderStatus, orderStatusView, refundOutcome, refundToolkitConfiguration, TOOLKIT_CONFIGURATION, toolkitOrderReader, toolkitRefunder, type ToolkitLike } from './paypal-toolkit';
 
 /** A PayPal order as GET /v2/checkout/orders/{id} returns it, payer data included. */
 const ORDER = {
@@ -78,5 +78,53 @@ describe('toolkitOrderReader', () => {
     t = 61 * 60_000;
     await read('ORDER1');
     expect(make).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('refunds through the Toolkit (server-side, never the agent’s)', () => {
+  const CAPTURE = '2GG279541U471931P';
+
+  function refundToolkit(result: unknown) {
+    const execute = vi.fn(async () => result);
+    const built: string[] = [];
+    return { execute, built, make: (requestId: string) => (built.push(requestId), { getTools: () => ({ create_refund: { execute } }) }) as ToolkitLike };
+  }
+
+  it('the real Toolkit built for a refund exposes create_refund only, sandbox forced, request id per refund', async () => {
+    const { PayPalAgentToolkit } = await import('@paypal/agent-toolkit/ai-sdk');
+    const config = refundToolkitConfiguration('vc-abc');
+    expect(config).toEqual({ actions: { payments: { createRefund: true } }, context: { sandbox: true, request_id: 'vc-abc' } });
+    const tk = new PayPalAgentToolkit({ clientId: 'test', clientSecret: 'test', configuration: config });
+    expect(Object.keys(tk.getTools())).toEqual(['create_refund']);
+  });
+
+  it('the agent’s Toolkit has no refund tool', () => {
+    expect(JSON.stringify(TOOLKIT_CONFIGURATION)).not.toMatch(/refund/i);
+  });
+
+  it('builds one instance per refund with the payment’s request id and refunds the full capture (no amount)', async () => {
+    const t = refundToolkit(JSON.stringify({ id: '1JU08902781691411', status: 'COMPLETED', links: [] }));
+    const refund = toolkitRefunder({ clientId: 'x', clientSecret: 'y', makeToolkit: t.make });
+    expect(await refund({ captureId: CAPTURE, requestId: 'vc-pay-1' })).toEqual({ kind: 'refund', refundId: '1JU08902781691411', status: 'COMPLETED' });
+    expect(t.built).toEqual(['vc-pay-1']);
+    expect(t.execute).toHaveBeenCalledWith({ capture_id: CAPTURE }, expect.anything());
+  });
+
+  it('a malformed capture ID is refused before any Toolkit is built', async () => {
+    const t = refundToolkit('{}');
+    expect(await toolkitRefunder({ clientId: 'x', clientSecret: 'y', makeToolkit: t.make })({ captureId: 'CAP/../x', requestId: 'r' })).toMatchObject({ kind: 'error' });
+    expect(t.built).toEqual([]);
+  });
+
+  it.each([
+    [{ ok: false, status: 422, code: 'PAYPAL_API_HTTP_ERROR', message: 'Unprocessable Entity: The capture has already been fully refunded' }, { kind: 'already_refunded' }],
+    [{ ok: false, status: 422, code: 'PAYPAL_API_HTTP_ERROR', message: 'CAPTURE_FULLY_REFUNDED' }, { kind: 'already_refunded' }],
+    [{ ok: false, status: 422, code: 'PAYPAL_API_HTTP_ERROR', message: 'Unprocessable Entity: Refund is not allowed' }, { kind: 'error', message: 'Unprocessable Entity: Refund is not allowed' }],
+    [{ ok: false, code: 'PAYPAL_API_NO_RESPONSE', message: 'timeout' }, { kind: 'unknown', message: 'timeout' }],
+    [{ ok: false, status: 503, code: 'PAYPAL_API_HTTP_ERROR', message: 'Service Unavailable' }, { kind: 'unknown', message: 'Service Unavailable' }],
+    [{ error: { message: 'boom', type: 'paypal_error' } }, { kind: 'error', message: 'boom' }],
+    ['not json', { kind: 'unknown', message: 'unreadable answer from the Toolkit' }],
+  ])('%j → %j', (raw, expected) => {
+    expect(refundOutcome(typeof raw === 'string' ? raw : JSON.stringify(raw))).toEqual(expected);
   });
 });
