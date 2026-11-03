@@ -8,8 +8,9 @@ import type { ScanFacts, SignalOutcome } from './signals/types';
  *
  * Why these numbers:
  * - Every "warn" stays SAFE on its own (max 20); two warns can reach HOLD.
- * - Every "fail" except domain_age reaches HOLD on its own. BLOCK (65) needs two independent strong
- *   signals: clone fail + any other fail (e.g. a fresh domain: 40 + 25), or AI fail + price fail (35 + 30).
+ * - Every "fail" except domain_age reaches HOLD on its own. No single check reaches BLOCK (65) alone: the
+ *   biggest weight is 40, so findings have to add up (e.g. clone fail + fresh domain: 40 + 25, or AI fail +
+ *   price fail: 35 + 30; warns count too). There is no "two signals" rule, only the sum and the hard rules.
  * - clone fail (40): a store that both borrows another store's name/domain AND copies its page is the
  *   textbook fake shop; it is the strongest non-list evidence we have.
  * - ai_page fail (35): many tells at once (no contact, fake reviews, off-platform payment). Strong, but

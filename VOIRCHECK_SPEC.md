@@ -166,7 +166,7 @@
   | 4 AI page analysis (model's overall risk 0–100: <25 pass, 25–49 warn, ≥50 fail; picked on tune, see 5.13) | 15 | 35 | Strong but a model's judgment; unavailable = 0 so a missing AI key never causes HOLD |
   | 5 Threat list | – | 100 | Someone else's confirmed finding (BLOCK by hard rule too) |
   | 6 Clone / lookalike (lookalike name/domain OR copied text = warn; both = fail) | 20 | 40 | Borrowed name + copied page is the textbook fake shop |
-  - Every warn stays SAFE alone; every fail except domain age reaches HOLD alone; BLOCK needs two strong signals (e.g. clone + fresh domain = 65, clone + price = 70, AI + price = 65).
+  - Every warn stays SAFE alone; every fail except domain age reaches HOLD alone; no single check reaches BLOCK alone (biggest weight 40 < 65), so findings must add up (e.g. clone + fresh domain = 65, clone + price = 70, AI + price = 65). There is no separate two-signal rule.
 - **BLOCK override:** user may still pay a BLOCK store only after an explicit "I understand the risk" confirmation. The override is recorded on the Trust Receipt. **Never allowed in Auto-pay mode.**
 - **Language:**
   - User picks language **at the start of onboarding** (first screen); changeable later in settings.
