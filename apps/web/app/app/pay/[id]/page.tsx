@@ -30,10 +30,13 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
 
   return (
     <main className="mx-auto max-w-2xl px-4 pb-20 sm:px-6">
-      <Link href="/app" className="text-[14px] text-muted hover:text-ink">
-        ← {fromChat ? t.pay.backToChat : t.pay.backToResults}
-      </Link>
-      <div className={`mt-5 flex items-center justify-between gap-6 rounded-card px-6 py-6 ${band}`}>
+      {/* From the agent chat, the "Back to the conversation" button below is the only way back (no second link). */}
+      {!fromChat && (
+        <Link href="/app" className="mb-5 inline-block text-[14px] text-muted hover:text-ink">
+          ← {t.pay.backToResults}
+        </Link>
+      )}
+      <div className={`flex items-center justify-between gap-6 rounded-card px-6 py-6 ${band}`}>
         <div className="min-w-0">
           {p.verdict && <VerdictLabel verdict={p.verdict} t={t} />}
           <h1 className="mt-1 text-[24px] font-medium tracking-tight">{t.pay[`title_${key}`]}</h1>
