@@ -85,8 +85,8 @@ Both use Claude Sonnet 5.5 through the Anthropic TypeScript SDK.
   schema, and quotes must really be on the page. `packages/scanner/src/signals/ai-page.ts`
 - **Hidden-text detection.** The scanner collects text a visitor can't see (clipped, off-screen, invisible, zero-size,
   tiny or same-colour text) and flags lines that address AI agents. `packages/scanner/src/hidden-text.ts`
-- **Two signs before a BLOCK.** No single warning blocks a store: BLOCK needs two strong signals together, such as
-  a copied page and a fresh domain. Hard rules add floors: a threat-list hit always blocks; no valid HTTPS, a
+- **No single check reaches BLOCK.** Points add up to a score; the biggest single weight is 40 (clone fail), below
+  the BLOCK line of 65, so it takes several findings together, such as a copied page and a fresh domain (40 + 25). Hard rules add floors: a threat-list hit always blocks; no valid HTTPS, a
   verified injection attempt, a young domain with a much lower price, or a page we couldn't read is at least HOLD.
   `packages/scanner/src/scoring.ts`
 - **Store pages never open on our server or your device.** Every visit runs in KERNEL's isolated cloud browser.
