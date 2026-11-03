@@ -67,6 +67,24 @@ export type WebhookOutcome =
   | { httpStatus: 200; outcome: 'duplicate' | 'ignored' }
   | { httpStatus: 200; outcome: 'processed'; paymentId?: string; followUp?: { action: 'complete_approval' | 'refresh_receipt'; paymentId: string; userId: string } };
 
+/**
+ * One log line for a webhook we turn away (401 bad signature, 400 unreadable), so a silent outage like Nov 1–3 shows
+ * up in the server logs. Event id and type only (cleaned, capped): never the body, headers or payer details.
+ */
+export function rejectedWebhookLog(out: { httpStatus: number; reason: string }, rawBody: string): string {
+  let id = '?';
+  let type = '?';
+  try {
+    const e = JSON.parse(rawBody) as { id?: unknown; event_type?: unknown };
+    const clean = (v: unknown) => (typeof v === 'string' && v ? v.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 80) || '?' : '?');
+    id = clean(e.id);
+    type = clean(e.event_type);
+  } catch {
+    // not JSON: id and type stay unknown
+  }
+  return `paypal webhook rejected (${out.httpStatus}): ${out.reason}; event ${id} ${type}`;
+}
+
 export interface WebhookDeps {
   paypal: PayPalClient;
   webhookId: string;

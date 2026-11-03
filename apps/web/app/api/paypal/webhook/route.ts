@@ -1,4 +1,4 @@
-import { handleWebhook } from '@voircheck/paypal';
+import { handleWebhook, rejectedWebhookLog } from '@voircheck/paypal';
 import { publicOrigin } from '../../../../lib/app-origin';
 import { getProfile } from '../../../../lib/user';
 import { isLang } from '../../../../lib/i18n';
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
   try {
     const { paypal, store, gate } = getPayPal();
     const out = await handleWebhook({ headers, rawBody }, { paypal, webhookId, store });
+    if (out.httpStatus === 401 || out.httpStatus === 400) console.warn(rejectedWebhookLog(out, rawBody));
     if (out.outcome === 'processed' && out.followUp?.action === 'complete_approval') {
       const { paymentId, userId } = out.followUp;
       await gate.completeApproval(paymentId, userId, 'webhook');

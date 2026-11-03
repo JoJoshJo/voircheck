@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { PayPalApiError, PayPalClient } from './client';
 import { orderBody, toMoney } from './orders';
 import { fakePayPal, seededStore, USER } from './test-helpers';
-import { handleWebhook } from './webhooks';
+import { handleWebhook, rejectedWebhookLog } from './webhooks';
 
 describe('PayPalClient', () => {
   function tokenServer(expiresIn = 32400) {
@@ -228,5 +228,19 @@ describe('webhooks', () => {
     const extra = { ...authCreated, id: 'WH-EVT-X', create_time: '2026-11-02T00:00:00Z', links: [{ rel: 'self' }] };
     await send(extra);
     expect((pp.callsTo(/verify-webhook-signature/)[0]!.body as Record<string, unknown>).webhook_event).toEqual(extra);
+  });
+});
+
+describe('rejectedWebhookLog', () => {
+  it('names the status, reason, event id and type only', () => {
+    const body = JSON.stringify({ id: 'WH-7F527469D77453940-2FJ49952H1783990D', event_type: 'PAYMENT.CAPTURE.REFUNDED', resource: { payer: { email_address: 'buyer@example.com' } } });
+    const line = rejectedWebhookLog({ httpStatus: 401, reason: 'signature verification failed' }, body);
+    expect(line).toBe('paypal webhook rejected (401): signature verification failed; event WH-7F527469D77453940-2FJ49952H1783990D PAYMENT.CAPTURE.REFUNDED');
+    expect(line).not.toContain('buyer@example.com');
+  });
+
+  it('cleans odd ids and survives a body that is not JSON', () => {
+    expect(rejectedWebhookLog({ httpStatus: 401, reason: 'x' }, JSON.stringify({ id: 'WH-1\n<script>', event_type: 42 }))).toBe('paypal webhook rejected (401): x; event WH-1script ?');
+    expect(rejectedWebhookLog({ httpStatus: 400, reason: 'body is not JSON' }, 'nope')).toBe('paypal webhook rejected (400): body is not JSON; event ? ?');
   });
 });
