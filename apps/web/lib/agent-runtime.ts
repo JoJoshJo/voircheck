@@ -3,7 +3,7 @@ import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, F
 import { assertSafeUrlShape } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
 import { neutralizeFakeNote, type AgentEvent } from './agent-view';
-import { paymentIdForRef, recentOrdersForUser } from './orders';
+import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './orders';
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
 import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend';
@@ -138,7 +138,9 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
         conv.scans.set(storeId, row.id);
         const view = toScanView(row);
         send({ type: 'scan_done', storeId, scan: view, cached });
-        return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules };
+        // A store the person already paid now scans BLOCK: tell the agent which orders it can offer to refund.
+        const refundablePaidOrders = view.verdict === 'BLOCK' ? await refundableRefsAtStore(userId, row.url).catch(() => []) : [];
+        return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules, refundablePaidOrders };
       } catch (err) {
         console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
         send({ type: 'scan_failed', storeId, reason: 'failed' });

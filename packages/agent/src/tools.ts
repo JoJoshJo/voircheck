@@ -61,6 +61,11 @@ export const ScanSummary = z.object({
   signals: z.array(SignalSummary).max(SIGNAL_IDS.length),
   /** The page hid text that addresses AI agents (hidden-text extract). A flag only: the text itself never reaches the agent. */
   pageTriedToInstructAgents: z.boolean(),
+  /**
+   * BLOCK only: the person's own paid orders at this store that can still be refunded (VoirCheck references, from our
+   * rows). The agent offers request_refund; it never refunds.
+   */
+  refundablePaidOrders: z.array(Ref).max(5).optional(),
 });
 export type ScanSummary = z.infer<typeof ScanSummary>;
 export const ScanOutput = z.union([ScanSummary, z.object({ storeId: Id, status: z.literal('unavailable'), reason: z.enum(['unknown_store', 'rate_limited', 'failed']) })]);
@@ -76,7 +81,8 @@ const MEANING: Record<(typeof SIGNAL_IDS)[number], Record<SignalResult['status']
 };
 
 /** What a finished scan looks like to the agent. Built field by field; nothing from the page is copied. */
-export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[] }): ScanSummary {
+export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[]; refundablePaidOrders?: readonly string[] }): ScanSummary {
+  const refunds = scan.verdict === 'BLOCK' ? (scan.refundablePaidOrders ?? []).filter((r) => Ref.safeParse(r).success).slice(0, 5) : [];
   const injection = scan.signals.some((s) => s.collected?.pages.some((p) => p.hiddenText?.some((h) => h.possibleInjection)));
   return ScanSummary.parse({
     storeId,
@@ -85,6 +91,7 @@ export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<ty
     hardRules: scan.hardRules.filter((r): r is (typeof HARD_RULES)[number] => (HARD_RULES as readonly string[]).includes(r)),
     signals: scan.signals.map((s) => ({ id: s.id, status: s.status, points: s.points, meaning: MEANING[s.id][s.status] })),
     pageTriedToInstructAgents: injection,
+    ...(refunds.length ? { refundablePaidOrders: refunds } : {}),
   });
 }
 
@@ -144,7 +151,7 @@ export type RequestRefundOutput = z.infer<typeof RequestRefundOutput>;
 export interface AgentDeps {
   searchStores(query: string, maxPrice: number | null): Promise<SearchOutput>;
   /** The finished scan (fresh or cached) of a store from this conversation's search. */
-  scanStore(storeId: string): Promise<{ status: 'ok'; verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[] } | { status: 'unavailable'; reason: 'unknown_store' | 'rate_limited' | 'failed' }>;
+  scanStore(storeId: string): Promise<{ status: 'ok'; verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[]; refundablePaidOrders?: readonly string[] } | { status: 'unavailable'; reason: 'unknown_store' | 'rate_limited' | 'failed' }>;
   /** MoneyGate.agentStartPurchase: AUTHORIZE order at our price, or a refusal. */
   createOrder(storeId: string): Promise<CreateOrderOutput>;
   /** MoneyGate.completeApproval: settles an approved order by verdict. */
