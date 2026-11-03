@@ -165,15 +165,15 @@ The demo stores are on a free Render plan until Nov 11, so the first load may ta
 ## Chrome extension
 
 A check-only shortcut: on any store page, click the VoirCheck ghost in Chrome's toolbar, then **Check this store**.
-VoirCheck opens in a new tab with that store's link in the check box (through sign-in or "Try the demo" if needed);
-press **Check** to see Safe, Hold or Block. The extension never pays, never handles payment details and never reads
+VoirCheck opens in a new tab and, if you're signed in, starts checking that store right away (Safe, Hold or Block).
+Signed out, it keeps the link through sign-in or "Try the demo"; then press **Check**. The extension never pays, never handles payment details and never reads
 the page: its only permission is `activeTab` (the current tab's link, after your click), it makes no network calls,
 and the scan runs on VoirCheck's servers through KERNEL as usual. English or French, following Chrome's language.
 
 **Install (unpacked, Chrome or another Chromium browser):**
 
-1. Get `voircheck-extension-v0.1.0.zip` (or build it: `pnpm --filter @voircheck/extension zip`, which writes
-   `apps/extension/dist/voircheck-extension-v0.1.0.zip` and the folder `apps/extension/dist/voircheck-extension/`).
+1. Get `voircheck-extension-v0.1.1.zip` (or build it: `pnpm --filter @voircheck/extension zip`, which writes
+   `apps/extension/dist/voircheck-extension-v0.1.1.zip` and the folder `apps/extension/dist/voircheck-extension/`).
 2. Unzip it. You get a folder named `voircheck-extension`.
 3. Open `chrome://extensions` and turn on **Developer mode** (top right).
 4. Click **Load unpacked** and pick the `voircheck-extension` folder.
@@ -238,7 +238,7 @@ catalog, with a fake PayPal and saved scan results. No keys needed.
 ## Tests
 
 ```bash
-pnpm test        # Vitest: 691 tests
+pnpm test        # Vitest: 731 tests
 pnpm typecheck
 pnpm lint
 ```
