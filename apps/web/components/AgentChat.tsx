@@ -73,6 +73,17 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
   }
 }
 
+/** What "Buy this" sends: the person's own words, so the agent orders (HOLD: their explicit go-ahead after seeing it). */
+export function buyMessage(t: Dict, storeName: string, verdict: 'SAFE' | 'HOLD') {
+  return fmt(verdict === 'HOLD' ? t.agent.buyMessageHold : t.agent.buyMessage, { store: storeName });
+}
+
+/** After the refund button worked: the payment's new status plus a confirmation line under the agent's "tap the button". */
+export function applyRefundResult(state: { items: Item[]; stores: Record<string, StoreState>; payments: Record<string, string> }, t: Dict, item: { paymentId: string; ref: string }, status: string, amount: string) {
+  const line = status === 'refunded' ? fmt(t.agent.refundDoneLine, { amount, ref: item.ref }) : fmt(t.agent.refundPendingLine, { ref: item.ref });
+  return { ...state, payments: { ...state.payments, [item.paymentId]: status }, items: [...state.items, { kind: 'agent' as const, text: line }] };
+}
+
 const EMPTY = { items: [] as Item[], stores: {} as Record<string, StoreState>, payments: {} as Record<string, string> };
 type ChatState = typeof EMPTY;
 
@@ -215,10 +226,10 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
                 {item.text}
               </p>
             ) : item.kind === 'refund' ? (
-              <RefundCard key={i} t={t} lang={lang} item={item} status={chat.payments[item.paymentId] ?? 'captured'} onStatus={(status) => setChat((c) => ({ ...c, payments: { ...c.payments, [item.paymentId]: status } }))} />
+              <RefundCard key={i} t={t} lang={lang} item={item} status={chat.payments[item.paymentId] ?? 'captured'} onStatus={(status, amount) => setChat((c) => applyRefundResult(c, t, item, status, amount))} />
             ) : (
               <div key={i} className="space-y-3">
-                {item.ids.map((id) => chat.stores[id] && <StoreCard key={id} t={t} lang={lang} clientId={clientId} s={chat.stores[id]!} payments={chat.payments} />)}
+                {item.ids.map((id) => chat.stores[id] && <StoreCard key={id} t={t} lang={lang} clientId={clientId} s={chat.stores[id]!} payments={chat.payments} busy={busy} onBuy={(m) => void send(m)} />)}
               </div>
             ),
           )
@@ -251,7 +262,7 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
   );
 }
 
-function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; clientId: string; s: StoreState; payments: Record<string, string> }) {
+export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: Dict; lang: string; clientId: string; s: StoreState; payments: Record<string, string>; busy: boolean; onBuy: (message: string) => void }) {
   const money = s.store.price ? new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: s.store.currency }).format(Number(s.store.price)) : '—';
   const verdict = s.scan?.verdict;
   const signals = s.scan ? (Object.fromEntries(s.scan.signals.map((x) => [x.id, x.status])) as Record<string, SignalState>) : s.signals;
@@ -300,6 +311,11 @@ function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; 
             </Link>
           </p>
         )}
+        {s.scan && !s.order && !s.refused && (s.scan.verdict === 'SAFE' || s.scan.verdict === 'HOLD') && (
+          <button type="button" className={btnPrimary} disabled={busy} onClick={() => onBuy(buyMessage(t, s.store.storeName, s.scan!.verdict as 'SAFE' | 'HOLD'))}>
+            {t.agent.buyThis}
+          </button>
+        )}
         {s.refused && <p className="text-[14px] font-medium">{fmt(t.agent.refused, { reason: t.agent[`reason_${s.refused}` as 'reason_other'] ?? t.agent.reason_other })}</p>}
         {s.order && s.scan && (
           <div className="space-y-3 border-t border-line pt-3">
@@ -321,7 +337,7 @@ function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; 
   );
 }
 
-function RefundCard({ t, lang, item, status, onStatus }: { t: Dict; lang: string; item: Extract<Item, { kind: 'refund' }>; status: string; onStatus: (status: string) => void }) {
+function RefundCard({ t, lang, item, status, onStatus }: { t: Dict; lang: string; item: Extract<Item, { kind: 'refund' }>; status: string; onStatus: (status: string, amount: string) => void }) {
   const amount = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: item.currency }).format(Number(item.amount));
   return (
     <div className="space-y-2 rounded-control border border-line bg-white px-4 py-3">
@@ -331,7 +347,7 @@ function RefundCard({ t, lang, item, status, onStatus }: { t: Dict; lang: string
       </p>
       {status === 'captured' && <p className="text-[13px] leading-relaxed text-muted">{t.refund.body}</p>}
       {status === 'captured' || status === 'refunded' || status === 'refund_pending' ? (
-        <RefundButton t={t} paymentId={item.paymentId} refLabel={item.ref} amount={amount} status={status} onStatus={onStatus} />
+        <RefundButton t={t} paymentId={item.paymentId} refLabel={item.ref} amount={amount} status={status} onStatus={(next) => onStatus(next, amount)} />
       ) : (
         <p className="text-[13px] text-muted">{t.refund.notRefundable}</p>
       )}
