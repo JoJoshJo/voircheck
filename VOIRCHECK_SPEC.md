@@ -226,7 +226,7 @@
 **Look & safety**
 - Realistic storefronts (product page, cart, policies, about, reviews) built from **one store template themed via config** (6 themes).
 - Every demo store shows a small fixed banner: **"Fictional demo store — VoirCheck hackathon project."**
-- `noindex` / robots.txt disallow on all demo stores; they **never collect real payment or personal details** (checkout goes only through our PayPal sandbox flow).
+- `noindex` / robots.txt disallow on all demo stores; they **never collect real payment or personal details** (checkout goes only through our PayPal sandbox flow). The cart's button is **"Buy through VoirCheck"** (Nov 2): it links to `${VOIRCHECK_APP_URL}/check?url=<product page>`, which keeps the link in a 30-minute cookie through sign-in / onboarding and opens the workspace with it in the check box. The person presses Check (never auto-scanned: any site can link there), then pays from the result as usual.
 - Only the 3 scam/borderline stores need fresh cheap domains (buy ~Nov 3–5). Legit demo stores can use hosting subdomains or older domains.
 
 **Sandbox payees:** no per-store payees (spike T3: void to a third-party payee → `PERMISSION_DENIED`). The 7 sandbox business accounts already created are unused for payments; keep them, no action needed.
@@ -535,6 +535,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-11-02 — Scan prompt v3: adds an EN + FR plain-language summary (replaces the "explanation will appear" placeholder); findings and risk instructions unchanged.
 - 2026-11-02 — AI evidence quotes must be real: unverified quotes become "AI notes"; a made-up quote can't trigger the injection hard rule.
 - 2026-11-02 — Order references: each payment gets a VoirCheck reference (VC-7K2F) shown to the person and usable by the agent; new read-only agent tool `list_my_recent_orders`; the agent learns of approvals from a server update line.
+- 2026-11-02 — Demo stores: the dead Checkout button becomes "Buy through VoirCheck", opening VoirCheck with that product ready to check; no payment on the store.
 - 2026-11-02 — Security pass before the repo goes public: security headers (CSP, HSTS, no framing); per-IP limits on Cloudflare's client IP; global daily caps replace the 500 scans/day count ($3 Anthropic + 300 KERNEL scans, `daily_spend`).
 - 2026-10-27 — Piece 16 locked: Render always-on via credits (web + stores + workflows); Supabase free + daily keep-alive; free uptime monitor with alerts; deploy freeze after Nov 12.
 - 2026-10-27 — Piece 15 locked: Next.js + TS, Tailwind, Vercel AI SDK, Supabase, PayPal v6 + Orders REST + Toolkit, Channel3, KERNEL, Render Workflows, Resend, Render hosting, Zod, Vitest + Playwright; pnpm monorepo.

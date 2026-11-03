@@ -16,3 +16,12 @@ export async function loadStore(slug: string): Promise<{ store: StoreConfig; the
 export const href = (base: string, path = '') => `${base}${path}` || '/';
 
 export const formatPrice = (usd: number) => `$${usd.toFixed(2)}`;
+
+/** Where "Buy through VoirCheck" goes: VoirCheck's own check page, with this product's link ready to scan. */
+export async function voircheckBuyUrl(base: string, productSlug: string): Promise<string> {
+  const h = await headers();
+  const proto = h.get('x-forwarded-proto')?.split(',')[0]?.trim() || 'https';
+  const product = `${proto}://${h.get('host') ?? 'localhost'}${href(base, `/products/${productSlug}`)}`;
+  const app = (process.env.VOIRCHECK_APP_URL || 'https://voircheck.com').replace(/\/$/, '');
+  return `${app}/check?url=${encodeURIComponent(product)}`;
+}

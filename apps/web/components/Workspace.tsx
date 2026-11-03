@@ -7,7 +7,7 @@ import { scoreLine } from '../lib/score-line';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
 import { Checkout } from './Checkout';
-import { DEMO_COOKIE } from '../lib/workspace';
+import { CHECK_COOKIE, DEMO_COOKIE } from '../lib/workspace';
 import { Mascot } from './Mascot';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, card, input } from './ui';
@@ -26,16 +26,21 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
   return fmt(t.workspace.hoursAgo, { n: Math.floor(mins / 60) });
 }
 
-export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean }) {
-  const [tab, setTab] = useState<'chat' | 'results'>('chat');
+export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initialCheck = null }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean; initialCheck?: string | null }) {
+  const [tab, setTab] = useState<'chat' | 'results'>(initialCheck ? 'results' : 'chat');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(initialCheck ?? '');
   const [state, setState] = useState<ScanState>({ phase: 'idle' });
   const abort = useRef<AbortController | null>(null);
 
   useEffect(() => {
     document.cookie = `${DEMO_COOKIE}=${demoMode ? '1' : '0'}; path=/; max-age=31536000; samesite=lax${location.protocol === 'https:' ? '; secure' : ''}`;
   }, [demoMode]);
+
+  // A link from "Buy through VoirCheck" is used once: forget it so the next visit starts empty.
+  useEffect(() => {
+    if (initialCheck) document.cookie = `${CHECK_COOKIE}=; path=/; max-age=0`;
+  }, [initialCheck]);
 
   async function run(target: string, rescan = false) {
     abort.current?.abort();
@@ -130,7 +135,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay }: { t: 
             </div>
           </form>
 
-          {state.phase === 'idle' && <p className="px-1 text-[15px] text-muted">{t.workspace.empty}</p>}
+          {state.phase === 'idle' && <p className="px-1 text-[15px] text-muted">{initialCheck && url === initialCheck ? t.workspace.checkReady : t.workspace.empty}</p>}
           {state.phase === 'scanning' && <ScanningCard t={t} url={state.url} signals={state.signals} liveViewUrl={state.liveViewUrl} />}
           {state.phase === 'done' && (
             <>

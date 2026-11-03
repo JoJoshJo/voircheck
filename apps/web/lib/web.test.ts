@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { GUEST_EMAIL_DOMAIN, isGuestEmail } from './guest';
 import { DICTS, fmt } from './i18n';
 import { AutopayForm, LangForm } from './profile-input';
-import { demoModeFrom } from './workspace';
+import { demoModeFrom, pendingCheckUrl } from './workspace';
 
 describe('settings / onboarding input', () => {
   it('Auto-pay off clears the limit; on requires 1–1000 USD, stored with 2 decimals', () => {
@@ -47,4 +47,11 @@ it('Demo mode is ON unless explicitly turned off', () => {
   expect(demoModeFrom(undefined)).toBe(true);
   expect(demoModeFrom('1')).toBe(true);
   expect(demoModeFrom('0')).toBe(false);
+});
+
+describe('"Buy through VoirCheck" link', () => {
+  it('keeps an http(s) product link for the check box and drops anything else', () => {
+    expect(pendingCheckUrl('https://voircheck-stores.onrender.com/s/velbrook-supply/products/zephlet-buds')).toBe('https://voircheck-stores.onrender.com/s/velbrook-supply/products/zephlet-buds');
+    for (const bad of [null, '', 'javascript:alert(1)', 'data:text/html,x', 'https://user:pw@shop.test/', 'not a url', `https://shop.test/${'a'.repeat(2050)}`]) expect(pendingCheckUrl(bad)).toBeNull();
+  });
 });

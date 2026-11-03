@@ -3,7 +3,7 @@ import { PageTitle } from '../../../../components/catalog';
 import { CheckoutButton } from '../../../../components/CheckoutButton';
 import { ProductArt } from '../../../../components/ProductArt';
 import { OffPlatformPaymentPush } from '../../../../components/tells';
-import { formatPrice, href, loadStore } from '../../../../lib/store';
+import { formatPrice, href, loadStore, voircheckBuyUrl } from '../../../../lib/store';
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ item?: string }> };
 
@@ -39,7 +39,7 @@ export default async function CartPage({ params, searchParams }: Props) {
             <span className="font-semibold">{formatPrice(product.price)}</span>
           </div>
           {store.tells.offPlatformPayment && <OffPlatformPaymentPush />}
-          <CheckoutButton />
+          <CheckoutButton href={await voircheckBuyUrl(base, product.slug)} />
         </div>
       )}
     </div>
