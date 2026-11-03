@@ -30,7 +30,7 @@
 | Sponsor: Channel3 | Core product search (default) |
 | Sponsor: Render | Hosting (default) |
 | Sponsor: APIMatic | Context Plugin used to build the PayPal integration (free eligibility) |
-| Sponsor: AG Grid | Stretch only — build only if core works by ~Nov 6 |
+| Sponsor: AG Grid | History risk log (AG Grid Community + AG Charts Community), built Nov 3 |
 
 ## 3. Resources & accounts
 | Item | Purpose | Status |
@@ -270,7 +270,7 @@
 4. **Store evidence view:** six signals, risk score, hard rules triggered, AI explanation
 5. **Payment step:** PayPal JS SDK v6 button; HOLD screen with 3-day countdown + Capture/Void; BLOCK override warning ("I understand the risk")
 6. **Trust Receipt:** public shareable page (no personal info)
-7. **History:** past requests and receipts
+7. **History:** risk log (AG Grid + AG Charts, see decision log 2026-11-03) above the past requests and receipts
 8. **Settings:** language, auto-pay toggle + limit, account
 9. **How it works / Accuracy:** explains the six signals + publishes real-world test-set results
 10. **Privacy (`/privacy`) and Terms (`/terms`)** (added Oct 29): public, indexable, EN + FR, "Last updated" date; written from the actual data inventory (Neon + Neon Auth incl. session IP/user agent, settings, scans, sandbox payments, stored PayPal webhook payloads, append-only audit log, public receipts; processors Neon, Render, PayPal sandbox, Resend, KERNEL, Google Safe Browsing, RDAP registries, Google sign-in; Channel3 + Anthropic marked "not live yet"). Contact email in one constant (`apps/web/lib/legal.ts`). Footer on every page: Privacy · Terms · How it works. `LICENSE` (MIT) at repo root.
@@ -540,6 +540,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 - 2026-11-03 — Scan prompt v4: the French summary is written with its accents (seen without them in live scans; the cause was the model, not our code).
 - 2026-11-03 — Scan prompt v5: a short EN + FR note per AI finding, so AI notes read in the user's language; quotes unchanged.
 - 2026-11-03 — Unapproved orders older than PayPal's 6-hour window show as expired (nothing charged), not "waiting for approval".
+- 2026-11-03 — AG Grid Community History risk log + AG Charts: History opens with a risk log of the signed-in person's own rows (owned through shopping_sessions): one row per purchase attempt plus one per link check not bought; date in the viewer's zone, VC ref, store, item, amount, verdict pill, risk score, six signal marks, outcome (Paid / Paid after override / Held / Voided / Expired / Waiting / Not paid / Checked only), Receipt or Payment + Evidence links; sort, quick search, verdict/outcome/date-range filters. Totals: stores checked, scams blocked, money protected (= voided payment amounts, per currency). AG Charts stacked SAFE/HOLD/BLOCK per local day. Community packages only (MIT, no Enterprise, no key), pinned: ag-grid-community/ag-grid-react/@ag-grid-community/locale 36.2.0, ag-charts-community/ag-charts-react 14.2.0; only the modules used are registered. Styled through the Theming API (themeQuartz.withParams, Mono ink; verdict colors only); EN + FR incl. the grid locale; under 768px a plain list, under 1200px no item/score columns. Lazy-loaded (next/dynamic, ssr off) so only History downloads it (one ~670 KB gzipped chunk). Rows carry signal statuses only, never evidence text. Limit 200 newest per kind.
 - 2026-11-02 — Security pass before the repo goes public: security headers (CSP, HSTS, no framing); per-IP limits on Cloudflare's client IP; global daily caps replace the 500 scans/day count ($3 Anthropic + 300 KERNEL scans, `daily_spend`).
 - 2026-10-27 — Piece 16 locked: Render always-on via credits (web + stores + workflows); Supabase free + daily keep-alive; free uptime monitor with alerts; deploy freeze after Nov 12.
 - 2026-10-27 — Piece 15 locked: Next.js + TS, Tailwind, Vercel AI SDK, Supabase, PayPal v6 + Orders REST + Toolkit, Channel3, KERNEL, Render Workflows, Resend, Render hosting, Zod, Vitest + Playwright; pnpm monorepo.
