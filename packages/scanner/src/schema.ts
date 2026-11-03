@@ -80,6 +80,11 @@ export const AiFinding = z.object({
   quote: z.string().max(300),
   /** Which page it was seen on (our page label, e.g. "home", "legal"), never a link. */
   page: z.string().max(40),
+  /**
+   * Set by VoirCheck, not the model: the quote really appears in the text we read (case and whitespace ignored).
+   * Otherwise it is shown as the AI's own note, without quote marks. Missing on scans from before Nov 2 = not checked.
+   */
+  quoteVerified: z.boolean().optional(),
 });
 export type AiFinding = z.infer<typeof AiFinding>;
 

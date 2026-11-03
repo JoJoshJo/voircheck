@@ -6,7 +6,8 @@ type Finding = NonNullable<SignalResult['findings']>[number];
 
 /**
  * The AI page analysis findings (signal 4). Quotes are copied from the store's pages by the model: untrusted text,
- * rendered as React text nodes only (escaped, never HTML), never as links.
+ * rendered as React text nodes only (escaped, never HTML), never as links. Only a quote VoirCheck found on the page
+ * (`quoteVerified`) gets quote marks; anything else is labelled as the AI's own note.
  */
 export function AiFindings({ findings, t }: { findings: Finding[]; t: Dict['evidence'] }) {
   return (
@@ -21,7 +22,14 @@ export function AiFindings({ findings, t }: { findings: Finding[]; t: Dict['evid
                 {f.kind === 'prompt_injection_attempt' ? <span className="mr-2 rounded-full bg-block-bg px-2 py-0.5 text-[13px] text-block">{t.hiddenInjection}</span> : null}
                 {t[`finding_${f.kind}`]} <span className="font-normal text-muted">· {t[`sev_${f.severity}`]}</span>
               </p>
-              <blockquote className="mt-1 border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{f.quote}”</blockquote>
+              {f.quoteVerified ? (
+                <blockquote className="mt-1 border-l-2 border-line pl-3 text-[14px] leading-relaxed break-words">“{f.quote}”</blockquote>
+              ) : (
+                // Not found on the page (a description, a paraphrase or made up): the AI's own words, never shown as a quote.
+                <p className="mt-1 pl-3 text-[14px] leading-relaxed break-words text-muted">
+                  <span className="font-medium text-ink">{t.aiOwnNote}:</span> {f.quote}
+                </p>
+              )}
               <p className="mt-1 pl-3 text-[13px] text-muted">{fmt(t.hiddenOn, { page: f.page })}</p>
             </li>
           ))}

@@ -8,6 +8,8 @@ export {
   placeholderAnalyzer,
   anthropicAnalyzer,
   confirmedInjection,
+  quoteFound,
+  verifyQuotes,
   memoryAiCache,
   aiCacheKey,
   buildAnalysisInput,

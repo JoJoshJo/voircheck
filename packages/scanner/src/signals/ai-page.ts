@@ -199,6 +199,38 @@ const KIND_EN: Record<AiFindingKind, string> = {
   language_mismatch: 'Language mismatch',
 };
 
+/** Case- and whitespace-insensitive form used to check quotes (NFKC folds look-alike Unicode forms; curly quotes → straight). */
+export function normalizeForQuote(s: string): string {
+  return s
+    .normalize('NFKC')
+    .replace(/[\u2018\u2019\u201A\u2032]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u2033]/g, '"')
+    .replace(/[\u2010-\u2015]/g, '-')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * Is the model's quote really in the text we gave it (any page's text, or the hidden text)? Surrounding quote marks
+ * are ignored, and "..." / "…" counts as an elision: every part must appear. A quote we can't find is the model's own
+ * wording (a paraphrase, a description, or made up), so it must not be shown as a quote.
+ */
+export function quoteFound(quote: string, haystack: string): boolean {
+  const parts = normalizeForQuote(quote)
+    .replace(/^["']+|["']+$/g, '')
+    .split(/\s*(?:\.\.\.|\u2026)\s*/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
+  return parts.length > 0 && parts.every((p) => haystack.includes(p));
+}
+
+/** Marks each finding's quote as verified or not against everything the analyzer read for this store. */
+export function verifyQuotes(a: AiAnalysis, page: PageForAnalysis): AiAnalysis {
+  const haystack = normalizeForQuote([page.fullText, page.visibleText, ...page.pages.flatMap((p) => [p.fullText, p.visibleText]), ...page.hiddenText.map((h) => h.text)].join('\n'));
+  return { ...a, findings: a.findings.map((f) => ({ ...f, quoteVerified: quoteFound(f.quote, haystack) })) };
+}
+
 /** The signal outcome for a validated analysis. Evidence strings are plain text (rendered as text, never HTML). */
 export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome {
   return {
@@ -206,7 +238,7 @@ export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome
     status: riskToStatus(a.risk),
     evidence: [
       `AI page analysis (${model}): risk ${a.risk}/100, ${a.findings.length ? `${a.findings.length} finding${a.findings.length === 1 ? '' : 's'}` : 'nothing suspicious found'}.`,
-      ...a.findings.map((f) => `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"`),
+      ...a.findings.map((f) => (f.quoteVerified ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"` : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.quote}`)),
     ],
     findings: a.findings,
   };
@@ -216,9 +248,10 @@ export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome
  * The prompt-injection hard rule needs two independent signs: the model reports an attempt AND its quote matches our
  * own injection patterns (`INJECTION_RE`, the hidden-text extractor's). A model finding alone stays a finding (and
  * counts toward its risk) but can't force HOLD: on the tune set the model called plain hidden marketing copy an injection.
+ * The quote must also really be on the page: a made-up quote can't trigger it.
  */
 export function confirmedInjection(findings: readonly AiFinding[] | undefined): boolean {
-  return findings?.some((f) => f.kind === 'prompt_injection_attempt' && INJECTION_RE.test(f.quote)) ?? false;
+  return findings?.some((f) => f.kind === 'prompt_injection_attempt' && f.quoteVerified === true && INJECTION_RE.test(f.quote)) ?? false;
 }
 
 /** The model sometimes writes a sentence where a page label goes ("home and product pages ..."): keep the first 40 chars. Nothing else is repaired. */
@@ -270,7 +303,7 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
       if (hit) {
         const usage: AiUsage = { model, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, cached: true };
         log(`[ai_page] ${page.url}: cached result (risk ${hit.risk}), $0`);
-        return { ...outcomeFromAnalysis(hit, model), usage };
+        return { ...outcomeFromAnalysis(verifyQuotes(hit, page), model), usage };
       }
       client ??= new Anthropic({ apiKey: opts.apiKey });
       let res: Awaited<ReturnType<MessagesParser['messages']['parse']>>;
@@ -306,7 +339,7 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
       if (!parsed.success) log(`[ai_page] ${page.url}: wrong format (${parsed.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.code}`).join('; ')})`);
       if (!parsed.success) return { ...unavailable('ai_page', 'AI page analysis returned an answer in the wrong format, so it was ignored.'), usage };
       await cache.set(key, parsed.data, CACHE_TTL_MS);
-      return { ...outcomeFromAnalysis(parsed.data, model), usage };
+      return { ...outcomeFromAnalysis(verifyQuotes(parsed.data, page), model), usage };
     },
   };
 }
