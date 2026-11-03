@@ -6,7 +6,7 @@ import { DICTS } from '../lib/i18n';
 import { AgentChat, applyAgentEvent } from './AgentChat';
 
 const store = (storeId: string, storeName: string, price: string) => ({ storeId, storeName, productTitle: 'Zephlet Buds', price, currency: 'USD', demo: true });
-const scan = (verdict: 'SAFE' | 'BLOCK') => ({ id: `scan-${verdict}`, url: 'https://x.test/', domain: 'x.test', verdict, score: verdict === 'SAFE' ? 5 : 85, signals: [], hardRules: [], scannedAt: '2026-10-31T10:00:00Z' });
+const scan = (verdict: 'SAFE' | 'BLOCK') => ({ id: `scan-${verdict}`, url: 'https://x.test/', domain: 'x.test', verdict, score: verdict === 'SAFE' ? 5 : 85, signals: [], hardRules: [], cantVerify: null, scannedAt: '2026-10-31T10:00:00Z' });
 
 describe('chat state', () => {
   it('follows a search → scans → order → refusal → payment run', () => {

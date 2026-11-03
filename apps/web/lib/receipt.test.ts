@@ -36,7 +36,7 @@ describe('Trust Receipt snapshot', () => {
     })!;
     const text = JSON.stringify(snap);
     for (const secret of ['ORDER-SECRET', 'AUTH-SECRET', 'user-1', 'buyer@example.com', 'sess-1']) expect(text).not.toContain(secret);
-    expect(Object.keys(snap).sort()).toEqual(['action', 'actionAt', 'amount', 'currency', 'hardRules', 'productTitle', 'scannedAt', 'score', 'signals', 'storeHost', 'storeName', 'storeUrl', 'v', 'verdict']);
+    expect(Object.keys(snap).sort()).toEqual(['action', 'actionAt', 'amount', 'cantVerify', 'currency', 'hardRules', 'productTitle', 'scannedAt', 'score', 'signals', 'storeHost', 'storeName', 'storeUrl', 'v', 'verdict']);
     expect(snap).toMatchObject({ action: 'voided', verdict: 'BLOCK', storeHost: 'voircheck-stores.onrender.com', storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-outlet-deals' });
     // The shared-hosting note is skipped in favour of the real finding.
     expect(snap.signals.find((s) => s.id === 'clone')?.summary).toBe('vs Velbrook Supply: copied name.');

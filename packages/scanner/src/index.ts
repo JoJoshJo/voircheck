@@ -2,6 +2,7 @@
 export * from './schema';
 export { scanStore, type ScannerDeps, type ScanReport, type ScanProgress } from './scan';
 export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, verdictForScore } from './scoring';
+export { cantVerifyOnly, type CantVerify, type CantVerifyReason } from './cant-verify';
 export { kernelVisitor, browserCreateParams, ensureIspProxy, ISP_PROXY_COUNTRIES, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot, type VisitHooks } from './kernel';
 export {
   placeholderAnalyzer,

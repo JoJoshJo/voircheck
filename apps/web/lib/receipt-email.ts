@@ -1,4 +1,5 @@
 import { DICTS, fmt, type Lang } from './i18n';
+import { scoreLine } from './score-line';
 import type { ReceiptSnapshot } from './receipt-snapshot';
 
 /**
@@ -60,7 +61,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
     `${k(e.store)} ${s.storeName} (${s.storeUrl ?? s.storeHost})`,
     `${k(e.product)} ${s.productTitle}`,
     money ? `${k(e.amount)} ${money}` : null,
-    `${k(e.verdict)} ${verdict} · ${t.workspace.score} ${s.score}/100`,
+    `${k(e.verdict)} ${verdict} · ${s.cantVerify ? scoreLine(t, s) : `${t.workspace.score} ${s.score}/100`}`,
     `${k(e.outcome)} ${outcome}`,
     '',
     k(e.reasons),
@@ -83,7 +84,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
 <tr><td style="font-size:15px;font-weight:500;padding-bottom:24px">VoirCheck</td></tr>
 <tr><td style="font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:#A8A29E;padding-bottom:8px">${escapeHtml(e.heading)}</td></tr>
-<tr><td style="padding-bottom:4px"><span style="display:inline-block;background:${c.bg};color:${c.fg};border-radius:999px;padding:4px 12px;font-size:13px;font-weight:500">${escapeHtml(verdict)} · ${s.score}/100</span></td></tr>
+<tr><td style="padding-bottom:4px"><span style="display:inline-block;background:${c.bg};color:${c.fg};border-radius:999px;padding:4px 12px;font-size:13px;font-weight:500">${escapeHtml(verdict)} · ${escapeHtml(s.cantVerify ? scoreLine(t, s) : `${s.score}/100`)}</span></td></tr>
 <tr><td style="font-size:24px;font-weight:500;padding:12px 0 4px">${escapeHtml(s.storeName)}</td></tr>
 <tr><td style="font-size:15px;color:#0C0C0C;padding-bottom:20px">${escapeHtml(outcome)}</td></tr>
 <tr><td style="border-top:1px solid #E7E5E4;border-bottom:1px solid #E7E5E4;padding:12px 0">

@@ -1,4 +1,4 @@
-import type { HardRule, SignalResult, Verdict } from '@voircheck/scanner';
+import { cantVerifyOnly, type HardRule, type SignalResult, type Verdict } from '@voircheck/scanner';
 import { z } from 'zod';
 
 /**
@@ -19,6 +19,8 @@ export const ReceiptSnapshot = z.object({
   verdict: z.enum(['SAFE', 'HOLD', 'BLOCK']),
   score: z.number(),
   hardRules: z.array(z.string()),
+  /** HOLD only because the store couldn't be verified: why (optional; older receipts don't have it). */
+  cantVerify: z.object({ reason: z.enum(['bot_check', 'error_page', 'empty_page', 'visit_failed']), httpStatus: z.number().optional() }).nullable().optional(),
   signals: z.array(z.object({ id: z.string(), status: z.string(), points: z.number(), summary: z.string() })),
   action: z.enum(['captured', 'held', 'voided', 'override', 'cancelled', 'declined', 'pending']),
   actionAt: z.string(),
@@ -45,6 +47,7 @@ export function buildSnapshot(input: {
 }): ReceiptSnapshot | null {
   const action = actionFor(input.payment.status, input.payment.overrideUsed);
   if (!action) return null;
+  const cantVerify = cantVerifyOnly({ verdict: input.scan.verdict, score: input.scan.riskScore, hardRules: input.scan.hardRulesTriggered, signals: input.scan.signals as SignalResult[] });
   const signals = (input.scan.signals as SignalResult[]).map((s) => ({ id: s.id, status: s.status, points: s.points, summary: (s.evidence.find((e) => !e.startsWith('This store shares')) ?? s.evidence[0] ?? '').slice(0, 300) }));
   return ReceiptSnapshot.parse({
     v: 1,
@@ -57,6 +60,7 @@ export function buildSnapshot(input: {
     verdict: input.scan.verdict,
     score: input.scan.riskScore,
     hardRules: input.scan.hardRulesTriggered as HardRule[],
+    cantVerify,
     signals,
     action,
     actionAt: input.now.toISOString(),

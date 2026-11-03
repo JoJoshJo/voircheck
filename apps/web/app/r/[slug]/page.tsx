@@ -6,6 +6,7 @@ import { SignalIcon, type SignalState } from '../../../components/SignalIcon';
 import { card } from '../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../components/Verdict';
 import { DICTS, fmt, isLang } from '../../../lib/i18n';
+import { scoreLine } from '../../../lib/score-line';
 import { getReceiptBySlug } from '../../../lib/receipts';
 
 export const dynamic = 'force-dynamic';
@@ -41,7 +42,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
           <VerdictLabel verdict={s.verdict} t={t} />
           <h1 className="mt-1 text-[24px] font-medium tracking-tight">{s.storeName}</h1>
           <p className="mt-1 text-[14px] opacity-80">
-            {s.storeUrl ?? s.storeHost} · {t.workspace.score}: {s.score}/100
+            {s.storeUrl ?? s.storeHost} · {scoreLine(t, s)}
           </p>
         </div>
         <Mascot mood={s.verdict} size={84} title={t.verdict[s.verdict]} />

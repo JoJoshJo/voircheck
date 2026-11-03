@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { fmt, type Dict } from '../lib/i18n';
+import { scoreLine } from '../lib/score-line';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
 import { Checkout } from './Checkout';
@@ -232,7 +233,7 @@ function ResultCard({ t, scan, cached, onRescan }: { t: Dict; scan: ScanView; ca
           <VerdictLabel verdict={scan.verdict} t={t} />
           <p className="mt-1 text-[16px] font-medium">{t.verdict[`${scan.verdict}_line`]}</p>
           <p className="mt-1 text-[13px] opacity-80">
-            {t.workspace.score}: {scan.score}/100
+            {scoreLine(t, scan)}
           </p>
         </div>
         <Mascot mood={scan.verdict} size={72} title={t.verdict[scan.verdict]} />

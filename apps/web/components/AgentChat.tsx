@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { AgentEvent, AgentStore } from '../lib/agent-view';
 import { fmt, type Dict } from '../lib/i18n';
+import { scoreLine } from '../lib/score-line';
 import type { ScanView } from '../lib/scan-view';
 import { Checkout } from './Checkout';
 import { Mascot } from './Mascot';
@@ -200,7 +201,7 @@ function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; 
           <div className="shrink-0 text-right">
             <VerdictLabel verdict={verdict} t={t} />
             <p className="text-[12px] opacity-80">
-              {t.workspace.score}: {s.scan!.score}/100
+              {scoreLine(t, s.scan!)}
             </p>
           </div>
         )}

@@ -6,6 +6,7 @@ import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
 import { DICTS, fmt } from '../../../../lib/i18n';
+import { scoreLine } from '../../../../lib/score-line';
 import { getScanForUser } from '../../../../lib/scans';
 import { toScanView } from '../../../../lib/scan-view';
 import { requireOnboardedUser } from '../../../../lib/user';
@@ -34,7 +35,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
           <h1 className="mt-1 text-[22px] font-medium tracking-tight">{t.verdict[`${scan.verdict}_line`]}</h1>
           <p className="mt-1 truncate text-[14px] opacity-80">{scan.url}</p>
           <p className="mt-1 text-[13px] opacity-80">
-            {t.workspace.score}: {scan.score}/100 · {fmt(t.evidence.scannedAt, { when })}
+            {scoreLine(t, scan)} · {fmt(t.evidence.scannedAt, { when })}
           </p>
         </div>
         <Mascot mood={scan.verdict} size={88} title={t.verdict[scan.verdict]} />
