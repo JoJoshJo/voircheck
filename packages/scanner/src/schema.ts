@@ -88,6 +88,10 @@ export const AiFinding = z.object({
 });
 export type AiFinding = z.infer<typeof AiFinding>;
 
+/** ai_page only: the model's short plain-language summary for the shopper, per UI language. Model text: plain text only. */
+export const AiSummary = z.object({ en: z.string().max(400), fr: z.string().max(400) });
+export type AiSummary = z.infer<typeof AiSummary>;
+
 export const SignalResult = z.object({
   id: SignalId,
   status: SignalStatus,
@@ -98,6 +102,8 @@ export const SignalResult = z.object({
   collected: CollectedEvidence.optional(),
   /** ai_page only: the model's findings (validated; quotes are untrusted page text). */
   findings: z.array(AiFinding).max(12).optional(),
+  /** ai_page only: the model's plain-language summary (EN + FR). Missing on scans from before Nov 2. */
+  summary: AiSummary.optional(),
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 

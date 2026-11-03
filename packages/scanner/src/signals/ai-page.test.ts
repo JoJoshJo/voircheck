@@ -193,6 +193,23 @@ describe('AI page analysis: model call', () => {
   });
 });
 
+describe('AI page analysis: plain-language summary', () => {
+  it('asks for a short EN + FR summary that never gives a verdict', () => {
+    expect(AI_SYSTEM_PROMPT).toMatch(/"summary": \{"en", "fr"\}/);
+    expect(AI_SYSTEM_PROMPT).toMatch(/Never call the shop safe/);
+  });
+  it('the summary reaches the signal (through scoring too); a long one is cut, not rejected', async () => {
+    const long = 'x'.repeat(600);
+    const { client } = fakeClient({ parsed_output: { ...injection, summary: { en: 'The legal page names a company that does not match the shop.', fr: long } } });
+    const r = await anthropicAnalyzer({ client, log: quiet }).analyze(page());
+    expect(r.status).toBe('fail');
+    expect(r.summary?.en).toBe('The legal page names a company that does not match the shop.');
+    expect(r.summary?.fr).toHaveLength(400);
+    const scored = score([r], { domainAgeDays: null, validHttps: true, priceBelowPeersPct: 0, threatHit: false, kernelOk: true });
+    expect(scored.signals.find((x) => x.id === 'ai_page')?.summary?.en).toContain('legal page');
+  });
+});
+
 describe('AI page analysis: quotes must be real', () => {
   it('finds a quote in any page or hidden text, ignoring case, whitespace and surrounding quote marks', () => {
     const p = page();

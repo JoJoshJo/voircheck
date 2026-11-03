@@ -22,6 +22,8 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
   const row = await getScanForUser(id, user.id);
   if (!row) notFound();
   const scan = toScanView(row);
+  // The page analysis' own plain-language summary (model text, shown as plain text); none when the AI didn't run.
+  const summary = scan.signals.find((s) => s.id === 'ai_page')?.summary?.[lang];
   const when = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(scan.scannedAt));
 
   return (
@@ -44,7 +46,13 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
       <section className={`${card} mt-6 p-6`}>
         <h2 className="text-[15px] font-medium">{t.evidence.hardRules}</h2>
         <p className="mt-2 text-[15px] text-muted">{scan.hardRules.length ? scan.hardRules.map((r) => t.evidence[`rule_${r}`]).join(' · ') : t.evidence.none}</p>
-        <p className="mt-4 text-[13px] text-faint">{t.evidence.explanationSoon}</p>
+        {summary ? (
+          <div className="mt-5 border-t border-line pt-4">
+            <h3 className="text-[14px] font-medium">{t.evidence.summaryTitle}</h3>
+            <p className="mt-1 text-[15px] leading-relaxed">{summary}</p>
+            <p className="mt-1 text-[13px] text-faint">{t.evidence.summaryNote}</p>
+          </div>
+        ) : null}
       </section>
 
       <h2 className="mb-3 mt-10 text-[17px] font-medium">{t.evidence.title}</h2>

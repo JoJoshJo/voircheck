@@ -1,5 +1,5 @@
 import type { CollectedEvidence } from '../evidence-pages';
-import type { AiFinding, SignalId, SignalStatus } from '../schema';
+import type { AiFinding, AiSummary, SignalId, SignalStatus } from '../schema';
 
 /** What a signal reports; points are added by scoring.ts from the weights table. */
 export interface SignalOutcome {
@@ -9,6 +9,8 @@ export interface SignalOutcome {
   collected?: CollectedEvidence;
   /** ai_page only. */
   findings?: AiFinding[];
+  /** ai_page only: plain-language summary (EN + FR). */
+  summary?: AiSummary;
   /** ai_page only: tokens and cost of the model call (operational; never part of the result). */
   usage?: AiUsage;
 }

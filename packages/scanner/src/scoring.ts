@@ -66,7 +66,7 @@ export function score(outcomes: SignalOutcome[], facts: ScanFacts): { signals: S
     const o = outcomes.find((x) => x.id === id);
     if (!o) return { id, status: 'unavailable', points: 0, evidence: ['Signal did not run.'] };
     const base = { id, status: o.status, points: WEIGHTS[id][o.status], evidence: o.evidence.map((e) => e.slice(0, 500)).slice(0, 20) };
-    return { ...base, ...(o.collected ? { collected: o.collected } : {}), ...(o.findings ? { findings: o.findings } : {}) };
+    return { ...base, ...(o.collected ? { collected: o.collected } : {}), ...(o.findings ? { findings: o.findings } : {}), ...(o.summary ? { summary: o.summary } : {}) };
   });
   const total = Math.min(100, signals.reduce((sum, s) => sum + s.points, 0));
   const rules = hardRules(facts);
