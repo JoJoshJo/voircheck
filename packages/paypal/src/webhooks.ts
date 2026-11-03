@@ -65,7 +65,7 @@ export type WebhookOutcome =
   | { httpStatus: 401; outcome: 'rejected'; reason: string }
   | { httpStatus: 400; outcome: 'invalid'; reason: string }
   | { httpStatus: 200; outcome: 'duplicate' | 'ignored' }
-  | { httpStatus: 200; outcome: 'processed'; paymentId?: string; followUp?: { action: 'complete_approval'; paymentId: string; userId: string } };
+  | { httpStatus: 200; outcome: 'processed'; paymentId?: string; followUp?: { action: 'complete_approval' | 'refresh_receipt'; paymentId: string; userId: string } };
 
 export interface WebhookDeps {
   paypal: PayPalClient;
@@ -137,7 +137,9 @@ async function applyEvent(event: WebhookEvent, store: GateStore): Promise<Webhoo
       const payment = captureId ? await store.getPaymentByCaptureId(captureId) : await find(relatedOrder);
       // REVERSED = PayPal returned the money to the buyer itself (a dispute, say): shown as refunded too.
       const to: PaymentStatus = event.event_type === 'PAYMENT.CAPTURE.REFUNDED' && r.status === 'PENDING' ? 'refund_pending' : 'refunded';
-      return move(payment, to, r.id ? { refundId: r.id } : {});
+      const out = await move(payment, to, r.id ? { refundId: r.id } : {});
+      // The route refreshes the Trust Receipt so it shows the refund.
+      return payment && out.outcome === 'processed' ? { ...out, followUp: { action: 'refresh_receipt', paymentId: payment.id, userId: payment.userId } } : out;
     }
     case 'VAULT.PAYMENT-TOKEN.CREATED': {
       const payment = await find(r.metadata?.order_id);

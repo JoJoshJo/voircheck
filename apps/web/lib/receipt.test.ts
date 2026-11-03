@@ -22,6 +22,8 @@ describe('Trust Receipt snapshot', () => {
     ['cancelled', false, 'cancelled'],
     ['capture_denied', false, 'declined'],
     ['capture_pending', false, 'pending'],
+    ['refund_pending', false, 'refund_pending'],
+    ['refunded', true, 'refunded'],
     ['created', false, null],
   ] as const)('status %s (override %s) → %s', (status, override, action) => {
     expect(actionFor(status, override)).toBe(action);

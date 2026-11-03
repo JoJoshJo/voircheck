@@ -32,6 +32,11 @@ export async function POST(req: Request) {
       const profile = await getProfile(userId);
       const origin = publicOrigin(req.headers);
       await upsertPaymentReceipt(paymentId, profile && isLang(profile.language) ? profile.language : 'en', origin).catch(() => null);
+    } else if (out.outcome === 'processed' && out.followUp?.action === 'refresh_receipt') {
+      // A refund changed the payment: the receipt shows it (no second email; it is sent once per receipt).
+      const { paymentId, userId } = out.followUp;
+      const profile = await getProfile(userId);
+      await upsertPaymentReceipt(paymentId, profile && isLang(profile.language) ? profile.language : 'en', publicOrigin(req.headers)).catch(() => null);
     }
     return Response.json({ outcome: out.outcome }, { status: out.httpStatus });
   } catch (err) {

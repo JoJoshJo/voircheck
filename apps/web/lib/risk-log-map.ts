@@ -8,8 +8,8 @@ import type { SignalId, SignalStatus } from '@voircheck/scanner';
  */
 
 export type Verdict = 'SAFE' | 'HOLD' | 'BLOCK';
-export type Outcome = 'paid' | 'paid_override' | 'held' | 'voided' | 'expired' | 'waiting' | 'not_paid' | 'checked';
-export const OUTCOMES: readonly Outcome[] = ['paid', 'paid_override', 'held', 'voided', 'expired', 'waiting', 'not_paid', 'checked'];
+export type Outcome = 'paid' | 'paid_override' | 'held' | 'voided' | 'refund_pending' | 'refunded' | 'expired' | 'waiting' | 'not_paid' | 'checked';
+export const OUTCOMES: readonly Outcome[] = ['paid', 'paid_override', 'held', 'voided', 'refund_pending', 'refunded', 'expired', 'waiting', 'not_paid', 'checked'];
 
 /** The six signals in display order (the scanner's own order; kept here so the browser bundle never imports it). */
 export const SIGNAL_ORDER = ['domain_age', 'ssl_redirects', 'price', 'ai_page', 'threat_list', 'clone'] as const satisfies readonly SignalId[];
@@ -76,6 +76,10 @@ export function outcomeFor(p: { status: string; overrideUsed: boolean; createdAt
       return 'held';
     case 'voided':
       return 'voided';
+    case 'refund_pending':
+      return 'refund_pending';
+    case 'refunded':
+      return 'refunded';
     case 'created':
       return shownPaymentStatus(p, now) === 'expired' ? 'expired' : 'waiting';
     case 'approved':
@@ -165,15 +169,26 @@ export interface RiskSummary {
   scamsBlocked: number;
   /** Sum of blocked (voided) payments' amounts, per currency: money that never reached the store. */
   protectedByCurrency: Record<string, number>;
+  /** Sum of paid orders the person had refunded in full (completed refunds only), per currency. Kept apart from "protected". */
+  refundedByCurrency: Record<string, number>;
+}
+
+function addTo(totals: Record<string, number>, r: RiskRow) {
+  if (r.amount != null) totals[r.currency] = Math.round(((totals[r.currency] ?? 0) + r.amount) * 100) / 100;
 }
 
 export function summarize(rows: readonly RiskRow[]): RiskSummary {
   const protectedByCurrency: Record<string, number> = {};
-  for (const r of rows) if (r.outcome === 'voided' && r.amount != null) protectedByCurrency[r.currency] = Math.round(((protectedByCurrency[r.currency] ?? 0) + r.amount) * 100) / 100;
+  const refundedByCurrency: Record<string, number> = {};
+  for (const r of rows) {
+    if (r.outcome === 'voided') addTo(protectedByCurrency, r);
+    if (r.outcome === 'refunded') addTo(refundedByCurrency, r);
+  }
   return {
     storesChecked: rows.filter((r) => r.verdict).length,
     scamsBlocked: rows.filter((r) => r.verdict === 'BLOCK').length,
     protectedByCurrency,
+    refundedByCurrency,
   };
 }
 

@@ -57,6 +57,8 @@ describe('risk log: outcome per payment', () => {
     ['captured', true, 1, 'paid_override'],
     ['authorized', false, 1, 'held'],
     ['voided', false, 1, 'voided'],
+    ['refund_pending', false, 1, 'refund_pending'],
+    ['refunded', true, 1, 'refunded'],
     ['created', false, 5, 'waiting'],
     ['created', false, 7, 'expired'],
     ['approved', false, 30, 'waiting'],
@@ -95,16 +97,17 @@ describe('risk log: rows', () => {
 
 describe('risk log: summary and chart', () => {
   const rows = toRiskRows(
-    [payment(), payment({ paymentId: 'p2', sessionId: 's2', verdict: 'BLOCK', status: 'voided', amount: '23.00' }), payment({ paymentId: 'p3', sessionId: 's3', verdict: 'BLOCK', status: 'voided', amount: '49.50', createdAt: hoursAgo(30) }), payment({ paymentId: 'p4', sessionId: 's4', verdict: 'HOLD', status: 'authorized', currency: 'EUR', amount: '10.00' })],
+    [payment(), payment({ paymentId: 'p2', sessionId: 's2', verdict: 'BLOCK', status: 'voided', amount: '23.00' }), payment({ paymentId: 'p3', sessionId: 's3', verdict: 'BLOCK', status: 'voided', amount: '49.50', createdAt: hoursAgo(30) }), payment({ paymentId: 'p4', sessionId: 's4', verdict: 'HOLD', status: 'authorized', currency: 'EUR', amount: '10.00' }), payment({ paymentId: 'p5', sessionId: 's5', verdict: 'SAFE', status: 'refunded', amount: '59.00', createdAt: hoursAgo(50) }), payment({ paymentId: 'p6', sessionId: 's6', verdict: 'SAFE', status: 'refund_pending', amount: '5.00', createdAt: hoursAgo(50) })],
     [check(), check({ sessionId: 's8', verdict: null, scanId: null })],
     NOW,
   );
-  it('stores checked = rows with a verdict; scams blocked = BLOCK verdicts; money protected = voided amounts per currency', () => {
-    expect(summarize(rows)).toEqual({ storesChecked: 5, scamsBlocked: 3, protectedByCurrency: { USD: 72.5 } });
-    expect(summarize([])).toEqual({ storesChecked: 0, scamsBlocked: 0, protectedByCurrency: {} });
+  it('stores checked = rows with a verdict; scams blocked = BLOCK verdicts; money protected = voided only; refunded = completed refunds, apart', () => {
+    expect(summarize(rows)).toEqual({ storesChecked: 7, scamsBlocked: 3, protectedByCurrency: { USD: 72.5 }, refundedByCurrency: { USD: 59 } });
+    expect(summarize([])).toEqual({ storesChecked: 0, scamsBlocked: 0, protectedByCurrency: {}, refundedByCurrency: {} });
   });
   it('stacks verdicts per local day, oldest first', () => {
     expect(verdictsPerDay(rows, (iso) => localDay(iso, 'America/New_York'))).toEqual([
+      { day: '2026-11-01', SAFE: 2, HOLD: 0, BLOCK: 0 },
       { day: '2026-11-02', SAFE: 0, HOLD: 0, BLOCK: 1 },
       { day: '2026-11-03', SAFE: 1, HOLD: 1, BLOCK: 2 },
     ]);

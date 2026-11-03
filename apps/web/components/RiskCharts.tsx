@@ -16,10 +16,11 @@ ModuleRegistry.registerModules([BarSeriesModule, CategoryAxisModule, NumberAxisM
 const VERDICT_FILL: Record<Verdict, string> = { SAFE: '#639922', HOLD: '#EF9F27', BLOCK: '#E24B4A' };
 
 export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<typeof summarize>; money: (a: number | null, c: string) => string }) {
-  const protectedText = Object.entries(summary.protectedByCurrency).map(([c, a]) => money(a, c)).join(' + ') || money(0, 'USD');
+  const total = (byCurrency: Record<string, number>) => Object.entries(byCurrency).map(([c, a]) => money(a, c)).join(' + ') || money(0, 'USD');
+  const protectedText = total(summary.protectedByCurrency);
   const tile = 'rounded-card border border-line bg-white p-4';
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
       <div className={tile}>
         <p className="text-[13px] text-muted">{t.riskLog.storesChecked}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{summary.storesChecked}</p>
@@ -28,10 +29,15 @@ export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<ty
         <p className="text-[13px] text-muted">{t.riskLog.scamsBlocked}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{summary.scamsBlocked}</p>
       </div>
-      <div className={`${tile} col-span-2 sm:col-span-1`}>
+      <div className={tile}>
         <p className="text-[13px] text-muted">{t.riskLog.moneyProtected}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{protectedText}</p>
         <p className="mt-1 text-[12px] text-faint">{t.riskLog.moneyProtectedNote}</p>
+      </div>
+      <div className={tile}>
+        <p className="text-[13px] text-muted">{t.riskLog.refunded}</p>
+        <p className="mt-1 text-[26px] font-medium tracking-tight">{total(summary.refundedByCurrency)}</p>
+        <p className="mt-1 text-[12px] text-faint">{t.riskLog.refundedNote}</p>
       </div>
     </div>
   );

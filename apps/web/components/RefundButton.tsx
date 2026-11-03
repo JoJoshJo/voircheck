@@ -12,10 +12,13 @@ import { btnPrimary, btnSecondary } from './ui';
  */
 export function RefundButton({ t, paymentId, refLabel, amount, status, confirmFirst = false, onStatus }: { t: Dict; paymentId: string; refLabel: string; amount: string; status: string; confirmFirst?: boolean; onStatus?: (status: string) => void }) {
   const [phase, setPhase] = useState<'idle' | 'confirm' | 'working' | 'failed'>('idle');
+  // What the refund call returned, until the parent (if any) passes the new status down.
+  const [result, setResult] = useState<string | null>(null);
+  const shown = status === 'refunded' ? status : (result ?? status);
 
-  if (status === 'refunded') return <p className="text-[13px] font-medium">{fmt(t.refund.done, { amount })}</p>;
-  if (status === 'refund_pending') return <p className="text-[13px] font-medium">{t.refund.pending}</p>;
-  if (status !== 'captured') return null;
+  if (shown === 'refunded') return <p className="text-[13px] font-medium">{fmt(t.refund.done, { amount })}</p>;
+  if (shown === 'refund_pending') return <p className="text-[13px] font-medium">{t.refund.pending}</p>;
+  if (shown !== 'captured') return null;
 
   async function refund() {
     setPhase('working');
@@ -24,6 +27,7 @@ export function RefundButton({ t, paymentId, refLabel, amount, status, confirmFi
       const body = (await res.json().catch(() => null)) as { payment?: { status?: string } } | null;
       const next = res.ok ? body?.payment?.status : undefined;
       if (next === 'refunded' || next === 'refund_pending') {
+        setResult(next);
         onStatus?.(next);
         setPhase('idle');
       } else setPhase('failed');

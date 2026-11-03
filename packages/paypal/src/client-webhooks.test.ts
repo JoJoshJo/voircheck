@@ -182,7 +182,7 @@ describe('webhooks', () => {
     const { store, payment, send } = await withPayment();
     await store.updatePayment(payment.id, { status: 'captured', captureId: 'CAP-9' });
     const refunded = { id: 'E6', event_type: 'PAYMENT.CAPTURE.REFUNDED', resource: { id: 'REF-9', status: 'COMPLETED', links: [{ rel: 'up', href: 'https://api.sandbox.paypal.com/v2/payments/captures/CAP-9' }] } };
-    expect(await send(refunded)).toMatchObject({ outcome: 'processed', paymentId: payment.id });
+    expect(await send(refunded)).toMatchObject({ outcome: 'processed', paymentId: payment.id, followUp: { action: 'refresh_receipt', paymentId: payment.id, userId: USER } });
     expect(store.payments.get(payment.id)).toMatchObject({ status: 'refunded', refundId: 'REF-9' });
   });
 

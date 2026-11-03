@@ -4,6 +4,7 @@ import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { LocalTime } from '../../../components/LocalTime';
+import { RefundButton } from '../../../components/RefundButton';
 import { RiskLogLazy } from '../../../components/RiskLogLazy';
 import { card } from '../../../components/ui';
 import { VerdictBadge } from '../../../components/Verdict';
@@ -31,11 +32,16 @@ export default async function HistoryPage() {
         .innerJoin(payments, eq(trustReceipts.paymentId, payments.id))
         .where(eq(payments.sessionId, s.id))
         .orderBy(desc(trustReceipts.createdAt));
+      const sessionPayments = await db
+        .select({ id: payments.id, ref: payments.ref, status: payments.status, amount: payments.amount, currency: payments.currency, createdAt: payments.createdAt })
+        .from(payments)
+        .where(eq(payments.sessionId, s.id))
+        .orderBy(desc(payments.createdAt));
       // Orders still without a receipt: waiting for approval, or expired after PayPal's window (nothing charged).
-      const open = (await db.select({ id: payments.id, status: payments.status, createdAt: payments.createdAt }).from(payments).where(eq(payments.sessionId, s.id)).orderBy(desc(payments.createdAt)))
-        .map((p) => ({ id: p.id, shown: shownPaymentStatus(p) }))
-        .filter((p) => p.shown === 'created' || p.shown === 'expired');
-      return { s, scan, receipts, open };
+      const open = sessionPayments.map((p) => ({ id: p.id, shown: shownPaymentStatus(p) })).filter((p) => p.shown === 'created' || p.shown === 'expired');
+      // Paid orders the person can refund here (MoneyGate re-checks ownership, status and PayPal's window).
+      const paid = sessionPayments.filter((p) => p.status === 'captured' || p.status === 'refund_pending' || p.status === 'refunded');
+      return { s, scan, receipts, open, paid };
     }),
   );
 
@@ -54,13 +60,18 @@ export default async function HistoryPage() {
         <p className="mt-6 text-[15px] text-muted">{t.history.empty}</p>
       ) : (
         <ul className={`${card} mt-4 max-w-3xl divide-y divide-line`}>
-          {rows.map(({ s, scan, receipts, open }) => (
-            <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
+          {rows.map(({ s, scan, receipts, open, paid }) => (
+            <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
               <div className="min-w-0">
                 <p className="truncate text-[15px]">{s.queryOrUrl}</p>
                 <p className="mt-0.5 text-[13px] text-faint">
                   {s.entryType === 'link' ? t.history.link : t.history.chat} · <LocalTime at={s.createdAt.toISOString()} lang={lang} />
                 </p>
+                {paid.map((p) => (
+                  <div key={p.id} className="mt-2">
+                    <RefundButton t={t} paymentId={p.id} refLabel={p.ref} amount={new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: p.currency }).format(Number(p.amount))} status={p.status} confirmFirst />
+                  </div>
+                ))}
               </div>
               <div className="flex shrink-0 items-center gap-3">
                 {open.map((p) =>

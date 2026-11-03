@@ -5,7 +5,7 @@ import { z } from 'zod';
  * Trust Receipts (spec 5.9): public via an unguessable link; store, evidence, verdict and the PayPal action taken.
  * The snapshot never contains personal info: no name, email, user id or PayPal IDs (order/authorization/capture).
  */
-export type ReceiptAction = 'captured' | 'held' | 'voided' | 'override' | 'cancelled' | 'declined' | 'pending';
+export type ReceiptAction = 'captured' | 'held' | 'voided' | 'override' | 'cancelled' | 'declined' | 'pending' | 'refund_pending' | 'refunded';
 
 export const ReceiptSnapshot = z.object({
   v: z.literal(1),
@@ -24,7 +24,7 @@ export const ReceiptSnapshot = z.object({
   /** HOLD only because the store couldn't be verified: why (optional; older receipts don't have it). */
   cantVerify: z.object({ reason: z.enum(['bot_check', 'error_page', 'empty_page', 'visit_failed']), httpStatus: z.number().optional() }).nullable().optional(),
   signals: z.array(z.object({ id: z.string(), status: z.string(), points: z.number(), summary: z.string() })),
-  action: z.enum(['captured', 'held', 'voided', 'override', 'cancelled', 'declined', 'pending']),
+  action: z.enum(['captured', 'held', 'voided', 'override', 'cancelled', 'declined', 'pending', 'refund_pending', 'refunded']),
   actionAt: z.string(),
   scannedAt: z.string(),
 });
@@ -37,6 +37,8 @@ export function actionFor(status: string, overrideUsed: boolean): ReceiptAction 
   if (status === 'cancelled') return 'cancelled';
   if (status === 'capture_denied') return 'declined';
   if (status === 'capture_pending') return 'pending';
+  if (status === 'refund_pending') return 'refund_pending';
+  if (status === 'refunded') return 'refunded';
   return null; // created / approved: nothing decided yet
 }
 
