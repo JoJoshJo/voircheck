@@ -19,6 +19,7 @@ export function drizzleGateStore(db: Db): GateStore {
     ref: payments.ref,
     authorizationId: payments.authorizationId,
     captureId: payments.captureId,
+    refundId: payments.refundId,
     storeSlug: payments.storeSlug,
     amount: payments.amount,
     currency: payments.currency,
@@ -87,6 +88,10 @@ export function drizzleGateStore(db: Db): GateStore {
     },
     async getPaymentByOrderId(orderId) {
       const [row] = await paymentQuery().where(eq(payments.paypalOrderId, orderId)).limit(1);
+      return row ? asPayment(row) : null;
+    },
+    async getPaymentByCaptureId(captureId) {
+      const [row] = await paymentQuery().where(eq(payments.captureId, captureId)).limit(1);
       return row ? asPayment(row) : null;
     },
     async insertPayment(row: NewPayment) {

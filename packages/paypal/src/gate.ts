@@ -30,6 +30,8 @@ import type { AuditActor, CandidateRow, GateStore, PaymentRow, PaymentStatus, Sc
  * - A stale or missing scan is "can't verify": never captured automatically.
  * - Auto-pay checks the verdict BEFORE creating the CAPTURE order (there is no authorization to gate later).
  * - Every decision, allowed or refused, writes an audit_log row.
+ * - Refunds: full refunds of the person's own captured payments, run only on the person's own button (userRefund).
+ *   The agent can only check that one is possible (agentProposeRefund); no agent path moves money back.
  */
 
 const DAY_MS = 86_400_000;
@@ -138,6 +140,36 @@ export function decideReauthorize(input: { authorizedAt: Date; now: Date; alread
   return { allowed: true };
 }
 
+/** PayPal accepts refunds for 180 days after capture. */
+export const REFUND_WINDOW_MS = 180 * DAY_MS;
+
+export type RefundRefusal = 'not_captured' | 'already_refunded' | 'refund_pending' | 'too_old';
+
+/**
+ * One full refund per captured payment. The window is counted from the order's creation, which is never after the
+ * capture: at worst we stop a few days before PayPal would.
+ */
+export function decideRefund(p: Pick<PaymentRow, 'status' | 'captureId' | 'createdAt'>, now: Date): { allowed: true } | { allowed: false; reason: RefundRefusal } {
+  if (p.status === 'refunded') return { allowed: false, reason: 'already_refunded' };
+  if (p.status === 'refund_pending') return { allowed: false, reason: 'refund_pending' };
+  if (p.status !== 'captured' || !p.captureId) return { allowed: false, reason: 'not_captured' };
+  if (now.getTime() - p.createdAt.getTime() >= REFUND_WINDOW_MS) return { allowed: false, reason: 'too_old' };
+  return { allowed: true };
+}
+
+/**
+ * What a refund call reports. `unknown` = PayPal didn't answer: nothing is assumed, and a retry reuses the same
+ * PayPal-Request-Id, so PayPal returns the first refund instead of making a second one.
+ */
+export type RefundOutcome =
+  | { kind: 'refund'; refundId: string; status: string }
+  | { kind: 'already_refunded' }
+  | { kind: 'error'; message: string }
+  | { kind: 'unknown'; message: string };
+
+/** Runs one full refund of a capture (the web app passes the PayPal Agent Toolkit's create_refund). */
+export type Refunder = (input: { captureId: string; requestId: string }) => Promise<RefundOutcome>;
+
 // ---------- inputs: IDs only (anything else, like a browser-sent price, is stripped) ----------
 
 const Id = z.string().min(1).max(100);
@@ -175,6 +207,8 @@ export interface MoneyGateOptions {
   paypal: PayPalClient;
   store: GateStore;
   now?: () => Date;
+  /** Without one, refunds are refused ("unavailable"). */
+  refunder?: Refunder;
 }
 
 /**
@@ -203,11 +237,13 @@ export class MoneyGate {
   private readonly paypal: PayPalClient;
   private readonly store: GateStore;
   private readonly now: () => Date;
+  private readonly refunder: Refunder | null;
 
   constructor(opts: MoneyGateOptions) {
     this.paypal = opts.paypal;
     this.store = opts.store;
     this.now = opts.now ?? (() => new Date());
+    this.refunder = opts.refunder ?? null;
   }
 
   private audit(userId: string | null, actor: AuditActor, action: string, entityId: string | null, details: Record<string, unknown>, entity = 'payment') {
@@ -500,6 +536,67 @@ export class MoneyGate {
     });
     await this.audit(input.userId, 'agent', 'autopay.captured', payment.id, { orderId: order.id, captureId: capture?.id ?? null, status: payment.status });
     return { ok: true, payment };
+  }
+
+  /**
+   * The agent's request_refund: checks only. The person's own button then calls userRefund; nothing here moves money.
+   */
+  async agentProposeRefund(raw: z.input<typeof PaymentActionInput>): Promise<{ ok: true; payment: PaymentRow } | { ok: false; reason: RefundRefusal | 'not_found' }> {
+    const input = PaymentActionInput.parse(raw);
+    const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
+    if (!payment) {
+      await this.audit(input.userId, 'agent', 'agent.refund_refused', null, { reason: 'not_found', paymentId: input.paymentId });
+      return { ok: false, reason: 'not_found' };
+    }
+    const decision = decideRefund(payment, this.now());
+    if (!decision.allowed) {
+      await this.audit(input.userId, 'agent', 'agent.refund_refused', payment.id, { reason: decision.reason, status: payment.status });
+      return { ok: false, reason: decision.reason };
+    }
+    await this.audit(input.userId, 'agent', 'agent.refund_proposed', payment.id, { amount: payment.amount, currency: payment.currency });
+    return { ok: true, payment };
+  }
+
+  async userRefund(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    return LOCK.run(`payment:${String(raw.paymentId)}`, () => this._userRefund(raw));
+  }
+
+  /** The person tapped "Request refund" (chat card or History): full refund of their own captured payment. */
+  private async _userRefund(raw: z.input<typeof PaymentActionInput>): Promise<GateResult> {
+    const input = PaymentActionInput.parse(raw);
+    const payment = await this.store.getPaymentForUser(input.paymentId, input.userId);
+    if (!payment) return { ok: false, reason: 'payment not found' };
+    const decision = decideRefund(payment, this.now());
+    if (!decision.allowed) {
+      await this.audit(input.userId, 'user', 'refund.refused', payment.id, { reason: decision.reason, status: payment.status });
+      // A repeat tap after the refund went through is not an error.
+      return decision.reason === 'already_refunded' || decision.reason === 'refund_pending' ? { ok: true, payment } : { ok: false, reason: decision.reason, payment };
+    }
+    if (!this.refunder) {
+      await this.audit(input.userId, 'user', 'refund.refused', payment.id, { reason: 'refunds unavailable' });
+      return { ok: false, reason: 'refunds are unavailable right now', payment };
+    }
+    await this.audit(input.userId, 'user', 'refund.requested', payment.id, { amount: payment.amount, currency: payment.currency });
+    let out: RefundOutcome;
+    try {
+      out = await this.refunder({ captureId: payment.captureId!, requestId: requestIdFor('refund', payment.id) });
+    } catch (err) {
+      out = { kind: 'unknown', message: err instanceof Error ? err.message.slice(0, 200) : 'refund call failed' };
+    }
+    if (out.kind === 'refund' && (out.status === 'COMPLETED' || out.status === 'PENDING')) {
+      const updated = await this.store.updatePayment(payment.id, { refundId: out.refundId, status: out.status === 'COMPLETED' ? 'refunded' : 'refund_pending' });
+      await this.audit(input.userId, 'user', 'payment.refunded', payment.id, { refundId: out.refundId, refundStatus: out.status, amount: payment.amount, currency: payment.currency });
+      return { ok: true, payment: updated };
+    }
+    if (out.kind === 'already_refunded') {
+      // Refunded outside VoirCheck (the PayPal dashboard): record what PayPal says.
+      const updated = await this.store.updatePayment(payment.id, { status: 'refunded' });
+      await this.audit(input.userId, 'user', 'payment.refunded', payment.id, { note: 'PayPal reports the capture is already fully refunded' });
+      return { ok: true, payment: updated };
+    }
+    const message = out.kind === 'refund' ? `refund ${out.status}` : out.message;
+    await this.audit(input.userId, 'user', out.kind === 'unknown' ? 'payment.refund_unknown' : 'payment.refund_failed', payment.id, { error: message });
+    return { ok: false, reason: out.kind === 'unknown' ? "PayPal didn't answer; nothing changed here. Try again." : 'PayPal refused the refund; nothing changed', payment };
   }
 
   /** Another path (the webhook, a second tab) may have settled this payment meanwhile: act only on a still-open hold. */

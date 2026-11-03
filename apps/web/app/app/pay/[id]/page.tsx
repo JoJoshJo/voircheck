@@ -10,7 +10,7 @@ import { requireOnboardedUser } from '../../../../lib/user';
 
 export const dynamic = 'force-dynamic';
 
-const TITLE = { captured: 'captured', authorized: 'held', voided: 'voided', cancelled: 'cancelled', capture_pending: 'pending', capture_denied: 'denied', failed: 'denied', created: 'pending', approved: 'pending' } as const;
+const TITLE = { captured: 'captured', authorized: 'held', voided: 'voided', cancelled: 'cancelled', capture_pending: 'pending', capture_denied: 'denied', failed: 'denied', created: 'pending', approved: 'pending', refund_pending: 'refund_pending', refunded: 'refunded' } as const;
 
 /** Payment step result (spec 5.11 #5): paid, HOLD (held, decide), BLOCK (voided, "Pay anyway"), cancelled. */
 export default async function PaymentPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ from?: string | string[] }> }) {

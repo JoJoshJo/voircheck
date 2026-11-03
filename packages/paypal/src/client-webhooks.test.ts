@@ -178,6 +178,33 @@ describe('webhooks', () => {
     expect(await send({ id: 'E5', event_type: 'PAYMENT.AUTHORIZATION.VOIDED', resource: { id: 'AUTH-0', supplementary_data: { related_ids: { order_id: 'UNKNOWN' } } } })).toEqual({ httpStatus: 200, outcome: 'ignored' });
   });
 
+  it('a refund event marks the captured payment refunded, found through its capture ("up" link)', async () => {
+    const { store, payment, send } = await withPayment();
+    await store.updatePayment(payment.id, { status: 'captured', captureId: 'CAP-9' });
+    const refunded = { id: 'E6', event_type: 'PAYMENT.CAPTURE.REFUNDED', resource: { id: 'REF-9', status: 'COMPLETED', links: [{ rel: 'up', href: 'https://api.sandbox.paypal.com/v2/payments/captures/CAP-9' }] } };
+    expect(await send(refunded)).toMatchObject({ outcome: 'processed', paymentId: payment.id });
+    expect(store.payments.get(payment.id)).toMatchObject({ status: 'refunded', refundId: 'REF-9' });
+  });
+
+  it('a pending refund, then completed; a reversal also reads as refunded', async () => {
+    const { store, payment, send } = await withPayment();
+    await store.updatePayment(payment.id, { status: 'captured', captureId: 'CAP-9' });
+    await send({ id: 'E7', event_type: 'PAYMENT.CAPTURE.REFUNDED', resource: { id: 'REF-9', status: 'PENDING', supplementary_data: { related_ids: { capture_id: 'CAP-9' } } } });
+    expect(store.payments.get(payment.id)?.status).toBe('refund_pending');
+    await send({ id: 'E8', event_type: 'PAYMENT.CAPTURE.REVERSED', resource: { id: 'REF-9', status: 'COMPLETED', supplementary_data: { related_ids: { capture_id: 'CAP-9' } } } });
+    expect(store.payments.get(payment.id)?.status).toBe('refunded');
+  });
+
+  it('a refund event never moves a payment that was not captured, and a late capture event can’t undo a refund', async () => {
+    const { store, payment, send } = await withPayment();
+    await store.updatePayment(payment.id, { status: 'voided', captureId: 'CAP-9' });
+    await send({ id: 'E9', event_type: 'PAYMENT.CAPTURE.REFUNDED', resource: { id: 'REF-9', status: 'COMPLETED', supplementary_data: { related_ids: { capture_id: 'CAP-9' } } } });
+    expect(store.payments.get(payment.id)?.status).toBe('voided');
+    await store.updatePayment(payment.id, { status: 'refunded' });
+    await send({ id: 'E10', event_type: 'PAYMENT.CAPTURE.COMPLETED', resource: { id: 'CAP-9', supplementary_data: { related_ids: { order_id: 'ORDER9' } } } });
+    expect(store.payments.get(payment.id)?.status).toBe('refunded');
+  });
+
   it('malformed body → 400', async () => {
     const { store } = await withPayment();
     const pp = fakePayPal();

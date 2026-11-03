@@ -8,7 +8,7 @@ import { randomPaymentRef } from '@voircheck/shared';
 
 export type Verdict = 'SAFE' | 'HOLD' | 'BLOCK';
 export type PaymentMode = 'approve' | 'auto';
-export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed' | 'cancelled';
+export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed' | 'cancelled' | 'refund_pending' | 'refunded';
 export type AuditActor = 'user' | 'agent' | 'system' | 'webhook';
 
 export interface CandidateRow {
@@ -50,6 +50,8 @@ export interface PaymentRow {
   ref: string;
   authorizationId: string | null;
   captureId: string | null;
+  /** PayPal refund ID once a refund was requested (one full refund per capture). */
+  refundId: string | null;
   storeSlug: string;
   amount: string;
   currency: string;
@@ -59,8 +61,8 @@ export interface PaymentRow {
   createdAt: Date;
 }
 
-export type NewPayment = Omit<PaymentRow, 'id' | 'createdAt' | 'ref'>;
-export type PaymentPatch = Partial<Pick<PaymentRow, 'authorizationId' | 'captureId' | 'status' | 'overrideUsed' | 'scanId'>>;
+export type NewPayment = Omit<PaymentRow, 'id' | 'createdAt' | 'ref' | 'refundId'>;
+export type PaymentPatch = Partial<Pick<PaymentRow, 'authorizationId' | 'captureId' | 'refundId' | 'status' | 'overrideUsed' | 'scanId'>>;
 
 export interface AuditEntry {
   userId: string | null;
@@ -83,6 +85,8 @@ export interface GateStore {
 
   getPaymentForUser(paymentId: string, userId: string): Promise<PaymentRow | null>;
   getPaymentByOrderId(paypalOrderId: string): Promise<PaymentRow | null>;
+  /** For refund webhooks, which point at the capture. */
+  getPaymentByCaptureId(captureId: string): Promise<PaymentRow | null>;
   /** Idempotent on paypalOrderId: returns the existing row if one already exists. */
   insertPayment(row: NewPayment): Promise<PaymentRow>;
   updatePayment(paymentId: string, patch: PaymentPatch): Promise<PaymentRow>;
@@ -132,13 +136,16 @@ export class MemoryGateStore implements GateStore {
   async getPaymentByOrderId(orderId: string) {
     return [...this.payments.values()].find((p) => p.paypalOrderId === orderId) ?? null;
   }
+  async getPaymentByCaptureId(captureId: string) {
+    return [...this.payments.values()].find((p) => p.captureId === captureId) ?? null;
+  }
   async insertPayment(row: NewPayment) {
     // Check and insert in one synchronous step, like ON CONFLICT in Postgres.
     const existing = [...this.payments.values()].find((p) => p.paypalOrderId === row.paypalOrderId);
     if (existing) return existing;
     let ref = randomPaymentRef();
     while ([...this.payments.values()].some((x) => x.ref === ref)) ref = randomPaymentRef();
-    const p: PaymentRow = { ...row, id: `pay_${++this.seq}`, ref, createdAt: new Date() };
+    const p: PaymentRow = { ...row, id: `pay_${++this.seq}`, ref, refundId: null, createdAt: new Date() };
     this.payments.set(p.id, p);
     return p;
   }

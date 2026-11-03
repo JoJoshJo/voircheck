@@ -21,8 +21,9 @@ export const WebhookEvent = z.looseObject({
     .looseObject({
       id: Id.optional(),
       status: z.string().max(100).optional(),
-      supplementary_data: z.looseObject({ related_ids: z.looseObject({ order_id: Id.optional(), authorization_id: Id.optional() }).optional() }).optional(),
+      supplementary_data: z.looseObject({ related_ids: z.looseObject({ order_id: Id.optional(), authorization_id: Id.optional(), capture_id: Id.optional() }).optional() }).optional(),
       metadata: z.looseObject({ order_id: Id.optional() }).optional(),
+      links: z.array(z.looseObject({ rel: z.string().max(50).optional(), href: z.string().max(2048).optional() })).max(20).optional(),
     })
     .optional(),
 });
@@ -46,9 +47,19 @@ export async function verifyWebhookSignature(paypal: PayPalClient, webhookId: st
   return res.verification_status === 'SUCCESS';
 }
 
-/** Status only moves forward; a late "authorization created" can't undo a capture or void. */
-const RANK: Record<PaymentStatus, number> = { created: 0, approved: 1, authorized: 2, capture_pending: 3, captured: 4, voided: 4, capture_denied: 4, failed: 4, cancelled: 4 };
-const canMove = (from: PaymentStatus, to: PaymentStatus) => RANK[to] > RANK[from] || (from === 'capture_pending' && RANK[to] === 4);
+/** Status only moves forward; a late "authorization created" can't undo a capture or void. Refunds follow a capture only. */
+const RANK: Record<PaymentStatus, number> = { created: 0, approved: 1, authorized: 2, capture_pending: 3, captured: 4, voided: 4, capture_denied: 4, failed: 4, cancelled: 4, refund_pending: 5, refunded: 6 };
+const REFUNDABLE_FROM: PaymentStatus[] = ['capture_pending', 'captured', 'refund_pending'];
+const canMove = (from: PaymentStatus, to: PaymentStatus) =>
+  to === 'refund_pending' || to === 'refunded' ? REFUNDABLE_FROM.includes(from) && RANK[to] > RANK[from] : RANK[to] > RANK[from] || (from === 'capture_pending' && RANK[to] === 4);
+
+/** A refund event's resource is the refund; its capture is in related_ids or the "up" link (…/captures/{id}). */
+function refundedCaptureId(r: NonNullable<WebhookEvent['resource']>): string | undefined {
+  const related = r.supplementary_data?.related_ids?.capture_id;
+  if (related) return related;
+  const up = r.links?.find((l) => l.rel === 'up' && l.href?.includes('/captures/'))?.href;
+  return up?.match(/\/captures\/([A-Za-z0-9_-]{1,64})/)?.[1];
+}
 
 export type WebhookOutcome =
   | { httpStatus: 401; outcome: 'rejected'; reason: string }
@@ -95,7 +106,7 @@ async function applyEvent(event: WebhookEvent, store: GateStore): Promise<Webhoo
   const relatedOrder = r.supplementary_data?.related_ids?.order_id;
   const find = (orderId: string | undefined) => (orderId ? store.getPaymentByOrderId(orderId) : Promise.resolve(null));
 
-  const move = async (payment: PaymentRow | null, to: PaymentStatus, patch: { authorizationId?: string; captureId?: string } = {}): Promise<WebhookOutcome> => {
+  const move = async (payment: PaymentRow | null, to: PaymentStatus, patch: { authorizationId?: string; captureId?: string; refundId?: string } = {}): Promise<WebhookOutcome> => {
     if (!payment) return { httpStatus: 200, outcome: 'ignored' };
     if (canMove(payment.status, to)) await store.updatePayment(payment.id, { status: to, ...patch });
     await store.appendAudit({ userId: payment.userId, actor: 'webhook', action: `webhook.${event.event_type}`, entity: 'payment', entityId: payment.id, details: { eventId: event.id, from: payment.status, to, applied: canMove(payment.status, to) } });
@@ -120,6 +131,14 @@ async function applyEvent(event: WebhookEvent, store: GateStore): Promise<Webhoo
     case 'PAYMENT.CAPTURE.DENIED':
     case 'PAYMENT.CAPTURE.DECLINED':
       return move(await find(relatedOrder), 'capture_denied');
+    case 'PAYMENT.CAPTURE.REFUNDED':
+    case 'PAYMENT.CAPTURE.REVERSED': {
+      const captureId = refundedCaptureId(r);
+      const payment = captureId ? await store.getPaymentByCaptureId(captureId) : await find(relatedOrder);
+      // REVERSED = PayPal returned the money to the buyer itself (a dispute, say): shown as refunded too.
+      const to: PaymentStatus = event.event_type === 'PAYMENT.CAPTURE.REFUNDED' && r.status === 'PENDING' ? 'refund_pending' : 'refunded';
+      return move(payment, to, r.id ? { refundId: r.id } : {});
+    }
     case 'VAULT.PAYMENT-TOKEN.CREATED': {
       const payment = await find(r.metadata?.order_id);
       if (!payment || !r.id) return { httpStatus: 200, outcome: 'ignored' };

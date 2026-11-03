@@ -135,6 +135,8 @@ export const payments = pgTable(
     ref: text('ref').notNull().unique().default(sql`vc_payment_ref()`),
     authorizationId: text('authorization_id'),
     captureId: text('capture_id'),
+    /** PayPal refund ID: one full refund per capture, requested only by the person through MoneyGate. */
+    refundId: text('refund_id'),
     storeSlug: text('store_slug').notNull(), // sent to PayPal as purchase_units[0].custom_id
     amount: numeric('amount', { precision: 10, scale: 2 }).notNull(),
     currency: char('currency', { length: 3 }).notNull().default('USD'),
@@ -147,7 +149,7 @@ export const payments = pgTable(
       .defaultNow()
       .$onUpdate(() => new Date()),
   },
-  (t) => [index('payments_session_idx').on(t.sessionId)],
+  (t) => [index('payments_session_idx').on(t.sessionId), index('payments_capture_idx').on(t.captureId)],
 );
 
 export const trustReceipts = pgTable(

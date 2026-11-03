@@ -123,7 +123,7 @@ export const OrderSummary = z.object({
   amount: z.string().regex(/^\d+\.\d{2}$/),
   currency: z.string().length(3),
   /** expired: never approved and past PayPal's 6-hour order window; nothing was charged or held. */
-  status: z.enum(['waiting_for_buyer', 'expired', 'approved', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']),
+  status: z.enum(['waiting_for_buyer', 'expired', 'approved', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'refund_pending', 'refunded']),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
 });
 export const RecentOrdersOutput = z.object({ orders: z.array(OrderSummary).max(10) });
