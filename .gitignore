@@ -13,4 +13,4 @@ next-env.d.ts
 .vitest/
 .cache/
 # Written by `next dev` (agent instructions for Next.js); not part of the project.
-apps/web/AGENTS.md
+apps/*/AGENTS.md
