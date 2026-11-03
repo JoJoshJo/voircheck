@@ -4,6 +4,7 @@ import { candidates, payments, scans, shoppingSessions, trustReceipts } from '@v
 import { ownedBy } from '@voircheck/shared';
 import { desc, eq } from 'drizzle-orm';
 import { getDb } from './db';
+import { toOrderCards, type OrderCard } from './orders-history';
 import { toRiskRows, type LinkCheckRecord, type PaymentRecord, type RiskRow } from './risk-log-map';
 
 /** Newest first; enough for a person's history during the hackathon (the grid sorts and filters in the browser). */
@@ -73,4 +74,11 @@ export async function loadRiskLog(userId: string): Promise<RiskRow[]> {
   const db = getDb();
   const [paid, checks] = await Promise.all([paymentRecordsQuery(db, userId), linkChecksQuery(db, userId)]);
   return toRiskRows(paid as PaymentRecord[], checks as LinkCheckRecord[]);
+}
+
+/** History: the risk log (Checks tab) and one card per order (Orders tab), from the same two owner-scoped queries. */
+export async function loadHistory(userId: string): Promise<{ riskRows: RiskRow[]; orders: OrderCard[] }> {
+  const db = getDb();
+  const [paid, checks] = await Promise.all([paymentRecordsQuery(db, userId), linkChecksQuery(db, userId)]);
+  return { riskRows: toRiskRows(paid as PaymentRecord[], checks as LinkCheckRecord[]), orders: toOrderCards(paid as PaymentRecord[]) };
 }

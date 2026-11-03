@@ -2,9 +2,10 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mascot, type MascotMood } from '../../../../components/Mascot';
 import { AwaitApproval, HoldActions, PayAnyway, ShareLink } from '../../../../components/PaymentActions';
+import { RefreshingRefundButton } from '../../../../components/RefreshingRefundButton';
 import { btnPrimary, btnSecondary, card } from '../../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
-import { DICTS } from '../../../../lib/i18n';
+import { DICTS, fmt } from '../../../../lib/i18n';
 import { getPaymentView } from '../../../../lib/payment-view';
 import { requireOnboardedUser } from '../../../../lib/user';
 
@@ -88,6 +89,14 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
             </Link>
           )}
         </div>
+        {p.status === 'captured' && (
+          // The person's own refund (same MoneyGate path as History); never on the public receipt page.
+          <div className={`${card} px-5 py-4`}>
+            <h2 className="text-[15px] font-medium">{t.refund.panelTitle}</h2>
+            <p className="mt-1 mb-3 text-[14px] text-muted">{fmt(t.refund.panelBody, { amount: money })}</p>
+            <RefreshingRefundButton t={t} paymentId={p.id} refLabel={p.ref} amount={money} status={p.status} confirmFirst />
+          </div>
+        )}
         {p.verdict === 'BLOCK' && p.status === 'voided' && p.mode === 'approve' && p.scanId && (
           <PayAnyway t={t} lang={lang} clientId={process.env.PAYPAL_CLIENT_ID ?? ''} candidateId={p.candidateId} scanId={p.scanId} />
         )}
