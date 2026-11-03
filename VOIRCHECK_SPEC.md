@@ -336,17 +336,17 @@ Eligible for three sponsor prizes; only one can be won.
 |---|---|
 | App | **Next.js (App Router) + TypeScript** |
 | Styling | **Tailwind CSS** with Mono ink tokens (5.12) |
-| AI | **Vercel AI SDK** + Anthropic (Sonnet 5.5 agent, Haiku 5.5 scans); PayPal Agent Toolkit plugs in natively |
+| AI | **Anthropic TypeScript SDK** (`@anthropic-ai/sdk` 1.3.0), own tool loop; **Claude Sonnet 5.5** for the shopping agent and the AI page analysis (5.13). No Vercel AI SDK |
 | Database / auth | **Neon** (serverless Postgres) + **Neon managed Better Auth**; ownership checks in server code + Postgres RLS where useful |
 | ORM / migrations | **Drizzle ORM + drizzle-kit** (schema + SQL migrations in `db/`). App queries use the **Neon serverless driver** with `DATABASE_URL`; migrations and seed use `DATABASE_URL_UNPOOLED`. Owner filter helper `ownedBy()` in `packages/shared` |
-| Payments | **PayPal JS SDK v6** (frontend) + **Orders v2 REST** (server) + **Agent Toolkit** |
-| Product search | **Channel3** API + MCP server |
+| Payments | **PayPal JS SDK v6** (frontend) + **Orders v2 REST** (server, authorize/capture/void/reauthorize) + **PayPal Agent Toolkit** (`@paypal/agent-toolkit` 1.11.0: refunds via `create_refund`, the agent's read-only `get_order`) |
+| Product search | **Channel3** REST API (`packages/agent/src/search`); no MCP server |
 | Scanning | **KERNEL** cloud browser (all page visits) + RDAP/WHOIS, TLS checks, Google Safe Browsing |
-| Background jobs | **Render Workflows** (parallel store scans, test-set runs) |
+| Background jobs | None: scans run in the web request (stores in parallel); test-set runs are local scripts (`pnpm eval:run`). No Render Workflows |
 | Email | **Resend** on `mail.voircheck.com` (Trust Receipt emails; see 5.3 #6) |
-| Hosting | **Render** (web app, 6 demo stores, workflows) |
+| Hosting | **Render** (web app + one service for the 6 demo stores) |
 | Validation | **Zod** for every API input and every AI JSON output |
-| Tests | **Vitest** (scoring + money-gate unit tests) + **Playwright** (end-to-end demo flow) |
+| Tests | **Vitest** (unit tests incl. scoring, hard rules, money gate, server-rendered components). No Playwright end-to-end suite |
 
 **Repo structure (monorepo, pnpm workspaces)**
 ```
