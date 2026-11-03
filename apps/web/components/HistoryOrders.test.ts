@@ -22,9 +22,9 @@ const card = (over: Partial<OrderCard>): OrderCard => ({
   ...over,
 });
 
-async function render(orders: OrderCard[], lang: 'en' | 'fr' = 'en') {
+async function render(orders: OrderCard[], lang: 'en' | 'fr' = 'en', stopped: Record<string, number> = {}) {
   const { HistoryOrders } = await import('./HistoryOrders');
-  return renderToStaticMarkup(createElement(HistoryOrders, { orders, t: DICTS[lang], lang }));
+  return renderToStaticMarkup(createElement(HistoryOrders, { orders, stopped, t: DICTS[lang], lang }));
 }
 
 const items = (html: string) => html.split('<li ').slice(1);
@@ -62,8 +62,15 @@ describe('History → Orders cards', () => {
 
   it('shows the four totals, in French too', async () => {
     const html = await render([card({ status: 'paid', amount: '24.00' }), card({ paymentId: 'v', status: 'voided', amount: '23.00', refundable: false })], 'fr');
-    for (const label of ['Payé', 'Remboursé', 'Argent protégé', 'En attente de vous']) expect(html).toContain(label);
+    for (const label of ['Payé', 'Remboursé', 'Arrêtés avant paiement', 'En attente de vous']) expect(html).toContain(label);
     expect(html).toContain('Demander un remboursement');
+  });
+
+  it('shows Stopped before paying from the server total, with its helper text', async () => {
+    const html = await render([], 'en', { USD: 42.99 });
+    expect(html).toContain('Stopped before paying');
+    expect(html).toContain('$42.99');
+    expect(html).toContain('Purchases VoirCheck stopped at a scam store before any money moved.');
   });
 
   it('says so when there are no orders', async () => {

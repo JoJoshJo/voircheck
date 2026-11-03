@@ -26,6 +26,7 @@ function payment(over: Partial<PaymentRecord> = {}): PaymentRecord {
     currency: 'USD',
     createdAt: hoursAgo(1),
     storeName: 'Velbrook Supply',
+    storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-supply',
     productTitle: 'Zephlet Buds',
     scanId: 'scan1',
     verdict: 'SAFE',
@@ -102,9 +103,9 @@ describe('risk log: summary and chart', () => {
     [check(), check({ sessionId: 's8', verdict: null, scanId: null })],
     NOW,
   );
-  it('stores checked = rows with a verdict; scams blocked = BLOCK verdicts; money protected = voided only; refunded = completed refunds, apart', () => {
-    expect(summarize(rows)).toEqual({ storesChecked: 7, scamsBlocked: 3, protectedByCurrency: { USD: 72.5 }, refundedByCurrency: { USD: 59 } });
-    expect(summarize([])).toEqual({ storesChecked: 0, scamsBlocked: 0, protectedByCurrency: {}, refundedByCurrency: {} });
+  it('stores checked = rows with a verdict; scams blocked = BLOCK verdicts; refunded = completed refunds', () => {
+    expect(summarize(rows)).toEqual({ storesChecked: 7, scamsBlocked: 3, refundedByCurrency: { USD: 59 } });
+    expect(summarize([])).toEqual({ storesChecked: 0, scamsBlocked: 0, refundedByCurrency: {} });
   });
   it('stacks verdicts per local day, oldest first', () => {
     expect(verdictsPerDay(rows, (iso) => localDay(iso, 'America/New_York'))).toEqual([

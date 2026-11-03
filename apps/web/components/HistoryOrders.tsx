@@ -21,23 +21,24 @@ const PILL: Record<OrderStatus, string> = {
 const link = 'text-[13px] text-muted underline underline-offset-4 hover:text-ink';
 
 /** History → Orders: one card per VC order with one neutral status pill (spec 5.11, Nov 3). */
-export function HistoryOrders({ orders, t, lang }: { orders: OrderCard[]; t: Dict; lang: Lang }) {
+export function HistoryOrders({ orders, stopped, t, lang }: { orders: OrderCard[]; stopped: Record<string, number>; t: Dict; lang: Lang }) {
   const money = (amount: number | string, currency: string) => new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency }).format(Number(amount));
   const totals = orderTotals(orders);
   const sum = (m: Record<string, number>) => (Object.keys(m).length ? Object.entries(m).map(([c, a]) => money(a, c)).join(' · ') : money(0, 'USD'));
-  const tiles: [string, string][] = [
+  const tiles: [string, string, string?][] = [
     [t.orders.paid, sum(totals.paidByCurrency)],
     [t.orders.refunded, sum(totals.refundedByCurrency)],
-    [t.orders.protected, sum(totals.protectedByCurrency)],
+    [t.orders.stopped, sum(stopped), t.orders.stoppedNote],
     [t.orders.waiting, String(totals.waiting)],
   ];
   return (
     <section className="mt-6 max-w-3xl">
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {tiles.map(([label, value]) => (
+        {tiles.map(([label, value, note]) => (
           <div key={label} className="rounded-control bg-surface px-4 py-3">
             <dt className="text-[13px] text-muted">{label}</dt>
             <dd className="mt-0.5 text-[20px] font-medium">{value}</dd>
+            {note && <dd className="mt-1 text-[12px] text-faint">{note}</dd>}
           </div>
         ))}
       </dl>

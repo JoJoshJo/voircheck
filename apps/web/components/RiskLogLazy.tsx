@@ -10,6 +10,6 @@ const RiskLog = dynamic(() => import('./RiskLog'), {
   loading: () => <p className="mt-6 text-[15px] text-muted">…</p>,
 });
 
-export function RiskLogLazy(props: { rows: RiskRow[]; t: Dict; lang: Lang }) {
+export function RiskLogLazy(props: { rows: RiskRow[]; stopped: Record<string, number>; t: Dict; lang: Lang }) {
   return <RiskLog {...props} />;
 }

@@ -1,11 +1,12 @@
 import 'server-only';
 import type { Db } from '@voircheck/db';
-import { candidates, payments, scans, shoppingSessions, trustReceipts } from '@voircheck/db/schema';
+import { auditLog, candidates, payments, scans, shoppingSessions, trustReceipts } from '@voircheck/db/schema';
 import { ownedBy } from '@voircheck/shared';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, or, sql } from 'drizzle-orm';
 import { getDb } from './db';
 import { toOrderCards, type OrderCard } from './orders-history';
 import { toRiskRows, type LinkCheckRecord, type PaymentRecord, type RiskRow } from './risk-log-map';
+import { stoppedBeforePaying, type RefusedOffer } from './stopped';
 
 /** Newest first; enough for a person's history during the hackathon (the grid sorts and filters in the browser). */
 export const RISK_LOG_LIMIT = 200;
@@ -26,6 +27,7 @@ export function paymentRecordsQuery(db: Db, userId: string) {
       currency: payments.currency,
       createdAt: payments.createdAt,
       storeName: candidates.storeName,
+      storeUrl: candidates.storeUrl,
       productTitle: candidates.productTitle,
       scanId: payments.scanId,
       verdict: scans.verdict,
@@ -70,15 +72,43 @@ export function linkChecksQuery(db: Db, userId: string) {
     .limit(RISK_LOG_LIMIT);
 }
 
+/**
+ * BLOCK offers VoirCheck refused before any order existed: the agent's create_order (reason "block") and Auto-pay
+ * (verdict BLOCK), from the append-only audit log, joined to the person's own candidate for the store and price.
+ */
+export function refusedOffersQuery(db: Db, userId: string) {
+  return db
+    .selectDistinct({ sessionId: candidates.sessionId, storeUrl: candidates.storeUrl, price: candidates.price, currency: candidates.currency })
+    .from(auditLog)
+    .innerJoin(candidates, sql`${auditLog.details}->>'candidateId' = ${candidates.id}::text`)
+    .innerJoin(shoppingSessions, eq(candidates.sessionId, shoppingSessions.id))
+    .where(
+      ownedBy(
+        shoppingSessions,
+        userId,
+        eq(auditLog.userId, userId),
+        or(
+          and(eq(auditLog.action, 'agent.order_refused'), sql`${auditLog.details}->>'reason' = 'block'`),
+          and(eq(auditLog.action, 'autopay.refused'), sql`${auditLog.details}->>'verdict' = 'BLOCK'`),
+        ),
+      ),
+    )
+    .limit(RISK_LOG_LIMIT);
+}
+
 export async function loadRiskLog(userId: string): Promise<RiskRow[]> {
   const db = getDb();
   const [paid, checks] = await Promise.all([paymentRecordsQuery(db, userId), linkChecksQuery(db, userId)]);
   return toRiskRows(paid as PaymentRecord[], checks as LinkCheckRecord[]);
 }
 
-/** History: the risk log (Checks tab) and one card per order (Orders tab), from the same two owner-scoped queries. */
-export async function loadHistory(userId: string): Promise<{ riskRows: RiskRow[]; orders: OrderCard[] }> {
+/** History: the risk log (Checks tab), one card per order (Orders tab) and "Stopped before paying" (both tabs). */
+export async function loadHistory(userId: string): Promise<{ riskRows: RiskRow[]; orders: OrderCard[]; stopped: Record<string, number> }> {
   const db = getDb();
-  const [paid, checks] = await Promise.all([paymentRecordsQuery(db, userId), linkChecksQuery(db, userId)]);
-  return { riskRows: toRiskRows(paid as PaymentRecord[], checks as LinkCheckRecord[]), orders: toOrderCards(paid as PaymentRecord[]) };
+  const [paid, checks, refused] = await Promise.all([paymentRecordsQuery(db, userId), linkChecksQuery(db, userId), refusedOffersQuery(db, userId)]);
+  return {
+    riskRows: toRiskRows(paid as PaymentRecord[], checks as LinkCheckRecord[]),
+    orders: toOrderCards(paid as PaymentRecord[]),
+    stopped: stoppedBeforePaying(paid as PaymentRecord[], refused as RefusedOffer[]),
+  };
 }

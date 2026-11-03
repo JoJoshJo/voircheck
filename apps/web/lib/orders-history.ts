@@ -60,18 +60,15 @@ export function toOrderCards(records: readonly PaymentRecord[], now: number = Da
 export interface OrderTotals {
   paidByCurrency: Record<string, number>;
   refundedByCurrency: Record<string, number>;
-  /** Voided payments only, like the risk log's "Money protected". */
-  protectedByCurrency: Record<string, number>;
   waiting: number;
 }
 
 export function orderTotals(cards: readonly OrderCard[]): OrderTotals {
-  const t: OrderTotals = { paidByCurrency: {}, refundedByCurrency: {}, protectedByCurrency: {}, waiting: 0 };
+  const t: OrderTotals = { paidByCurrency: {}, refundedByCurrency: {}, waiting: 0 };
   const add = (m: Record<string, number>, c: OrderCard) => (m[c.currency] = Math.round(((m[c.currency] ?? 0) + Number(c.amount)) * 100) / 100);
   for (const c of cards) {
     if (c.status === 'paid') add(t.paidByCurrency, c);
     if (c.status === 'refunded') add(t.refundedByCurrency, c);
-    if (c.status === 'voided') add(t.protectedByCurrency, c);
     if (c.needsYou) t.waiting += 1;
   }
   return t;

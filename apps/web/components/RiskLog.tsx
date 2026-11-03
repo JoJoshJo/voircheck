@@ -152,7 +152,7 @@ function zoneName(locale: string): string {
   return new Intl.DateTimeFormat(locale, { timeZoneName: 'short' }).formatToParts(new Date()).find((p) => p.type === 'timeZoneName')?.value ?? '';
 }
 
-export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; lang: Lang }) {
+export default function RiskLog({ rows, stopped, t, lang }: { rows: RiskRow[]; stopped: Record<string, number>; t: Dict; lang: Lang }) {
   const layout = useLayout();
   const [quick, setQuick] = useState('');
   const [filters, setFilters] = useState<RiskFilters>({ verdict: null, outcome: null, from: null, to: null });
@@ -244,7 +244,7 @@ export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; l
 
   return (
     <div className="mt-6 space-y-6">
-      <Summary t={t} summary={summary} money={money} />
+      <Summary t={t} summary={summary} stopped={stopped} money={money} />
       <VerdictChart rows={rows} t={t} lang={lang} />
 
       <div className="flex flex-wrap items-end gap-3">

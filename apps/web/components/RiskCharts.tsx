@@ -15,9 +15,8 @@ ModuleRegistry.registerModules([BarSeriesModule, CategoryAxisModule, NumberAxisM
 // Mid tones of the verdict colors (the pill text shades are too dark to tell HOLD from BLOCK in a stack).
 const VERDICT_FILL: Record<Verdict, string> = { SAFE: '#639922', HOLD: '#EF9F27', BLOCK: '#E24B4A' };
 
-export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<typeof summarize>; money: (a: number | null, c: string) => string }) {
+export function Summary({ t, summary, stopped, money }: { t: Dict; summary: ReturnType<typeof summarize>; stopped: Record<string, number>; money: (a: number | null, c: string) => string }) {
   const total = (byCurrency: Record<string, number>) => Object.entries(byCurrency).map(([c, a]) => money(a, c)).join(' + ') || money(0, 'USD');
-  const protectedText = total(summary.protectedByCurrency);
   const tile = 'rounded-card border border-line bg-white p-4';
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -30,9 +29,9 @@ export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<ty
         <p className="mt-1 text-[26px] font-medium tracking-tight">{summary.scamsBlocked}</p>
       </div>
       <div className={tile}>
-        <p className="text-[13px] text-muted">{t.riskLog.moneyProtected}</p>
-        <p className="mt-1 text-[26px] font-medium tracking-tight">{protectedText}</p>
-        <p className="mt-1 text-[12px] text-faint">{t.riskLog.moneyProtectedNote}</p>
+        <p className="text-[13px] text-muted">{t.riskLog.stopped}</p>
+        <p className="mt-1 text-[26px] font-medium tracking-tight">{total(stopped)}</p>
+        <p className="mt-1 text-[12px] text-faint">{t.riskLog.stoppedNote}</p>
       </div>
       <div className={tile}>
         <p className="text-[13px] text-muted">{t.riskLog.refunded}</p>

@@ -19,7 +19,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
   const { user, lang } = await requireOnboardedUser();
   const t = DICTS[lang];
   const tab = (await searchParams).tab === 'checks' ? 'checks' : 'orders';
-  const { riskRows, orders } = await loadHistory(user.id);
+  const { riskRows, orders, stopped } = await loadHistory(user.id);
 
   return (
     <main className="mx-auto max-w-7xl px-4 pb-20 sm:px-6">
@@ -31,12 +31,12 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
           </Link>
         ))}
       </nav>
-      {tab === 'orders' ? <HistoryOrders orders={orders} t={t} lang={lang} /> : <Checks userId={user.id} riskRows={riskRows} t={t} lang={lang} />}
+      {tab === 'orders' ? <HistoryOrders orders={orders} stopped={stopped} t={t} lang={lang} /> : <Checks userId={user.id} riskRows={riskRows} stopped={stopped} t={t} lang={lang} />}
     </main>
   );
 }
 
-async function Checks({ userId, riskRows, t, lang }: { userId: string; riskRows: Awaited<ReturnType<typeof loadHistory>>['riskRows']; t: Dict; lang: Lang }) {
+async function Checks({ userId, riskRows, stopped, t, lang }: { userId: string; riskRows: Awaited<ReturnType<typeof loadHistory>>['riskRows']; stopped: Record<string, number>; t: Dict; lang: Lang }) {
   const db = getDb();
   const sessions = await db.select().from(shoppingSessions).where(ownedBy(shoppingSessions, userId, eq(shoppingSessions.entryType, 'link'))).orderBy(desc(shoppingSessions.createdAt)).limit(50);
   // The latest scan of each URL (scans are a shared cache keyed by URL; the session decides whose row it is).
@@ -53,7 +53,7 @@ async function Checks({ userId, riskRows, t, lang }: { userId: string; riskRows:
           {t.riskLog.title}
         </h2>
         <p className="mt-1 text-[15px] text-muted">{t.riskLog.intro}</p>
-        <RiskLogLazy rows={riskRows} t={t} lang={lang} />
+        <RiskLogLazy rows={riskRows} stopped={stopped} t={t} lang={lang} />
       </section>
       <h2 className="mt-12 text-[20px] font-medium tracking-tight">{t.orders.linkChecks}</h2>
       {rows.length === 0 ? (

@@ -44,6 +44,7 @@ export interface PaymentRecord {
   currency: string;
   createdAt: Date;
   storeName: string;
+  storeUrl: string;
   productTitle: string;
   scanId: string | null;
   verdict: string | null;
@@ -169,9 +170,7 @@ function hostOf(url: string): string {
 export interface RiskSummary {
   storesChecked: number;
   scamsBlocked: number;
-  /** Sum of blocked (voided) payments' amounts, per currency: money that never reached the store. */
-  protectedByCurrency: Record<string, number>;
-  /** Sum of paid orders the person had refunded in full (completed refunds only), per currency. Kept apart from "protected". */
+  /** Sum of paid orders the person had refunded in full (completed refunds only), per currency. Kept apart from "Stopped before paying". */
   refundedByCurrency: Record<string, number>;
 }
 
@@ -180,16 +179,13 @@ function addTo(totals: Record<string, number>, r: RiskRow) {
 }
 
 export function summarize(rows: readonly RiskRow[]): RiskSummary {
-  const protectedByCurrency: Record<string, number> = {};
   const refundedByCurrency: Record<string, number> = {};
   for (const r of rows) {
-    if (r.outcome === 'voided') addTo(protectedByCurrency, r);
     if (r.outcome === 'refunded') addTo(refundedByCurrency, r);
   }
   return {
     storesChecked: rows.filter((r) => r.verdict).length,
     scamsBlocked: rows.filter((r) => r.verdict === 'BLOCK').length,
-    protectedByCurrency,
     refundedByCurrency,
   };
 }

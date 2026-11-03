@@ -14,6 +14,7 @@ const rec = (over: Partial<PaymentRecord>): PaymentRecord => ({
   currency: 'USD',
   createdAt: new Date(NOW - HOUR),
   storeName: 'Velbrook Supply',
+  storeUrl: 'https://voircheck-stores.onrender.com/s/velbrook-supply',
   productTitle: 'Zephlet Buds',
   scanId: 'scan-1',
   verdict: 'SAFE',
@@ -72,7 +73,7 @@ describe('History → Orders: one status per order', () => {
 });
 
 describe('History → Orders totals', () => {
-  it('Paid, Refunded, Money protected (voids only) per currency, and Waiting for you', () => {
+  it('Paid and Refunded per currency, and Waiting for you', () => {
     const t = orderTotals(
       toOrderCards(
         [
@@ -88,6 +89,6 @@ describe('History → Orders totals', () => {
         NOW,
       ),
     );
-    expect(t).toEqual({ paidByCurrency: { USD: 24, EUR: 10.1 }, refundedByCurrency: { USD: 59 }, protectedByCurrency: { USD: 23 }, waiting: 2 });
+    expect(t).toEqual({ paidByCurrency: { USD: 24, EUR: 10.1 }, refundedByCurrency: { USD: 59 }, waiting: 2 });
   });
 });
