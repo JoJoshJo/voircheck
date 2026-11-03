@@ -2,6 +2,7 @@ import { payments, scans, shoppingSessions, trustReceipts } from '@voircheck/db/
 import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq } from 'drizzle-orm';
 import Link from 'next/link';
+import { LocalTime } from '../../../components/LocalTime';
 import { card } from '../../../components/ui';
 import { VerdictBadge } from '../../../components/Verdict';
 import { getDb } from '../../../lib/db';
@@ -29,7 +30,6 @@ export default async function HistoryPage() {
       return { s, scan, receipts };
     }),
   );
-  const fmtDate = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' });
 
   return (
     <main className="mx-auto max-w-3xl px-4 pb-20 sm:px-6">
@@ -43,7 +43,7 @@ export default async function HistoryPage() {
               <div className="min-w-0">
                 <p className="truncate text-[15px]">{s.queryOrUrl}</p>
                 <p className="mt-0.5 text-[13px] text-faint">
-                  {s.entryType === 'link' ? t.history.link : t.history.chat} · {fmtDate.format(s.createdAt)}
+                  {s.entryType === 'link' ? t.history.link : t.history.chat} · <LocalTime at={s.createdAt.toISOString()} lang={lang} />
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3">

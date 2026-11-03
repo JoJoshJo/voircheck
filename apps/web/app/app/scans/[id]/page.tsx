@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AiFindings, CollectedEvidence } from '../../../../components/CollectedEvidence';
+import { LocalTime } from '../../../../components/LocalTime';
 import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
@@ -11,6 +12,7 @@ import { scoreLine } from '../../../../lib/score-line';
 import { getScanForUser } from '../../../../lib/scans';
 import { toScanView } from '../../../../lib/scan-view';
 import { requireOnboardedUser } from '../../../../lib/user';
+import { splitWhen } from '../../../../lib/when';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +27,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
   const scan = toScanView(row);
   // The page analysis' own plain-language summary (model text, shown as plain text); none when the AI didn't run.
   const summary = scan.signals.find((s) => s.id === 'ai_page')?.summary?.[lang];
-  const when = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(scan.scannedAt));
+  const [whenBefore, whenAfter] = splitWhen(t.evidence.scannedAt);
 
   return (
     <main className="mx-auto max-w-3xl px-4 pb-20 sm:px-6">
@@ -38,7 +40,9 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
           <h1 className="mt-1 text-[22px] font-medium tracking-tight">{t.verdict[`${scan.verdict}_line`]}</h1>
           <p className="mt-1 truncate text-[14px] opacity-80">{scan.url}</p>
           <p className="mt-1 text-[13px] opacity-80">
-            {scoreLine(t, scan)} · {fmt(t.evidence.scannedAt, { when })}
+            {scoreLine(t, scan)} · {whenBefore}
+            <LocalTime at={new Date(scan.scannedAt).toISOString()} lang={lang} />
+            {whenAfter}
           </p>
         </div>
         <Mascot mood={scan.verdict} size={88} title={t.verdict[scan.verdict]} />

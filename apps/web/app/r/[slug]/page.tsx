@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { LocalTime } from '../../../components/LocalTime';
 import { Logo } from '../../../components/Logo';
 import { Mascot } from '../../../components/Mascot';
 import { ShareLink } from '../../../components/PaymentActions';
@@ -6,9 +7,10 @@ import { SignalIcon, type SignalState } from '../../../components/SignalIcon';
 import { card } from '../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../components/Verdict';
 import { evidenceLine } from '../../../lib/evidence-i18n';
-import { DICTS, fmt, isLang } from '../../../lib/i18n';
+import { DICTS, isLang } from '../../../lib/i18n';
 import { scoreLine } from '../../../lib/score-line';
 import { getReceiptBySlug } from '../../../lib/receipts';
+import { splitWhen } from '../../../lib/when';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Trust Receipt', robots: { index: false, follow: false }, referrer: 'no-referrer' };
@@ -28,7 +30,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
   const lang = isLang(r.language) ? r.language : 'en';
   const t = DICTS[lang];
   const s = r.snapshot;
-  const when = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'long', timeStyle: 'short' }).format(new Date(s.actionAt));
+  const [whenBefore, whenAfter] = splitWhen(t.receipt.when);
   const money = s.amount ? new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: s.currency }).format(Number(s.amount)) : null;
 
   return (
@@ -66,7 +68,9 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
         )}
       </dl>
       <p className="mt-3 text-[13px] text-faint">
-        {fmt(t.receipt.when, { when })}
+        {whenBefore}
+        <LocalTime at={new Date(s.actionAt).toISOString()} lang={lang} style="long" />
+        {whenAfter}
         {s.ref ? ` · ${t.pay.ref}${t.colon} ${s.ref}` : ''}
       </p>
 

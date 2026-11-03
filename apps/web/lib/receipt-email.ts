@@ -1,3 +1,4 @@
+import { formatWhen } from './when';
 import { DICTS, fmt, type Lang } from './i18n';
 import { evidenceLine } from './evidence-i18n';
 import { scoreLine } from './score-line';
@@ -45,7 +46,8 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
   const url = `${input.baseUrl.replace(/\/$/, '')}/r/${encodeURIComponent(input.slug)}`;
   const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
   const money = s.amount ? new Intl.NumberFormat(locale, { style: 'currency', currency: s.currency }).format(Number(s.amount)) : '';
-  const when = new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeStyle: 'short', timeZone: 'UTC' }).format(new Date(s.actionAt));
+  // An email can't know the reader's zone: UTC, named ("… 4:25 PM UTC").
+  const when = formatWhen(s.actionAt, lang, 'long', 'UTC');
   const outcome = t.receipt[`action_${s.action}`];
   const verdict = t.verdict[s.verdict];
   const labels = t.signals as Record<string, string>;
@@ -71,7 +73,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
     '',
     `${k(e.view)} ${url}`,
     '',
-    fmt(t.receipt.when, { when: `${when} UTC` }),
+    fmt(t.receipt.when, { when }),
     e.footer,
   ]
     .filter((l): l is string => l !== null)
@@ -101,7 +103,7 @@ ${reasons
   )
   .join('\n')}
 <tr><td style="padding:16px 0 24px"><a href="${escapeHtml(url)}" style="display:inline-block;background:#0C0C0C;color:#FFFFFF;text-decoration:none;border-radius:999px;padding:12px 22px;font-size:15px;font-weight:500">${escapeHtml(e.view)}</a></td></tr>
-<tr><td style="font-size:12px;color:#A8A29E;line-height:1.5">${escapeHtml(fmt(t.receipt.when, { when: `${when} UTC` }))}<br>${escapeHtml(e.footer)}</td></tr>
+<tr><td style="font-size:12px;color:#A8A29E;line-height:1.5">${escapeHtml(fmt(t.receipt.when, { when }))}<br>${escapeHtml(e.footer)}</td></tr>
 </table></td></tr></table></body></html>`;
 
   return { subject, html, text };
