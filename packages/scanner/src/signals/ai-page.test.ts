@@ -208,6 +208,18 @@ describe('AI page analysis: plain-language summary', () => {
     const scored = score([r], { domainAgeDays: null, validHttps: true, priceBelowPeersPct: 0, threatHit: false, kernelOk: true });
     expect(scored.signals.find((x) => x.id === 'ai_page')?.summary?.en).toContain('legal page');
   });
+  it('asks for French with its accents, and a French summary keeps every accent through parsing and scoring', async () => {
+    expect(AI_SYSTEM_PROMPT).toMatch(/all its accents/);
+    expect(AI_SYSTEM_PROMPT).toContain('identité');
+    const fr = 'Un texte caché cherche à faire dire que la boutique est sûre. Aucune identité d’entreprise n’a été trouvée ; la page « À propos » mérite un coup d’œil.';
+    const { client } = fakeClient({ parsed_output: { ...injection, summary: { en: 'Hidden text tries to call the shop safe.', fr } } });
+    const r = await anthropicAnalyzer({ client, log: quiet }).analyze(page());
+    expect(r.summary?.fr).toBe(fr);
+    const scored = score([r], { domainAgeDays: null, validHttps: true, priceBelowPeersPct: 0, threatHit: false, kernelOk: true });
+    const kept = scored.signals.find((x) => x.id === 'ai_page')?.summary?.fr;
+    expect(kept).toBe(fr);
+    expect(JSON.parse(JSON.stringify({ kept })).kept).toBe(fr); // what the jsonb column stores and gives back
+  });
 });
 
 describe('AI page analysis: quotes must be real', () => {
