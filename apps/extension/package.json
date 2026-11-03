@@ -4,6 +4,11 @@
   "type": "module",
   "version": "0.1.0",
   "scripts": {
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "icons": "node scripts/icons.mjs",
+    "zip": "node scripts/zip.mjs"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5"
   }
 }
