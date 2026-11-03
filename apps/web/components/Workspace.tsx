@@ -7,7 +7,7 @@ import { scoreLine } from '../lib/score-line';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
 import { Checkout } from './Checkout';
-import { CHECK_COOKIE, DEMO_COOKIE } from '../lib/workspace';
+import { CHECK_AUTO_COOKIE, CHECK_COOKIE, DEMO_COOKIE } from '../lib/workspace';
 import { Mascot } from './Mascot';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, card, input } from './ui';
@@ -26,7 +26,7 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
   return fmt(t.workspace.hoursAgo, { n: Math.floor(mins / 60) });
 }
 
-export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initialCheck = null }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean; initialCheck?: string | null }) {
+export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initialCheck = null, autoStart = false }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean; initialCheck?: string | null; autoStart?: boolean }) {
   const [tab, setTab] = useState<'chat' | 'results'>(initialCheck ? 'results' : 'chat');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [url, setUrl] = useState(initialCheck ?? '');
@@ -37,10 +37,11 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
     document.cookie = `${DEMO_COOKIE}=${demoMode ? '1' : '0'}; path=/; max-age=31536000; samesite=lax${location.protocol === 'https:' ? '; secure' : ''}`;
   }, [demoMode]);
 
-  // A link from "Buy through VoirCheck" is used once: forget it so the next visit starts empty.
+  // A link from "Buy through VoirCheck" or the extension is used once: forget it so the next visit starts empty.
   useEffect(() => {
     if (initialCheck) document.cookie = `${CHECK_COOKIE}=; path=/; max-age=0`;
-  }, [initialCheck]);
+    if (autoStart) document.cookie = `${CHECK_AUTO_COOKIE}=; path=/; max-age=0`;
+  }, [initialCheck, autoStart]);
 
   async function run(target: string, rescan = false) {
     abort.current?.abort();
@@ -79,6 +80,15 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
       if ((err as Error).name !== 'AbortError') setState({ phase: 'error', code: 'failed', url: target });
     }
   }
+
+  // /check marked this link to start on arrival (the signed-in person's own navigation, e.g. the extension): run it
+  // once. Limits and daily caps still apply in /api/scans.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStart || !initialCheck || autoStarted.current) return;
+    autoStarted.current = true;
+    void run(initialCheck);
+  }, [autoStart, initialCheck]);
 
   const tabBtn = (id: 'chat' | 'results', text: string) => (
     <button type="button" onClick={() => setTab(id)} className={`flex-1 rounded-full py-2 text-[14px] font-medium ${tab === id ? 'bg-ink text-white' : 'text-muted'}`}>
