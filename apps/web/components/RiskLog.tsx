@@ -4,7 +4,6 @@ import { AG_GRID_LOCALE_FR } from '@ag-grid-community/locale';
 import {
   CellStyleModule,
   ClientSideRowModelModule,
-  DateFilterModule,
   enableDevValidations,
   ExternalFilterModule,
   LocaleModule,
@@ -33,7 +32,7 @@ import { input, label as labelClass } from './ui';
  */
 
 // Only the Community modules this grid uses (keeps the bundle small; AllCommunityModule would register them all).
-const GRID_MODULES: Module[] = [ClientSideRowModelModule, TextFilterModule, NumberFilterModule, DateFilterModule, QuickFilterModule, ExternalFilterModule, PaginationModule, LocaleModule, CellStyleModule];
+const GRID_MODULES: Module[] = [ClientSideRowModelModule, TextFilterModule, NumberFilterModule, QuickFilterModule, ExternalFilterModule, PaginationModule, LocaleModule, CellStyleModule];
 if (process.env.NODE_ENV !== 'production') enableDevValidations();
 
 // Mono ink (spec 5.12) through the Theming API: white, #F5F5F4 surfaces, #E7E5E4 borders, #0C0C0C ink, no accent.
@@ -56,6 +55,7 @@ const gridTheme = themeQuartz.withParams({
   fontFamily: 'inherit',
   fontSize: 14,
   spacing: 6,
+  cellHorizontalPadding: 12,
   rowHeight: 48,
   headerHeight: 40,
   wrapperBorder: { color: '#E7E5E4' },
@@ -142,9 +142,14 @@ function useLayout(): 'list' | 'compact' | 'full' {
   return layout;
 }
 
-/** "Nov 3, 12:10 PM EST": the viewer's own zone, named, short enough for a grid cell. */
+/** "Nov 3, 12:10 PM" in the viewer's own zone; the zone is named once, in the column header (zoneName). */
 function shortWhen(d: Date, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(d);
+  return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(d);
+}
+
+/** The viewer's zone as a short name ("EST", "UTC−5"), for the Date header. */
+function zoneName(locale: string): string {
+  return new Intl.DateTimeFormat(locale, { timeZoneName: 'short' }).formatToParts(new Date()).find((p) => p.type === 'timeZoneName')?.value ?? '';
 }
 
 export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; lang: Lang }) {
@@ -168,46 +173,39 @@ export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; l
     () => [
       {
         colId: 'at',
-        headerName: t.riskLog.colDate,
+        headerName: `${t.riskLog.colDate} (${zoneName(locale)})`,
         valueGetter: (p) => (p.data ? new Date(p.data.at) : null),
         valueFormatter: (p) => (p.value ? shortWhen(p.value as Date, locale) : ''),
         getQuickFilterText: () => '',
-        filter: 'agDateColumnFilter',
-        filterParams: {
-          // Compare the row's local calendar day with the picked day (the default comparator expects midnight values).
-          comparator: (filterDay: Date, cell: Date) => {
-            const d = new Date(cell.getFullYear(), cell.getMonth(), cell.getDate()).getTime();
-            return d === filterDay.getTime() ? 0 : d < filterDay.getTime() ? -1 : 1;
-          },
-        },
+        filter: false, // the From/To day inputs above the grid filter dates (in the viewer's zone)
         sort: 'desc',
-        width: 168,
+        width: 136,
       },
-      { field: 'ref', headerName: t.riskLog.colRef, width: 104, valueFormatter: (p) => p.value ?? '–', filter: 'agTextColumnFilter' },
-      { field: 'store', headerName: t.riskLog.colStore, flex: 1.3, minWidth: 140, filter: 'agTextColumnFilter' },
-      { field: 'product', headerName: t.riskLog.colProduct, flex: 1, minWidth: 120, filter: 'agTextColumnFilter', hide: layout !== 'full' },
+      { field: 'ref', headerName: t.riskLog.colRef, width: 96, valueFormatter: (p) => p.value ?? '–', filter: false },
+      { field: 'store', headerName: t.riskLog.colStore, flex: 1.3, minWidth: 110, filter: 'agTextColumnFilter' },
+      { field: 'product', headerName: t.riskLog.colProduct, flex: 1, minWidth: 96, filter: 'agTextColumnFilter', hide: layout !== 'full' },
       {
         field: 'amount',
         headerName: t.riskLog.colAmount,
         type: 'rightAligned',
-        width: 100,
+        width: 108,
         filter: 'agNumberColumnFilter',
         valueFormatter: (p) => (p.data ? money(p.data.amount, p.data.currency) : ''),
       },
       {
         field: 'verdict',
         headerName: t.riskLog.colVerdict,
-        width: 100,
+        width: 108,
         filter: false,
         comparator: (a: Verdict | null, b: Verdict | null) => (a ? VERDICT_RANK[a] : -1) - (b ? VERDICT_RANK[b] : -1),
         getQuickFilterText: (p) => (p.data?.verdict ? t.verdict[p.data.verdict] : ''),
         cellRenderer: (p: ICellRendererParams<RiskRow>) => (p.data ? <VerdictPill verdict={p.data.verdict} t={t} /> : null),
       },
-      { field: 'score', headerName: t.riskLog.colScore, type: 'rightAligned', width: 76, hide: layout !== 'full', filter: 'agNumberColumnFilter', valueFormatter: (p) => (p.value == null ? '–' : String(p.value)) },
+      { field: 'score', headerName: t.riskLog.colScore, type: 'rightAligned', width: 72, hide: layout !== 'full', filter: false, valueFormatter: (p) => (p.value == null ? '–' : String(p.value)) },
       {
         colId: 'signals',
         headerName: t.riskLog.colSignals,
-        width: 150,
+        width: 152,
         sortable: false,
         filter: false,
         getQuickFilterText: () => '',
@@ -224,7 +222,7 @@ export default function RiskLog({ rows, t, lang }: { rows: RiskRow[]; t: Dict; l
       {
         colId: 'links',
         headerName: t.riskLog.colLinks,
-        width: 160,
+        width: 146,
         sortable: false,
         filter: false,
         getQuickFilterText: () => '',

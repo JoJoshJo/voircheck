@@ -19,7 +19,7 @@ export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<ty
   const protectedText = Object.entries(summary.protectedByCurrency).map(([c, a]) => money(a, c)).join(' + ') || money(0, 'USD');
   const tile = 'rounded-card border border-line bg-white p-4';
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       <div className={tile}>
         <p className="text-[13px] text-muted">{t.riskLog.storesChecked}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{summary.storesChecked}</p>
@@ -28,7 +28,7 @@ export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<ty
         <p className="text-[13px] text-muted">{t.riskLog.scamsBlocked}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{summary.scamsBlocked}</p>
       </div>
-      <div className={tile}>
+      <div className={`${tile} col-span-2 sm:col-span-1`}>
         <p className="text-[13px] text-muted">{t.riskLog.moneyProtected}</p>
         <p className="mt-1 text-[26px] font-medium tracking-tight">{protectedText}</p>
         <p className="mt-1 text-[12px] text-faint">{t.riskLog.moneyProtectedNote}</p>
@@ -40,6 +40,8 @@ export function Summary({ t, summary, money }: { t: Dict; summary: ReturnType<ty
 export function VerdictChart({ rows, t, lang }: { rows: RiskRow[]; t: Dict; lang: Lang }) {
   const locale = lang === 'fr' ? 'fr-FR' : 'en-US';
   const data = useMemo(() => verdictsPerDay(rows, (iso) => localDay(iso)), [rows]);
+  // The chart draws on a canvas, which can't 'inherit' a font: hand it the page's own (client-only component).
+  const fontFamily = useMemo(() => getComputedStyle(document.body).fontFamily, []);
   const options = useMemo<AgCartesianChartOptions>(
     () => ({
       data,
@@ -61,20 +63,20 @@ export function VerdictChart({ rows, t, lang }: { rows: RiskRow[]; t: Dict; lang
           type: 'category',
           position: 'bottom',
           line: { stroke: '#E7E5E4' },
-          label: { color: '#6B6866', formatter: ({ value }: { value: unknown }) => new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${String(value)}T00:00:00Z`)) },
+          label: { color: '#6B6866', fontSize: 13, formatter: ({ value }: { value: unknown }) => new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${String(value)}T00:00:00Z`)) },
         },
         y: {
           type: 'number',
           position: 'left',
           title: { enabled: false },
           gridLine: { style: [{ stroke: '#E7E5E4', lineDash: [] }] },
-          label: { color: '#6B6866', formatter: ({ value }: { value: unknown }) => (Number.isInteger(value) ? String(value) : '') },
+          label: { color: '#6B6866', fontSize: 13, formatter: ({ value }: { value: unknown }) => (Number.isInteger(value) ? String(value) : '') },
         },
       },
-      legend: { position: 'bottom', item: { label: { color: '#0C0C0C' } } },
-      theme: { params: { fontFamily: 'inherit', fontSize: 13, foregroundColor: '#0C0C0C', backgroundColor: '#FFFFFF' } },
+      legend: { position: 'bottom', item: { label: { color: '#0C0C0C', fontSize: 13 } } },
+      theme: { params: { fontFamily, fontSize: 13, foregroundColor: '#0C0C0C', backgroundColor: '#FFFFFF' } },
     }),
-    [data, t, locale],
+    [data, t, locale, fontFamily],
   );
   return (
     <section className="rounded-card border border-line bg-white p-4" aria-label={t.riskLog.chartTitle}>
