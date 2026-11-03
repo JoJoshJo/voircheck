@@ -33,7 +33,8 @@ function deps(over: Partial<AgentDeps> = {}): AgentDeps {
     scanStore: vi.fn(async () => scanWithPageText()),
     createOrder: vi.fn(async (storeId: string) => ({ storeId, status: 'refused' as const, reason: 'block' as const })),
     requestPayment: vi.fn(async (paymentId: string) => ({ paymentId, status: 'waiting_for_buyer' as const })),
-    getOrder: vi.fn(async (paymentId: string) => ({ paymentId, status: 'not_found' as const })),
+    getOrder: vi.fn(async () => ({ status: 'not_found' as const })),
+    listRecentOrders: vi.fn(async () => ({ orders: [] })),
     ...over,
   };
 }

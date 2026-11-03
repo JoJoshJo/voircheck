@@ -7,3 +7,5 @@ export * from './loop';
 export * from './prompt';
 export * from './tools';
 export * from './paypal-toolkit';
+// The agent takes VoirCheck order references (VC-7K2F); re-exported for the scripts that wire its tools.
+export { parsePaymentRef } from '@voircheck/shared';

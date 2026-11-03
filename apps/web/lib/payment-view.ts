@@ -11,6 +11,8 @@ const DAY = 86_400_000;
 /** What the browser may know about a payment. No PayPal order/authorization/capture IDs. */
 export interface PaymentView {
   id: string;
+  /** VoirCheck's own short reference (VC-7K2F), safe to show; not a PayPal ID. */
+  ref: string;
   status: PaymentStatus;
   mode: 'approve' | 'auto';
   overrideUsed: boolean;
@@ -47,6 +49,7 @@ export async function getPaymentView(paymentId: string, userId: string): Promise
 
   return {
     id: payment.id,
+    ref: payment.ref,
     status: payment.status,
     mode: payment.mode,
     overrideUsed: payment.overrideUsed,

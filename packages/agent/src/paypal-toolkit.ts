@@ -72,8 +72,8 @@ export function toolkitOrderReader(opts: { clientId: string; clientSecret: strin
 }
 
 /** The get_order tool's result for one of the user's payments. Anything that doesn't fit the strict schema is "unavailable". */
-export function agentOrderStatus(paymentId: string, view: OrderStatusView | null): GetOrderOutput {
+export function agentOrderStatus(paymentId: string, view: OrderStatusView | null, ref?: string): GetOrderOutput {
   if (!view) return { paymentId, status: 'unavailable' };
-  const r = GetOrderOutput.safeParse({ paymentId, status: 'ok', orderStatus: view.status, intent: view.intent, amount: view.amount, authorizationStatus: view.authorizationStatus, captureStatus: view.captureStatus });
+  const r = GetOrderOutput.safeParse({ paymentId, ...(ref ? { ref } : {}), status: 'ok', orderStatus: view.status, intent: view.intent, amount: view.amount, authorizationStatus: view.authorizationStatus, captureStatus: view.captureStatus });
   return r.success ? r.data : { paymentId, status: 'unavailable' };
 }

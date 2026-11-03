@@ -128,6 +128,11 @@ export const payments = pgTable(
     candidateId: uuid('candidate_id').notNull().references(() => candidates.id),
     scanId: uuid('scan_id').references(() => scans.id),
     paypalOrderId: text('paypal_order_id').notNull().unique(),
+    /**
+     * Short public-safe VoirCheck reference (e.g. VC-7K2F) the person and the agent can quote. Not a PayPal ID and not a
+     * secret: lookups by it are always scoped to the owner. Made by Postgres (vc_payment_ref(), migration 0004).
+     */
+    ref: text('ref').notNull().unique().default(sql`vc_payment_ref()`),
     authorizationId: text('authorization_id'),
     captureId: text('capture_id'),
     storeSlug: text('store_slug').notNull(), // sent to PayPal as purchase_units[0].custom_id

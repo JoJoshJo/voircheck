@@ -1,3 +1,5 @@
+import { randomPaymentRef } from '@voircheck/shared';
+
 /**
  * What the money gate and webhook handler read and write. Everything money-related (amount, currency, store)
  * comes from these rows, never from the browser (spec 5.17 #5). Implementations must scope every user-owned
@@ -44,6 +46,8 @@ export interface PaymentRow {
   candidateId: string;
   scanId: string | null;
   paypalOrderId: string;
+  /** VoirCheck's own short reference (VC-7K2F), made by Postgres on insert. Public-safe, shown to the person. */
+  ref: string;
   authorizationId: string | null;
   captureId: string | null;
   storeSlug: string;
@@ -55,7 +59,7 @@ export interface PaymentRow {
   createdAt: Date;
 }
 
-export type NewPayment = Omit<PaymentRow, 'id' | 'createdAt'>;
+export type NewPayment = Omit<PaymentRow, 'id' | 'createdAt' | 'ref'>;
 export type PaymentPatch = Partial<Pick<PaymentRow, 'authorizationId' | 'captureId' | 'status' | 'overrideUsed' | 'scanId'>>;
 
 export interface AuditEntry {
@@ -132,7 +136,9 @@ export class MemoryGateStore implements GateStore {
     // Check and insert in one synchronous step, like ON CONFLICT in Postgres.
     const existing = [...this.payments.values()].find((p) => p.paypalOrderId === row.paypalOrderId);
     if (existing) return existing;
-    const p: PaymentRow = { ...row, id: `pay_${++this.seq}`, createdAt: new Date() };
+    let ref = randomPaymentRef();
+    while ([...this.payments.values()].some((x) => x.ref === ref)) ref = randomPaymentRef();
+    const p: PaymentRow = { ...row, id: `pay_${++this.seq}`, ref, createdAt: new Date() };
     this.payments.set(p.id, p);
     return p;
   }

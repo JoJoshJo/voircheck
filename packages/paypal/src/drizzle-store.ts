@@ -16,6 +16,7 @@ export function drizzleGateStore(db: Db): GateStore {
     candidateId: payments.candidateId,
     scanId: payments.scanId,
     paypalOrderId: payments.paypalOrderId,
+    ref: payments.ref,
     authorizationId: payments.authorizationId,
     captureId: payments.captureId,
     storeSlug: payments.storeSlug,

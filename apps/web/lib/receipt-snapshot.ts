@@ -9,6 +9,8 @@ export type ReceiptAction = 'captured' | 'held' | 'voided' | 'override' | 'cance
 
 export const ReceiptSnapshot = z.object({
   v: z.literal(1),
+  /** VoirCheck's own order reference (VC-7K2F; not a PayPal ID). Optional: receipts made before Nov 2 don't have it. */
+  ref: z.string().optional(),
   storeName: z.string(),
   storeHost: z.string(),
   /** The store's own page (e.g. …/s/velbrook-supply). Optional: receipts made before Oct 29 only have the host. */
@@ -40,7 +42,7 @@ export function actionFor(status: string, overrideUsed: boolean): ReceiptAction 
 
 /** Pure: builds the public snapshot from rows we already trust. Only whitelisted fields are copied. */
 export function buildSnapshot(input: {
-  payment: { status: string; overrideUsed: boolean; amount: string | null; currency: string };
+  payment: { status: string; overrideUsed: boolean; amount: string | null; currency: string; ref?: string };
   candidate: { storeName: string; storeUrl: string; productTitle: string };
   scan: { verdict: Verdict; riskScore: number; hardRulesTriggered: string[]; signals: unknown; scannedAt: Date };
   now: Date;
@@ -51,6 +53,7 @@ export function buildSnapshot(input: {
   const signals = (input.scan.signals as SignalResult[]).map((s) => ({ id: s.id, status: s.status, points: s.points, summary: (s.evidence.find((e) => !e.startsWith('This store shares')) ?? s.evidence[0] ?? '').slice(0, 300) }));
   return ReceiptSnapshot.parse({
     v: 1,
+    ...(input.payment.ref ? { ref: input.payment.ref } : {}),
     storeName: input.candidate.storeName,
     storeHost: new URL(input.candidate.storeUrl).host,
     storeUrl: input.candidate.storeUrl,

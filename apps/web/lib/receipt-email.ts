@@ -61,6 +61,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
     '',
     `${k(e.store)} ${s.storeName} (${s.storeUrl ?? s.storeHost})`,
     `${k(e.product)} ${s.productTitle}`,
+    s.ref ? `${k(e.ref)} ${s.ref}` : null,
     money ? `${k(e.amount)} ${money}` : null,
     `${k(e.verdict)} ${verdict} · ${s.cantVerify ? scoreLine(t, s) : `${t.workspace.score} ${s.score}/100`}`,
     `${k(e.outcome)} ${outcome}`,
@@ -90,7 +91,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
 <tr><td style="font-size:15px;color:#0C0C0C;padding-bottom:20px">${escapeHtml(outcome)}</td></tr>
 <tr><td style="border-top:1px solid #E7E5E4;border-bottom:1px solid #E7E5E4;padding:12px 0">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-${row(e.product, s.productTitle)}${money ? row(e.amount, money) : ''}${row(e.store, s.storeUrl ?? s.storeHost)}
+${row(e.product, s.productTitle)}${s.ref ? row(e.ref, s.ref) : ''}${money ? row(e.amount, money) : ''}${row(e.store, s.storeUrl ?? s.storeHost)}
 </table></td></tr>
 <tr><td style="font-size:13px;font-weight:500;padding:20px 0 8px">${escapeHtml(e.reasons)}</td></tr>
 ${reasons

@@ -25,6 +25,7 @@ export function Checkout({
   autopay,
   override = false,
   existingOrder,
+  from,
 }: {
   t: Dict;
   lang: string;
@@ -35,6 +36,8 @@ export function Checkout({
   override?: boolean;
   /** An order the shopping agent already prepared through MoneyGate: the first click opens it instead of a new one. */
   existingOrder?: { paymentId: string; orderId: string };
+  /** Opened from the agent chat: the payment page then offers "Back to the conversation". */
+  from?: 'chat';
 }) {
   const router = useRouter();
   const container = useRef<HTMLDivElement>(null);
@@ -45,7 +48,7 @@ export function Checkout({
   const [phase, setPhase] = useState<Phase>('loading');
   const [note, setNote] = useState<string | null>(null);
 
-  const goTo = (p: PaymentView) => router.push(`/app/pay/${p.id}`);
+  const goTo = (p: PaymentView) => router.push(`/app/pay/${p.id}${from === 'chat' ? '?from=chat' : ''}`);
   const reason = (r: string | undefined) => (r && t.pay.reasons[r]) || r || '';
 
   useEffect(() => {

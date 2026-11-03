@@ -58,7 +58,9 @@ describe('FakeModel flow, end to end through the real MoneyGate', () => {
     const first = await s.say(find);
     expect(s.scanStoreCalls).toEqual(['cand-velbrook-supply', 'cand-velbrook-outlet-deals']); // every store checked
     expect(first).toContain('Velbrook Supply');
-    expect(s.lastResults()).toEqual([{ storeId: 'cand-velbrook-supply', status: 'awaiting_buyer_approval', paymentId: 'pay_1' }]);
+    const ref = s.store.payments.get('pay_1')!.ref;
+    expect(ref).toMatch(/^VC-[2-9A-HJ-NP-Z]{4}$/);
+    expect(s.lastResults()).toEqual([{ storeId: 'cand-velbrook-supply', status: 'awaiting_buyer_approval', paymentId: 'pay_1', ref }]);
     expect(s.store.payments.get('pay_1')).toMatchObject({ amount: '59.00', currency: 'USD', status: 'created', overrideUsed: false, mode: 'approve' });
 
     expect(await s.say(cheaper)).toMatch(/Velbrook-Outlet Deals/);
@@ -81,7 +83,7 @@ describe('FakeModel flow, end to end through the real MoneyGate', () => {
 
     const callsBefore = [...s.paypal.calls];
     expect(await s.say(status)).toMatch(reported);
-    expect(s.lastResults()).toEqual([{ paymentId: 'pay_1', status: 'ok', orderStatus: 'COMPLETED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: 'CAPTURED', captureStatus: 'COMPLETED' }]);
+    expect(s.lastResults()).toEqual([{ paymentId: 'pay_1', ref, status: 'ok', orderStatus: 'COMPLETED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: 'CAPTURED', captureStatus: 'COMPLETED' }]);
     expect(s.paypal.calls).toEqual(callsBefore); // read only: no new PayPal write
     expect(s.store.audit).toHaveLength(6);
   });
@@ -174,21 +176,37 @@ describe('get_order (Agent Toolkit, read only)', () => {
         {
           text: '',
           toolCalls: [
-            { id: 'g1', name: 'get_order', input: { paymentId: 'pay_1', capture: true } },
-            { id: 'g2', name: 'get_order', input: { paymentId: 'pay_999' } },
+            { id: 'g1', name: 'get_order', input: { order: 'pay_1', capture: true } },
+            { id: 'g2', name: 'get_order', input: { order: 'pay_999' } },
             { id: 'g3', name: 'pay_order', input: { id: 'ORDER1' } },
           ],
         },
       ]),
     );
     await s.say('go');
-    expect(s.lastResults()).toEqual([
-      { paymentId: 'pay_1', status: 'ok', orderStatus: 'PAYER_ACTION_REQUIRED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: null, captureStatus: null },
-      { paymentId: 'pay_999', status: 'not_found' },
-      { error: 'unknown tool: pay_order' },
-    ]);
+    const ref = s.store.payments.get('pay_1')!.ref;
+    const pending = { paymentId: 'pay_1', ref, status: 'ok', orderStatus: 'PAYER_ACTION_REQUIRED', intent: 'AUTHORIZE', amount: { value: '59.00', currency: 'USD' }, authorizationStatus: null, captureStatus: null };
+    expect(s.lastResults()).toEqual([pending, { status: 'not_found' }, { error: 'unknown tool: pay_order' }]);
     expect(s.paypal.calls).toEqual(['POST /v2/checkout/orders']); // only create_order's AUTHORIZE order
     expect(s.store.payments.get('pay_1')!.status).toBe('created');
+  });
+
+  it('finds an order by its VC reference and lists recent orders by reference; an unknown reference finds nothing', async () => {
+    const steps: ModelTurn[] = [
+      { text: '', toolCalls: [{ id: 's', name: 'search_products', input: { query: 'wireless earbuds', maxPrice: 60 } }] },
+      { text: '', toolCalls: [{ id: 'v', name: 'get_scan_verdict', input: { storeId: 'cand-velbrook-supply' } }] },
+      { text: '', toolCalls: [{ id: 'o', name: 'create_order', input: { storeId: 'cand-velbrook-supply' } }] },
+    ];
+    const s = session(new Hostile(steps));
+    await s.say('go');
+    const ref = s.store.payments.get('pay_1')!.ref;
+    steps.push({ text: '', toolCalls: [{ id: 'r', name: 'list_my_recent_orders', input: { userId: 'someone-else' } }, { id: 'g1', name: 'get_order', input: { order: ref.toLowerCase() } }, { id: 'g2', name: 'get_order', input: { order: ref === 'VC-2222' ? 'VC-3333' : 'VC-2222' } }] });
+    await s.say('which orders do I have?');
+    const [recent, byRef, unknown] = s.lastResults() as [{ orders: unknown[] }, { ref: string; orderStatus: string }, unknown];
+    expect(recent.orders).toEqual([{ ref, store: 'Velbrook Supply', item: expect.any(String), amount: '59.00', currency: 'USD', status: 'waiting_for_buyer', date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) }]);
+    expect(byRef).toMatchObject({ ref, orderStatus: 'PAYER_ACTION_REQUIRED' });
+    expect(unknown).toEqual({ status: 'not_found' });
+    expect(captures(s.paypal.calls)).toEqual([]);
   });
 });
 

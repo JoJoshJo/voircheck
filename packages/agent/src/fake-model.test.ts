@@ -56,7 +56,7 @@ describe('FakeModel ranking', () => {
       { role: 'user', text: 'où en est ma commande ?' },
     ];
     const turn = await respond(msgs, 'fr');
-    expect(turn.toolCalls).toEqual([{ id: 'fake_8_0', name: 'get_order', input: { paymentId: 'pay_1' } }]);
+    expect(turn.toolCalls).toEqual([{ id: 'fake_8_0', name: 'get_order', input: { order: 'pay_1' } }]);
     const after = await respond([...msgs, { role: 'assistant', text: '', toolCalls: turn.toolCalls }, { role: 'tool', results: [{ toolCallId: 'fake_8_0', content: JSON.stringify({ paymentId: 'pay_1', status: 'unavailable' }) }] }], 'fr');
     expect(after.text).toBe('Je n’ai pas pu consulter cette commande pour l’instant.');
   });

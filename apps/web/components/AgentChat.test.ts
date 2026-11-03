@@ -17,14 +17,14 @@ describe('chat state', () => {
       { type: 'scan_signal', storeId: 'a', id: 'domain_age', status: 'pass' },
       { type: 'scan_done', storeId: 'a', scan: scan('SAFE'), cached: false },
       { type: 'scan_done', storeId: 'b', scan: scan('BLOCK'), cached: true },
-      { type: 'order', storeId: 'a', paymentId: 'pay-1', orderId: 'ORDER1' },
+      { type: 'order', storeId: 'a', paymentId: 'pay-1', orderId: 'ORDER1', ref: 'VC-7K2F' },
       { type: 'refused', storeId: 'b', reason: 'block' },
       { type: 'payment', paymentId: 'pay-1', status: 'captured' },
       { type: 'scan_signal', storeId: 'nope', id: 'price', status: 'fail' }, // unknown store: ignored
     ];
     const s = events.reduce(applyAgentEvent, { items: [], stores: {}, payments: {} });
     expect(s.items.map((i) => i.kind)).toEqual(['agent', 'stores']);
-    expect(s.stores.a).toMatchObject({ phase: 'done', signals: { domain_age: 'pass' }, order: { paymentId: 'pay-1', orderId: 'ORDER1' } });
+    expect(s.stores.a).toMatchObject({ phase: 'done', signals: { domain_age: 'pass' }, order: { paymentId: 'pay-1', orderId: 'ORDER1', ref: 'VC-7K2F' } });
     expect(s.stores.b).toMatchObject({ phase: 'done', cached: true, refused: 'block' });
     expect(s.stores.nope).toBeUndefined();
     expect(s.payments).toEqual({ 'pay-1': 'captured' });

@@ -3,7 +3,7 @@
  * PayPal sandbox (no network), the real demo catalog, and fixed scan results that match what KERNEL found live on
  * Oct 31 (Velbrook Supply SAFE 0; Velbrook-Outlet Deals BLOCK 70 with the planted hidden instruction).
  */
-import { agentOrderStatus, demoItemFor, demoResults, type AgentDeps, type SearchResult } from '@voircheck/agent';
+import { agentOrderStatus, demoItemFor, demoResults, parsePaymentRef, type AgentDeps, type SearchResult } from '@voircheck/agent';
 import { MemoryGateStore, MoneyGate, PayPalClient } from '@voircheck/paypal';
 import { score, type SignalOutcome, type SignalResult } from '@voircheck/scanner';
 
@@ -100,7 +100,7 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
     },
     async createOrder(storeId) {
       const r = await gate.agentStartPurchase({ userId: DEMO_USER, candidateId: storeId, scanId: scanIds.get(storeId) ?? null, idempotencyKey: `demo-${storeId}`, returnUrl: 'https://voircheck.test/app', cancelUrl: 'https://voircheck.test/app' });
-      if (r.ok) return { storeId, status: 'awaiting_buyer_approval', paymentId: r.payment.id };
+      if (r.ok) return { storeId, status: 'awaiting_buyer_approval', paymentId: r.payment.id, ref: r.payment.ref };
       const reason = r.reason === 'block' || r.reason === 'unverified' || r.reason === 'no_price' || r.reason === 'not_found' ? r.reason : 'other';
       return { storeId, status: 'refused', reason };
     },
@@ -110,13 +110,25 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
       if (!st) return { paymentId, status: 'not_found' };
       return { paymentId, status: st === 'created' ? 'waiting_for_buyer' : st === 'authorized' || st === 'captured' || st === 'voided' || st === 'failed' ? st : 'failed' };
     },
-    async getOrder(paymentId) {
+    async getOrder(order) {
       // Offline stand-in for the Agent Toolkit's get_order: the same reduced view, built from our own row.
+      const ref = parsePaymentRef(order);
+      const byRef = ref ? [...store.payments.values()].find((p) => p.ref === ref && p.userId === DEMO_USER) : undefined;
+      const paymentId = byRef?.id ?? order;
       const row = await store.getPaymentForUser(paymentId, DEMO_USER);
-      if (!row) return { paymentId, status: 'not_found' };
+      if (!row) return { status: 'not_found' };
       const orderStatus = row.status === 'created' ? (approved() ? 'APPROVED' : 'PAYER_ACTION_REQUIRED') : 'COMPLETED';
       const auth = row.status === 'authorized' ? 'CREATED' : row.status === 'captured' ? 'CAPTURED' : row.status === 'voided' ? 'VOIDED' : null;
-      return agentOrderStatus(paymentId, { orderId: row.paypalOrderId, status: orderStatus, intent: 'AUTHORIZE', amount: { value: row.amount, currency: row.currency }, authorizationStatus: auth, captureStatus: row.status === 'captured' ? 'COMPLETED' : null });
+      return agentOrderStatus(paymentId, { orderId: row.paypalOrderId, status: orderStatus, intent: 'AUTHORIZE', amount: { value: row.amount, currency: row.currency }, authorizationStatus: auth, captureStatus: row.status === 'captured' ? 'COMPLETED' : null }, row.ref);
+    },
+    async listRecentOrders() {
+      const rows = [...store.payments.values()].filter((p) => p.userId === DEMO_USER).reverse().slice(0, 10);
+      return {
+        orders: rows.map((p) => {
+          const c = store.candidates.get(p.candidateId);
+          return { ref: p.ref, store: c?.storeName ?? p.storeSlug, item: c?.productTitle ?? '', amount: p.amount, currency: p.currency, status: p.status === 'created' ? 'waiting_for_buyer' : p.status, date: p.createdAt.toISOString().slice(0, 10) };
+        }),
+      };
     },
   };
   return { deps, gate, store, paypal, scanStoreCalls };

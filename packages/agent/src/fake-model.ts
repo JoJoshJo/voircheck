@@ -171,7 +171,7 @@ export class FakeModel implements ModelClient {
       const text = last.text;
       if (STATUS_RE.test(text)) {
         const order = latestOrder();
-        return order?.paymentId ? { text: '', toolCalls: [call('get_order', { paymentId: order.paymentId })] } : say(t.noOrder);
+        return order?.paymentId ? { text: '', toolCalls: [call('get_order', { order: order.paymentId })] } : say(t.noOrder);
       }
       if (APPROVED_RE.test(text)) {
         const order = latestOrder();

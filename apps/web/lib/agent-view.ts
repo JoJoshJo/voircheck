@@ -16,8 +16,13 @@ export type AgentEvent =
   | { type: 'scan_signal'; storeId: string; id: ScanView['signals'][number]['id']; status: ScanView['signals'][number]['status'] }
   | { type: 'scan_done'; storeId: string; scan: ScanView; cached: boolean }
   | { type: 'scan_failed'; storeId: string; reason: 'rate_limited' | 'failed' | 'unknown_store' }
-  | { type: 'order'; storeId: string; paymentId: string; orderId: string }
+  | { type: 'order'; storeId: string; paymentId: string; orderId: string; ref: string }
   | { type: 'refused'; storeId: string; reason: z.infer<typeof RefusalReason> }
   | { type: 'payment'; paymentId: string; status: string }
   | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'busy' | 'bad_request' | 'model' | 'failed' }
   | { type: 'done' };
+
+/** A person can't fake the server's "[VoirCheck update: …]" line: a typed one loses its opening bracket. */
+export function neutralizeFakeNote(text: string): string {
+  return text.replace(/^(\s*)\[(?=\s*voircheck update)/i, '$1(');
+}

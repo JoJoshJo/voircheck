@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Mascot, type MascotMood } from '../../../../components/Mascot';
 import { AwaitApproval, HoldActions, PayAnyway, ShareLink } from '../../../../components/PaymentActions';
-import { btnPrimary, card } from '../../../../components/ui';
+import { btnPrimary, btnSecondary, card } from '../../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
 import { DICTS } from '../../../../lib/i18n';
 import { getPaymentView } from '../../../../lib/payment-view';
@@ -13,10 +13,12 @@ export const dynamic = 'force-dynamic';
 const TITLE = { captured: 'captured', authorized: 'held', voided: 'voided', cancelled: 'cancelled', capture_pending: 'pending', capture_denied: 'denied', failed: 'denied', created: 'pending', approved: 'pending' } as const;
 
 /** Payment step result (spec 5.11 #5): paid, HOLD (held, decide), BLOCK (voided, "Pay anyway"), cancelled. */
-export default async function PaymentPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PaymentPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ from?: string | string[] }> }) {
   const { user, lang } = await requireOnboardedUser();
   const t = DICTS[lang];
   const { id } = await params;
+  // Paid from the agent chat: offer the way back to it (the chat restores itself from this browser tab's storage).
+  const fromChat = (await searchParams).from === 'chat';
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const p = await getPaymentView(id, user.id);
   if (!p) notFound();
@@ -29,13 +31,17 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
   return (
     <main className="mx-auto max-w-2xl px-4 pb-20 sm:px-6">
       <Link href="/app" className="text-[14px] text-muted hover:text-ink">
-        ← {t.pay.backToResults}
+        ← {fromChat ? t.pay.backToChat : t.pay.backToResults}
       </Link>
       <div className={`mt-5 flex items-center justify-between gap-6 rounded-card px-6 py-6 ${band}`}>
         <div className="min-w-0">
           {p.verdict && <VerdictLabel verdict={p.verdict} t={t} />}
           <h1 className="mt-1 text-[24px] font-medium tracking-tight">{t.pay[`title_${key}`]}</h1>
           <p className="mt-2 text-[15px] leading-relaxed opacity-90">{t.pay[`body_${key}`]}</p>
+          <p className="mt-2 text-[13px] opacity-80">
+            {t.pay.ref}
+            {t.colon} <span className="font-medium tracking-wide">{p.ref}</span>
+          </p>
           {p.overrideUsed && p.status === 'captured' && <p className="mt-2 text-[13px] opacity-80">{t.pay.override_note}</p>}
         </div>
         <Mascot mood={mood} size={84} title={p.verdict ? t.verdict[p.verdict] : ''} />
@@ -60,6 +66,11 @@ export default async function PaymentPage({ params }: { params: Promise<{ id: st
         {p.status === 'authorized' && <HoldActions t={t} payment={p} />}
         {(p.status === 'created' || p.status === 'approved') && <AwaitApproval t={t} paymentId={p.id} />}
         <div className="flex flex-wrap items-center gap-2">
+          {fromChat && (
+            <Link href="/app" className={btnSecondary}>
+              {t.pay.backToChat}
+            </Link>
+          )}
           {p.receiptSlug && (
             <>
               <Link href={`/r/${p.receiptSlug}`} className={btnPrimary}>

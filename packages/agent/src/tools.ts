@@ -1,9 +1,10 @@
 import { HARD_RULES, SIGNAL_IDS, type SignalResult } from '@voircheck/scanner';
+import { PAYMENT_REF_RE } from '@voircheck/shared';
 import { z } from 'zod';
 import type { AgentTool, AnyAgentTool } from './loop';
 
 /**
- * The shopping agent's four tools (spec 5.3 / 5.7 / 5.13). The model only names things by our IDs:
+ * The shopping agent's six tools (spec 5.3 / 5.7 / 5.13). The model only names things by our IDs:
  * - Prices, store URLs and amounts come from our own rows (Channel3 / demo config), never from the model; any extra
  *   field the model sends (price, amount, override) is stripped by the input schemas.
  * - Scan results reach the model as a structured summary in OUR words (verdict, score, signal statuses, hard rules,
@@ -12,9 +13,12 @@ import type { AgentTool, AnyAgentTool } from './loop';
  *   request_payment asks MoneyGate to settle an approved order. There is no capture, void or override tool.
  * - get_order reads an order's status through the PayPal Agent Toolkit's read-only get_order (spec 5.7). Read only:
  *   the agent names one of its own payments, never a PayPal order ID, and gets status fields back, never payer data.
+ * - Every order has VoirCheck's own short reference (VC-7K2F): the agent quotes it, get_order accepts it, and
+ *   list_my_recent_orders lists the signed-in person's own recent orders by it (summaries from our rows only).
  */
 
 const Id = z.string().min(1).max(100);
+const Ref = z.string().regex(PAYMENT_REF_RE);
 const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
 
 // ---------- search ----------
@@ -88,7 +92,7 @@ export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<ty
 
 export const RefusalReason = z.enum(['block', 'unverified', 'no_price', 'not_found', 'other']);
 export const CreateOrderOutput = z.discriminatedUnion('status', [
-  z.object({ storeId: Id, status: z.literal('awaiting_buyer_approval'), paymentId: Id }),
+  z.object({ storeId: Id, status: z.literal('awaiting_buyer_approval'), paymentId: Id, ref: Ref }),
   z.object({ storeId: Id, status: z.literal('refused'), reason: RefusalReason }),
 ]);
 export type CreateOrderOutput = z.infer<typeof CreateOrderOutput>;
@@ -99,6 +103,7 @@ const PayPalStatus = z.string().regex(/^[A-Z_]{2,40}$/);
 export const GetOrderOutput = z.discriminatedUnion('status', [
   z.object({
     paymentId: Id,
+    ref: Ref.optional(),
     status: z.literal('ok'),
     orderStatus: PayPalStatus,
     intent: PayPalStatus.nullable(),
@@ -106,9 +111,22 @@ export const GetOrderOutput = z.discriminatedUnion('status', [
     authorizationStatus: PayPalStatus.nullable(),
     captureStatus: PayPalStatus.nullable(),
   }),
-  z.object({ paymentId: Id, status: z.enum(['not_found', 'unavailable']) }),
+  z.object({ paymentId: Id.optional(), status: z.enum(['not_found', 'unavailable']) }),
 ]);
 export type GetOrderOutput = z.infer<typeof GetOrderOutput>;
+
+/** One of the person's own recent orders, from our rows only (store and item names as shown in our search). */
+export const OrderSummary = z.object({
+  ref: Ref,
+  store: z.string().max(80),
+  item: z.string().max(120),
+  amount: z.string().regex(/^\d+\.\d{2}$/),
+  currency: z.string().length(3),
+  status: z.enum(['waiting_for_buyer', 'approved', 'authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+});
+export const RecentOrdersOutput = z.object({ orders: z.array(OrderSummary).max(10) });
+export type RecentOrdersOutput = z.infer<typeof RecentOrdersOutput>;
 
 /** What the server provides. Each call is already scoped to the signed-in user and this conversation. */
 export interface AgentDeps {
@@ -119,8 +137,10 @@ export interface AgentDeps {
   createOrder(storeId: string): Promise<CreateOrderOutput>;
   /** MoneyGate.completeApproval: settles an approved order by verdict. */
   requestPayment(paymentId: string): Promise<RequestPaymentOutput>;
-  /** Agent Toolkit get_order (read only) on one of this conversation's payments. */
-  getOrder(paymentId: string): Promise<GetOrderOutput>;
+  /** Agent Toolkit get_order (read only): one of this conversation's payment IDs, or a VC reference of the person's own order. */
+  getOrder(order: string): Promise<GetOrderOutput>;
+  /** The signed-in person's own most recent orders (newest first). */
+  listRecentOrders(): Promise<RecentOrdersOutput>;
 }
 
 export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
@@ -155,14 +175,23 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     output: RequestPaymentOutput,
     run: ({ paymentId }) => deps.requestPayment(paymentId),
   };
-  const status: AgentTool<{ paymentId: string }, GetOrderOutput> = {
+  const status: AgentTool<{ order: string }, GetOrderOutput> = {
     name: 'get_order',
-    description: "Look up an order's current status in PayPal (read only; it changes nothing). Pass the paymentId from create_order. Returns PayPal's order status, the amount and the authorization / capture status.",
-    input: z.object({ paymentId: Id }),
+    description:
+      "Look up an order's current status in PayPal (read only; it changes nothing). Pass the paymentId from create_order, or the order's VoirCheck reference (like VC-7K2F) from this chat or from list_my_recent_orders. Returns PayPal's order status, the amount and the authorization / capture status.",
+    input: z.object({ order: z.string().trim().min(1).max(100) }),
     output: GetOrderOutput,
-    run: ({ paymentId }) => deps.getOrder(paymentId),
+    run: ({ order }) => deps.getOrder(order),
   };
-  return [search, verdict, order, pay, status];
+  const recent: AgentTool<Record<string, never>, RecentOrdersOutput> = {
+    name: 'list_my_recent_orders',
+    description:
+      "List the signed-in person's own most recent orders (up to 10, newest first): VoirCheck reference, store, item, amount, VoirCheck's payment status and date. Use it when they ask about an order that isn't in this chat. Read only.",
+    input: z.object({}),
+    output: RecentOrdersOutput,
+    run: () => deps.listRecentOrders(),
+  };
+  return [search, verdict, order, pay, status, recent];
 }
 
-export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order'] as const;
+export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order', 'list_my_recent_orders'] as const;

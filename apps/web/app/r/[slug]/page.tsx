@@ -65,7 +65,10 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
           </div>
         )}
       </dl>
-      <p className="mt-3 text-[13px] text-faint">{fmt(t.receipt.when, { when })}</p>
+      <p className="mt-3 text-[13px] text-faint">
+        {fmt(t.receipt.when, { when })}
+        {s.ref ? ` · ${t.pay.ref}${t.colon} ${s.ref}` : ''}
+      </p>
 
       <section className={`${card} mt-6 p-6`}>
         <h2 className="text-[15px] font-medium">{t.evidence.hardRules}</h2>

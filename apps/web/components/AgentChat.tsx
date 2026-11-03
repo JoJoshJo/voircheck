@@ -21,7 +21,7 @@ interface StoreState {
   scan?: ScanView;
   cached?: boolean;
   failure?: 'rate_limited' | 'failed' | 'unknown_store';
-  order?: { paymentId: string; orderId: string };
+  order?: { paymentId: string; orderId: string; ref?: string };
   refused?: string;
 }
 
@@ -50,7 +50,7 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
       patch(e.storeId, { phase: 'failed', failure: e.reason });
       return { ...state, stores };
     case 'order':
-      patch(e.storeId, { order: { paymentId: e.paymentId, orderId: e.orderId } });
+      patch(e.storeId, { order: { paymentId: e.paymentId, orderId: e.orderId, ref: e.ref } });
       return { ...state, stores };
     case 'refused':
       patch(e.storeId, { refused: e.reason });
@@ -63,6 +63,36 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
 }
 
 const EMPTY = { items: [] as Item[], stores: {} as Record<string, StoreState>, payments: {} as Record<string, string> };
+type ChatState = typeof EMPTY;
+
+/** Payment states after which the chat shows the outcome instead of the PayPal button. */
+const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
+
+/**
+ * The chat survives a trip to the payment page and back (same browser tab): what's on screen plus the conversation ID,
+ * whose history the server keeps for 2 hours. A convenience only: storage can be missing or blocked, then the chat
+ * just starts empty.
+ */
+const STORAGE_KEY = 'voircheck.agentChat.v1';
+function loadSaved(): { conversationId: string | null; chat: ChatState; fake: boolean } | null {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw) as { conversationId?: unknown; chat?: ChatState; fake?: unknown };
+    if (!s.chat || !Array.isArray(s.chat.items) || typeof s.chat.stores !== 'object') return null;
+    return { conversationId: typeof s.conversationId === 'string' ? s.conversationId : null, chat: { ...EMPTY, ...s.chat }, fake: s.fake === true };
+  } catch {
+    return null;
+  }
+}
+function save(v: { conversationId: string | null; chat: ChatState; fake: boolean }) {
+  try {
+    if (!v.chat.items.length) sessionStorage.removeItem(STORAGE_KEY);
+    else sessionStorage.setItem(STORAGE_KEY, JSON.stringify(v));
+  } catch {
+    // Storage blocked or full: the chat still works, it just won't come back after leaving the page.
+  }
+}
 
 export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; clientId: string }) {
   const [chat, setChat] = useState(EMPTY);
@@ -72,6 +102,33 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
   const [fake, setFake] = useState(false);
   const conversationId = useRef<string | null>(null);
   const list = useRef<HTMLDivElement>(null);
+  const restored = useRef(false);
+
+  // Back from the payment page: restore the chat, then ask our server where each of its orders stands.
+  useEffect(() => {
+    const saved = loadSaved();
+    restored.current = true;
+    if (!saved) return;
+    conversationId.current = saved.conversationId;
+    setFake(saved.fake);
+    setChat(saved.chat);
+    const open = Object.values(saved.chat.stores)
+      .map((s) => s.order?.paymentId)
+      .filter((id): id is string => !!id && !SETTLED.has(saved.chat.payments[id] ?? ''));
+    for (const paymentId of open) {
+      void fetch('/api/pay/status', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ paymentId }) })
+        .then((r) => (r.ok ? (r.json() as Promise<{ payment?: { status?: string } }>) : null))
+        .then((b) => {
+          const status = b?.payment?.status;
+          if (status) setChat((c) => ({ ...c, payments: { ...c.payments, [paymentId]: status } }));
+        })
+        .catch(() => {});
+    }
+  }, []);
+
+  useEffect(() => {
+    if (restored.current && !busy) save({ conversationId: conversationId.current, chat, fake });
+  }, [chat, busy, fake]);
 
   // Keep the newest message in view by scrolling the chat list only, never the page.
   useEffect(() => {
@@ -120,6 +177,7 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
     conversationId.current = null;
     setChat(EMPTY);
     setError(null);
+    save({ conversationId: null, chat: EMPTY, fake });
   }
 
   return (
@@ -234,8 +292,15 @@ function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; 
           <div className="space-y-3 border-t border-line pt-3">
             <p className="text-[14px] font-medium">{t.agent.payTitle}</p>
             <p className="text-[13px] leading-relaxed text-muted">{t.agent.payBody}</p>
-            {paid && <p className="text-[13px] text-muted">{fmt(t.agent.paymentStatus, { status: paid })}</p>}
-            <Checkout key={s.order.paymentId} t={t} lang={lang} clientId={clientId} candidateId={s.store.storeId} scanId={s.scan.id} autopay={false} existingOrder={s.order} />
+            {s.order.ref && <p className="text-[13px] text-muted">{fmt(t.agent.orderRef, { ref: s.order.ref })}</p>}
+            {paid && <p className="text-[13px] text-muted">{fmt(t.agent.paymentStatus, { status: t.agent[`st_${paid}` as 'st_failed'] ?? paid })}</p>}
+            {paid && SETTLED.has(paid) ? (
+              <Link href={`/app/pay/${s.order.paymentId}?from=chat`} className="text-[13px] text-ink underline underline-offset-4">
+                {t.agent.seePayment}
+              </Link>
+            ) : (
+              <Checkout key={s.order.paymentId} t={t} lang={lang} clientId={clientId} candidateId={s.store.storeId} scanId={s.scan.id} autopay={false} existingOrder={s.order} from="chat" />
+            )}
           </div>
         )}
       </div>

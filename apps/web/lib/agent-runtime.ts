@@ -1,7 +1,9 @@
 import 'server-only';
 import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
 import { assertSafeUrlShape } from '@voircheck/scanner';
-import type { AgentEvent } from './agent-view';
+import { parsePaymentRef } from '@voircheck/shared';
+import { neutralizeFakeNote, type AgentEvent } from './agent-view';
+import { paymentIdForRef, recentOrdersForUser } from './orders';
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
 import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend';
@@ -23,6 +25,8 @@ interface Conversation {
   scans: Map<string, string>;
   orders: Map<string, string>;
   payments: Set<string>;
+  /** paymentId → the payment status the agent last heard about (so the next turn can tell it what changed). */
+  lastStatus: Map<string, string>;
   busy: boolean;
   touchedAt: number;
   /** Model spend so far (logged per turn; the conversation stops at MAX_CONVERSATION_USD). */
@@ -52,7 +56,7 @@ export function openConversation(userId: string, id: string | null): { id: strin
     found.touchedAt = now;
     return { id: id!, conv: found };
   }
-  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), busy: false, touchedAt: now, costUsd: 0 };
+  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), lastStatus: new Map(), busy: false, touchedAt: now, costUsd: 0 };
   const newId = crypto.randomUUID();
   conversations.set(newId, conv);
   return { id: newId, conv };
@@ -145,7 +149,10 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
     async createOrder(storeId) {
       if (!conv.stores.has(storeId)) return { storeId, status: 'refused', reason: 'not_found' };
       const existing = conv.orders.get(storeId);
-      if (existing) return { storeId, status: 'awaiting_buyer_approval', paymentId: existing };
+      if (existing) {
+        const row = await store.getPaymentForUser(existing, userId);
+        if (row) return { storeId, status: 'awaiting_buyer_approval', paymentId: existing, ref: row.ref };
+      }
       const r = await gate.agentStartPurchase({
         userId,
         candidateId: storeId,
@@ -161,8 +168,9 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
       }
       conv.orders.set(storeId, r.payment.id);
       conv.payments.add(r.payment.id);
-      send({ type: 'order', storeId, paymentId: r.payment.id, orderId: r.payment.paypalOrderId });
-      return { storeId, status: 'awaiting_buyer_approval', paymentId: r.payment.id };
+      conv.lastStatus.set(r.payment.id, r.payment.status);
+      send({ type: 'order', storeId, paymentId: r.payment.id, orderId: r.payment.paypalOrderId, ref: r.payment.ref });
+      return { storeId, status: 'awaiting_buyer_approval', paymentId: r.payment.id, ref: r.payment.ref };
     },
 
     async requestPayment(paymentId) {
@@ -170,36 +178,76 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
       const r = await gate.completeApproval(paymentId, userId, 'agent');
       const st = r.payment?.status;
       const status = !r.ok || st === 'created' || !st ? 'waiting_for_buyer' : PAYMENT_STATUSES.has(st) ? (st as 'captured') : 'failed';
+      if (st) conv.lastStatus.set(paymentId, st);
       send({ type: 'payment', paymentId, status });
       return { paymentId, status };
     },
 
-    async getOrder(paymentId) {
-      // Only this conversation's payments, and the row must be the signed-in user's: the order ID comes from it.
-      if (!conv.payments.has(paymentId)) return { paymentId, status: 'not_found' };
+    async getOrder(order) {
+      // A VC reference must be one of the signed-in user's own orders; a payment ID must be from this conversation.
+      // Either way the row must be the user's: the PayPal order ID comes from it, never from the model.
+      const ref = parsePaymentRef(order);
+      const paymentId = ref ? await paymentIdForRef(ref, userId) : conv.payments.has(order) ? order : null;
+      if (!paymentId) return { status: 'not_found' };
       const row = await store.getPaymentForUser(paymentId, userId);
-      if (!row) return { paymentId, status: 'not_found' };
+      if (!row) return { status: 'not_found' };
       try {
-        return agentOrderStatus(paymentId, await orderReader()(row.paypalOrderId));
+        return agentOrderStatus(paymentId, await orderReader()(row.paypalOrderId), row.ref);
       } catch (err) {
         console.error('agent get_order failed:', err instanceof Error ? err.message : 'unknown error');
         return { paymentId, status: 'unavailable' };
       }
     },
+
+    listRecentOrders: () => recentOrdersForUser(userId),
   };
 }
+
+const NOTE_STATUS: Record<string, string> = {
+  approved: 'approved in PayPal (VoirCheck is settling it)',
+  authorized: 'approved and on hold: PayPal holds the money until the person decides',
+  captured: 'paid',
+  capture_pending: 'paid, with PayPal still confirming',
+  capture_denied: 'refused by PayPal',
+  voided: 'cancelled and released',
+  cancelled: 'cancelled',
+  failed: 'failed',
+};
+
+/**
+ * What changed on this conversation's orders since the agent last heard (the person approved in PayPal on the pay
+ * page, say), as one server line the prompt tells the model to trust. Our own rows and wording only.
+ */
+async function statusNote(o: { conv: Conversation; userId: string; send: (e: AgentEvent) => void }): Promise<string | null> {
+  const { store } = getPayPal();
+  const lines: string[] = [];
+  for (const paymentId of o.conv.payments) {
+    const row = await store.getPaymentForUser(paymentId, o.userId);
+    if (!row || row.status === o.conv.lastStatus.get(paymentId)) continue;
+    o.conv.lastStatus.set(paymentId, row.status);
+    const said = NOTE_STATUS[row.status];
+    if (!said) continue;
+    const storeName = o.conv.stores.get(row.candidateId)?.storeName ?? 'the store';
+    lines.push(`order ${row.ref} at ${storeName} is now ${said}`);
+    o.send({ type: 'payment', paymentId, status: row.status });
+  }
+  return lines.length ? `[VoirCheck update: ${lines.join('; ')}.]` : null;
+}
+
 
 /** One chat turn for this user. Streams events through `send`; returns when the agent has answered. */
 export async function runChatTurn(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; lang: 'en' | 'fr'; text: string; send: (e: AgentEvent) => void }) {
   const { model, kind } = agentModel();
   if (o.conv.costUsd >= MAX_CONVERSATION_USD) throw new ConversationBudgetError();
   if (kind === 'claude' && (await anthropicCapReached())) throw new DailyCapError();
+  const note = await statusNote(o).catch(() => null);
+  const userText = [note, neutralizeFakeNote(o.text)].filter(Boolean).join('\n');
   const { messages, stopped, usage, modelCalls } = await runAgentTurn({
     model,
     tools: shoppingTools(webDeps(o)),
     system: AGENT_SYSTEM_PROMPT,
     history: o.conv.messages,
-    userText: o.text,
+    userText,
     lang: o.lang,
     onEvent: (e) => e.type === 'assistant_text' && o.send({ type: 'text', text: e.text }),
   });
