@@ -129,6 +129,17 @@ export const OrderSummary = z.object({
 export const RecentOrdersOutput = z.object({ orders: z.array(OrderSummary).max(10) });
 export type RecentOrdersOutput = z.infer<typeof RecentOrdersOutput>;
 
+/**
+ * request_refund only PROPOSES: the person gets a "Request refund" button, and only their click (MoneyGate.userRefund)
+ * asks PayPal. Our own fields only.
+ */
+export const RefundRefusalReason = z.enum(['not_found', 'not_captured', 'already_refunded', 'refund_pending', 'too_old']);
+export const RequestRefundOutput = z.discriminatedUnion('status', [
+  z.object({ status: z.literal('awaiting_person_confirmation'), ref: Ref, store: z.string().max(80), amount: z.string().regex(/^\d+\.\d{2}$/), currency: z.string().length(3) }),
+  z.object({ status: z.literal('not_refundable'), ref: Ref.optional(), reason: RefundRefusalReason }),
+]);
+export type RequestRefundOutput = z.infer<typeof RequestRefundOutput>;
+
 /** What the server provides. Each call is already scoped to the signed-in user and this conversation. */
 export interface AgentDeps {
   searchStores(query: string, maxPrice: number | null): Promise<SearchOutput>;
@@ -142,6 +153,8 @@ export interface AgentDeps {
   getOrder(order: string): Promise<GetOrderOutput>;
   /** The signed-in person's own most recent orders (newest first). */
   listRecentOrders(): Promise<RecentOrdersOutput>;
+  /** MoneyGate.agentProposeRefund + a "Request refund" button in the chat. Never refunds by itself. */
+  requestRefund(ref: string): Promise<RequestRefundOutput>;
 }
 
 export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
@@ -192,7 +205,15 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     output: RecentOrdersOutput,
     run: () => deps.listRecentOrders(),
   };
-  return [search, verdict, order, pay, status, recent];
+  const refund: AgentTool<{ ref: string }, RequestRefundOutput> = {
+    name: 'request_refund',
+    description:
+      "Offer the person a full refund of one of their own paid orders, by its VoirCheck reference (like VC-7K2F). This does NOT refund anything: it shows them a \"Request refund\" button, and only their click asks PayPal. Returns awaiting_person_confirmation with the amount, or not_refundable with the reason (not paid yet, already refunded, refund in progress, too old for PayPal, not found).",
+    input: z.object({ ref: z.string().trim().min(1).max(20) }),
+    output: RequestRefundOutput,
+    run: ({ ref }) => deps.requestRefund(ref),
+  };
+  return [search, verdict, order, pay, status, recent, refund];
 }
 
-export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order', 'list_my_recent_orders'] as const;
+export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order', 'list_my_recent_orders', 'request_refund'] as const;

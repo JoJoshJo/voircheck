@@ -28,6 +28,7 @@ const bodies = {
   void: z.object({ paymentId: Id }),
   reauthorize: z.object({ paymentId: Id }),
   cancel: z.object({ paymentId: Id }),
+  refund: z.object({ paymentId: Id }),
   autopay: z.object({ candidateId: Id, scanId: Id, idempotencyKey: Key }),
 } as const;
 type Action = keyof typeof bodies;
@@ -107,6 +108,13 @@ export async function POST(req: Request, ctx: { params: Promise<{ action: string
           const done = await gate.completeApproval(paymentId, userId, 'user');
           return json({ payment: await view(paymentId, done.ok), approvedAfterAll: true });
         }
+        if (!r.ok) return json({ error: 'refused', reason: r.reason }, 409);
+        return json({ payment: await view(paymentId) });
+      }
+      case 'refund': {
+        // The person's own button (chat card or History). The agent can only propose; this is the only refund path.
+        const paymentId = (b as { paymentId: string }).paymentId;
+        const r = await gate.userRefund({ userId, paymentId });
         if (!r.ok) return json({ error: 'refused', reason: r.reason }, 409);
         return json({ payment: await view(paymentId) });
       }

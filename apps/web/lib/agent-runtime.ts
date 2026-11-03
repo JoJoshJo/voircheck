@@ -200,6 +200,21 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
     },
 
     listRecentOrders: () => recentOrdersForUser(userId),
+
+    async requestRefund(order) {
+      // Proposal only: MoneyGate checks the person's own captured payment, and the chat shows a button. The refund
+      // itself happens only when the person presses it (the pay route; refund-paths.test.ts keeps it that way).
+      const ref = parsePaymentRef(order);
+      const paymentId = ref ? await paymentIdForRef(ref, userId) : null;
+      if (!ref || !paymentId) return { status: 'not_refundable', reason: 'not_found' };
+      const r = await gate.agentProposeRefund({ userId, paymentId });
+      if (!r.ok) return { status: 'not_refundable', ref, reason: r.reason };
+      const storeName = (await store.getCandidateForUser(r.payment.candidateId, userId))?.storeName.slice(0, 80) ?? r.payment.storeSlug;
+      conv.payments.add(paymentId);
+      conv.lastStatus.set(paymentId, r.payment.status);
+      send({ type: 'refund_offer', paymentId, ref, store: storeName, amount: r.payment.amount, currency: r.payment.currency });
+      return { status: 'awaiting_person_confirmation', ref, store: storeName, amount: r.payment.amount, currency: r.payment.currency };
+    },
   };
 }
 
@@ -212,6 +227,8 @@ const NOTE_STATUS: Record<string, string> = {
   voided: 'cancelled and released',
   cancelled: 'cancelled',
   failed: 'failed',
+  refund_pending: 'being refunded: the person asked, PayPal is still processing it',
+  refunded: 'refunded in full to the person’s PayPal',
 };
 
 /**

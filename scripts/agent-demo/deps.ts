@@ -130,6 +130,15 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
         }),
       };
     },
+    async requestRefund(order) {
+      // Proposal only, like the app: MoneyGate checks; the refund itself needs the person's button.
+      const ref = parsePaymentRef(order);
+      const row = ref ? [...store.payments.values()].find((p) => p.ref === ref && p.userId === DEMO_USER) : undefined;
+      if (!row || !ref) return { status: 'not_refundable', reason: 'not_found' };
+      const r = await gate.agentProposeRefund({ userId: DEMO_USER, paymentId: row.id });
+      if (!r.ok) return { status: 'not_refundable', ref, reason: r.reason };
+      return { status: 'awaiting_person_confirmation', ref, store: store.candidates.get(row.candidateId)?.storeName ?? row.storeSlug, amount: row.amount, currency: row.currency };
+    },
   };
   return { deps, gate, store, paypal, scanStoreCalls };
 }

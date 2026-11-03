@@ -8,11 +8,16 @@ import { scoreLine } from '../lib/score-line';
 import type { ScanView } from '../lib/scan-view';
 import { Checkout } from './Checkout';
 import { Mascot } from './Mascot';
+import { RefundButton } from './RefundButton';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, input } from './ui';
 import { VERDICT_CLASSES, VerdictLabel } from './Verdict';
 
-type Item = { kind: 'user'; text: string } | { kind: 'agent'; text: string } | { kind: 'stores'; ids: string[] };
+type Item =
+  | { kind: 'user'; text: string }
+  | { kind: 'agent'; text: string }
+  | { kind: 'stores'; ids: string[] }
+  | { kind: 'refund'; paymentId: string; ref: string; store: string; amount: string; currency: string };
 
 interface StoreState {
   store: AgentStore;
@@ -57,6 +62,12 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
       return { ...state, stores };
     case 'payment':
       return { ...state, payments: { ...state.payments, [e.paymentId]: e.status } };
+    case 'refund_offer': {
+      // One card per order; the agent offering again just keeps the existing one.
+      if (state.items.some((i) => i.kind === 'refund' && i.paymentId === e.paymentId)) return state;
+      const item = { kind: 'refund' as const, paymentId: e.paymentId, ref: e.ref, store: e.store, amount: e.amount, currency: e.currency };
+      return { ...state, items: [...state.items, item], payments: { ...state.payments, [e.paymentId]: state.payments[e.paymentId] ?? 'captured' } };
+    }
     default:
       return state;
   }
@@ -66,7 +77,7 @@ const EMPTY = { items: [] as Item[], stores: {} as Record<string, StoreState>, p
 type ChatState = typeof EMPTY;
 
 /** Payment states after which the chat shows the outcome instead of the PayPal button. */
-const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'expired']);
+const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'expired', 'refund_pending', 'refunded']);
 
 /**
  * The chat survives a trip to the payment page and back (same browser tab): what's on screen plus the conversation ID,
@@ -203,6 +214,8 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
                 <span className="sr-only">{t.agent.agent}{t.colon} </span>
                 {item.text}
               </p>
+            ) : item.kind === 'refund' ? (
+              <RefundCard key={i} t={t} lang={lang} item={item} status={chat.payments[item.paymentId] ?? 'captured'} onStatus={(status) => setChat((c) => ({ ...c, payments: { ...c.payments, [item.paymentId]: status } }))} />
             ) : (
               <div key={i} className="space-y-3">
                 {item.ids.map((id) => chat.stores[id] && <StoreCard key={id} t={t} lang={lang} clientId={clientId} s={chat.stores[id]!} payments={chat.payments} />)}
@@ -304,6 +317,24 @@ function StoreCard({ t, lang, clientId, s, payments }: { t: Dict; lang: string; 
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+function RefundCard({ t, lang, item, status, onStatus }: { t: Dict; lang: string; item: Extract<Item, { kind: 'refund' }>; status: string; onStatus: (status: string) => void }) {
+  const amount = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: item.currency }).format(Number(item.amount));
+  return (
+    <div className="space-y-2 rounded-control border border-line bg-white px-4 py-3">
+      <p className="text-[15px] font-medium">{fmt(t.refund.title, { ref: item.ref })}</p>
+      <p className="text-[13px] text-muted">
+        {item.store} · {amount}
+      </p>
+      {status === 'captured' && <p className="text-[13px] leading-relaxed text-muted">{t.refund.body}</p>}
+      {status === 'captured' || status === 'refunded' || status === 'refund_pending' ? (
+        <RefundButton t={t} paymentId={item.paymentId} refLabel={item.ref} amount={amount} status={status} onStatus={onStatus} />
+      ) : (
+        <p className="text-[13px] text-muted">{t.refund.notRefundable}</p>
+      )}
     </div>
   );
 }

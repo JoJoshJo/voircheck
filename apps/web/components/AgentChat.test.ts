@@ -29,6 +29,23 @@ describe('chat state', () => {
     expect(s.stores.nope).toBeUndefined();
     expect(s.payments).toEqual({ 'pay-1': 'captured' });
   });
+
+  it('a refund offer adds one card (offered twice → still one) and keeps the payment’s known status', () => {
+    const offer: AgentEvent = { type: 'refund_offer', paymentId: 'pay-1', ref: 'VC-7K2F', store: 'Velbrook Supply', amount: '59.00', currency: 'USD' };
+    const s = [offer, offer].reduce(applyAgentEvent, { items: [], stores: {}, payments: {} });
+    expect(s.items).toEqual([{ kind: 'refund', paymentId: 'pay-1', ref: 'VC-7K2F', store: 'Velbrook Supply', amount: '59.00', currency: 'USD' }]);
+    expect(s.payments).toEqual({ 'pay-1': 'captured' });
+    const later = applyAgentEvent({ ...s, payments: { 'pay-1': 'refunded' } }, offer);
+    expect(later.payments['pay-1']).toBe('refunded');
+  });
+
+  it('the refund card is a button the person presses: the agent’s offer alone moves nothing', async () => {
+    const { RefundButton } = await import('./RefundButton');
+    const html = renderToStaticMarkup(createElement(RefundButton, { t: DICTS.fr, paymentId: 'pay-1', refLabel: 'VC-7K2F', amount: '59,00 $US', status: 'captured' }));
+    expect(html).toContain('Demander le remboursement de VC-7K2F, 59,00 $US');
+    expect(renderToStaticMarkup(createElement(RefundButton, { t: DICTS.en, paymentId: 'pay-1', refLabel: 'VC-7K2F', amount: '$59.00', status: 'refunded' }))).toContain('Refunded.');
+    expect(renderToStaticMarkup(createElement(RefundButton, { t: DICTS.en, paymentId: 'pay-1', refLabel: 'VC-7K2F', amount: '$59.00', status: 'voided' }))).toBe('');
+  });
 });
 
 describe('chat panel', () => {

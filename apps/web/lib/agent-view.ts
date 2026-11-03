@@ -19,6 +19,8 @@ export type AgentEvent =
   | { type: 'order'; storeId: string; paymentId: string; orderId: string; ref: string }
   | { type: 'refused'; storeId: string; reason: z.infer<typeof RefusalReason> }
   | { type: 'payment'; paymentId: string; status: string }
+  /** request_refund: the agent proposed a refund; the person's button decides (POST /api/pay/refund). */
+  | { type: 'refund_offer'; paymentId: string; ref: string; store: string; amount: string; currency: string }
   | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'busy' | 'bad_request' | 'model' | 'failed' }
   | { type: 'done' };
 

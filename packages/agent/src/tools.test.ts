@@ -35,6 +35,7 @@ function deps(over: Partial<AgentDeps> = {}): AgentDeps {
     requestPayment: vi.fn(async (paymentId: string) => ({ paymentId, status: 'waiting_for_buyer' as const })),
     getOrder: vi.fn(async () => ({ status: 'not_found' as const })),
     listRecentOrders: vi.fn(async () => ({ orders: [] })),
+    requestRefund: vi.fn(async (ref: string) => ({ status: 'awaiting_person_confirmation' as const, ref, store: 'Velbrook Supply', amount: '59.00', currency: 'USD' })),
     ...over,
   };
 }
@@ -80,6 +81,15 @@ describe('scan summary for the agent', () => {
 describe('agent tools', () => {
   it('are exactly search, scan verdict, create order, request payment, read-only get_order (no capture, void, override, pay or auto-pay tool)', () => {
     expect(shoppingTools(deps()).map((t) => t.name)).toEqual([...TOOL_NAMES]);
+  });
+
+  it('request_refund only proposes: the model can send nothing but a reference (no amount, no "confirm"), and no tool refunds', async () => {
+    expect(TOOL_NAMES.filter((n) => /refund/.test(n))).toEqual(['request_refund']);
+    const d = deps();
+    const model = new OneShot([{ text: '', toolCalls: [{ id: '1', name: 'request_refund', input: { ref: 'VC-7K2F', amount: '1000.00', confirm: true, execute: true } }] }, { text: 'Tap the button to confirm.', toolCalls: [] }]);
+    await runAgentTurn({ model, tools: shoppingTools(d), system: AGENT_SYSTEM_PROMPT, history: [], userText: 'refund VC-7K2F please', lang: 'en' });
+    expect(d.requestRefund).toHaveBeenCalledTimes(1);
+    expect(d.requestRefund).toHaveBeenCalledWith('VC-7K2F');
   });
 
   it('strip anything but IDs from money inputs: a model-sent price, amount or override never reaches the server', async () => {
