@@ -127,6 +127,15 @@ describe('webhooks', () => {
     expect(store.webhookEvents.get('WH-EVT-1')).toMatchObject({ signatureVerified: true, processed: true });
   });
 
+  it('sends PayPal the event exactly as received (key order included)', async () => {
+    const { pp, send } = await withPayment();
+    // PayPal's own order: fields outside our schema come before event_type / resource, and inside resource.
+    const asSent = { id: 'WH-EVT-7', event_version: '1.0', create_time: '2026-11-03T16:25:09Z', resource_type: 'capture', event_type: 'PAYMENT.CAPTURE.COMPLETED', summary: 'Payment completed', resource: { amount: { value: '59.00' }, id: 'CAP-9', status: 'COMPLETED', supplementary_data: { related_ids: { order_id: 'ORDER9' } } }, links: [] };
+    await send(asSent);
+    const verify = pp.callsTo(/verify-webhook-signature/)[0]!.body as Record<string, unknown>;
+    expect(JSON.stringify(verify.webhook_event)).toBe(JSON.stringify(asSent));
+  });
+
   it('bad signature → 401, nothing stored or changed', async () => {
     const { store, payment, send } = await withPayment('FAILURE');
     expect(await send(authCreated)).toMatchObject({ httpStatus: 401, outcome: 'rejected' });

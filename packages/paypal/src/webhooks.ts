@@ -84,9 +84,10 @@ export async function handleWebhook(req: { headers: Record<string, string | unde
   if (!parsed.success) return { httpStatus: 400, outcome: 'invalid', reason: 'missing event id/type' };
   const event = parsed.data;
 
+  // PayPal checks the event as sent: verify the JSON.parse result, not zod's output (zod reorders keys → FAILURE).
   let verified = false;
   try {
-    verified = await verifyWebhookSignature(deps.paypal, deps.webhookId, req.headers, event);
+    verified = await verifyWebhookSignature(deps.paypal, deps.webhookId, req.headers, json);
   } catch {
     verified = false;
   }
