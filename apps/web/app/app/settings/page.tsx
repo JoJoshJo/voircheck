@@ -2,6 +2,7 @@ import { btnPrimary, btnSecondary, card, input, label } from '../../../component
 import { getPayPal } from '../../../lib/paypal';
 import { DICTS } from '../../../lib/i18n';
 import { requireOnboardedUser } from '../../../lib/user';
+import { signOut } from '../../actions';
 import { removeSavedPayPal, saveSettings } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -60,6 +61,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           )}
         </section>
       )}
+      <form action={signOut} className="mt-6">
+        <button className={btnSecondary}>{t.nav.signOut}</button>
+      </form>
     </main>
   );
 }
