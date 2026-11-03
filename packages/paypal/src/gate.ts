@@ -201,7 +201,8 @@ export function requestIdFor(...parts: string[]): string {
 }
 
 const captureStatus = (c: Capture): PaymentStatus => (c.status === 'COMPLETED' ? 'captured' : c.status === 'PENDING' ? 'capture_pending' : 'capture_denied');
-const TERMINAL: PaymentStatus[] = ['captured', 'voided', 'capture_denied', 'failed'];
+// replaced: the agent made a newer order in the same conversation; a late approval of the old one is never authorized.
+const TERMINAL: PaymentStatus[] = ['captured', 'voided', 'capture_denied', 'failed', 'replaced'];
 
 export interface MoneyGateOptions {
   paypal: PayPalClient;
@@ -329,7 +330,25 @@ export class MoneyGate {
     const decision = decideAgentOrder(v.verdict);
     if (!decision.allowed) return refuse(decision.reason, { verdict: v.verdict, why: v.why });
     await this.audit(input.userId, 'agent', 'agent.order_requested', null, { verdict: v.verdict, candidateId: candidate.id, scanId: input.scanId });
-    return this.startApprovePurchase({ ...input, override: false, saveWalletForAutopay: false });
+    const started = await this.startApprovePurchase({ ...input, override: false, saveWalletForAutopay: false });
+    if (started.ok) await this.replaceOlderOrders(candidate.sessionId, input.userId, started.payment.id);
+    return started;
+  }
+
+  /**
+   * The agent's new order replaces the conversation's older ones still waiting for approval: they become "replaced,
+   * nothing charged" here (local status only; an unapproved PayPal order holds no money and expires by itself).
+   */
+  private async replaceOlderOrders(sessionId: string, userId: string, newPaymentId: string) {
+    for (const old of await this.store.getUnapprovedInSession(sessionId, userId)) {
+      if (old.id === newPaymentId) continue;
+      await LOCK.run(`payment:${old.id}`, async () => {
+        const now = await this.store.getPaymentForUser(old.id, userId);
+        if (now?.status !== 'created') return; // approved or settled meanwhile: leave it
+        await this.store.updatePayment(old.id, { status: 'replaced' });
+        await this.audit(userId, 'agent', 'order.replaced', old.id, { by: newPaymentId });
+      });
+    }
   }
 
   async completeApproval(paymentId: string, userId: string, actor: AuditActor = 'system'): Promise<GateResult> {

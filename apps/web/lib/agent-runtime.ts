@@ -228,6 +228,7 @@ const NOTE_STATUS: Record<string, string> = {
   capture_denied: 'refused by PayPal',
   voided: 'cancelled and released',
   cancelled: 'cancelled',
+  replaced: 'replaced by a newer order in this conversation: never approved, nothing charged',
   failed: 'failed',
   refund_pending: 'being refunded: the person asked, PayPal is still processing it',
   refunded: 'refunded in full to the person’s PayPal',

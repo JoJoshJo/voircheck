@@ -8,8 +8,8 @@ import type { SignalId, SignalStatus } from '@voircheck/scanner';
  */
 
 export type Verdict = 'SAFE' | 'HOLD' | 'BLOCK';
-export type Outcome = 'paid' | 'paid_override' | 'held' | 'voided' | 'refund_pending' | 'refunded' | 'expired' | 'waiting' | 'not_paid' | 'checked';
-export const OUTCOMES: readonly Outcome[] = ['paid', 'paid_override', 'held', 'voided', 'refund_pending', 'refunded', 'expired', 'waiting', 'not_paid', 'checked'];
+export type Outcome = 'paid' | 'paid_override' | 'held' | 'voided' | 'refund_pending' | 'refunded' | 'expired' | 'replaced' | 'waiting' | 'not_paid' | 'checked';
+export const OUTCOMES: readonly Outcome[] = ['paid', 'paid_override', 'held', 'voided', 'refund_pending', 'refunded', 'expired', 'replaced', 'waiting', 'not_paid', 'checked'];
 
 /** The six signals in display order (the scanner's own order; kept here so the browser bundle never imports it). */
 export const SIGNAL_ORDER = ['domain_age', 'ssl_redirects', 'price', 'ai_page', 'threat_list', 'clone'] as const satisfies readonly SignalId[];
@@ -80,6 +80,8 @@ export function outcomeFor(p: { status: string; overrideUsed: boolean; createdAt
       return 'refund_pending';
     case 'refunded':
       return 'refunded';
+    case 'replaced':
+      return 'replaced';
     case 'created':
       return shownPaymentStatus(p, now) === 'expired' ? 'expired' : 'waiting';
     case 'approved':

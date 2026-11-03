@@ -509,4 +509,36 @@ describe('the shopping agent asks for an order (agentStartPurchase)', () => {
     const done = await gate.completeApproval(payment.id, USER, 'agent');
     expect(done.ok && done.payment.status).toBe('captured');
   });
+
+  it("a newer agent order replaces the conversation's unapproved ones (local status, no PayPal call)", async () => {
+    const { pp, store, gate } = setup();
+    store.candidates.set('cand-2', { ...store.candidates.get('cand-1')!, id: 'cand-2', storeName: 'Ondaya Home', price: '24.99' });
+    const first = await gate.agentStartPurchase({ userId: USER, candidateId: 'cand-2', scanId: 'scan-safe', idempotencyKey: 'agent-0001', ...urls });
+    const calls = pp.calls.length;
+    const second = await gate.agentStartPurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'agent-0002', ...urls });
+    expect(first.ok && second.ok).toBe(true);
+    if (!first.ok || !second.ok) return;
+    expect(store.payments.get(first.payment.id)!.status).toBe('replaced');
+    expect(store.payments.get(second.payment.id)!.status).toBe('created');
+    expect(pp.calls.slice(calls).map((c) => `${c.method} ${c.path}`)).toEqual(['POST /v2/checkout/orders']);
+    expect(store.audit.at(-1)).toMatchObject({ actor: 'agent', action: 'order.replaced', entityId: first.payment.id, details: { by: second.payment.id } });
+    // A late approval of the replaced order is never authorized or charged.
+    const late = await gate.completeApproval(first.payment.id, USER, 'webhook');
+    expect(late.ok && late.payment.status).toBe('replaced');
+    expect(pp.callsTo(/authorize|capture/)).toHaveLength(0);
+  });
+
+  it('leaves approved, settled and other conversations’ orders alone', async () => {
+    const { store, gate } = setup();
+    const base = [...store.payments.values()].length;
+    const started = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'click-0001', ...urls });
+    if (!started.ok) throw new Error('setup');
+    await store.updatePayment(started.payment.id, { status: 'approved' });
+    store.candidates.set('cand-3', { ...store.candidates.get('cand-1')!, id: 'cand-3', sessionId: 'sess-2' });
+    const other = await gate.startApprovePurchase({ userId: USER, candidateId: 'cand-3', scanId: 'scan-safe', idempotencyKey: 'click-0002', ...urls });
+    await gate.agentStartPurchase({ userId: USER, candidateId: 'cand-1', scanId: 'scan-safe', idempotencyKey: 'agent-0003', ...urls });
+    expect(store.payments.get(started.payment.id)!.status).toBe('approved');
+    expect(other.ok && store.payments.get(other.payment.id)!.status).toBe('created');
+    expect(store.payments.size).toBe(base + 3);
+  });
 });

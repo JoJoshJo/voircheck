@@ -94,6 +94,10 @@ export function drizzleGateStore(db: Db): GateStore {
       const [row] = await paymentQuery().where(eq(payments.captureId, captureId)).limit(1);
       return row ? asPayment(row) : null;
     },
+    async getUnapprovedInSession(sessionId, userId) {
+      const rows = await paymentQuery().where(ownedBy(shoppingSessions, userId, and(eq(payments.sessionId, sessionId), eq(payments.status, 'created'))));
+      return rows.map(asPayment);
+    },
     async insertPayment(row: NewPayment) {
       const { userId, ...values } = row;
       await db.insert(payments).values(values).onConflictDoNothing({ target: payments.paypalOrderId });

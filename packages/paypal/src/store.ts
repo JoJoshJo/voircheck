@@ -8,7 +8,7 @@ import { randomPaymentRef } from '@voircheck/shared';
 
 export type Verdict = 'SAFE' | 'HOLD' | 'BLOCK';
 export type PaymentMode = 'approve' | 'auto';
-export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed' | 'cancelled' | 'refund_pending' | 'refunded';
+export type PaymentStatus = 'created' | 'approved' | 'authorized' | 'capture_pending' | 'captured' | 'voided' | 'capture_denied' | 'failed' | 'cancelled' | 'replaced' | 'refund_pending' | 'refunded';
 export type AuditActor = 'user' | 'agent' | 'system' | 'webhook';
 
 export interface CandidateRow {
@@ -89,6 +89,8 @@ export interface GateStore {
   getPaymentByCaptureId(captureId: string): Promise<PaymentRow | null>;
   /** Idempotent on paypalOrderId: returns the existing row if one already exists. */
   insertPayment(row: NewPayment): Promise<PaymentRow>;
+  /** The person's orders in one conversation still waiting for PayPal approval (status created). */
+  getUnapprovedInSession(sessionId: string, userId: string): Promise<PaymentRow[]>;
   updatePayment(paymentId: string, patch: PaymentPatch): Promise<PaymentRow>;
 
   appendAudit(entry: AuditEntry): Promise<void>;
@@ -138,6 +140,9 @@ export class MemoryGateStore implements GateStore {
   }
   async getPaymentByCaptureId(captureId: string) {
     return [...this.payments.values()].find((p) => p.captureId === captureId) ?? null;
+  }
+  async getUnapprovedInSession(sessionId: string, userId: string) {
+    return [...this.payments.values()].filter((p) => p.sessionId === sessionId && p.userId === userId && p.status === 'created');
   }
   async insertPayment(row: NewPayment) {
     // Check and insert in one synchronous step, like ON CONFLICT in Postgres.

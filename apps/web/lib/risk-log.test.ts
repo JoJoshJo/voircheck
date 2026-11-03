@@ -61,6 +61,7 @@ describe('risk log: outcome per payment', () => {
     ['refunded', true, 1, 'refunded'],
     ['created', false, 5, 'waiting'],
     ['created', false, 7, 'expired'],
+    ['replaced', false, 1, 'replaced'],
     ['approved', false, 30, 'waiting'],
     ['capture_pending', false, 1, 'waiting'],
     ['cancelled', false, 1, 'not_paid'],

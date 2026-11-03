@@ -88,7 +88,7 @@ const EMPTY = { items: [] as Item[], stores: {} as Record<string, StoreState>, p
 type ChatState = typeof EMPTY;
 
 /** Payment states after which the chat shows the outcome instead of the PayPal button. */
-const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed', 'expired', 'refund_pending', 'refunded']);
+const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'replaced', 'failed', 'expired', 'refund_pending', 'refunded']);
 
 /**
  * The chat survives a trip to the payment page and back (same browser tab): what's on screen plus the conversation ID,
