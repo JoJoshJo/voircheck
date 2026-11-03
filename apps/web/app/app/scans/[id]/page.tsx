@@ -5,6 +5,7 @@ import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
 import { card } from '../../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
+import { evidenceLine } from '../../../../lib/evidence-i18n';
 import { DICTS, fmt } from '../../../../lib/i18n';
 import { scoreLine } from '../../../../lib/score-line';
 import { getScanForUser } from '../../../../lib/scans';
@@ -69,11 +70,11 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
             <ul className="mt-3 space-y-1.5">
               {(s.id === 'ai_page' && s.findings ? s.evidence.slice(0, 1) : s.evidence).map((e, i) => (
                 <li key={i} className="text-[14px] leading-relaxed text-muted">
-                  {e}
+                  {evidenceLine(e, lang)}
                 </li>
               ))}
             </ul>
-            {s.id === 'ai_page' && s.findings ? <AiFindings findings={s.findings} t={t.evidence} /> : null}
+            {s.id === 'ai_page' && s.findings ? <AiFindings findings={s.findings} t={t.evidence} lang={lang} /> : null}
             {s.id === 'ai_page' && s.collected ? <CollectedEvidence collected={s.collected} t={t.evidence} /> : null}
           </li>
         ))}

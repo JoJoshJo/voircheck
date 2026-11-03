@@ -137,12 +137,12 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
           chat.items.map((item, i) =>
             item.kind === 'user' ? (
               <p key={i} className="ml-auto w-fit max-w-[85%] rounded-2xl bg-ink px-4 py-2.5 text-[15px] text-white">
-                <span className="sr-only">{t.agent.you}: </span>
+                <span className="sr-only">{t.agent.you}{t.colon} </span>
                 {item.text}
               </p>
             ) : item.kind === 'agent' ? (
               <p key={i} className="max-w-[92%] whitespace-pre-line text-[15px] leading-relaxed">
-                <span className="sr-only">{t.agent.agent}: </span>
+                <span className="sr-only">{t.agent.agent}{t.colon} </span>
                 {item.text}
               </p>
             ) : (

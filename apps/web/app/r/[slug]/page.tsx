@@ -5,6 +5,7 @@ import { ShareLink } from '../../../components/PaymentActions';
 import { SignalIcon, type SignalState } from '../../../components/SignalIcon';
 import { card } from '../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../components/Verdict';
+import { evidenceLine } from '../../../lib/evidence-i18n';
 import { DICTS, fmt, isLang } from '../../../lib/i18n';
 import { scoreLine } from '../../../lib/score-line';
 import { getReceiptBySlug } from '../../../lib/receipts';
@@ -77,7 +78,7 @@ export default async function ReceiptPage({ params }: { params: Promise<{ slug: 
           <li key={sig.id} className="flex items-start justify-between gap-4 px-5 py-4">
             <div className="min-w-0">
               <p className="text-[15px]">{t.signals[sig.id as keyof typeof t.signals] ?? sig.id}</p>
-              {sig.summary && <p className="mt-1 text-[13px] leading-relaxed text-muted">{sig.summary}</p>}
+              {sig.summary && <p className="mt-1 text-[13px] leading-relaxed text-muted">{evidenceLine(sig.summary, lang)}</p>}
             </div>
             <SignalIcon state={sig.status as SignalState} />
           </li>

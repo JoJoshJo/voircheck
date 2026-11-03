@@ -8,6 +8,8 @@ export type Lang = (typeof LANGS)[number];
 export const isLang = (x: unknown): x is Lang => x === 'en' || x === 'fr';
 
 const en = {
+  /** Label–value separator: French typography puts a no-break space before the colon. */
+  colon: ':',
   meta: { tagline: 'Before your agent pays, VoirCheck sees who it’s paying.' },
   nav: { workspace: 'Workspace', history: 'History', settings: 'Settings', howItWorks: 'How it works', signIn: 'Sign in', signOut: 'Sign out', guest: 'Demo account' },
   landing: {
@@ -165,6 +167,7 @@ const en = {
     aiTitle: 'What page analysis found',
     aiNote: 'Quotes are copied from the store’s pages as found, and VoirCheck checked each one is really there. VoirCheck never follows them.',
     aiOwnNote: 'AI note',
+    colon: ':',
     aiNone: 'Nothing suspicious found.',
     aiRisk: 'Page analysis risk: {n}/100',
     sev_low: 'minor',
@@ -350,6 +353,7 @@ const en = {
 export type Dict = typeof en;
 
 const fr: Dict = {
+  colon: '\u00a0:',
   meta: { tagline: 'Avant que votre agent ne paie, VoirCheck vérifie à qui il paie.' },
   nav: { workspace: 'Espace de travail', history: 'Historique', settings: 'Réglages', howItWorks: 'Comment ça marche', signIn: 'Se connecter', signOut: 'Se déconnecter', guest: 'Compte de démo' },
   landing: {
@@ -507,6 +511,7 @@ const fr: Dict = {
     aiTitle: 'Ce que l’analyse de page a trouvé',
     aiNote: 'Les citations sont copiées telles quelles depuis les pages de la boutique, et VoirCheck a vérifié que chacune s’y trouve bien. VoirCheck ne les suit jamais.',
     aiOwnNote: 'Note de l’IA',
+    colon: '\u00a0:',
     aiNone: 'Rien de suspect trouvé.',
     aiRisk: 'Risque selon l’analyse de page : {n}/100',
     sev_low: 'mineur',

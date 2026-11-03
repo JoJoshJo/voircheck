@@ -1,4 +1,5 @@
 import { DICTS, fmt, type Lang } from './i18n';
+import { evidenceLine } from './evidence-i18n';
 import { scoreLine } from './score-line';
 import type { ReceiptSnapshot } from './receipt-snapshot';
 
@@ -48,7 +49,7 @@ export function buildReceiptEmail(input: { snapshot: ReceiptSnapshot; slug: stri
   const outcome = t.receipt[`action_${s.action}`];
   const verdict = t.verdict[s.verdict];
   const labels = t.signals as Record<string, string>;
-  const reasons = topReasons(s).map((r) => ({ label: labels[r.id] ?? r.id, summary: r.summary }));
+  const reasons = topReasons(s).map((r) => ({ label: labels[r.id] ?? r.id, summary: evidenceLine(r.summary, lang) }));
   const e = t.email;
   const subject = fmt(e.subject, { store: s.storeName, outcome });
   const c = VERDICT_COLORS[s.verdict];

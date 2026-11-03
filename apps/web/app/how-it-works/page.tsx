@@ -28,7 +28,7 @@ export default async function HowItWorks() {
                 <h2 className="text-[17px] font-medium">{t.signals[id]}</h2>
                 <p className="mt-1.5 text-[15px] leading-relaxed text-muted">{t.how[KEYS[i]!]}</p>
                 <p className="mt-2 text-[13px] text-faint">
-                  {t.signals.status_warn}: {WEIGHTS[id].warn} · {t.signals.status_fail}: {WEIGHTS[id].fail}
+                  {t.signals.status_warn}{t.colon} {WEIGHTS[id].warn} · {t.signals.status_fail}{t.colon} {WEIGHTS[id].fail}
                 </p>
               </div>
             </li>

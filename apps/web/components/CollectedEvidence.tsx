@@ -1,5 +1,6 @@
 import type { SignalResult } from '@voircheck/scanner';
-import { fmt, type Dict } from '../lib/i18n';
+import { pageLabel } from '../lib/evidence-i18n';
+import { fmt, type Dict, type Lang } from '../lib/i18n';
 
 type Collected = NonNullable<SignalResult['collected']>;
 type Finding = NonNullable<SignalResult['findings']>[number];
@@ -9,7 +10,7 @@ type Finding = NonNullable<SignalResult['findings']>[number];
  * rendered as React text nodes only (escaped, never HTML), never as links. Only a quote VoirCheck found on the page
  * (`quoteVerified`) gets quote marks; anything else is labelled as the AI's own note.
  */
-export function AiFindings({ findings, t }: { findings: Finding[]; t: Dict['evidence'] }) {
+export function AiFindings({ findings, t, lang = 'en' }: { findings: Finding[]; t: Dict['evidence']; lang?: Lang }) {
   return (
     <div className="mt-4 border-t border-line pt-4">
       <h4 className="text-[14px] font-medium">{t.aiTitle}</h4>
@@ -27,10 +28,10 @@ export function AiFindings({ findings, t }: { findings: Finding[]; t: Dict['evid
               ) : (
                 // Not found on the page (a description, a paraphrase or made up): the AI's own words, never shown as a quote.
                 <p className="mt-1 pl-3 text-[14px] leading-relaxed break-words text-muted">
-                  <span className="font-medium text-ink">{t.aiOwnNote}:</span> {f.quote}
+                  <span className="font-medium text-ink">{t.aiOwnNote}{t.colon}</span> {f.quote}
                 </p>
               )}
-              <p className="mt-1 pl-3 text-[13px] text-muted">{fmt(t.hiddenOn, { page: f.page })}</p>
+              <p className="mt-1 pl-3 text-[13px] text-muted">{fmt(t.hiddenOn, { page: pageLabel(f.page, lang) })}</p>
             </li>
           ))}
         </ul>
@@ -54,7 +55,7 @@ export function CollectedEvidence({ collected, t }: { collected: Collected; t: D
     [t.factAddress, list(f.addresses)],
     [t.factPhone, list(f.phones)],
     [t.factEmail, f.emails.length ? f.emails.map((e) => (e.freeMail ? `${e.address} (${t.factFreeMail})` : e.address)).join(' · ') : none],
-    [t.factRegistration, list(f.registrationIds.map((r) => `${r.type}: ${r.value}`))],
+    [t.factRegistration, list(f.registrationIds.map((r) => `${r.type}${t.colon} ${r.value}`))],
     [t.factPayment, list(f.paymentMethods)],
     [t.factReturns, f.returnPolicy ? t.present : none],
     [t.factDiscounts, list(f.discountsPct.map((d) => `${d}%`))],
@@ -82,7 +83,7 @@ export function CollectedEvidence({ collected, t }: { collected: Collected; t: D
       <h4 className="text-[14px] font-medium">{t.collectedTitle}</h4>
       <p className="mt-1 text-[13px] text-faint">{t.collectedNote}</p>
       <p className="mt-3 text-[13px] text-muted">
-        {t.pagesRead}: {collected.pages.map((p) => `${t[`kind_${p.kind}`]} (${p.url})`).join(' · ')}
+        {t.pagesRead}{t.colon} {collected.pages.map((p) => `${t[`kind_${p.kind}`]} (${p.url})`).join(' · ')}
       </p>
       <dl className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1.5 text-[14px] sm:grid-cols-[180px_1fr]">
         {rows.map(([k, v]) => (

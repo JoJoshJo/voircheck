@@ -31,7 +31,7 @@ describe('"Collected for page analysis" on the evidence page', () => {
   it.each(['en', 'fr'] as const)('lists pages and facts as plain text (%s)', (lang) => {
     const t = DICTS[lang].evidence;
     const html = renderToStaticMarkup(createElement(CollectedEvidence, { collected, t }));
-    for (const part of [t.collectedTitle, t.kind_legal, '+49 30 1234 5678', `shop.service@gmail.com (${t.factFreeMail})`, 'VAT: DE123456789', '70%', t.notFound]) {
+    for (const part of [t.collectedTitle, t.kind_legal, '+49 30 1234 5678', `shop.service@gmail.com (${t.factFreeMail})`, `VAT${t.colon} DE123456789`, '70%', t.notFound]) {
       expect(html).toContain(part);
     }
     // Store text is escaped, never markup, and store URLs are not links.
