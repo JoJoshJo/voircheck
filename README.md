@@ -1,5 +1,7 @@
 # VoirCheck
 
+[![CI](https://github.com/JoJoshJo/voircheck/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JoJoshJo/voircheck/actions/workflows/ci.yml)
+
 Your AI agent sees who it's paying, before it pays.
 
 VoirCheck checks an online store for signs of a fake shop, then decides what PayPal does with the money: pay, hold

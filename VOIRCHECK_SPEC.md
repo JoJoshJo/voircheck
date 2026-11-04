@@ -396,7 +396,7 @@ voircheck/
 - **Unit (Vitest):** scoring + every threshold + every hard rule; money gate (a BLOCK store can never be captured without override; never in Auto-pay).
 - **Sandbox integration:** real PayPal sandbox authorize / capture / void / reauthorize.
 - **End-to-end (Playwright) *(planned, not built)*:** (1) SAFE: pay Velbrook; (2) HOLD: Nyuie Clearance, user decides; (3) BLOCK: Velbrook-Outlet voided, injection detected, override path.
-- **CI:** GitHub Actions runs unit tests on every push; status badge in README.
+- **CI (built Nov 3):** GitHub Actions (`.github/workflows/ci.yml`) runs typecheck, lint and the Vitest suite on every push and pull request to main: Node 24, pnpm from `packageManager`, frozen lockfile, pnpm store cached, actions pinned to exact tags, `contents: read` only. No secrets: every test runs without API keys or the database. Status badge in README.
 
 **Core rule: if VoirCheck can't verify a store, it is never SAFE.**
 
@@ -457,7 +457,7 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 | Nov 4–5 | `packages/agent` + `packages/paypal`: Sonnet agent, Toolkit + custom tools, money gate, JS SDK v6 checkout, webhooks, HOLD/BLOCK/override, auto-pay + vault |
 | Nov 6 | Workspace UI (split view), mascot, Trust Receipt + Resend email, EN/FR i18n. **🚦 Checkpoint: full SAFE/HOLD/BLOCK flow works end to end? → decide AG Grid / mobile** |
 | Nov 7 | Auth (magic link, Google, password, guest demo), onboarding, history, settings, accuracy page; **run real-world test set** + tune weights |
-| Nov 8 | Playwright e2e *(planned, not built)*, GitHub Actions CI, failure-case handling; **decide narration / on-camera** |
+| Nov 8 | Playwright e2e *(planned, not built)*, GitHub Actions CI *(built Nov 3)*, failure-case handling; **decide narration / on-camera** |
 | Nov 9 | Stretch (AG Grid dashboard) **or** polish buffer |
 | Nov 10 | Security self-audit + fixes, `SECURITY.md`, `pnpm audit` |
 | Nov 11 | **Switch `voircheck-stores` + `voircheck-web` to Render Starter ($7/mo) before recording**; record + edit video, README + GIF, Devpost draft; deploy freeze begins after final deploy |
