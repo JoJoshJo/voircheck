@@ -13,13 +13,40 @@ export const dynamic = 'force-dynamic';
  * events are idempotent on paypal_event_id. Webhooks never capture by themselves: an approved order goes through
  * the money gate like any other approval.
  */
+/** PayPal events are a few KB; anything bigger is refused before it is read into memory. */
+const MAX_WEBHOOK_BYTES = 200_000;
+
+/**
+ * The body as text, or null when it is larger than `max` bytes: refused from Content-Length before reading, and,
+ * without one (chunked), while reading, so an oversized body is never held in memory whole.
+ */
+async function readCapped(req: Request, max: number): Promise<string | null> {
+  const declared = Number(req.headers.get('content-length') ?? '');
+  if (Number.isFinite(declared) && declared > max) return null;
+  if (!req.body) return '';
+  const reader = req.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > max) {
+      await reader.cancel().catch(() => {});
+      return null;
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 export async function POST(req: Request) {
   // Unset ID: unsigned requests still get 401 (no headers), signed ones fail PayPal verification (401) and retry later.
   const webhookId = process.env.PAYPAL_WEBHOOK_ID ?? '';
   if (!webhookId) console.warn('PAYPAL_WEBHOOK_ID is not set; webhooks will be rejected');
 
-  const rawBody = await req.text();
-  if (rawBody.length > 200_000) return Response.json({ error: 'too large' }, { status: 413 });
+  const rawBody = await readCapped(req, MAX_WEBHOOK_BYTES);
+  if (rawBody === null) return Response.json({ error: 'too large' }, { status: 413 });
   const headers = Object.fromEntries(req.headers.entries());
 
   try {
