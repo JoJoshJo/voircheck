@@ -52,7 +52,8 @@ function Face({ mood }: { mood: MascotMood }) {
 export function Mascot({ mood = 'idle', size = 64, title }: { mood?: MascotMood; size?: number; title?: string }) {
   const scanning = mood === 'scanning';
   return (
-    <svg viewBox="0 0 64 64" width={size} height={size} role="img" aria-label={title ?? 'VoirCheck ghost'} className={scanning ? 'vc-float' : undefined}>
+    // title="" means decorative (e.g. next to the wordmark): hidden from screen readers instead of an unnamed image.
+    <svg viewBox="0 0 64 64" width={size} height={size} {...(title === '' ? { 'aria-hidden': true } : { role: 'img', 'aria-label': title ?? 'VoirCheck ghost' })} className={scanning ? 'vc-float' : undefined}>
       <path
         d="M14 54V29a16.5 16.5 0 0 1 33 0v25l-5.5-4-5.5 4-5.5-4-5.5 4-5.5-4z"
         fill="#fff"

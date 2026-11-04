@@ -11,7 +11,7 @@
   --color-line: #e7e5e4;
   --color-ink: #0c0c0c;
   --color-muted: #6b6866;
-  --color-faint: #a8a29e;
+  --color-faint: #736e6a; /* 5.0:1 on white, 4.6:1 on surface (WCAG AA); was #a8a29e */
   --color-transparent: transparent;
 
   --color-safe-bg: #eaf3de;
