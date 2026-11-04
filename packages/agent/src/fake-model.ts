@@ -38,25 +38,25 @@ const T = {
     none: (q: string) => `I couldn't find ${q} at a store I can check. Try a different wording.`,
     searchDown: "Product search isn't available right now, so I can't look this up.",
     checking: (n: number) => `Found ${n} store${n === 1 ? '' : 's'}. Checking each one before I suggest anything.`,
-    pick: (s: Store, others: string) => `${s.storeName} looks safe and has ${s.productTitle} for ${money(s, 'en')}.${others} I've prepared the order; approve it in PayPal when you're ready.`,
-    skip: (s: Store, v: Verdict) => ` I'd skip ${s.storeName} (${v.verdict}${reasonEn(v)}), even though it's ${money(s, 'en')}.`,
-    injection: ' Its page also hid text aimed at AI shopping agents.',
-    alt: (s: Store) => ` ${s.storeName} also looks safe, with a different product: ${s.productTitle} for ${money(s, 'en')}.`,
-    noSafe: 'None of these stores checked out as safe, so I haven\'t prepared an order. You can see the evidence on each card.',
-    holdOnly: (s: Store) => `${s.storeName} is on hold: some checks were unclear. Look at the evidence and decide; I won't buy there on my own.`,
-    refused: (s: string, r: string) => `VoirCheck won't let me buy from ${s}: ${r}. That's the server's rule, not mine to change.`,
-    reasons: { block: 'its scan says BLOCK', unverified: "the store can't be verified right now", no_price: 'there is no known price', not_found: "that store isn't in this search", other: 'the payment check said no' },
-    unknownStore: "I don't know which store you mean. Pick one from the results.",
+    pick: (s: Store, others: string) => `${s.storeName} looks safe to buy: ${s.productTitle} for ${money(s, 'en')}.${others} I've prepared the order: tap the PayPal button to say yes, nothing is charged before that.`,
+    skip: (s: Store, v: Verdict) => ` ${s.storeName} looks like a fake shop${reasonEn(v)}, so I won't pay it, even at ${money(s, 'en')}.`,
+    injection: ' Its page also hid instructions aimed at shopping helpers like me, a strong warning sign.',
+    alt: (s: Store) => ` ${s.storeName} also looks safe to buy, with a different product: ${s.productTitle} for ${money(s, 'en')}.`,
+    noSafe: 'None of these shops looks safe enough, so I haven\'t prepared an order. Tap “Why?” on a card to see what I found.',
+    holdOnly: (s: Store) => `Something looks a bit off at ${s.storeName}, so I won't buy there on my own. Buy anyway, or see why?`,
+    refused: (s: string, r: string) => `I can't pay ${s}: ${r}. That's VoirCheck's rule, and I can't change it.`,
+    reasons: { block: 'it looks like a fake shop', unverified: "I couldn't check this shop right now", no_price: "I don't know its price", not_found: "that shop isn't in this search", other: 'the payment check said no' },
+    unknownStore: "Which shop do you mean? Tap “Buy this” on the one you want.",
     waiting: 'The order is waiting for your approval in PayPal.',
-    settled: (st: string) => (st === 'captured' ? 'Paid. VoirCheck captured the payment.' : st === 'authorized' ? 'The money is held, not taken. You decide on the store card.' : st === 'voided' ? 'VoirCheck released the hold; nothing was charged.' : `The payment is ${st}.`),
+    settled: (st: string) => (st === 'captured' ? 'Done, you paid. I’ll keep your receipt in History.' : st === 'authorized' ? 'PayPal is holding your money; nothing is taken yet. You decide on the shop’s card.' : st === 'voided' ? 'PayPal gave the money back; nothing was charged.' : 'That payment didn’t go through. Nothing was charged.'),
     noOrder: "There's no order waiting yet.",
     failed: "That didn't work. Try again in a moment.",
     orderState: (o: OrderStatus) => {
       const amt = orderMoney(o, 'en');
       if (o.captureStatus === 'COMPLETED') return `PayPal shows your order as completed: ${amt} was paid.`;
-      if (o.authorizationStatus === 'VOIDED') return `PayPal shows the hold on ${amt} was released; nothing was charged.`;
+      if (o.authorizationStatus === 'VOIDED') return `PayPal gave the ${amt} back; nothing was charged.`;
       if (o.authorizationStatus === 'CREATED') return `PayPal shows ${amt} held, not taken yet.`;
-      if (o.orderStatus === 'APPROVED') return `You approved the ${amt} order in PayPal; it isn't settled yet. Tell me when you're done and I'll ask VoirCheck to settle it.`;
+      if (o.orderStatus === 'APPROVED') return `You said yes to the ${amt} order in PayPal. Tell me when you're done and I'll finish it.`;
       if (o.orderStatus === 'PAYER_ACTION_REQUIRED' || o.orderStatus === 'CREATED') return `Your ${amt} order is waiting for your approval in PayPal.`;
       return `PayPal shows the order as ${o.orderStatus}.`;
     },
@@ -68,25 +68,25 @@ const T = {
     none: (q: string) => `Je n’ai pas trouvé ${q} dans une boutique que je peux vérifier. Essayez une autre formulation.`,
     searchDown: 'La recherche de produits n’est pas disponible pour l’instant.',
     checking: (n: number) => `${n} boutique${n === 1 ? '' : 's'} trouvée${n === 1 ? '' : 's'}. Je vérifie chacune avant de proposer quoi que ce soit.`,
-    pick: (s: Store, others: string) => `${s.storeName} semble fiable et propose ${s.productTitle} à ${money(s, 'fr')}.${others} J’ai préparé la commande ; validez-la dans PayPal quand vous voulez.`,
-    skip: (s: Store, v: Verdict) => ` J’éviterais ${s.storeName} (${v.verdict}), même à ${money(s, 'fr')}.`,
-    injection: ' Sa page cachait aussi du texte destiné aux agents d’achat IA.',
-    alt: (s: Store) => ` ${s.storeName} semble fiable aussi, avec un autre produit : ${s.productTitle} à ${money(s, 'fr')}.`,
-    noSafe: 'Aucune de ces boutiques n’est jugée sûre, donc je n’ai pas préparé de commande. Les preuves sont sur chaque carte.',
-    holdOnly: (s: Store) => `${s.storeName} est en attente : certains contrôles sont incertains. Regardez les preuves et décidez ; je n’achèterai pas seul.`,
-    refused: (s: string, r: string) => `VoirCheck refuse que j’achète chez ${s} : ${r}. C’est la règle du serveur, je ne peux pas la changer.`,
-    reasons: { block: 'son analyse dit BLOQUER', unverified: 'la boutique ne peut pas être vérifiée pour l’instant', no_price: 'aucun prix connu', not_found: 'cette boutique n’est pas dans cette recherche', other: 'le contrôle de paiement a refusé' },
-    unknownStore: 'Je ne sais pas de quelle boutique vous parlez. Choisissez-en une dans les résultats.',
+    pick: (s: Store, others: string) => `${s.storeName} semble sûr pour acheter : ${s.productTitle} à ${money(s, 'fr')}.${others} J’ai préparé la commande : validez-la avec le bouton PayPal, rien n’est prélevé avant.`,
+    skip: (s: Store) => ` ${s.storeName} ressemble à une fausse boutique, je ne la paierai pas, même à ${money(s, 'fr')}.`,
+    injection: ' Sa page cachait aussi des consignes destinées aux assistants d’achat comme moi : un signal d’alerte fort.',
+    alt: (s: Store) => ` ${s.storeName} semble sûr aussi, avec un autre produit : ${s.productTitle} à ${money(s, 'fr')}.`,
+    noSafe: 'Aucune de ces boutiques ne semble assez sûre, donc je n’ai pas préparé de commande. Touchez « Pourquoi ? » sur une carte pour voir ce que j’ai trouvé.',
+    holdOnly: (s: Store) => `Quelque chose cloche un peu chez ${s.storeName}, donc je n’achèterai pas seul. Acheter quand même, ou voir pourquoi ?`,
+    refused: (s: string, r: string) => `Je ne peux pas payer ${s} : ${r}. C’est la règle de VoirCheck, je ne peux pas la changer.`,
+    reasons: { block: 'elle ressemble à une fausse boutique', unverified: 'je n’ai pas pu vérifier cette boutique pour l’instant', no_price: 'je ne connais pas son prix', not_found: 'cette boutique n’est pas dans cette recherche', other: 'le contrôle de paiement a refusé' },
+    unknownStore: 'De quelle boutique parlez-vous ? Touchez « Acheter » sur celle que vous voulez.',
     waiting: 'La commande attend votre validation dans PayPal.',
-    settled: (st: string) => (st === 'captured' ? 'Payé. VoirCheck a encaissé le paiement.' : st === 'authorized' ? 'L’argent est bloqué, pas prélevé. Vous décidez sur la carte de la boutique.' : st === 'voided' ? 'VoirCheck a libéré le blocage ; rien n’a été prélevé.' : `Le paiement est : ${st}.`),
+    settled: (st: string) => (st === 'captured' ? 'C’est fait, vous avez payé. Je garde votre reçu dans l’Historique.' : st === 'authorized' ? 'PayPal garde votre argent de côté, rien n’est prélevé. Vous décidez sur la carte de la boutique.' : st === 'voided' ? 'PayPal vous a rendu l’argent ; rien n’a été prélevé.' : 'Ce paiement n’est pas passé. Rien n’a été prélevé.'),
     noOrder: 'Aucune commande n’attend pour l’instant.',
     failed: 'Ça n’a pas marché. Réessayez dans un instant.',
     orderState: (o: OrderStatus) => {
       const amt = orderMoney(o, 'fr');
       if (o.captureStatus === 'COMPLETED') return `PayPal indique que votre commande est terminée : ${amt} ont été payés.`;
-      if (o.authorizationStatus === 'VOIDED') return `PayPal indique que le blocage de ${amt} a été libéré ; rien n’a été prélevé.`;
+      if (o.authorizationStatus === 'VOIDED') return `PayPal vous a rendu les ${amt} ; rien n’a été prélevé.`;
       if (o.authorizationStatus === 'CREATED') return `PayPal indique que ${amt} sont bloqués, pas encore prélevés.`;
-      if (o.orderStatus === 'APPROVED') return `Vous avez validé la commande de ${amt} dans PayPal ; elle n’est pas encore réglée. Dites-moi quand c’est fait et je demanderai à VoirCheck de la régler.`;
+      if (o.orderStatus === 'APPROVED') return `Vous avez validé la commande de ${amt} dans PayPal. Dites-moi quand c’est fait et je la termine.`;
       if (o.orderStatus === 'PAYER_ACTION_REQUIRED' || o.orderStatus === 'CREATED') return `Votre commande de ${amt} attend votre validation dans PayPal.`;
       return `PayPal indique le statut : ${o.orderStatus}.`;
     },
@@ -106,7 +106,7 @@ function orderMoney(o: OrderStatus, lang: Lang): string {
 
 function reasonEn(v: Verdict): string {
   const failed = (v.signals ?? []).filter((s) => s.status === 'fail').map((s) => s.meaning);
-  return failed.length ? `: ${failed.slice(0, 2).join(', ')}` : '';
+  return failed.length ? ` (${failed.slice(0, 2).join(', ')})` : '';
 }
 
 const PRICE_RE = /(?:\s(?:for|à)\s+)?\b(?:under|below|less than|max(?:imum)?|up to|moins de|sous|max\.?|jusqu['’]à)\s*(?:\$|€|usd\s*)?(\d+(?:[.,]\d+)?)\s*(?:\$|€|dollars?|euros?)?/i;

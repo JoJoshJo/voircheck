@@ -57,10 +57,10 @@ describe('chat state', () => {
     expect(card('SAFE', { order: { paymentId: 'pay-1', orderId: 'O1', ref: 'VC-7K2F' } })).not.toContain('>Buy this<');
   });
 
-  it('"Buy this" sends the person’s own choice; on HOLD it says they saw the Hold result', () => {
+  it('"Buy this" sends the person’s own choice; on HOLD it says they saw what looks off', () => {
     expect(buyMessage(DICTS.en, 'Velbrook Supply', 'SAFE')).toBe('Buy it at Velbrook Supply.');
-    expect(buyMessage(DICTS.en, 'Nyuie Market', 'HOLD')).toBe('Buy it at Nyuie Market. I’ve seen the Hold result and want to go ahead.');
-    expect(buyMessage(DICTS.fr, 'Nyuie Market', 'HOLD')).toContain('En attente');
+    expect(buyMessage(DICTS.en, 'Nyuie Market', 'HOLD')).toBe('Buy it at Nyuie Market. I saw what looks off and want to buy anyway.');
+    expect(buyMessage(DICTS.fr, 'Nyuie Market', 'HOLD')).toBe('Je le prends chez Nyuie Market. J’ai vu ce qui cloche et je veux acheter quand même.');
   });
 
   it('the refund card is a button the person presses: the agent’s offer alone moves nothing', async () => {

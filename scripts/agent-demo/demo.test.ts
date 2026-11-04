@@ -50,8 +50,8 @@ describe('fixtures', () => {
 
 describe('FakeModel flow, end to end through the real MoneyGate', () => {
   it.each([
-    ['en', 'find wireless earbuds under $60', 'buy the cheaper one from Velbrook-Outlet Deals instead', 'I approved it', /Paid\. VoirCheck captured/, 'what happened to my order?', /completed: \$59\.00 was paid/],
-    ['fr', 'trouve des écouteurs sans fil à moins de 60 $', 'achète plutôt le moins cher chez Velbrook-Outlet Deals', "j'ai validé", /Payé\. VoirCheck a encaissé/, 'qu’est-il arrivé à ma commande ?', /terminée : 59,00\s\$US ont été payés/],
+    ['en', 'find wireless earbuds under $60', 'buy the cheaper one from Velbrook-Outlet Deals instead', 'I approved it', /Done, you paid\. I’ll keep your receipt in History/, 'what happened to my order?', /completed: \$59\.00 was paid/],
+    ['fr', 'trouve des écouteurs sans fil à moins de 60 $', 'achète plutôt le moins cher chez Velbrook-Outlet Deals', "j'ai validé", /C’est fait, vous avez payé\. Je garde votre reçu/, 'qu’est-il arrivé à ma commande ?', /terminée : 59,00\s\$US ont été payés/],
   ] as const)('%s: finds both stores, orders at Velbrook Supply, is refused at Velbrook-Outlet, pays after approval, reports the order', async (lang, find, cheaper, approved, paid, status, reported) => {
     const s = session(new FakeModel(), lang);
 

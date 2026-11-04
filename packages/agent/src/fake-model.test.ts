@@ -25,9 +25,11 @@ describe('FakeModel ranking', () => {
     const turn = await respond(afterScans());
     expect(turn.toolCalls).toEqual([{ id: 'fake_5_0', name: 'create_order', input: { storeId: 'supply' } }]);
     expect(turn.text).toMatch(/^Velbrook Supply looks safe/);
-    expect(turn.text).toContain("I'd skip Velbrook-Outlet Deals (BLOCK");
-    expect(turn.text).toContain('hid text aimed at AI shopping agents');
-    expect(turn.text).toContain('bestbuy.com also looks safe, with a different product');
+    expect(turn.text).toContain("Velbrook-Outlet Deals looks like a fake shop, so I won't pay it");
+    expect(turn.text).toContain('hid instructions aimed at shopping helpers like me');
+    expect(turn.text).toContain('bestbuy.com also looks safe to buy, with a different product');
+    // Hedged and plain: a result is never stated as a fact about a business, and no jargon.
+    expect(turn.text).not.toMatch(/\b(is|are) (safe|real|fake|legit)\b|\b(SAFE|HOLD|BLOCK|verdict|scan)\b/);
   });
 
   it('never orders from a BLOCK store, even when it is the only cheap one', async () => {
