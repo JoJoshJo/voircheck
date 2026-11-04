@@ -99,11 +99,12 @@ describe('POST /api/mcp authentication', () => {
     vi.doMock('next/headers', () => ({ headers: async () => new Headers({ host: 'localhost:3000' }) }));
     vi.doMock('./api', () => ({ mcpApi: () => ({ checkStore: vi.fn(), getVerdict: vi.fn(), preparePurchase: vi.fn() }) }));
   });
-  const call = async (auth: string | null) => {
+  const LIST = JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} });
+  const call = async (auth: string | null, body: string = LIST) => {
     const { POST } = await import('../../app/api/mcp/route');
     const h: Record<string, string> = { 'content-type': 'application/json', accept: 'application/json, text/event-stream' };
     if (auth) h.authorization = auth;
-    return POST(new Request('http://localhost:3000/api/mcp', { method: 'POST', headers: h, body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }) }));
+    return POST(new Request('http://localhost:3000/api/mcp', { method: 'POST', headers: h, body }));
   };
 
   it('no token → 401 with a Bearer challenge, and no tool runs', async () => {
@@ -124,6 +125,24 @@ describe('POST /api/mcp authentication', () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { result: { tools: Array<{ name: string }> } };
     expect(body.result.tools.map((t) => t.name).sort()).toEqual([...MCP_TOOL_NAMES].sort());
+  });
+
+  it('a JSON-RPC batch → 400, and none of its calls run', async () => {
+    owner.value = { tokenId: 't1', userId: 'u1', isGuest: false };
+    const checkStore = vi.fn();
+    vi.doMock('./api', () => ({ mcpApi: () => ({ checkStore, getVerdict: vi.fn(), preparePurchase: vi.fn() }) }));
+    const one = (id: number) => ({ jsonrpc: '2.0', id, method: 'tools/call', params: { name: 'check_store', arguments: { url: `https://shop${id}.example/` } } });
+    const res = await call(`Bearer ${generateApiToken().token}`, `  ${JSON.stringify([one(1), one(2), one(3)])}`);
+    expect(res.status).toBe(400);
+    expect(((await res.json()) as { error: { code: number } }).error.code).toBe(-32600);
+    expect(checkStore).not.toHaveBeenCalled();
+  });
+
+  it('an oversized body → 413 before parsing; malformed JSON is still a parse error', async () => {
+    owner.value = { tokenId: 't1', userId: 'u1', isGuest: false };
+    const token = `Bearer ${generateApiToken().token}`;
+    expect((await call(token, JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: { pad: 'a'.repeat(70_000) } }))).status).toBe(413);
+    expect((await call(token, '{not json')).status).toBe(400);
   });
 });
 

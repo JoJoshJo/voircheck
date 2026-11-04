@@ -5,6 +5,7 @@ import { publicOrigin } from '../../../lib/app-origin';
 import { clientIp } from '../../../lib/client-ip';
 import { mcpApi } from '../../../lib/mcp/api';
 import { createMcpServer } from '../../../lib/mcp/core';
+import { singleMessageRequest } from '../../../lib/mcp/http';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,15 +22,18 @@ const unauthorized = () =>
  * VoirCheck's MCP server (Streamable HTTP, stateless, JSON responses). Auth: a per-user API token as a Bearer header,
  * never a cookie, so a browser can't be made to call it with someone's session. The token is hashed and looked up;
  * neither the token nor any header is ever logged. Every request gets a fresh server bound to the token's owner.
+ * One JSON-RPC message per request: batches are refused (400) before the SDK sees them.
  */
 export async function POST(req: Request) {
   const owner = await authenticateApiToken(req.headers.get('authorization'));
   if (!owner) return unauthorized();
+  const single = await singleMessageRequest(req);
+  if (single instanceof Response) return single;
   const h = await headers();
   const server = createMcpServer(mcpApi(owner, { ip: clientIp(h), origin: publicOrigin(h) }));
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   await server.connect(transport);
-  const res = await transport.handleRequest(req);
+  const res = await transport.handleRequest(single);
   res.headers.set('cache-control', 'no-store');
   return res;
 }
