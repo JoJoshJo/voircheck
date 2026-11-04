@@ -257,6 +257,10 @@ const en = {
     hidden_same_color: 'same colour as the background',
     hidden_zero_size: 'zero size',
     hidden_aria_hidden: 'hidden from screen readers',
+    hidden_alt_text: 'in image alt text',
+    hidden_aria_label: 'in an aria-label',
+    hidden_html_comment: 'in an HTML comment',
+    hidden_structured_data: 'in structured data (JSON-LD)',
   },
   pay: {
     ref: 'Order reference',
@@ -764,6 +768,10 @@ const fr: Dict = {
     hidden_same_color: 'même couleur que le fond',
     hidden_zero_size: 'taille nulle',
     hidden_aria_hidden: 'masqué aux lecteurs d’écran',
+    hidden_alt_text: 'dans le texte alternatif d’une image',
+    hidden_aria_label: 'dans un aria-label',
+    hidden_html_comment: 'dans un commentaire HTML',
+    hidden_structured_data: 'dans les données structurées (JSON-LD)',
   },
   pay: {
     ref: 'Référence de commande',

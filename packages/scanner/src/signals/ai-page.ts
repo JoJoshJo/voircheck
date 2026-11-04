@@ -88,7 +88,8 @@ export const placeholderAnalyzer: PageAnalyzer = {
 /** Sonnet 5.5 since Nov 1: on the tune split Haiku 5.5 scored real fake shops 12–35 (legit up to 30), Sonnet 30–88 (legit ≤ 12). */
 export const DEFAULT_SCAN_MODEL = 'claude-sonnet-5-5';
 /** Bump when the prompt or mapping changes: it is part of the cache key, so old cached results are not reused. */
-export const AI_PROMPT_VERSION = 'v5';
+// v6 (Nov 4): the input also carries injection-like markup text (alt, aria-label, comments, JSON-LD).
+export const AI_PROMPT_VERSION = 'v6';
 /** Haiku 5.5, prompts ≤100K tokens (our input cap keeps us there): $ per million tokens. Cache write 1.25×, read 0.1×. */
 export const HAIKU_PRICE = { input: 0.1, output: 0.5, cacheWrite: 0.125, cacheRead: 0.01 } as const;
 /** $ per MTok (prompts under 100K tokens). Cache write 1.25×, read 0.1× of input. Unknown models are priced as Sonnet. */

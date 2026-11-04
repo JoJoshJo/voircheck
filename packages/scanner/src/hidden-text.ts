@@ -10,7 +10,13 @@ import { z } from 'zod';
  * it doesn't change scores yet.
  */
 
-export const HIDDEN_REASONS = ['clipped', 'offscreen', 'opacity_0', 'visibility_hidden', 'display_none', 'tiny_font', 'same_color', 'zero_size', 'aria_hidden'] as const;
+export const HIDDEN_REASONS = ['clipped', 'offscreen', 'opacity_0', 'visibility_hidden', 'display_none', 'tiny_font', 'same_color', 'zero_size', 'aria_hidden', 'alt_text', 'aria_label', 'html_comment', 'structured_data'] as const;
+/**
+ * Text people never read as page text: image alt text, aria-labels, HTML comments, JSON-LD. Found by the attack lab
+ * (Nov 4: an instruction planted there scored SAFE 0). Only injection-like text from these places is ever kept: real
+ * shops are full of long alt texts and structured data.
+ */
+export const MARKUP_REASONS: readonly HiddenReason[] = ['alt_text', 'aria_label', 'html_comment', 'structured_data'];
 export type HiddenReason = (typeof HIDDEN_REASONS)[number];
 
 /** What the browser reports for each hidden element (outermost hidden element only; its descendants are not repeated). */
@@ -82,6 +88,7 @@ export function filterHiddenText(candidates: HiddenCandidate[]): HiddenText[] {
     const text = clean(c.text);
     if (text.length < 12) continue;
     const possibleInjection = INJECTION_RE.test(text);
+    if (!possibleInjection && MARKUP_REASONS.includes(c.reason)) continue;
     if (!possibleInjection) {
       if (c.hashLink && SKIP_LINK_RE.test(text)) continue;
       if (text.length < MIN_HIDDEN_TEXT) continue;
@@ -141,5 +148,15 @@ export const HIDDEN_TEXT_JS = `() => {
     for (const c of el.children) walk(c);
   };
   if (document.body) for (const c of document.body.children) walk(c);
-  return out;
+  // Markup people never read: alt text, aria-labels, comments, JSON-LD strings. Injection-like text only, max 20.
+  const RE = new RegExp(${JSON.stringify(INJECTION_RE.source)}, 'i');
+  const marked = [];
+  const add = (text, reason, h) => { const t = (text || '').replace(/\\s+/g, ' ').trim(); if (marked.length < 20 && t.length >= 12 && RE.test(t)) marked.push({ text: t.slice(0, 1000), reason, hint: h.slice(0, 120), linkRatio: 0, context: 'markup', hashLink: false }); };
+  for (const el of document.querySelectorAll('img[alt]')) add(el.getAttribute('alt'), 'alt_text', hint(el));
+  for (const el of document.querySelectorAll('[aria-label]')) add(el.getAttribute('aria-label'), 'aria_label', hint(el));
+  const tw = document.createTreeWalker(document, NodeFilter.SHOW_COMMENT);
+  for (let n = tw.nextNode(), i = 0; n && i < 500; n = tw.nextNode(), i++) add(n.textContent, 'html_comment', 'comment');
+  const strings = (v, acc) => { if (acc.length > 200) return acc; if (typeof v === 'string') acc.push(v); else if (v && typeof v === 'object') for (const x of Object.values(v)) strings(x, acc); return acc; };
+  for (const el of document.querySelectorAll('script[type="application/ld+json"]')) { try { for (const t of strings(JSON.parse(el.textContent || ''), [])) add(t, 'structured_data', 'script[ld+json]'); } catch { /* not JSON */ } }
+  return out.slice(0, 100 - marked.length).concat(marked);
 }`;
