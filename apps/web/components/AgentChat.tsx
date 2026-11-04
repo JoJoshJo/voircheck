@@ -116,7 +116,7 @@ function save(v: { conversationId: string | null; chat: ChatState; fake: boolean
   }
 }
 
-export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; clientId: string }) {
+export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: string; clientId: string; ask?: { text: string; n: number } | null }) {
   const [chat, setChat] = useState(EMPTY);
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
@@ -194,6 +194,13 @@ export function AgentChat({ t, lang, clientId }: { t: Dict; lang: string; client
       setBusy(false);
     }
   }
+
+  // The workspace's "Ask the agent" chip: send its message once per press (n changes on each press).
+  const sendRef = useRef(send);
+  sendRef.current = send;
+  useEffect(() => {
+    if (ask) void sendRef.current(ask.text);
+  }, [ask]);
 
   function reset() {
     conversationId.current = null;

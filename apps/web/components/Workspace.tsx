@@ -26,7 +26,28 @@ export function timeAgo(iso: string, t: Dict, now = Date.now()): string {
   return fmt(t.workspace.hoursAgo, { n: Math.floor(mins / 60) });
 }
 
-export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initialCheck = null, autoStart = false }: { t: Dict; lang: string; clientId: string; initialDemoMode: boolean; autopay: boolean; initialCheck?: string | null; autoStart?: boolean }) {
+export function Workspace({
+  t,
+  lang,
+  clientId,
+  initialDemoMode,
+  autopay,
+  initialCheck = null,
+  autoStart = false,
+  demoLinks,
+}: {
+  t: Dict;
+  lang: string;
+  clientId: string;
+  initialDemoMode: boolean;
+  autopay: boolean;
+  initialCheck?: string | null;
+  autoStart?: boolean;
+  /** One-click "try it" links to our fictional demo stores (shown in Demo mode while nothing is checked yet). */
+  demoLinks?: { safe: string; scam: string };
+}) {
+  // "Ask the agent" chip: a message for the chat to send, with a counter so the same text can be asked again.
+  const [ask, setAsk] = useState<{ text: string; n: number } | null>(null);
   const [tab, setTab] = useState<'chat' | 'results'>(initialCheck ? 'results' : 'chat');
   const [demoMode, setDemoMode] = useState(initialDemoMode);
   const [url, setUrl] = useState(initialCheck ?? '');
@@ -106,7 +127,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
         {/* LEFT: chat */}
         <section className={`${card} flex max-h-[85vh] min-h-[540px] flex-col p-6 ${tab === 'chat' ? '' : 'hidden lg:flex'}`} aria-label={t.workspace.chatTitle}>
           <h2 className="text-[17px] font-medium">{t.workspace.chatTitle}</h2>
-          <AgentChat t={t} lang={lang} clientId={clientId} />
+          <AgentChat t={t} lang={lang} clientId={clientId} ask={ask} />
         </section>
 
         {/* RIGHT: results */}
@@ -126,6 +147,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
               </button>
             </label>
           </div>
+          {demoMode && <p className="-mt-3 px-1 text-[13px] text-faint">{t.workspace.demoModeLine}</p>}
 
           <form
             className={`${card} p-5`}
@@ -146,6 +168,41 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
           </form>
 
           {state.phase === 'idle' && <p className="px-1 text-[15px] text-muted">{initialCheck && url === initialCheck ? t.workspace.checkReady : t.workspace.empty}</p>}
+          {state.phase === 'idle' && demoMode && demoLinks && (
+            <div className="space-y-2 px-1" data-testid="try-demo">
+              <p className="text-[13px] text-faint">{t.workspace.tryTitle}</p>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    [t.workspace.trySafe, demoLinks.safe],
+                    [t.workspace.tryScam, demoLinks.scam],
+                  ] as const
+                ).map(([label, link]) => (
+                  <button
+                    key={link}
+                    type="button"
+                    className={btnSecondary}
+                    onClick={() => {
+                      setUrl(link);
+                      void run(link);
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  onClick={() => {
+                    setTab('chat');
+                    setAsk((a) => ({ text: t.agent.example, n: (a?.n ?? 0) + 1 }));
+                  }}
+                >
+                  {t.workspace.tryAgent}
+                </button>
+              </div>
+            </div>
+          )}
           {state.phase === 'scanning' && <ScanningCard t={t} url={state.url} signals={state.signals} liveViewUrl={state.liveViewUrl} />}
           {state.phase === 'done' && (
             <>
