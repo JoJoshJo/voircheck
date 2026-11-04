@@ -10,6 +10,7 @@ import { getDb } from '../db';
 import { getPayPal } from '../paypal';
 import { allowAgentRequest, checkScanLimits, hitWindow } from '../rate-limit';
 import { runStoreScan } from '../scan-runner';
+import { DailyCapError } from '../spend';
 import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } from '../scans';
 import { toScanView } from '../scan-view';
 import { preparePurchaseWith, storeOutput, type McpApi, type McpResult } from './core';
@@ -67,6 +68,7 @@ export function mcpApi(owner: TokenOwner, ctx: { ip: string; origin: string }): 
       } catch (err) {
         await finishLinkRequest(userId, sessionId, 'failed').catch(() => {});
         if (err instanceof SsrfError) return { ok: false, error: 'invalid_url' };
+        if (err instanceof DailyCapError) return { ok: false, error: 'daily_cap' };
         console.error('mcp check_store failed:', err instanceof Error ? err.message : 'unknown error');
         return { ok: false, error: 'scan_failed' };
       }

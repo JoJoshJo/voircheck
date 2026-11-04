@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { clientIp } from '../../../lib/client-ip';
 import { checkScanLimits } from '../../../lib/rate-limit';
 import { runStoreScan } from '../../../lib/scan-runner';
+import { DailyCapError } from '../../../lib/spend';
 import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } from '../../../lib/scans';
 import { toScanView, type ScanEvent } from '../../../lib/scan-view';
 import { getCurrentUser, getProfile } from '../../../lib/user';
@@ -81,8 +82,8 @@ export async function POST(req: Request) {
         send({ type: 'done', scan: toScanView(row), candidate });
       } catch (err) {
         await finishLinkRequest(user.id, sessionId, 'failed').catch(() => {});
-        send({ type: 'error', code: err instanceof SsrfError ? 'url' : 'failed' });
-        if (!(err instanceof SsrfError)) console.error('scan failed:', err instanceof Error ? err.message : 'unknown error');
+        send({ type: 'error', code: err instanceof SsrfError ? 'url' : err instanceof DailyCapError ? 'cap' : 'failed' });
+        if (!(err instanceof SsrfError) && !(err instanceof DailyCapError)) console.error('scan failed:', err instanceof Error ? err.message : 'unknown error');
       } finally {
         controller.close();
       }

@@ -142,6 +142,11 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
         const refundablePaidOrders = view.verdict === 'BLOCK' ? await refundableRefsAtStore(userId, row.url).catch(() => []) : [];
         return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules, refundablePaidOrders };
       } catch (err) {
+        // Today's KERNEL cap was reached between the check and the reservation: the calm "limit reached" line.
+        if (err instanceof DailyCapError) {
+          send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
+          return { status: 'unavailable', reason: 'rate_limited' };
+        }
         console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
         send({ type: 'scan_failed', storeId, reason: 'failed' });
         return { status: 'unavailable', reason: 'failed' };
