@@ -1,9 +1,11 @@
 # Keeps the two Render services awake while they are on the free plan (spec 5.16): a free instance sleeps after
 # 15 idle minutes and the next visit waits 30-60 s for it (a fresh scan of a sleeping demo store took 77 s, Nov 4).
 #
-# Free plan budget: 750 instance hours a month for the workspace. Both services awake 24/7 from Nov 4 to Nov 11 is
-# about 340 h; from Nov 11 to Dec 15 both are on Starter (always on, not counted), so these pings change nothing.
-# After Dec 15 the job stops itself: keeping two free services awake all month (~1,490 h) would exceed the budget.
+# Free plan budget: 750 instance hours a month for the workspace, and two services awake 24/7 use ~48 h a day:
+# Nov 1-11 fits (at most ~530 h), but on the free plan the budget would run out around Nov 16. So both services MUST
+# move to Starter on Nov 11 (spec 5.16), and each one's pings stop after its Starter date: Starter is always on, and
+# pings would only keep spending free hours if a service were still on the free plan. Each service has its own date,
+# so one that moves later keeps its pings until then (edit its date here).
 #
 # Only GETs of public, read-only paths. No secrets, no checkout.
 name: Keep warm
@@ -24,10 +26,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Ping the app and the demo stores
+      - name: Ping the app and the demo stores (each until its Starter date)
         run: |
-          if [ "$(date -u +%Y%m%d)" -gt 20261215 ]; then echo "Past Dec 15: keep-warm is off (free-plan hours)."; exit 0; fi
-          for url in https://voircheck.com/api/health https://voircheck-stores.onrender.com/robots.txt; do
+          today=$(date -u +%Y%m%d)
+          # "<last day to ping> <url>": voircheck-web, then voircheck-stores. Both move to Starter on Nov 11.
+          for entry in "20261111 https://voircheck.com/api/health" "20261111 https://voircheck-stores.onrender.com/robots.txt"; do
+            until=${entry%% *}; url=${entry#* }
+            if [ "$today" -gt "$until" ]; then echo "$url: on Starter since $until, not pinged"; continue; fi
             # Up to 90 s: a sleeping instance takes 30-60 s to answer. A failed ping never fails the job.
             curl -sS -o /dev/null --max-time 90 -w "$url %{http_code} %{time_total}s\n" "$url" || echo "$url unreachable"
           done
