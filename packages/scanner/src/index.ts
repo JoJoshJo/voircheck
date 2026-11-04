@@ -29,7 +29,7 @@ export {
   type PageAnalyzer,
   type PageForAnalysis,
 } from './signals/ai-page';
-export { filterHiddenText, INJECTION_RE, HiddenText, HiddenCandidate, type HiddenReason } from './hidden-text';
+export { ADDRESS_RE, filterHiddenText, INJECTION_CANDIDATE_RE, INSTRUCTION_RE, looksLikeInjection, ORDER_RE, HiddenText, HiddenCandidate, type HiddenReason } from './hidden-text';
 export { domainInfo, type DomainInfo } from './domain';
 export { CollectedEvidence, CollectedFacts, EvidencePage, extractFacts, pickEvidenceLinks, EVIDENCE_BUDGET_MS, type EvidenceKind } from './evidence-pages';
 export { detectBlockedPage, type BlockedReason } from './blocked-page';

@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 import type { CollectedFacts, EvidenceKind, EvidencePage } from '../evidence-pages';
-import { INJECTION_RE, type HiddenText } from '../hidden-text';
+import { looksLikeInjection, type HiddenText } from '../hidden-text';
 import { AI_FINDING_KINDS, AiFinding, AiSummary, type AiFindingKind, type SignalStatus } from '../schema';
 import { errorMessage, unavailable, type AiUsage, type SignalOutcome } from './types';
 
@@ -252,12 +252,12 @@ export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome
 
 /**
  * The prompt-injection hard rule needs two independent signs: the model reports an attempt AND its quote matches our
- * own injection patterns (`INJECTION_RE`, the hidden-text extractor's). A model finding alone stays a finding (and
+ * own injection rule (`looksLikeInjection`, the hidden-text extractor's: an instruction, or an AI addressed plus an order). A model finding alone stays a finding (and
  * counts toward its risk) but can't force HOLD: on the tune set the model called plain hidden marketing copy an injection.
  * The quote must also really be on the page: a made-up quote can't trigger it.
  */
 export function confirmedInjection(findings: readonly AiFinding[] | undefined): boolean {
-  return findings?.some((f) => f.kind === 'prompt_injection_attempt' && f.quoteVerified === true && INJECTION_RE.test(f.quote)) ?? false;
+  return findings?.some((f) => f.kind === 'prompt_injection_attempt' && f.quoteVerified === true && looksLikeInjection(f.quote)) ?? false;
 }
 
 /** The model sometimes writes a sentence where a page label goes ("home and product pages ..."): keep the first 40 chars. Long summaries and notes are cut too. Nothing else is repaired. */

@@ -47,31 +47,57 @@ export const MAX_HIDDEN_PER_PAGE = 10;
 /** Shorter hidden text is normal UI (screen-reader labels like "Close", "Cart, 2 items") unless it reads as an injection. */
 export const MIN_HIDDEN_TEXT = 40;
 
-/** Instructions or addressing an AI (EN/DE/FR). Deliberately broad: it only marks evidence for the AI signal. */
-export const INJECTION_RE = new RegExp(
-  [
-    '\\b(ignore|disregard|forget|override)\\b[^.]{0,40}\\b(instructions?|prompts?|rules|guidelines|previous|above)\\b',
-    '\\b(ai|a\\.i\\.)\\s+(shopping\\s+)?(agents?|assistants?|models?|bots?)\\b',
-    '\\b(shopping|ai|virtual)\\s+assistants?\\b',
-    '\\b(dear|attention|note to|hey)\\s+(ai|assistant|agent|bot|llm|chatgpt|claude|gpt)\\b',
-    '\\b(language model|llm|chatgpt|gpt-\\d|claude|gemini|copilot)\\b',
-    '\\bsystem prompt\\b',
-    '\\byou (must|should|are now|will now|are required to)\\b',
-    '\\b(approve|authorize|confirm|whitelist|trust)\\s+(this|the)\\s+(store|shop|site|merchant|payment|purchase|order)\\b',
-    '\\b(this|the)\\s+(store|shop|site|merchant)\\s+is\\s+(verified|safe|trusted|legit(imate)?|certified)\\b',
-    '\\b(verified|guaranteed)\\s+safe\\b',
-    '\\bmark\\s+(this|the)\\s+(store|shop|site)\\b',
-    '\\bdo not\\s+(flag|warn|report|block|mention)\\b',
-    '\\bignoriere\\b[^.]{0,40}\\b(anweisungen|regeln|vorgaben)\\b',
-    '\\b(ki|k\\.i\\.)[- ](agent|assistent|einkaufsassistent)\\w*\\b',
-    '\\bdu musst\\b|\\bsie müssen\\b',
-    '\\b(ignore[zr]?|oublie[zr]?)\\b[^.]{0,40}\\b(instructions|consignes|règles)\\b',
-    '\\b(agent|assistant)\\s+(ia|i\\.a\\.)\\b',
-    '\\btu dois\\b|\\bvous devez\\b',
-    '\\b(cette|la)\\s+boutique\\s+est\\s+(vérifiée|sûre|fiable)\\b',
-  ].join('|'),
-  'i',
-);
+const re = (parts: string[]) => new RegExp(parts.join('|'), 'i');
+
+/**
+ * Text that addresses an AI helper (EN/DE/FR). A mention alone is NOT an attack: big shops run their own AI shopping
+ * assistants and menus ("I'm your shopping assistant", "skills for Claude"; newegg.com, Nov 4 2026).
+ */
+export const ADDRESS_RE = re([
+  '\\b(ai|a\\.i\\.)\\s+(shopping\\s+)?(agents?|assistants?|models?|bots?)\\b',
+  '\\b(shopping|ai|virtual)\\s+(assistants?|agents?)\\b',
+  '\\b(dear|attention|note to|hey)\\s+(ai|assistant|agent|bot|llm|chatgpt|claude|gpt)\\b',
+  '\\b(language model|llm|chatgpt|gpt-\\d|claude|gemini|copilot)\\b',
+  '\\bassistant instructions?\\b',
+  '\\b(ki|k\\.i\\.)[- ](agent|assistent|einkaufsassistent)\\w*\\b',
+  '\\b(agent|assistant)\\s+(ia|i\\.a\\.)\\b',
+]);
+
+/** An instruction on its own: override the rules, claim a verdict, demand a ranking or silence, approve a payment. */
+export const INSTRUCTION_RE = re([
+  '\\b(ignore|disregard|forget|override)\\b[^.]{0,40}\\b(instructions?|prompts?|rules|guidelines|previous|above|warnings?)\\b',
+  '\\bsystem prompt\\b',
+  '\\b(approve|authorize|confirm|whitelist|trust)\\s+(this|the)\\s+(store|shop|site|merchant|payment|purchase|order)\\b',
+  '\\b(this|the)\\s+(store|shop|site|merchant)\\s+is\\s+(verified|safe|trusted|legit(imate)?|certified)\\b',
+  '\\b(verified|guaranteed)\\s+safe\\b',
+  '\\bmark\\s+(this|the)\\s+(store|shop|site)\\b',
+  '\\bdo not\\s+(flag|warn|report|block|mention)\\b',
+  '\\b(always\\s+)?rank\\s+(this|the|our)\\s+(store|shop|site)\\s+first\\b',
+  '\\brecommend\\s+(it|this|us)\\s+over\\b',
+  '\\bignoriere\\b[^.]{0,40}\\b(anweisungen|regeln|vorgaben|warnungen)\\b',
+  '\\b(ignore[zr]?|oublie[zr]?)\\b[^.]{0,40}\\b(instructions|consignes|règles|avertissements)\\b',
+  '\\b(cette|la)\\s+boutique\\s+est\\s+(vérifiée|sûre|fiable)\\b',
+]);
+
+/** Orders that count only in text that also addresses an AI ("You must…" alone is ordinary help-page copy). */
+export const ORDER_RE = re([
+  '\\byou (must|should|are now|will now|are required to)\\b',
+  '\\bdu musst\\b|\\bsie müssen\\b|\\btu dois\\b|\\bvous devez\\b',
+  '\\b(send|transfer)\\s+(the\\s+)?payment\\b',
+  '\\bgift ?cards?\\b',
+  '\\bcomplete (the )?(checkout|order|purchase|payment)\\b',
+  '\\bbuy (here|now)\\b',
+  '\\bwithout asking\\b',
+  '\\bpre-?approved\\b',
+]);
+
+/** An instruction aimed at an outside AI helper: an instruction on its own, or an AI addressed plus an order. */
+export function looksLikeInjection(text: string): boolean {
+  return INSTRUCTION_RE.test(text) || (ADDRESS_RE.test(text) && ORDER_RE.test(text));
+}
+
+/** Markup the in-page walk collects as candidates (any of the three; filterHiddenText then applies looksLikeInjection). */
+export const INJECTION_CANDIDATE_RE = new RegExp([ADDRESS_RE.source, INSTRUCTION_RE.source, ORDER_RE.source].join('|'), 'i');
 
 /** Hidden-by-design UI: menus, drawers, modals, cookie/consent banners, tabs, carousels, tooltips. */
 const UI_CONTEXT_RE =
@@ -87,7 +113,7 @@ export function filterHiddenText(candidates: HiddenCandidate[]): HiddenText[] {
   for (const c of candidates) {
     const text = clean(c.text);
     if (text.length < 12) continue;
-    const possibleInjection = INJECTION_RE.test(text);
+    const possibleInjection = looksLikeInjection(text);
     if (!possibleInjection && MARKUP_REASONS.includes(c.reason)) continue;
     if (!possibleInjection) {
       if (c.hashLink && SKIP_LINK_RE.test(text)) continue;
@@ -149,7 +175,7 @@ export const HIDDEN_TEXT_JS = `() => {
   };
   if (document.body) for (const c of document.body.children) walk(c);
   // Markup people never read: alt text, aria-labels, comments, JSON-LD strings. Injection-like text only, max 20.
-  const RE = new RegExp(${JSON.stringify(INJECTION_RE.source)}, 'i');
+  const RE = new RegExp(${JSON.stringify(INJECTION_CANDIDATE_RE.source)}, 'i');
   const marked = [];
   const add = (text, reason, h) => { const t = (text || '').replace(/\\s+/g, ' ').trim(); if (marked.length < 20 && t.length >= 12 && RE.test(t)) marked.push({ text: t.slice(0, 1000), reason, hint: h.slice(0, 120), linkRatio: 0, context: 'markup', hashLink: false }); };
   for (const el of document.querySelectorAll('img[alt]')) add(el.getAttribute('alt'), 'alt_text', hint(el));
