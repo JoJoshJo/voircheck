@@ -56,6 +56,43 @@ body {
 .vc-float { animation: vc-float 2.4s ease-in-out infinite; }
 .vc-scan { animation: vc-scan 1.6s ease-in-out infinite; transform-origin: 30px 44px; }
 .vc-tick { animation: vc-tick 240ms ease-out both; }
+
+/*
+ * Ghost strokes (Mascot.tsx). Each stroke has pathLength=1, so a dash offset of 1 hides it and 0 shows it.
+ * .vc-off = not earned yet (a check still running); earning one draws it in 500 ms.
+ */
+.vc-part { stroke-dasharray: 1; stroke-dashoffset: 0; transition: stroke-dashoffset 500ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 120ms; }
+.vc-part.vc-off { stroke-dashoffset: 1; opacity: 0; }
+.vc-eyes { transform-origin: 31.75px 28.5px; transition: opacity 300ms ease-out, transform 300ms ease-out; }
+.vc-eyes.vc-off { opacity: 0; transform: scale(0.4); }
+.vc-fill { transition: opacity 300ms ease-out; }
+.vc-fill.vc-off { opacity: 0; }
+@keyframes vc-draw {
+  from { stroke-dashoffset: 1; opacity: 0; }
+  1% { opacity: 1; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+@keyframes vc-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes vc-fade { from { opacity: 0; } to { opacity: 1; } }
+/* Hero: the ghost assembles once (2.2 s in all, each step ≤ 450 ms). */
+.vc-asm .vc-part { animation: vc-draw 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.vc-asm .vc-s1 { animation-delay: 300ms; }
+.vc-asm .vc-s2 { animation-delay: 600ms; }
+.vc-asm .vc-eyes { animation: vc-pop 300ms ease-out 1000ms both; }
+.vc-asm .vc-s4 { animation-delay: 1200ms; }
+.vc-asm .vc-s5 { animation-delay: 1500ms; animation-duration: 300ms; }
+.vc-asm .vc-fill { animation: vc-fade 400ms ease-out 1050ms both; }
+.vc-asm .vc-face .vc-part { animation-delay: 1800ms; animation-duration: 400ms; }
+/* Result: the verdict face draws in once the check is done. */
+.vc-face-in .vc-face .vc-part { animation: vc-draw 400ms ease-out 100ms both; }
+/* Hero background: stone to white once the ghost is assembled. */
+@keyframes vc-hero-bg { from { background-color: var(--color-surface); } to { background-color: var(--color-white); } }
+.vc-hero-bg { animation: vc-hero-bg 600ms ease-out 2200ms both; }
+
 @media (prefers-reduced-motion: reduce) {
-  .vc-float, .vc-scan, .vc-tick { animation: none; }
+  .vc-float, .vc-scan, .vc-tick, .vc-asm .vc-part, .vc-asm .vc-eyes, .vc-asm .vc-fill, .vc-face-in .vc-face .vc-part, .vc-hero-bg { animation: none; }
+  .vc-part, .vc-eyes, .vc-fill { transition: none; }
 }

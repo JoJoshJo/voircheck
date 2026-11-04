@@ -290,7 +290,7 @@
     - BLOCK: bg `#FCEBEB` / text `#791F1F`
   - Primary button: solid ink `#0C0C0C` with white text.
 - **Font:** system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`) falling back to **Inter**. Never embed SF Pro (Apple's license doesn't allow web embedding). Two weights: regular and medium.
-- **Mascot:** a little ghost holding a magnifying glass, **minimal black line art** (SVG). Floats over each store card while scanning; expression follows the verdict: relaxed (SAFE), curious (HOLD), alarmed (BLOCK). Lightweight animation; respects `prefers-reduced-motion`.
+- **Mascot:** a little ghost holding a magnifying glass, **minimal black line art** (SVG). Floats over each store card while scanning; expression follows the verdict: smile (SAFE, looks safe), raised brow (HOLD, a bit off), frown (BLOCK, looks fake). **Motion (✅ Nov 4, J picked from mockups):** drawn as six strokes (left side, right side, hem, eyes, glass, handle). Landing hero: assembles once on load (each step ≤ 450 ms, 2.2 s in all), then the hero background shifts stone → white. During a store check: one stroke per finished check over a faint dotted outline, then the verdict face. Pure SVG/CSS; under `prefers-reduced-motion` every step still shows, without motion.
 - **Logo:** "VoirCheck" wordmark in the system font, medium weight. The ghost icon alone is the favicon / app icon.
 - **Tone of voice:** calm, plain and direct, like a sharp friend. Example: "This store is 6 days old and copied Velbrook's site. I'd skip it." No jargon, no fear-mongering, no exclamation marks.
 
