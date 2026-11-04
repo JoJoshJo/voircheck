@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { AgentEvent } from '../lib/agent-view';
 import { DICTS } from '../lib/i18n';
-import { AgentChat, applyAgentEvent, applyRefundResult, buyMessage, StoreCard } from './AgentChat';
+import { AgentChat, applyAgentEvent, applyRefundResult, buyMessage, pendingApproval, StoreCard } from './AgentChat';
 
 const store = (storeId: string, storeName: string, price: string) => ({ storeId, storeName, productTitle: 'Zephlet Buds', price, currency: 'USD', demo: true });
 const scan = (verdict: 'SAFE' | 'BLOCK') => ({ id: `scan-${verdict}`, url: 'https://x.test/', domain: 'x.test', verdict, score: verdict === 'SAFE' ? 5 : 85, signals: [], hardRules: [], cantVerify: null, scannedAt: '2026-10-31T10:00:00Z' });
@@ -79,5 +79,31 @@ describe('chat panel', () => {
     expect(html).toContain(DICTS[lang].agent.inputLabel);
     expect(html).toContain(DICTS[lang].agent.send);
     expect(html).toContain(DICTS[lang].agent.example);
+  });
+});
+
+describe('waiting for approval', () => {
+  const base: AgentEvent[] = [
+    { type: 'stores', stores: [store('a', 'Velbrook Supply', '59.00'), store('b', 'Velbrook-Outlet Deals', '23.00')] },
+    { type: 'scan_done', storeId: 'a', scan: scan('SAFE'), cached: false },
+    { type: 'order', storeId: 'a', paymentId: 'pay-1', orderId: 'ORDER1', ref: 'VC-7K2F' },
+  ];
+  const run = (events: AgentEvent[]) => events.reduce(applyAgentEvent, { items: [], stores: {}, payments: {} });
+
+  it('names the prepared order until PayPal settles it', () => {
+    expect(pendingApproval(run(base.slice(0, 2)))).toBeNull();
+    expect(pendingApproval(run(base))?.order?.ref).toBe('VC-7K2F');
+    for (const status of ['authorized', 'captured', 'voided', 'failed']) expect(pendingApproval(run([...base, { type: 'payment', paymentId: 'pay-1', status }]))).toBeNull();
+  });
+
+  it('the order section has an anchor the bar scrolls to', () => {
+    const s = run(base).stores.a!;
+    const html = renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s, payments: { 'pay-1': 'captured' }, busy: false, onBuy: () => {} }));
+    expect(html).toContain('id="order-pay-1"');
+  });
+
+  it.each(['en', 'fr'] as const)('the bar reads in plain words (%s)', (lang) => {
+    expect(DICTS[lang].agent.pendingOrder).toMatch(/\{ref\}.*\{price\}.*\{store\}/);
+    expect(DICTS[lang].agent.approveNow).toMatch(/PayPal/);
   });
 });

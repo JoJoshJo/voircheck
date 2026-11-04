@@ -90,6 +90,12 @@ type ChatState = typeof EMPTY;
 /** Payment states after which the chat shows the outcome instead of the PayPal button. */
 const SETTLED = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'replaced', 'failed', 'expired', 'refund_pending', 'refunded']);
 
+/** The newest prepared order the person hasn't approved yet (no settled payment status), if any. */
+export function pendingApproval(chat: { stores: Record<string, StoreState>; payments: Record<string, string> }): StoreState | null {
+  const waiting = Object.values(chat.stores).filter((s) => s.order && !SETTLED.has(chat.payments[s.order.paymentId] ?? ''));
+  return waiting.at(-1) ?? null;
+}
+
 /**
  * The chat survives a trip to the payment page and back (same browser tab): what's on screen plus the conversation ID,
  * whose history the server keeps for 2 hours. A convenience only: storage can be missing or blocked, then the chat
@@ -202,6 +208,8 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
     if (ask) void sendRef.current(ask.text);
   }, [ask]);
 
+  const pending = pendingApproval(chat);
+
   function reset() {
     conversationId.current = null;
     setChat(EMPTY);
@@ -245,6 +253,24 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
         {error && <p className="text-[14px] text-muted">{error}</p>}
       </div>
       {fake && <p className="mb-2 text-[12px] text-faint">{t.agent.fakeNote}</p>}
+      {pending?.order && (
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-control border border-ink px-3 py-2.5" data-testid="pending-approval">
+          <p className="min-w-0 flex-1 text-[13px]">
+            {fmt(t.agent.pendingOrder, {
+              ref: pending.order.ref ?? '',
+              price: pending.store.price ? new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: pending.store.currency }).format(Number(pending.store.price)) : '',
+              store: pending.store.storeName,
+            })}
+          </p>
+          <button
+            type="button"
+            className={`${btnPrimary} !h-9 !px-4 !text-[13px]`}
+            onClick={() => document.getElementById(`order-${pending.order!.paymentId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          >
+            {t.agent.approveNow}
+          </button>
+        </div>
+      )}
       <form
         className="flex gap-2"
         onSubmit={(e) => {
@@ -325,7 +351,7 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
         )}
         {s.refused && <p className="text-[14px] font-medium">{fmt(t.agent.refused, { reason: t.agent[`reason_${s.refused}` as 'reason_other'] ?? t.agent.reason_other })}</p>}
         {s.order && s.scan && (
-          <div className="space-y-3 border-t border-line pt-3">
+          <div id={`order-${s.order.paymentId}`} className="space-y-3 border-t border-line pt-3">
             <p className="text-[14px] font-medium">{t.agent.payTitle}</p>
             <p className="text-[13px] leading-relaxed text-muted">{t.agent.payBody}</p>
             {s.order.ref && <p className="text-[13px] text-muted">{fmt(t.agent.orderRef, { ref: s.order.ref })}</p>}
