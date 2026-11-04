@@ -261,6 +261,9 @@ access or keys.
   shops, which make up much of our scam source.
 - **Run-to-run noise.** The scan model accepts no temperature setting, so the same page can score differently on
   two runs (up to about 20 points in our check). Scores near a cutoff can flip.
+- **Chats live in server memory.** A conversation with the shopping agent is kept in the web server's memory for
+  2 hours, and resets on a redeploy or instance restart (the chat then starts over). Orders, receipts and History
+  are stored in the database and survive restarts (see Data retention below).
 - **Small, regional samples.** Our scams come from one source and are mostly German and Austrian.
 - **Data retention.** Data is kept through judging (until 2026-12-15); after that, user-linked data is deleted 90
   days after it was created (`pnpm retention:run`, rules in `db/src/retention.ts`).
