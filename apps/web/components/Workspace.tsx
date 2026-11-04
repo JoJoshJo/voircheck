@@ -10,6 +10,7 @@ import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
 import { Checkout } from './Checkout';
 import { CHECK_AUTO_COOKIE, CHECK_COOKIE, DEMO_COOKIE } from '../lib/workspace';
+import { builtStrokes } from '../lib/ghost';
 import { Mascot } from './Mascot';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, card, input } from './ui';
@@ -233,7 +234,7 @@ function Checklist({ t, signals }: { t: Dict; signals: Partial<Record<string, Si
             <span className="text-[15px]">{t.signals[id]}</span>
             <span className="flex items-center gap-2 text-[13px] text-muted">
               {t.signals[`status_${s}`]}
-              <SignalIcon state={s} />
+              <SignalIcon state={s} id={id} />
             </span>
           </li>
         );
@@ -246,7 +247,7 @@ function ScanningCard({ t, url, signals, liveViewUrl }: { t: Dict; url: string; 
   return (
     <div className={`${card} relative p-5`}>
       <div className="absolute -top-7 right-6">
-        <Mascot mood="scanning" size={64} title={t.workspace.checking} />
+        <Mascot mood="scanning" size={64} built={builtStrokes(signals)} title={t.workspace.checking} />
       </div>
       <p className="pr-20 text-[16px] font-medium" role="status" aria-live="polite">
         {scanStage(t, signals)}
@@ -330,7 +331,7 @@ function ResultCard({ t, scan, cached, onRescan }: { t: Dict; scan: ScanView; ca
             {scoreLine(t, scan)}
           </p>
         </div>
-        <Mascot mood={scan.verdict} size={72} title={t.verdict[scan.verdict]} />
+        <Mascot mood={scan.verdict} size={72} faceIn title={t.verdict[scan.verdict]} />
       </div>
       <div className="p-5">
         <p className="truncate text-[13px] text-faint">{scan.url}</p>

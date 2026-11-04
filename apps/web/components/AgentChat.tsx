@@ -8,6 +8,7 @@ import { plainVerdict } from '../lib/plain-verdict';
 import { scanStage } from '../lib/scan-stage';
 import type { ScanView } from '../lib/scan-view';
 import { Checkout } from './Checkout';
+import { builtStrokes } from '../lib/ghost';
 import { Mascot } from './Mascot';
 import { RefundButton } from './RefundButton';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
@@ -327,9 +328,12 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
   return (
     <div className="overflow-hidden rounded-control border border-line bg-white">
       {verdict && plain && (
-        <div className={`px-4 py-3 ${VERDICT_CLASSES[verdict]}`}>
-          <p className="text-[17px] font-medium leading-snug">{plain.line}</p>
-          {plain.ask && <p className="mt-0.5 text-[15px] opacity-90">{plain.ask}</p>}
+        <div className={`flex items-center gap-3 px-4 py-3 ${VERDICT_CLASSES[verdict]}`}>
+          <div className="min-w-0 flex-1">
+            <p className="text-[17px] font-medium leading-snug">{plain.line}</p>
+            {plain.ask && <p className="mt-0.5 text-[15px] opacity-90">{plain.ask}</p>}
+          </div>
+          <Mascot mood={verdict} size={40} faceIn title="" />
         </div>
       )}
       <div className="space-y-3 px-4 py-3">
@@ -345,7 +349,7 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
         </div>
         {s.phase === 'scanning' && (
           <p className="flex items-center gap-2 text-[15px] text-muted" role="status" aria-live="polite">
-            <Mascot mood="scanning" size={28} title="" />
+            <Mascot mood="scanning" size={36} built={builtStrokes(signals)} title="" />
             {scanStage(t, signals)}
           </p>
         )}
@@ -363,7 +367,7 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
                 const st = signals[id] ?? 'pending';
                 return (
                   <li key={id} className="flex items-center gap-1.5 text-[13px] text-muted" title={t.signals[`status_${st}`]}>
-                    <SignalIcon state={st} />
+                    <SignalIcon state={st} id={id} />
                     {t.signals[id]}
                     <span className="sr-only">: {t.signals[`status_${st}`]}</span>
                   </li>

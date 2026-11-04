@@ -153,6 +153,21 @@ describe('while checking a shop', () => {
     expect(html).toContain('role="status"');
     expect(html).toContain('aria-live="polite"');
   });
+
+  it('the ghost builds one stroke per finished check while the other icons still move', () => {
+    const html = renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'scanning', signals: { domain_age: 'pass', price: 'warn' } }, payments: {}, busy: true, onBuy: () => {} }));
+    expect(html).toContain('data-built="2"');
+    expect(html).not.toContain('data-face');
+    expect(html).toContain('vc-run-ssl_redirects');
+    expect(html).not.toContain('vc-run-price');
+    expect(html).toContain('fill-hold-bg');
+  });
+
+  it.each([['SAFE'], ['HOLD'], ['BLOCK']] as const)('when done, the ghost ends on the %s face', (verdict) => {
+    const html = renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'done', signals: {}, scan: { ...scan(verdict === 'BLOCK' ? 'BLOCK' : 'SAFE'), verdict } }, payments: {}, busy: false, onBuy: () => {} }));
+    expect(html).toContain(`data-face="${verdict}"`);
+    expect(html).toContain('vc-face-in');
+  });
 });
 
 describe('after paying', () => {
