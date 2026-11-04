@@ -226,7 +226,7 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div ref={list} className="flex-1 space-y-4 overflow-y-auto py-4">
+      <div ref={list} className="flex-1 space-y-4 overflow-y-auto py-4" role="log" aria-live="polite" aria-label={t.workspace.chatTitle}>
         {chat.items.length === 0 ? (
           <div className="flex h-full flex-col items-center justify-center gap-5 py-10 text-center">
             <Mascot mood="idle" size={72} />
@@ -238,20 +238,20 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
         ) : (
           chat.items.map((item, i) =>
             item.kind === 'user' ? (
-              <p key={i} className="ml-auto w-fit max-w-[85%] rounded-2xl bg-ink px-4 py-2.5 text-[15px] text-white">
+              <p key={i} className="ml-auto w-fit max-w-[85%] rounded-2xl bg-ink px-4 py-2.5 text-[16px] text-white">
                 <span className="sr-only">{t.agent.you}{t.colon} </span>
                 {item.text}
               </p>
             ) : item.kind === 'agent' ? (
               <div key={i} className="space-y-3">
-                <p className="max-w-[92%] whitespace-pre-line text-[15px] leading-relaxed">
+                <p className="max-w-[92%] whitespace-pre-line text-[16px] leading-relaxed">
                   <span className="sr-only">{t.agent.agent}{t.colon} </span>
                   {item.text}
                 </p>
                 {i === chat.items.length - 1 && !busy && !!item.replies?.length && (
                   <div className="flex flex-wrap gap-2" role="group" aria-label={t.agent.quickReplies}>
                     {item.replies.map((q) => (
-                      <button key={q} type="button" onClick={() => void send(q)} className="min-h-11 rounded-full border border-line bg-white px-4 text-left text-[15px] text-ink transition hover:border-ink">
+                      <button key={q} type="button" onClick={() => void send(q)} className="min-h-11 rounded-full border border-line bg-white px-4 text-left text-[15px] text-ink transition hover:border-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">
                         {q}
                       </button>
                     ))}
@@ -287,7 +287,7 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
           </p>
           <button
             type="button"
-            className={`${btnPrimary} !h-9 !px-4 !text-[13px]`}
+            className={`${btnPrimary} !px-4 !text-[14px]`}
             onClick={() => document.getElementById(`order-${pending.order!.paymentId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
           >
             {t.agent.approveNow}
@@ -310,7 +310,7 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
         </button>
       </form>
       {chat.items.length > 0 && (
-        <button type="button" onClick={reset} disabled={busy} className="mt-2 self-start text-[13px] text-muted underline underline-offset-4">
+        <button type="button" onClick={reset} disabled={busy} className="mt-1 inline-flex min-h-11 items-center self-start text-[14px] text-muted underline underline-offset-4">
           {t.agent.newChat}
         </button>
       )}
@@ -373,7 +373,7 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
             {s.scan && (
               <p className="pt-2 text-[13px] text-muted">
                 {s.cached ? `${t.agent.cachedScan} · ` : ''}
-                <Link href={`/app/scans/${s.scan.id}`} className="text-ink underline underline-offset-4">
+                <Link href={`/app/scans/${s.scan.id}`} className="inline-flex min-h-11 items-center text-ink underline underline-offset-4">
                   {t.workspace.viewEvidence}
                 </Link>
               </p>

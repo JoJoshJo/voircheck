@@ -157,3 +157,22 @@ describe('after paying', () => {
     expect(html).not.toContain(t.agent.payBody);
   });
 });
+
+describe('accessibility', () => {
+  it('tap targets are at least 44 px, focus is visible, inputs are 16 px (no zoom on phones)', async () => {
+    const ui = await import('./ui');
+    for (const c of [ui.btnPrimary, ui.btnSecondary]) {
+      expect(c).toMatch(/min-h-11/);
+      expect(c).toMatch(/focus-visible:outline/);
+    }
+    expect(ui.input).toMatch(/min-h-11/);
+    expect(ui.input).toContain('text-[16px]');
+  });
+
+  it('new messages are announced: the conversation is a labelled log', () => {
+    const html = renderToStaticMarkup(createElement(AgentChat, { t: DICTS.en, lang: 'en', clientId: 'sb' }));
+    expect(html).toContain('role="log"');
+    expect(html).toContain('aria-live="polite"');
+    expect(html).toContain(`aria-label="${DICTS.en.workspace.chatTitle}"`);
+  });
+});
