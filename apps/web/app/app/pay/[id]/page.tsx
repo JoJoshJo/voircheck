@@ -7,11 +7,10 @@ import { btnPrimary, btnSecondary, card } from '../../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../../components/Verdict';
 import { DICTS, fmt } from '../../../../lib/i18n';
 import { getPaymentView } from '../../../../lib/payment-view';
+import { payTitleKey } from '../../../../lib/pay-status';
 import { requireOnboardedUser } from '../../../../lib/user';
 
 export const dynamic = 'force-dynamic';
-
-const TITLE = { captured: 'captured', authorized: 'held', voided: 'voided', cancelled: 'cancelled', replaced: 'replaced', capture_pending: 'pending', capture_denied: 'denied', failed: 'denied', created: 'pending', approved: 'pending', refund_pending: 'refund_pending', refunded: 'refunded' } as const;
 
 /** Payment step result (spec 5.11 #5): paid, HOLD (held, decide), BLOCK (voided, "Pay anyway"), cancelled. */
 export default async function PaymentPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ from?: string | string[] }> }) {
@@ -24,7 +23,7 @@ export default async function PaymentPage({ params, searchParams }: { params: Pr
   const p = await getPaymentView(id, user.id);
   if (!p) notFound();
 
-  const key = p.expired ? 'expired' : TITLE[p.status];
+  const key = payTitleKey(p);
   const mood: MascotMood = p.verdict ?? 'idle';
   const band = p.verdict ? VERDICT_CLASSES[p.verdict] : 'bg-surface text-ink';
   const money = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: p.currency }).format(Number(p.amount));
