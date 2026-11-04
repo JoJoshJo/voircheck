@@ -24,6 +24,8 @@ interface Conversation {
   /** storeId (candidate ID) → what we found, including the URLs the model never sees. */
   stores: Map<string, SearchResult>;
   scans: Map<string, string>;
+  /** storeId → its scan, started as soon as search returns it (get_scan_verdict then reuses it). */
+  scanJobs: Map<string, Promise<ScanStoreResult>>;
   orders: Map<string, string>;
   payments: Set<string>;
   /** paymentId → the payment status the agent last heard about (so the next turn can tell it what changed). */
@@ -57,7 +59,7 @@ export function openConversation(userId: string, id: string | null): { id: strin
     found.touchedAt = now;
     return { id: id!, conv: found };
   }
-  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), orders: new Map(), payments: new Set(), lastStatus: new Map(), busy: false, touchedAt: now, costUsd: 0 };
+  const conv: Conversation = { userId, messages: [], stores: new Map(), scans: new Map(), scanJobs: new Map(), orders: new Map(), payments: new Set(), lastStatus: new Map(), busy: false, touchedAt: now, costUsd: 0 };
   const newId = crypto.randomUUID();
   conversations.set(newId, conv);
   return { id: newId, conv };
@@ -104,9 +106,69 @@ function safeLinkUrl(raw: string): string | null {
 
 const PAYMENT_STATUSES = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
 
+type ScanStoreResult = Awaited<ReturnType<AgentDeps['scanStore']>>;
+
 export function webDeps(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; send: (e: AgentEvent) => void }): AgentDeps {
   const { conv, userId, send } = o;
   const { gate, store } = getPayPal();
+
+  async function scanOnce(storeId: string): Promise<ScanStoreResult> {
+    const found = conv.stores.get(storeId);
+    if (!found) return { status: 'unavailable', reason: 'unknown_store' };
+    // Demo stores: their product page (the price and copycat checks compare product pages). Real retailers: the
+    // store itself (Channel3's buy link is a tracking redirect).
+    const url = canonicalUrl(assertSafeUrlShape(found.source === 'demo' ? found.productUrl : found.storeUrl).href);
+    send({ type: 'scan_start', storeId });
+    try {
+      let row = await findFreshScan(url);
+      const cached = !!row;
+      if (!row) {
+        const limit = await checkScanLimits({ userId, isGuest: o.isGuest, ip: o.ip, fresh: true });
+        if (!limit.ok) {
+          send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
+          return { status: 'unavailable', reason: 'rate_limited' };
+        }
+        row = await runStoreScan({ url, demoMode: o.demoMode, liveView: false, onProgress: (e) => e.type === 'signal' && send({ type: 'scan_signal', storeId, id: e.id, status: e.status }) });
+      }
+      conv.scans.set(storeId, row.id);
+      const view = toScanView(row);
+      send({ type: 'scan_done', storeId, scan: view, cached });
+      // A store the person already paid now scans BLOCK: tell the agent which orders it can offer to refund.
+      const refundablePaidOrders = view.verdict === 'BLOCK' ? await refundableRefsAtStore(userId, row.url).catch(() => []) : [];
+      return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules, refundablePaidOrders };
+    } catch (err) {
+      // Today's KERNEL cap was reached, or the app is running its maximum of scans at once: the calm "limit reached" line.
+      if (err instanceof DailyCapError || err instanceof ScanBusyError) {
+        send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
+        return { status: 'unavailable', reason: 'rate_limited' };
+      }
+      console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
+      send({ type: 'scan_failed', storeId, reason: 'failed' });
+      return { status: 'unavailable', reason: 'failed' };
+    }
+  }
+
+  /**
+   * One scan per store per conversation, shared by the prefetch and get_scan_verdict. A result that isn't "ok"
+   * (limit reached, failed) is forgotten once it's in, so a later get_scan_verdict tries again.
+   */
+  function ensureScan(storeId: string): Promise<ScanStoreResult> {
+    const running = conv.scanJobs.get(storeId);
+    if (running) return running;
+    const job = scanOnce(storeId).then(
+      (r) => {
+        if (r.status !== 'ok') conv.scanJobs.delete(storeId);
+        return r;
+      },
+      (err: unknown) => {
+        conv.scanJobs.delete(storeId);
+        throw err;
+      },
+    );
+    conv.scanJobs.set(storeId, job);
+    return job;
+  }
+
   return {
     async searchStores(query, maxPrice) {
       const r = await compareStores(query, { apiKey: process.env.CHANNEL3_API_KEY, demoMode: o.demoMode, demoStoresBaseUrl: process.env.DEMO_STORES_BASE_URL, maxPrice });
@@ -125,44 +187,13 @@ export function webDeps(o: { convId: string; conv: Conversation; userId: string;
       const stores = rows.map((row, i) => ({ storeId: candidateIds[i]!, storeName: row.storeName, productTitle: row.productTitle, price: row.price, currency: row.currency, demo: row.source === 'demo' }));
       candidateIds.forEach((id, i) => conv.stores.set(id, picks[i]!));
       send({ type: 'stores', stores });
+      // Start checking them now, while the model reads the results: it asks for every store's verdict next
+      // (the prompt requires it), and get_scan_verdict then reuses these scans. Same path, limits and caps.
+      for (const id of candidateIds) ensureScan(id).catch(() => {}); // an error reaches the model on its own call
       return { status: 'ok', stores, sameProduct: r.sameProduct };
     },
 
-    async scanStore(storeId) {
-      const found = conv.stores.get(storeId);
-      if (!found) return { status: 'unavailable', reason: 'unknown_store' };
-      // Demo stores: their product page (the price and copycat checks compare product pages). Real retailers: the
-      // store itself (Channel3's buy link is a tracking redirect).
-      const url = canonicalUrl(assertSafeUrlShape(found.source === 'demo' ? found.productUrl : found.storeUrl).href);
-      send({ type: 'scan_start', storeId });
-      try {
-        let row = await findFreshScan(url);
-        const cached = !!row;
-        if (!row) {
-          const limit = await checkScanLimits({ userId, isGuest: o.isGuest, ip: o.ip, fresh: true });
-          if (!limit.ok) {
-            send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
-            return { status: 'unavailable', reason: 'rate_limited' };
-          }
-          row = await runStoreScan({ url, demoMode: o.demoMode, liveView: false, onProgress: (e) => e.type === 'signal' && send({ type: 'scan_signal', storeId, id: e.id, status: e.status }) });
-        }
-        conv.scans.set(storeId, row.id);
-        const view = toScanView(row);
-        send({ type: 'scan_done', storeId, scan: view, cached });
-        // A store the person already paid now scans BLOCK: tell the agent which orders it can offer to refund.
-        const refundablePaidOrders = view.verdict === 'BLOCK' ? await refundableRefsAtStore(userId, row.url).catch(() => []) : [];
-        return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules, refundablePaidOrders };
-      } catch (err) {
-        // Today's KERNEL cap was reached, or the app is running its maximum of scans at once: the calm "limit reached" line.
-        if (err instanceof DailyCapError || err instanceof ScanBusyError) {
-          send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
-          return { status: 'unavailable', reason: 'rate_limited' };
-        }
-        console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
-        send({ type: 'scan_failed', storeId, reason: 'failed' });
-        return { status: 'unavailable', reason: 'failed' };
-      }
-    },
+    scanStore: (storeId) => ensureScan(storeId),
 
     async checkLink(raw) {
       // Same path as /api/scans: SSRF-safe URL, cache, the person's scan limits, then runStoreScan (which reserves the
@@ -322,6 +353,9 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
       if (e.type === 'assistant_text') for (const ev of agentTextEvents(e.text)) o.send(ev);
     },
   });
+  // Scans started when search returned finish inside this turn, so their cards never stay on "checking" after the
+  // stream closes (normally they are long done: the model asks for every verdict).
+  await Promise.allSettled([...o.conv.scanJobs.values()]);
   o.conv.messages = messages;
   o.conv.costUsd += usage.costUsd;
   await recordSpendQuietly({ anthropicUsd: usage.costUsd });
