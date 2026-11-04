@@ -9,6 +9,8 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-inter', display: 'swap' });
 
 export const metadata: Metadata = {
+  // Makes the share card's /og.png absolute; on its own it adds no tags (cards are per public page, lib/og.ts).
+  metadataBase: new URL(process.env.APP_URL?.trim() || 'https://voircheck.com'),
   title: { default: 'VoirCheck', template: '%s · VoirCheck' },
   description: 'Before your agent pays, VoirCheck sees who it’s paying.',
 };

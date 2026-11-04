@@ -1,10 +1,13 @@
 import { SiteHeader } from '../../components/SiteHeader';
 import { card } from '../../components/ui';
 import { DICTS, isLang } from '../../lib/i18n';
+import { shareCard } from '../../lib/og';
 import { getCurrentUser, getProfile, guessLang } from '../../lib/user';
 import { WEIGHTS } from '@voircheck/scanner';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata = { title: 'How it works', ...shareCard('How VoirCheck works') };
 
 const IDS = ['domain_age', 'ssl_redirects', 'price', 'ai_page', 'threat_list', 'clone'] as const;
 const KEYS = ['s1', 's2', 's3', 's4', 's5', 's6'] as const;

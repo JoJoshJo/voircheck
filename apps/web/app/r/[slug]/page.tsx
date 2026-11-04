@@ -8,12 +8,14 @@ import { card } from '../../../components/ui';
 import { VERDICT_CLASSES, VerdictLabel } from '../../../components/Verdict';
 import { evidenceLine } from '../../../lib/evidence-i18n';
 import { DICTS, isLang } from '../../../lib/i18n';
+import { shareCard } from '../../../lib/og';
 import { scoreLine } from '../../../lib/score-line';
 import { getReceiptBySlug } from '../../../lib/receipts';
 import { splitWhen } from '../../../lib/when';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Trust Receipt', robots: { index: false, follow: false }, referrer: 'no-referrer' };
+// Generic card only: the receipt's store, amount and verdict never go into link previews.
+export const metadata: Metadata = { title: 'Trust Receipt', robots: { index: false, follow: false }, referrer: 'no-referrer', ...shareCard('A VoirCheck Trust Receipt') };
 
 /** Public Trust Receipt (spec 5.9): no login, no personal info, plain text only. */
 export default async function ReceiptPage({ params }: { params: Promise<{ slug: string }> }) {

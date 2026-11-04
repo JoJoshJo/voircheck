@@ -4,9 +4,12 @@ import { DemoButton } from '../components/DemoButton';
 import { Mascot } from '../components/Mascot';
 import { SiteHeader } from '../components/SiteHeader';
 import { btnSecondary } from '../components/ui';
+import { shareCard } from '../lib/og';
 import { dictFor, getCurrentUser, guessLang } from '../lib/user';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata = shareCard();
 
 export default async function Landing() {
   if (await getCurrentUser()) redirect('/app');
