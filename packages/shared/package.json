@@ -4,9 +4,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./stores": "./src/stores/index.ts"
+    "./stores": "./src/stores/index.ts",
+    "./lab": "./src/lab.ts"
   },
-  "scripts": { "typecheck": "tsc --noEmit" },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "drizzle-orm": "^0.45.4"
   }
