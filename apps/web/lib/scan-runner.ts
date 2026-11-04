@@ -40,14 +40,19 @@ export async function runStoreScan(opts: { url: string; demoMode: boolean; liveV
   // Checked and taken in the same synchronous step, so concurrent requests can't all slip past it.
   if (freshScansRunning() >= MAX_FRESH_SCANS_RUNNING) throw new ScanBusyError();
   running.__voircheckScansRunning = freshScansRunning() + 1;
+  // The KERNEL browser is deleted in the background after its pages are read; the slot stays taken until it is gone,
+  // so at most MAX_FRESH_SCANS_RUNNING browsers ever exist at once.
+  const cleanups: Promise<void>[] = [];
   try {
-    return await runReservedScan(opts);
+    return await runReservedScan(opts, (p) => cleanups.push(p));
   } finally {
-    running.__voircheckScansRunning = Math.max(0, freshScansRunning() - 1);
+    void Promise.allSettled(cleanups).then(() => {
+      running.__voircheckScansRunning = Math.max(0, freshScansRunning() - 1);
+    });
   }
 }
 
-async function runReservedScan(opts: { url: string; demoMode: boolean; liveView: boolean; onProgress?: (e: ScanProgress) => void }): Promise<ScanRecord> {
+async function runReservedScan(opts: { url: string; demoMode: boolean; liveView: boolean; onProgress?: (e: ScanProgress) => void }, onCleanup: (done: Promise<void>) => void): Promise<ScanRecord> {
   const demo = opts.demoMode ? demoPeersForUrl(opts.url, process.env.DEMO_STORES_BASE_URL) : null;
   const kernelKey = process.env.KERNEL_API_KEY;
   // Each peer's own latest verdict: a BLOCK store's price must not enter this store's price comparison.
@@ -68,7 +73,7 @@ async function runReservedScan(opts: { url: string; demoMode: boolean; liveView:
           },
         }
       : placeholderAnalyzer;
-    const visitor = kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: opts.liveView, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null;
+    const visitor = kernelKey ? kernelVisitor({ apiKey: kernelKey, liveView: opts.liveView, replay: true, proxyId: process.env.KERNEL_PROXY_ID || undefined, onCleanup }) : null;
     const { result, meta } = await scanStore(
       { url: opts.url, peers, productTitle: demo?.productTitle },
       {

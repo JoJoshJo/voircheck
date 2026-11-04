@@ -7,6 +7,7 @@ vi.mock('server-only', () => ({}));
 const spend = vi.hoisted(() => ({ kernelOk: true, aiOk: true, recorded: [] as Array<{ anthropicUsd: number; kernelScans: number }> }));
 const scanner = vi.hoisted(() => ({ visit: true, aiCost: 0.031, throwBefore: null as Error | null, analyzerUsed: null as unknown, scanCalls: 0 }));
 const placeholder = vi.hoisted(() => ({ analyze: async () => ({}) }));
+const kernel = vi.hoisted(() => ({ cleanup: null as Promise<void> | null }));
 
 vi.mock('./db', () => ({ getDb: () => ({}) }));
 vi.mock('./spend', async (orig) => {
@@ -23,7 +24,12 @@ vi.mock('@voircheck/agent/search', () => ({ demoPeersForUrl: () => null }));
 vi.mock('@voircheck/scanner', () => ({
   placeholderAnalyzer: placeholder,
   anthropicAnalyzer: () => ({ analyze: async () => ({}) }),
-  kernelVisitor: () => ({ visit: async () => ({ pages: [] }) }),
+  kernelVisitor: (o: { onCleanup?: (p: Promise<void>) => void }) => ({
+    visit: async () => {
+      if (kernel.cleanup) o.onCleanup?.(kernel.cleanup);
+      return { pages: [] };
+    },
+  }),
   scanStore: async (_input: unknown, deps: { visitor: { visit: (u: string[]) => Promise<unknown> } | null; analyzer: { analyze: (p: null) => Promise<unknown> } }) => {
     scanner.scanCalls++;
     scanner.analyzerUsed = deps.analyzer;
@@ -39,6 +45,7 @@ const { AI_RESERVE_PER_SCAN_USD, DailyCapError, DAILY_CAPS, reserveAiQuery, rese
 
 beforeEach(() => {
   Object.assign(spend, { kernelOk: true, aiOk: true, recorded: [] });
+  kernel.cleanup = null;
   Object.assign(scanner, { visit: true, aiCost: 0.031, throwBefore: null, analyzerUsed: null, scanCalls: 0 });
   process.env.KERNEL_API_KEY = 'test-kernel-key';
   process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
@@ -106,6 +113,19 @@ describe('fresh scans running at once (whole app)', () => {
     gates.splice(0).forEach((g) => g());
     await Promise.all([...running.slice(1), next]);
     vi.mocked(spendMod.reserveKernelScan).mockImplementation(async () => spend.kernelOk);
+  });
+});
+
+describe('KERNEL cleanup in the background', () => {
+  it('the scan returns before the browser is deleted, but keeps its slot until it is', async () => {
+    const { freshScansRunning } = await import('./scan-runner');
+    let deleted!: () => void;
+    kernel.cleanup = new Promise<void>((ok) => (deleted = ok));
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    expect(freshScansRunning()).toBe(1);
+    deleted();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(freshScansRunning()).toBe(0);
   });
 });
 

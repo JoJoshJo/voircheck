@@ -8,7 +8,8 @@ import { errorMessage } from './signals/types';
 /**
  * All store page visits happen in KERNEL's isolated cloud browser (spec 5.5 / 5.17). Our server never fetches a
  * store page: it sends KERNEL a Playwright snippet that runs next to the browser and returns only extracted data.
- * Every browser session is deleted in `finally`, including on timeout.
+ * Every browser session is deleted in `finally`, including on timeout. The result doesn't wait for that cleanup (replay
+ * stop + delete, about a second); `onCleanup` gets a promise for it so the caller can hold its scan slot until then.
  */
 
 export const PageSnapshot = z.object({
@@ -208,6 +209,8 @@ export interface KernelVisitorOptions {
    * Unset = direct egress. The browser is never in stealth mode, whatever the proxy (see browserCreateParams).
    */
   proxyId?: string;
+  /** Called once per visit with a promise that settles when the browser is gone (replay stopped, session deleted). */
+  onCleanup?: (done: Promise<void>) => void;
 }
 
 /**
@@ -254,19 +257,16 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
       const browser = await client.browsers.create(browserCreateParams({ ...opts, totalTimeoutMs }), { timeout: 20_000, maxRetries: 0 });
       const sessionId = browser.session_id;
       hooks?.onSession?.({ sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined });
-      let replayId: string | undefined;
-      let replayUrl: string | undefined;
+      // The replay starts alongside the first page read instead of before it. Replays may not be on this plan; the scan
+      // doesn't need them, so a failed start is just "no replay".
+      const replayStart: Promise<{ id: string; url?: string } | null> =
+        (opts.replay ?? true)
+          ? client.browsers.replays.start(sessionId, { max_duration_in_seconds: Math.ceil(totalTimeoutMs / 1000) }).then(
+              (r) => ({ id: r.replay_id, url: r.replay_view_url ?? undefined }),
+              () => null,
+            )
+          : Promise.resolve(null);
       try {
-        if (opts.replay ?? true) {
-          try {
-            const replay = await client.browsers.replays.start(sessionId, { max_duration_in_seconds: Math.ceil(totalTimeoutMs / 1000) });
-            replayId = replay.replay_id;
-            replayUrl = replay.replay_view_url;
-          } catch {
-            // Replays may not be on this plan; the scan doesn't need them.
-          }
-        }
-
         const homepageWork = client.browsers.playwright
           .execute(
             sessionId,
@@ -309,10 +309,16 @@ export function kernelVisitor(opts: KernelVisitorOptions): PageVisitor {
         const pages = await Promise.race([work, timeout])
           .catch((err): PageVisit[] => urls.map(() => ({ ok: false, error: errorMessage(err) })))
           .finally(() => clearTimeout(timer));
+        const replayUrl = (await replayStart)?.url;
         return { sessionId, liveViewUrl: browser.browser_live_view_url ?? undefined, replayUrl, pages, sessionSeconds: (Date.now() - started) / 1000, evidencePages };
       } finally {
-        if (replayId) await client.browsers.replays.stop(replayId, { id_or_name: sessionId }).catch(() => {});
-        await client.browsers.deleteByID(sessionId).catch(() => {});
+        // Not awaited: the scan goes on (AI analysis, saving) while KERNEL stops the replay and deletes the browser.
+        const done = (async () => {
+          const replay = await replayStart;
+          if (replay) await client.browsers.replays.stop(replay.id, { id_or_name: sessionId }).catch(() => {});
+          await client.browsers.deleteByID(sessionId).catch(() => {});
+        })();
+        opts.onCleanup?.(done);
       }
     },
   };
