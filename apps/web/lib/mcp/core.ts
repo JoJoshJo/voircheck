@@ -19,7 +19,7 @@ import { z } from 'zod';
 
 export const MCP_TOOL_NAMES = ['check_store', 'get_verdict', 'prepare_purchase'] as const;
 
-export type McpErrorCode = 'invalid_url' | 'rate_limited' | 'daily_cap' | 'scan_failed' | 'not_found' | 'no_price' | 'amount_mismatch' | 'block' | 'unverified' | 'refused';
+export type McpErrorCode = 'invalid_url' | 'rate_limited' | 'scan_running' | 'busy' | 'daily_cap' | 'scan_failed' | 'not_found' | 'no_price' | 'amount_mismatch' | 'block' | 'unverified' | 'refused';
 export type McpResult = { ok: true; data: Record<string, unknown> } | { ok: false; error: McpErrorCode; detail?: Record<string, unknown> };
 
 export interface McpApi {
@@ -31,6 +31,8 @@ export interface McpApi {
 const ERROR_TEXT: Record<McpErrorCode, string> = {
   invalid_url: 'That is not a public http(s) store link VoirCheck can check.',
   rate_limited: 'Rate limit reached for this account. Try again later.',
+  scan_running: 'This token already has a scan running. Wait for it to finish, then call check_store again.',
+  busy: 'VoirCheck is running as many scans as it allows at once. Try again in a minute.',
   daily_cap: "VoirCheck's daily scan limit is reached. Try again tomorrow, or use get_verdict for stores already checked.",
   scan_failed: "The scan couldn't finish. Nothing was decided about this store.",
   not_found: 'No such store for this account. Call check_store first and use its storeId.',

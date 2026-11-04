@@ -123,7 +123,9 @@ function activeTokens(userId: string): Promise<TokenView[]> {
 }
 
 /** Creates a token for this user; returns it ONCE (never stored, never logged). */
-export async function createApiToken(userId: string, name: string): Promise<{ token: string; view: TokenView } | 'limit' | 'unavailable'> {
+export async function createApiToken(userId: string, name: string, isGuest: boolean): Promise<{ token: string; view: TokenView } | 'guest' | 'limit' | 'unavailable'> {
+  // Guest ("Try the demo") accounts can't connect an agent: a throwaway account per token would multiply the limits.
+  if (isGuest) return 'guest';
   const active = await listApiTokens(userId);
   if (!active) return 'unavailable';
   if (active.length >= MAX_ACTIVE_TOKENS) return 'limit';

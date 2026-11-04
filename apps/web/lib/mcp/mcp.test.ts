@@ -4,7 +4,7 @@ import { MoneyGate, type CandidateRow } from '@voircheck/paypal';
 import type { SignalResult } from '@voircheck/scanner';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { fakePayPal, NOW, seededStore, USER } from '../../../../packages/paypal/src/test-helpers';
-import { bearerToken, generateApiToken, hashApiToken, isMissingTokenTable, ownerForToken, TOKEN_PREFIX } from '../api-tokens';
+import { bearerToken, createApiToken, generateApiToken, hashApiToken, isMissingTokenTable, ownerForToken, TOKEN_PREFIX } from '../api-tokens';
 import { createMcpServer, MCP_TOOL_NAMES, preparePurchaseWith, storeOutput, type McpApi } from './core';
 
 vi.mock('server-only', () => ({}));
@@ -83,6 +83,10 @@ describe('MCP API tokens', () => {
     for (const [hash] of lookup.mock.calls) expect(hash).toMatch(/^[0-9a-f]{64}$/);
   });
 
+  it('guest (demo) accounts cannot create one', async () => {
+    expect(await createApiToken('guest-user', 'Claude Desktop', true)).toBe('guest');
+  });
+
   it('recognises the missing table (before migration 0006) and nothing else', () => {
     expect(isMissingTokenTable({ code: '42P01' })).toBe(true);
     expect(isMissingTokenTable(new Error('relation "api_tokens" does not exist'))).toBe(true);
@@ -125,6 +129,13 @@ describe('POST /api/mcp authentication', () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { result: { tools: Array<{ name: string }> } };
     expect(body.result.tools.map((t) => t.name).sort()).toEqual([...MCP_TOOL_NAMES].sort());
+  });
+
+  it('a guest (demo) account token → 403, and no tool runs', async () => {
+    owner.value = { tokenId: 't1', userId: 'u1', isGuest: true };
+    const res = await call(`Bearer ${generateApiToken().token}`);
+    expect(res.status).toBe(403);
+    expect(((await res.json()) as { error: { message: string } }).error.message).toMatch(/Sign up to connect an AI agent/);
   });
 
   it('a JSON-RPC batch → 400, and none of its calls run', async () => {

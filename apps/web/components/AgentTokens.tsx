@@ -16,6 +16,8 @@ export interface AgentTokensText {
   copied: string;
   limit: string;
   unavailable: string;
+  /** Shown instead of the form to guest ("Try the demo") accounts, which can't create tokens. */
+  guest: string;
   none: string;
   created: string;
   lastUsed: string;
@@ -31,6 +33,8 @@ export interface AgentTokensText {
 export function AgentTokens(props: {
   t: AgentTokensText;
   endpoint: string;
+  /** Guest ("Try the demo") account: no form and no list, just why. */
+  guest?: boolean;
   /** null: tokens aren't set up on this server yet (database migration pending). */
   tokens: Array<{ id: string; name: string; prefix: string; created: string; lastUsed: string | null }> | null;
   createAction: (prev: AgentTokenState, form: FormData) => Promise<AgentTokenState>;
@@ -40,6 +44,18 @@ export function AgentTokens(props: {
   const [state, formAction, pending] = useActionState(props.createAction, null);
   const [copied, setCopied] = useState(false);
   const token = state && 'token' in state ? state.token : null;
+
+  if (props.guest) {
+    return (
+      <div className="space-y-4">
+        <h2 className="text-[15px] font-medium">{t.title}</h2>
+        <p className="text-[15px] leading-relaxed text-muted">{t.body}</p>
+        <p className="text-[15px]" data-testid="agent-guest">
+          {t.guest}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -66,7 +82,7 @@ export function AgentTokens(props: {
           </button>
         </div>
       )}
-      {state && 'error' in state && <p className="text-[14px] text-muted">{state.error === 'limit' ? t.limit : t.unavailable}</p>}
+      {state && 'error' in state && <p className="text-[14px] text-muted">{state.error === 'limit' ? t.limit : state.error === 'guest' ? t.guest : t.unavailable}</p>}
       <form action={formAction} className="flex flex-wrap items-end gap-3">
         <div className="min-w-0 flex-1">
           <label htmlFor="token-name" className={label}>

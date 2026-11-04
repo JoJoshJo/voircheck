@@ -7,7 +7,7 @@ import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './o
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
 import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend';
-import { runStoreScan } from './scan-runner';
+import { runStoreScan, ScanBusyError } from './scan-runner';
 import { canonicalUrl, findFreshScan, recordSearchRequest } from './scans';
 import { toScanView } from './scan-view';
 
@@ -142,8 +142,8 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
         const refundablePaidOrders = view.verdict === 'BLOCK' ? await refundableRefsAtStore(userId, row.url).catch(() => []) : [];
         return { status: 'ok', verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules, refundablePaidOrders };
       } catch (err) {
-        // Today's KERNEL cap was reached between the check and the reservation: the calm "limit reached" line.
-        if (err instanceof DailyCapError) {
+        // Today's KERNEL cap was reached, or the app is running its maximum of scans at once: the calm "limit reached" line.
+        if (err instanceof DailyCapError || err instanceof ScanBusyError) {
           send({ type: 'scan_failed', storeId, reason: 'rate_limited' });
           return { status: 'unavailable', reason: 'rate_limited' };
         }

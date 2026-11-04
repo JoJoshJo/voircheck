@@ -69,7 +69,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </section>
       )}
       <section className={`${card} mt-6 p-6`}>
-        <AgentTokens t={t.settings.agent} endpoint={endpoint} tokens={tokens} createAction={createAgentToken} revokeAction={revokeAgentToken} />
+        <AgentTokens t={t.settings.agent} endpoint={endpoint} guest={user.isGuest} tokens={tokens} createAction={createAgentToken} revokeAction={revokeAgentToken} />
       </section>
       <form action={signOut} className="mt-6">
         <button className={btnSecondary}>{t.nav.signOut}</button>

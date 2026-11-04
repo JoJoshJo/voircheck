@@ -4,6 +4,20 @@ import { anthropicAnalyzer, kernelVisitor, placeholderAnalyzer, scanStore, type 
 import { latestVerdictForStore, saveScan, type ScanRecord } from './scans';
 import { AI_RESERVE_PER_SCAN_USD, DailyCapError, recordSpendQuietly, reserveAiScan, reserveKernelScan } from './spend';
 
+/** At most this many fresh scans (KERNEL sessions) run at once across the whole app (one Render instance). */
+export const MAX_FRESH_SCANS_RUNNING = 5;
+const running = globalThis as typeof globalThis & { __voircheckScansRunning?: number };
+
+/** Thrown when MAX_FRESH_SCANS_RUNNING scans are already running: callers say "try again in a minute". */
+export class ScanBusyError extends Error {
+  constructor() {
+    super('too many scans running');
+    this.name = 'ScanBusyError';
+  }
+}
+
+export const freshScansRunning = () => running.__voircheckScansRunning ?? 0;
+
 // One analyzer per process: it holds the 24h per-URL AI result cache (on globalThis so a dev hot reload keeps it).
 const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: PageAnalyzer };
 function pageAnalyzer(): PageAnalyzer {
@@ -23,6 +37,17 @@ function pageAnalyzer(): PageAnalyzer {
  * KERNEL one is released if KERNEL was never used (the scan failed before the visit, e.g. an SSRF refusal).
  */
 export async function runStoreScan(opts: { url: string; demoMode: boolean; liveView: boolean; onProgress?: (e: ScanProgress) => void }): Promise<ScanRecord> {
+  // Checked and taken in the same synchronous step, so concurrent requests can't all slip past it.
+  if (freshScansRunning() >= MAX_FRESH_SCANS_RUNNING) throw new ScanBusyError();
+  running.__voircheckScansRunning = freshScansRunning() + 1;
+  try {
+    return await runReservedScan(opts);
+  } finally {
+    running.__voircheckScansRunning = Math.max(0, freshScansRunning() - 1);
+  }
+}
+
+async function runReservedScan(opts: { url: string; demoMode: boolean; liveView: boolean; onProgress?: (e: ScanProgress) => void }): Promise<ScanRecord> {
   const demo = opts.demoMode ? demoPeersForUrl(opts.url, process.env.DEMO_STORES_BASE_URL) : null;
   const kernelKey = process.env.KERNEL_API_KEY;
   // Each peer's own latest verdict: a BLOCK store's price must not enter this store's price comparison.

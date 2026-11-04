@@ -4,7 +4,7 @@ import { cookies, headers } from 'next/headers';
 import { z } from 'zod';
 import { clientIp } from '../../../lib/client-ip';
 import { checkScanLimits } from '../../../lib/rate-limit';
-import { runStoreScan } from '../../../lib/scan-runner';
+import { runStoreScan, ScanBusyError } from '../../../lib/scan-runner';
 import { DailyCapError } from '../../../lib/spend';
 import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } from '../../../lib/scans';
 import { toScanView, type ScanEvent } from '../../../lib/scan-view';
@@ -82,8 +82,8 @@ export async function POST(req: Request) {
         send({ type: 'done', scan: toScanView(row), candidate });
       } catch (err) {
         await finishLinkRequest(user.id, sessionId, 'failed').catch(() => {});
-        send({ type: 'error', code: err instanceof SsrfError ? 'url' : err instanceof DailyCapError ? 'cap' : 'failed' });
-        if (!(err instanceof SsrfError) && !(err instanceof DailyCapError)) console.error('scan failed:', err instanceof Error ? err.message : 'unknown error');
+        send({ type: 'error', code: err instanceof SsrfError ? 'url' : err instanceof DailyCapError ? 'cap' : err instanceof ScanBusyError ? 'rate' : 'failed' });
+        if (!(err instanceof SsrfError) && !(err instanceof DailyCapError) && !(err instanceof ScanBusyError)) console.error('scan failed:', err instanceof Error ? err.message : 'unknown error');
       } finally {
         controller.close();
       }

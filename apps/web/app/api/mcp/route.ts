@@ -18,6 +18,12 @@ const unauthorized = () =>
     { status: 401, headers: { 'www-authenticate': 'Bearer realm="voircheck"', 'cache-control': 'no-store' } },
   );
 
+const guestRefused = () =>
+  Response.json(
+    { jsonrpc: '2.0', error: { code: -32001, message: 'Guest demo accounts cannot use the MCP server. Sign up to connect an AI agent.' }, id: null },
+    { status: 403, headers: { 'cache-control': 'no-store' } },
+  );
+
 /**
  * VoirCheck's MCP server (Streamable HTTP, stateless, JSON responses). Auth: a per-user API token as a Bearer header,
  * never a cookie, so a browser can't be made to call it with someone's session. The token is hashed and looked up;
@@ -27,6 +33,8 @@ const unauthorized = () =>
 export async function POST(req: Request) {
   const owner = await authenticateApiToken(req.headers.get('authorization'));
   if (!owner) return unauthorized();
+  // Guest accounts can't create tokens; a token from before that rule is refused here too.
+  if (owner.isGuest) return guestRefused();
   const single = await singleMessageRequest(req);
   if (single instanceof Response) return single;
   const h = await headers();

@@ -41,14 +41,14 @@ export async function removeSavedPayPal() {
   redirect('/app/settings?removed=1');
 }
 
-export type AgentTokenState = { token: string } | { error: 'limit' | 'unavailable' } | null;
+export type AgentTokenState = { token: string } | { error: 'guest' | 'limit' | 'unavailable' } | null;
 
 /** "Connect an AI agent": creates an MCP API token and returns it ONCE to this response. Only its hash is stored. */
 export async function createAgentToken(_prev: AgentTokenState, form: FormData): Promise<AgentTokenState> {
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const name = String(form.get('name') ?? '').slice(0, 60);
-  const created = await createApiToken(user.id, name);
+  const created = await createApiToken(user.id, name, user.isGuest);
   if (typeof created === 'string') return { error: created };
   await getDb().insert(auditLog).values({ userId: user.id, actor: 'user', action: 'api_token.created', entity: 'api_token', entityId: created.view.id, details: { prefix: created.view.prefix } });
   revalidatePath('/app/settings');

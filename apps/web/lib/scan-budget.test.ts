@@ -34,7 +34,7 @@ vi.mock('@voircheck/scanner', () => ({
   },
 }));
 
-const { runStoreScan, settlement } = await import('./scan-runner');
+const { MAX_FRESH_SCANS_RUNNING, runStoreScan, ScanBusyError, settlement } = await import('./scan-runner');
 const { AI_RESERVE_PER_SCAN_USD, DailyCapError, DAILY_CAPS, reserveAiQuery, reserveKernelQuery } = await import('./spend');
 
 beforeEach(() => {
@@ -87,6 +87,25 @@ describe('runStoreScan reserves before it runs', () => {
     spend.kernelOk = false; // would refuse if asked
     await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
     expect(scanner.scanCalls).toBe(1);
+  });
+});
+
+describe('fresh scans running at once (whole app)', () => {
+  it(`at most ${5}: the next one is refused with ScanBusyError, and a slot frees when one ends`, async () => {
+    expect(MAX_FRESH_SCANS_RUNNING).toBe(5);
+    const gates: Array<() => void> = [];
+    const spendMod = await import('./spend');
+    // Hold each scan at its KERNEL reservation so they stay running.
+    vi.mocked(spendMod.reserveKernelScan).mockImplementation(() => new Promise((ok) => gates.push(() => ok(true))));
+    const running = Array.from({ length: MAX_FRESH_SCANS_RUNNING }, (_, i) => runStoreScan({ url: `https://s${i}.example/`, demoMode: false, liveView: false }));
+    await expect(runStoreScan({ url: 'https://sixth.example/', demoMode: false, liveView: false })).rejects.toBeInstanceOf(ScanBusyError);
+    gates.shift()!();
+    await running[0];
+    const next = runStoreScan({ url: 'https://next.example/', demoMode: false, liveView: false });
+    await new Promise((r) => setTimeout(r, 0));
+    gates.splice(0).forEach((g) => g());
+    await Promise.all([...running.slice(1), next]);
+    vi.mocked(spendMod.reserveKernelScan).mockImplementation(async () => spend.kernelOk);
   });
 });
 
