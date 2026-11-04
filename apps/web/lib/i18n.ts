@@ -372,6 +372,14 @@ const en = {
     view: 'View the full receipt',
     footer: 'VoirCheck checks a store before an agent pays it. Sandbox payment: no real money moved.',
   },
+  errors: {
+    notFoundTitle: 'Nothing here',
+    notFoundBody: 'This page doesn’t exist, or it isn’t yours to see.',
+    errorTitle: 'Something went wrong',
+    errorBody: 'VoirCheck hit an unexpected error. Try again, or go back to the start.',
+    retry: 'Try again',
+    home: 'Back to VoirCheck',
+  },
   history: { title: 'History', empty: 'Nothing yet. Checks you run show up here.', link: 'Link check', chat: 'Chat request', notScanned: 'Not scanned', receipt: 'Receipt', allRequests: 'All requests' },
   orders: {
     tabOrders: 'Orders',
@@ -853,6 +861,14 @@ const fr: Dict = {
     reasons: 'Pourquoi',
     view: 'Voir le reçu complet',
     footer: 'VoirCheck vérifie une boutique avant qu’un agent ne la paie. Paiement sandbox : aucun argent réel n’a été débité.',
+  },
+  errors: {
+    notFoundTitle: 'Rien ici',
+    notFoundBody: 'Cette page n’existe pas, ou elle ne vous est pas destinée.',
+    errorTitle: 'Un problème est survenu',
+    errorBody: 'VoirCheck a rencontré une erreur inattendue. Réessayez, ou revenez à l’accueil.',
+    retry: 'Réessayer',
+    home: 'Retour à VoirCheck',
   },
   history: { title: 'Historique', empty: 'Rien pour l’instant. Vos vérifications apparaîtront ici.', link: 'Vérification de lien', chat: 'Demande à l’agent', notScanned: 'Non analysée', receipt: 'Reçu', allRequests: 'Toutes les demandes' },
   orders: {
