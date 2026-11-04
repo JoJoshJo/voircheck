@@ -1,4 +1,4 @@
-import type { RefusalReason, StoreOffer } from '@voircheck/agent';
+import { parseQuickReplies, type RefusalReason, type StoreOffer } from '@voircheck/agent';
 import type { z } from 'zod';
 import type { ScanView } from './scan-view';
 
@@ -11,6 +11,8 @@ export type AgentStore = z.infer<typeof StoreOffer>;
 export type AgentEvent =
   | { type: 'conversation'; id: string; model: 'fake' | 'claude' }
   | { type: 'text'; text: string }
+  /** Tap-to-send suggestions for the agent's latest message (labels only; a tap sends the label as the person's message). */
+  | { type: 'replies'; replies: string[] }
   | { type: 'stores'; stores: AgentStore[] }
   | { type: 'scan_start'; storeId: string }
   | { type: 'scan_signal'; storeId: string; id: ScanView['signals'][number]['id']; status: ScanView['signals'][number]['status'] }
@@ -23,6 +25,12 @@ export type AgentEvent =
   | { type: 'refund_offer'; paymentId: string; ref: string; store: string; amount: string; currency: string }
   | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'busy' | 'bad_request' | 'model' | 'failed' }
   | { type: 'done' };
+
+/** One agent message as chat events: its text, then its quick replies (the model's `[[replies: …]]` line, validated). */
+export function agentTextEvents(raw: string): AgentEvent[] {
+  const { text, replies } = parseQuickReplies(raw);
+  return [...(text ? [{ type: 'text' as const, text }] : []), ...(replies.length ? [{ type: 'replies' as const, replies }] : [])];
+}
 
 /** A person can't fake the server's "[VoirCheck update: …]" line: a typed one loses its opening bracket. */
 export function neutralizeFakeNote(text: string): string {

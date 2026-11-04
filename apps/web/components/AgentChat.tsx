@@ -15,7 +15,7 @@ import { VERDICT_CLASSES, VerdictLabel } from './Verdict';
 
 type Item =
   | { kind: 'user'; text: string }
-  | { kind: 'agent'; text: string }
+  | { kind: 'agent'; text: string; replies?: string[] }
   | { kind: 'stores'; ids: string[] }
   | { kind: 'refund'; paymentId: string; ref: string; store: string; amount: string; currency: string };
 
@@ -39,6 +39,12 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
   switch (e.type) {
     case 'text':
       return { ...state, items: [...state.items, { kind: 'agent' as const, text: e.text }] };
+    case 'replies': {
+      // Quick replies belong to the agent's latest message; anything else in between drops them.
+      const last = state.items.at(-1);
+      if (last?.kind !== 'agent') return state;
+      return { ...state, items: [...state.items.slice(0, -1), { ...last, replies: e.replies }] };
+    }
     case 'stores':
       for (const s of e.stores) stores[s.storeId] = { store: s, phase: 'listed', signals: {} };
       return { ...state, stores, items: [...state.items, { kind: 'stores' as const, ids: e.stores.map((s) => s.storeId) }] };
@@ -236,10 +242,21 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
                 {item.text}
               </p>
             ) : item.kind === 'agent' ? (
-              <p key={i} className="max-w-[92%] whitespace-pre-line text-[15px] leading-relaxed">
-                <span className="sr-only">{t.agent.agent}{t.colon} </span>
-                {item.text}
-              </p>
+              <div key={i} className="space-y-3">
+                <p className="max-w-[92%] whitespace-pre-line text-[15px] leading-relaxed">
+                  <span className="sr-only">{t.agent.agent}{t.colon} </span>
+                  {item.text}
+                </p>
+                {i === chat.items.length - 1 && !busy && !!item.replies?.length && (
+                  <div className="flex flex-wrap gap-2" role="group" aria-label={t.agent.quickReplies}>
+                    {item.replies.map((q) => (
+                      <button key={q} type="button" onClick={() => void send(q)} className="min-h-11 rounded-full border border-line bg-white px-4 text-left text-[15px] text-ink transition hover:border-ink">
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             ) : item.kind === 'refund' ? (
               <RefundCard key={i} t={t} lang={lang} item={item} status={chat.payments[item.paymentId] ?? 'captured'} onStatus={(status, amount) => setChat((c) => applyRefundResult(c, t, item, status, amount))} />
             ) : (

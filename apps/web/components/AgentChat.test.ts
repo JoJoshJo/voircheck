@@ -107,3 +107,16 @@ describe('waiting for approval', () => {
     expect(DICTS[lang].agent.approveNow).toMatch(/PayPal/);
   });
 });
+
+describe('quick replies', () => {
+  const run = (events: AgentEvent[]) => events.reduce(applyAgentEvent, { items: [], stores: {}, payments: {} });
+  it('attach to the agent’s latest message, and only to a message', () => {
+    const s = run([{ type: 'text', text: 'Want it?' }, { type: 'replies', replies: ['Buy it', 'Show me cheaper'] }]);
+    expect(s.items).toEqual([{ kind: 'agent', text: 'Want it?', replies: ['Buy it', 'Show me cheaper'] }]);
+    expect(run([{ type: 'stores', stores: [store('a', 'Velbrook Supply', '59.00')] }, { type: 'replies', replies: ['Buy it'] }]).items).toEqual([{ kind: 'stores', ids: ['a'] }]);
+  });
+
+  it.each(['en', 'fr'] as const)('the button group has a label for screen readers (%s)', (lang) => {
+    expect(DICTS[lang].agent.quickReplies.length).toBeGreaterThan(3);
+  });
+});

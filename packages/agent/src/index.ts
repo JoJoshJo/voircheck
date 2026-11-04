@@ -5,6 +5,7 @@ export * from './anthropic-model';
 export * from './fake-model';
 export * from './loop';
 export * from './prompt';
+export * from './quick-replies';
 export * from './tools';
 export * from './paypal-toolkit';
 // The agent takes VoirCheck order references (VC-7K2F); re-exported for the scripts that wire its tools.

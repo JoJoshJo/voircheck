@@ -2,7 +2,7 @@ import 'server-only';
 import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
 import { assertSafeUrlShape } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
-import { neutralizeFakeNote, type AgentEvent } from './agent-view';
+import { agentTextEvents, neutralizeFakeNote, type AgentEvent } from './agent-view';
 import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './orders';
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
@@ -274,7 +274,9 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
     history: o.conv.messages,
     userText,
     lang: o.lang,
-    onEvent: (e) => e.type === 'assistant_text' && o.send({ type: 'text', text: e.text }),
+    onEvent: (e) => {
+      if (e.type === 'assistant_text') for (const ev of agentTextEvents(e.text)) o.send(ev);
+    },
   });
   o.conv.messages = messages;
   o.conv.costUsd += usage.costUsd;
