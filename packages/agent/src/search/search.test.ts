@@ -79,6 +79,15 @@ describe('searchProducts', () => {
     expect(await searchProducts('earbuds', 5, opts(mockFetch(status, { detail: 'x' })))).toEqual({ status: 'unavailable', reason, httpStatus: status });
   });
 
+  it('one malformed product is skipped, never the whole search (live wig search, Nov 4: available: "true")', async () => {
+    const odd = { id: 'p3', title: 'Wig 20 inch', offers: [offer('wigs.com', 99)], variants: { options: [{ name: 'Length', values: [{ label: '20', available: 'true' }, { label: '22', available: 'false' }] }] } };
+    const broken = { id: 'p4', title: 'No offers shape', offers: [{ url: 1 }] };
+    const r = await searchProducts('wig', 10, opts(mockFetch(200, { products: [odd, broken, ...PRODUCTS] })));
+    expect(r.status).toBe('ok');
+    if (r.status !== 'ok') return;
+    expect(r.results.map((x) => x.storeDomain)).toEqual(['wigs.com', 'beststore.com', 'shopb.com', 'soldout.com', 'usedgear.com', 'shopc.com', 'shopb.com']);
+  });
+
   it('network error, malformed body, or missing key → unavailable', async () => {
     const boom = vi.fn(async () => {
       throw new TypeError('fetch failed');

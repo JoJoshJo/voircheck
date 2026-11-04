@@ -20,9 +20,11 @@ const Offer = z.object({
   condition: z.string().nullish(),
 });
 const Image = z.object({ url: z.string(), cleaned_url: z.string().nullish(), is_main_image: z.boolean().nullish(), alt_text: z.string().nullish() });
+/** Channel3 sometimes sends availability as the string "true"/"false" (seen live, Nov 4 2026). Anything else: unknown. */
+const LooseBool = z.preprocess((v) => (v === 'true' ? true : v === 'false' ? false : typeof v === 'boolean' || v == null ? v : null), z.boolean().nullish());
 const VariantOption = z.object({
   name: z.string(),
-  values: z.array(z.object({ label: z.string(), available: z.boolean().nullish(), product_id: z.string().nullish() })).default([]),
+  values: z.array(z.object({ label: z.string(), available: LooseBool, product_id: z.string().nullish() })).default([]),
 });
 export const Channel3Product = z.object({
   id: z.string(),
@@ -34,7 +36,8 @@ export const Channel3Product = z.object({
   variants: z.object({ options: z.array(VariantOption).default([]), selected: z.array(z.object({ name: z.string(), label: z.string() })).default([]) }).nullish(),
 });
 export type Channel3Product = z.infer<typeof Channel3Product>;
-const SearchResponse = z.object({ products: z.array(Channel3Product), next_page_token: z.string().nullish() });
+// Products are checked one by one: a product with an odd field is skipped, it never sinks the whole search.
+const SearchResponse = z.object({ products: z.array(z.unknown()), next_page_token: z.string().nullish() });
 
 // ---------- normalized results ----------
 
@@ -138,7 +141,11 @@ export async function searchProducts(query: string, limit: number, opts: Channel
   if (!res.ok) return { status: 'unavailable', reason: res.reason, httpStatus: res.httpStatus };
   const parsed = SearchResponse.safeParse(res.json);
   if (!parsed.success) return { status: 'unavailable', reason: 'Channel3 returned an unexpected response' };
-  const results = normalizeProducts(parsed.data.products);
+  const products = parsed.data.products.flatMap((p) => {
+    const one = Channel3Product.safeParse(p);
+    return one.success ? [one.data] : [];
+  });
+  const results = normalizeProducts(products);
   return results.length ? { status: 'ok', results } : { status: 'no_results', query: q };
 }
 
