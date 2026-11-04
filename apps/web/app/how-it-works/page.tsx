@@ -12,6 +12,15 @@ export const metadata = { title: 'How it works', ...shareCard('How VoirCheck wor
 const IDS = ['domain_age', 'ssl_redirects', 'price', 'ai_page', 'threat_list', 'clone'] as const;
 const KEYS = ['s1', 's2', 's3', 's4', 's5', 's6'] as const;
 
+// Published sources for "Why now" (the only ones cited; text in i18n `how.why1`–`why5`).
+const WHY_NOW = [
+  ['why1', 'https://guard.io/labs/scamlexity-we-put-agentic-ai-browsers-to-the-test-they-clicked-they-paid-they-failed'],
+  ['why2', 'https://corporate.visa.com/en/sites/visa-perspectives/security-trust/the-threats-landscape-of-agentic-commerce.html'],
+  ['why3', 'https://thepaypers.com/payments/expert-views/know-your-merchant-the-trust-gap-at-the-heart-of-ai-commerce'],
+  ['why4', 'https://www.emergentmind.com/papers/2601.22569'],
+  ['why5', 'https://origin-unit42.paloaltonetworks.com/retail-fraud-agentic-ai/'],
+] as const;
+
 export default async function HowItWorks() {
   const user = await getCurrentUser();
   const profile = user ? await getProfile(user.id) : null;
@@ -49,6 +58,19 @@ export default async function HowItWorks() {
             <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how[body]}</p>
           </section>
         ))}
+        <section className="mt-12">
+          <h2 className="text-[20px] font-medium">{t.how.whyTitle}</h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.whyIntro}</p>
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-muted">
+            {WHY_NOW.map(([key, href]) => (
+              <li key={key}>
+                <a href={href} className="underline underline-offset-4 hover:text-ink" rel="noopener noreferrer">
+                  {t.how[key]}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
         <section className="mt-14 rounded-card bg-surface p-7">
           <h2 className="text-[20px] font-medium">{t.how.accuracyTitle}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.accuracyBody}</p>

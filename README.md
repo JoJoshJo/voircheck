@@ -4,13 +4,30 @@
 
 Your AI agent sees who it's paying, before it pays.
 
-VoirCheck checks an online store for signs of a fake shop, then decides what PayPal does with the money: pay, hold
-it for you, or release it. Built for the PayPal AI Hackathon 2026.
+**Know Your Merchant for AI agents.** AI agents are starting to pay for people. Agent payment protocols verify the
+agent and what the person allowed it to do; they don't verify the merchant. VoirCheck is that check: it scans the
+store in an isolated cloud browser before PayPal captures, then decides what PayPal does with the money: pay, hold it
+for you, or release it. Built for the PayPal AI Hackathon 2026.
 
 - **Live app:** https://voircheck.com
 - **Try the demo:** press "Try the demo" on the home page. It creates a private temporary account (English, Demo mode
   on). Everything runs in the PayPal **sandbox**: no real money moves.
 - **Video:** [link coming]
+
+## Why now
+
+What others have published about agents and fake merchants:
+
+- **Guardio Labs, "Scamlexity":** an agentic browser (Perplexity Comet) bought an Apple Watch from a fake Walmart
+  site. [guard.io](https://guard.io/labs/scamlexity-we-put-agentic-ai-browsers-to-the-test-they-clicked-they-paid-they-failed)
+- **Visa Perspectives (Nov 20, 2025):** counterfeit storefronts target agents; dark-web posts mentioning "AI Agent"
+  rose more than 450%. [visa.com](https://corporate.visa.com/en/sites/visa-perspectives/security-trust/the-threats-landscape-of-agentic-commerce.html)
+- **The Paypers:** "Know your merchant: the trust gap at the heart of AI commerce".
+  [thepaypers.com](https://thepaypers.com/payments/expert-views/know-your-merchant-the-trust-gap-at-the-heart-of-ai-commerce)
+- **AP2 red-team paper:** AP2 "lacks effective mechanisms for mitigating prompt injection" (the "Branded Whisper"
+  attack). [emergentmind.com](https://www.emergentmind.com/papers/2601.22569)
+- **Unit 42 (Mar 2026):** a hidden instruction makes shopping agents add a gift card; they recommend line-item
+  approvals. [unit42](https://origin-unit42.paloaltonetworks.com/retail-fraud-agentic-ai/)
 
 ## The 30-second story
 

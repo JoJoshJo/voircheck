@@ -27,6 +27,7 @@ export default async function Landing() {
           <div className="mb-8 flex justify-center">
             <Mascot mood="scanning" size={96} />
           </div>
+          <p className="mb-4 text-[13px] font-medium uppercase tracking-widest text-muted">{t.landing.kicker}</p>
           <h1 className="text-[40px] font-medium leading-[1.08] tracking-tight sm:text-[56px]">{t.landing.title}</h1>
           <p className="mx-auto mt-6 max-w-2xl text-[19px] leading-relaxed text-muted">{t.landing.body}</p>
           <div className="mt-10 flex flex-wrap items-start justify-center gap-3">
