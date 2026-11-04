@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getProductDetail, normalizeProducts, searchProducts, type Channel3Product } from './channel3';
+import { createSearchCache, getProductDetail, normalizeProducts, SEARCH_CACHE_TTL_MS, searchProducts, type Channel3Product } from './channel3';
 import { compareStores, demoItemFor, demoPeersForUrl, demoResults, pickStoresForItem } from './compare';
 
 const offer = (domain: string, price: number, extra: Record<string, unknown> = {}) => ({
@@ -205,5 +205,49 @@ describe('demoPeersForUrl (check-a-link on a demo store)', () => {
   it('null for real sites and unknown slugs', () => {
     expect(demoPeersForUrl('https://www.bestbuy.com/site/x')).toBeNull();
     expect(demoPeersForUrl(`${B}/not-a-store`)).toBeNull();
+  });
+});
+
+describe('Channel3 search cache (10 minutes)', () => {
+  it('the same search within 10 minutes is answered from the cache, case and spacing aside; after that Channel3 is asked again', async () => {
+    let t = 1_000_000;
+    const cache = createSearchCache({ now: () => t });
+    const f = mockFetch(200, { products: PRODUCTS });
+    const first = await searchProducts('Wireless  earbuds', 20, { ...opts(f), cache });
+    const again = await searchProducts('wireless earbuds', 20, { ...opts(f), cache });
+    expect(f).toHaveBeenCalledTimes(1);
+    expect(again).toEqual(first);
+    if (again.status === 'ok') again.results[0]!.price = 1; // a caller changing its copy doesn't change the cache
+    expect(await searchProducts('wireless earbuds', 20, { ...opts(f), cache })).toEqual(first);
+    await searchProducts('wireless earbuds', 10, { ...opts(f), cache }); // another limit is another search
+    expect(f).toHaveBeenCalledTimes(2);
+    t += SEARCH_CACHE_TTL_MS;
+    await searchProducts('wireless earbuds', 20, { ...opts(f), cache });
+    expect(f).toHaveBeenCalledTimes(3);
+  });
+
+  it('errors and "no results" are not kept, and without a cache every search asks Channel3', async () => {
+    const cache = createSearchCache();
+    const down = mockFetch(429, {});
+    await searchProducts('earbuds', 20, { ...opts(down), cache });
+    await searchProducts('earbuds', 20, { ...opts(down), cache });
+    expect(down).toHaveBeenCalledTimes(2);
+    const none = mockFetch(200, { products: [] });
+    await searchProducts('zzzz', 20, { ...opts(none), cache });
+    await searchProducts('zzzz', 20, { ...opts(none), cache });
+    expect(none).toHaveBeenCalledTimes(2);
+    const f = mockFetch(200, { products: PRODUCTS });
+    await searchProducts('earbuds', 20, opts(f));
+    await searchProducts('earbuds', 20, opts(f));
+    expect(f).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps at most the newest entries', async () => {
+    const cache = createSearchCache({ max: 2 });
+    const f = mockFetch(200, { products: PRODUCTS });
+    for (const q of ['a', 'b', 'c']) await searchProducts(q, 20, { ...opts(f), cache });
+    await searchProducts('a', 20, { ...opts(f), cache }); // dropped as the oldest
+    await searchProducts('c', 20, { ...opts(f), cache }); // still cached
+    expect(f).toHaveBeenCalledTimes(4);
   });
 });

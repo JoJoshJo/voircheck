@@ -122,6 +122,7 @@
 - **Products:** real search works for any item. Demo stores carry a **3-item catalog**: wireless earbuds, air purifier, smartwatch. All demo-store products use **made-up generic names** (e.g., "Zephlet Buds"), never real brands.
 - **Video hero item:** wireless earbuds; the other two appear briefly to prove nothing is hardcoded.
 - **No results / Channel3 error:** honest agent message ("I couldn't find that"), suggests a broader search, and offers the check-a-link box. Never silently fake results.
+- **Recent-search cache (✅ Nov 4):** the web app keeps Channel3 results for **10 minutes** in memory (same text, case and spacing aside, same limit; at most 200 searches). Only successful searches are kept; an error or "no results" asks Channel3 again. Every result still comes from a real Channel3 call; the cache only skips repeating one. Orders use the price stored with the listed stores, as before.
 
 ### 5.5 Store scan ✅
 - **Engine:** new slim scan module in this repo (GhostCheck-inspired, no GhostCheck code). All page visits happen in **KERNEL's isolated cloud browser**, never on our server or the user's machine.

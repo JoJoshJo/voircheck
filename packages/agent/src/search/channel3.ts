@@ -74,7 +74,49 @@ export interface Channel3Options {
   baseUrl?: string;
   fetch?: typeof fetch;
   timeoutMs?: number;
+  /** Reuse recent search results (createSearchCache). Off unless given. */
+  cache?: SearchCache;
 }
+
+/**
+ * Recent Channel3 results, in memory, so the same search within 10 minutes (a follow-up, another person trying the
+ * example) doesn't wait 1-2 s or spend a call. Only successful searches are kept; errors and "no results" ask again.
+ * Prices can move in 10 minutes, but the order uses the price stored when the stores were listed, as before.
+ */
+export interface SearchCache {
+  get(key: string): SearchResult[] | undefined;
+  set(key: string, results: SearchResult[]): void;
+}
+
+export const SEARCH_CACHE_TTL_MS = 10 * 60_000;
+export const SEARCH_CACHE_MAX = 200;
+
+export function createSearchCache(o: { ttlMs?: number; max?: number; now?: () => number } = {}): SearchCache {
+  const ttl = o.ttlMs ?? SEARCH_CACHE_TTL_MS;
+  const max = o.max ?? SEARCH_CACHE_MAX;
+  const now = o.now ?? Date.now;
+  const map = new Map<string, { at: number; results: SearchResult[] }>();
+  return {
+    get(key) {
+      const hit = map.get(key);
+      if (!hit) return undefined;
+      if (now() - hit.at >= ttl) {
+        map.delete(key);
+        return undefined;
+      }
+      return hit.results.map((r) => ({ ...r }));
+    },
+    set(key, results) {
+      map.delete(key);
+      map.set(key, { at: now(), results: results.map((r) => ({ ...r })) });
+      // Oldest first out (Map keeps insertion order).
+      while (map.size > max) map.delete(map.keys().next().value!);
+    },
+  };
+}
+
+/** Same search = same text (case and spacing aside), same limit, same API. */
+export const searchCacheKey = (q: string, limit: number, baseUrl = CHANNEL3_BASE_URL) => `${baseUrl}|${limit}|${q.toLowerCase().replace(/\s+/g, ' ')}`;
 
 const bareDomain = (d: string) => d.trim().toLowerCase().replace(/^www\./, '');
 
@@ -137,7 +179,11 @@ async function call(path: string, init: RequestInit, opts: Channel3Options): Pro
 export async function searchProducts(query: string, limit: number, opts: Channel3Options): Promise<SearchOutcome> {
   const q = query.trim().slice(0, 500);
   if (!q) return { status: 'no_results', query };
-  const res = await call('/v1/search', { method: 'POST', body: JSON.stringify({ query: q, limit: Math.min(Math.max(1, Math.floor(limit)), MAX_LIMIT) }) }, opts);
+  const n = Math.min(Math.max(1, Math.floor(limit)), MAX_LIMIT);
+  const key = opts.cache && opts.apiKey ? searchCacheKey(q, n, opts.baseUrl) : null;
+  const cached = key ? opts.cache!.get(key) : undefined;
+  if (cached) return { status: 'ok', results: cached };
+  const res = await call('/v1/search', { method: 'POST', body: JSON.stringify({ query: q, limit: n }) }, opts);
   if (!res.ok) return { status: 'unavailable', reason: res.reason, httpStatus: res.httpStatus };
   const parsed = SearchResponse.safeParse(res.json);
   if (!parsed.success) return { status: 'unavailable', reason: 'Channel3 returned an unexpected response' };
@@ -146,6 +192,7 @@ export async function searchProducts(query: string, limit: number, opts: Channel
     return one.success ? [one.data] : [];
   });
   const results = normalizeProducts(products);
+  if (key && results.length) opts.cache!.set(key, results);
   return results.length ? { status: 'ok', results } : { status: 'no_results', query: q };
 }
 
