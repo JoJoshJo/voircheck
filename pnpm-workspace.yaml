@@ -19,3 +19,7 @@ overrides:
   '@langchain/core': 0.3.80
   'uuid@<11.1.1': 11.1.1
   'jsondiffpatch@<0.7.6': 0.7.7
+  # Security review (Nov 4): transitive advisories under @paypal/agent-toolkit and @neondatabase/auth-ui.
+  'mathjs@<15.2.0': ^15.2.0
+  'langsmith@<0.6.0': ^0.6.0
+  'zod@>=4.0.0 <4.6.6': 4.6.7
