@@ -125,9 +125,19 @@ export function parseShoppingRequest(text: string): { query: string; maxPrice: n
   return query.length >= 2 ? { query: query.slice(0, 120), maxPrice } : null;
 }
 
+/** Lifts the store's own words back out of their `untrusted` object (searchForModel / recentOrdersForModel). */
+const unframe = (v: unknown): unknown => {
+  if (!v || typeof v !== 'object') return v;
+  const o = v as Record<string, unknown>;
+  const lift = (x: unknown) => (x && typeof x === 'object' && 'untrusted' in x ? { ...(x as object), ...((x as { untrusted: object }).untrusted ?? {}) } : x);
+  if (Array.isArray(o.stores)) return { ...o, stores: o.stores.map(lift) };
+  if (Array.isArray(o.orders)) return { ...o, orders: o.orders.map(lift) };
+  return o;
+};
+
 const parse = <T>(s: string): T | null => {
   try {
-    return JSON.parse(s) as T;
+    return unframe(JSON.parse(s)) as T;
   } catch {
     return null;
   }

@@ -21,6 +21,40 @@ const Id = z.string().min(1).max(100);
 const Ref = z.string().regex(PAYMENT_REF_RE);
 const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
 
+// ---------- store-controlled text ----------
+
+/** Lengths the model sees of store-controlled text (Channel3 results, merchants' own names and titles). */
+export const UNTRUSTED_MAX = { storeName: 80, productTitle: 120 } as const;
+
+/**
+ * Store-controlled text for the model (security review, M1): NFKC-normalised (so full-width ＜＞ become <>), control
+ * and invisible format characters and <> replaced by spaces, whitespace collapsed, length-capped. It is still the
+ * store's words: the model sees it only inside an `untrusted` object, and the system prompt says those are data.
+ */
+export function untrustedText(s: string, max: number): string {
+  return s
+    .normalize('NFKC')
+    .replace(/[\p{Cc}\p{Cf}\p{Zl}\p{Zp}<>]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, max);
+}
+
+const untrusted = (storeName: string, productTitle: string) => ({
+  untrusted: { storeName: untrustedText(storeName, UNTRUSTED_MAX.storeName), productTitle: untrustedText(productTitle, UNTRUSTED_MAX.productTitle) },
+});
+
+/** search_products as the model sees it: our fields as they are, the store's own words under `untrusted`. */
+export function searchForModel(out: SearchOutput): unknown {
+  if (out.status !== 'ok') return out;
+  return { ...out, stores: out.stores.map(({ storeName, productTitle, ...ours }) => ({ ...ours, ...untrusted(storeName, productTitle) })) };
+}
+
+/** list_my_recent_orders as the model sees it: store and item names (from the search) under `untrusted`. */
+export function recentOrdersForModel(out: RecentOrdersOutput): unknown {
+  return { orders: out.orders.map(({ store, item, ...ours }) => ({ ...ours, ...untrusted(store, item) })) };
+}
+
 // ---------- search ----------
 
 export const StoreOffer = z.object({
@@ -171,6 +205,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     input: SearchInput,
     output: SearchOutput,
     run: ({ query, maxPrice }) => deps.searchStores(query, maxPrice),
+    forModel: searchForModel,
   };
   const verdict: AgentTool<{ storeId: string }, ScanOutput> = {
     name: 'get_scan_verdict',
@@ -211,6 +246,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     input: z.object({}),
     output: RecentOrdersOutput,
     run: () => deps.listRecentOrders(),
+    forModel: recentOrdersForModel,
   };
   const refund: AgentTool<{ ref: string }, RequestRefundOutput> = {
     name: 'request_refund',

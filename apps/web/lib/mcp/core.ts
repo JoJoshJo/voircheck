@@ -131,7 +131,9 @@ export async function preparePurchaseWith(
     data: {
       status: 'awaiting_buyer_approval',
       ref: r.payment.ref,
-      storeName: candidate.storeName,
+      // The hostname only: a candidate's store name can come from Channel3 or the merchant, and this output goes to
+      // another company's agent. Nothing the store wrote is passed on (security review, M2).
+      storeHost: hostOf(candidate.storeUrl),
       amount: r.payment.amount,
       currency: r.payment.currency,
       approvalUrl: 'approvalUrl' in r ? (r.approvalUrl ?? null) : null,
@@ -139,6 +141,14 @@ export async function preparePurchaseWith(
         'Give approvalUrl to the person. Nothing is held or charged until they approve in PayPal. After that, PayPal holds the money and VoirCheck settles it from the scan (Safe is captured, Hold stays held for the person, Block is released). You cannot capture, void or refund.',
     },
   };
+}
+
+function hostOf(url: string): string | null {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return null;
+  }
 }
 
 const ToolUrl = z.string().max(2048).describe('The store or product page link, e.g. https://shop.example/products/lamp');

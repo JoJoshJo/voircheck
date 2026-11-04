@@ -203,7 +203,8 @@ describe('get_order (Agent Toolkit, read only)', () => {
     steps.push({ text: '', toolCalls: [{ id: 'r', name: 'list_my_recent_orders', input: { userId: 'someone-else' } }, { id: 'g1', name: 'get_order', input: { order: ref.toLowerCase() } }, { id: 'g2', name: 'get_order', input: { order: ref === 'VC-2222' ? 'VC-3333' : 'VC-2222' } }] });
     await s.say('which orders do I have?');
     const [recent, byRef, unknown] = s.lastResults() as [{ orders: unknown[] }, { ref: string; orderStatus: string }, unknown];
-    expect(recent.orders).toEqual([{ ref, store: 'Velbrook Supply', item: expect.any(String), amount: '59.00', currency: 'USD', status: 'waiting_for_buyer', date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) }]);
+    // What the model sees: the store's own words only under "untrusted".
+    expect(recent.orders).toEqual([{ ref, untrusted: { storeName: 'Velbrook Supply', productTitle: expect.any(String) }, amount: '59.00', currency: 'USD', status: 'waiting_for_buyer', date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/) }]);
     expect(byRef).toMatchObject({ ref, orderStatus: 'PAYER_ACTION_REQUIRED' });
     expect(unknown).toEqual({ status: 'not_found' });
     expect(captures(s.paypal.calls)).toEqual([]);

@@ -12,6 +12,8 @@ export interface AgentTool<I = unknown, O = unknown> {
   input: z.ZodType<I>;
   output: z.ZodType<O>;
   run(input: I): Promise<O>;
+  /** What the model sees of a valid output, when it isn't the output itself (e.g. store text framed as untrusted). */
+  forModel?(output: O): unknown;
 }
 
 // Tools are stored without their type parameters; each one validates its own input before `run`.
@@ -47,7 +49,7 @@ async function runTool(tools: Map<string, AnyAgentTool>, call: ToolCall): Promis
   }
   const out = tool.output.safeParse(raw);
   if (!out.success) return errorResult(call.id, 'the tool returned an unexpected result');
-  const content = JSON.stringify(out.data);
+  const content = JSON.stringify(tool.forModel ? tool.forModel(out.data) : out.data);
   if (content.length > MAX_TOOL_RESULT_CHARS) return errorResult(call.id, 'the tool result was too large');
   return { toolCallId: call.id, content };
 }
