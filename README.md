@@ -217,6 +217,45 @@ The demo stores are on a free Render plan until Nov 11, so the first load may ta
 5. **French.** Settings → Français. The app, the agent's replies, the evidence and the receipts switch to French
    (quotes from store pages stay as written).
 
+## Connect an AI agent (MCP)
+
+VoirCheck is also an [MCP](https://modelcontextprotocol.io) server, so any AI agent can check a merchant before it
+pays: `POST https://voircheck.com/api/mcp` (Streamable HTTP, stateless). Three tools:
+
+| Tool | What it does |
+| --- | --- |
+| `check_store(url)` | VoirCheck's verdict (SAFE / HOLD / BLOCK), score, each check's status in our words, hard rules, whether the page tried to instruct agents, an evidence link, and a `storeId`. Scans the store if there's no fresh result (up to a minute). Never returns page text or hidden text. |
+| `get_verdict(url)` | The cached verdict only (last 24 hours). Never starts a scan. |
+| `prepare_purchase(storeId, amount)` | A PayPal **sandbox** order for the item, at VoirCheck's price (`amount` must match; it is a check, never applied). BLOCK and unchecked stores are refused. Returns an approval link **for the person**: nothing is held or charged until they approve, and settling stays with VoirCheck. |
+
+There is no capture, void, refund, price or payee tool. Each token acts as its owner, with the same scan limits,
+daily KERNEL cap and agent limit as the app.
+
+**Get a token:** Settings → Connect an AI agent → Create token. It is shown once; VoirCheck stores only its SHA-256.
+Revoke it there any time.
+
+**Claude Desktop** (`claude_desktop_config.json`; `mcp-remote` bridges a remote server with a header):
+
+```json
+{
+  "mcpServers": {
+    "voircheck": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@0.15.1", "https://voircheck.com/api/mcp", "--header", "Authorization:${VOIRCHECK_AUTH}"],
+      "env": { "VOIRCHECK_AUTH": "Bearer vcmcp_your_token_here" }
+    }
+  }
+}
+```
+
+**MCP Inspector:** `npx @modelcontextprotocol/inspector@0.22.0`, transport "Streamable HTTP", URL
+`https://voircheck.com/api/mcp`, header `Authorization: Bearer vcmcp_…`.
+
+**End-to-end check:** `VOIRCHECK_MCP_TOKEN=… pnpm mcp:e2e --url http://localhost:3000/api/mcp` runs the official SDK
+client through every tool (no token → 401, Block refused, wrong amount refused, a sandbox order for a Safe store) and
+writes a transcript with the token redacted. `pnpm mcp:e2e --local` runs the same client against the same server code
+in-process, with an in-memory token check; its transcript: [`eval/mcp/2026-11-04-local.md`](eval/mcp/2026-11-04-local.md).
+
 ## Chrome extension
 
 A check-only shortcut: on any store page, click the VoirCheck ghost in Chrome's toolbar, then **Check this store**.
