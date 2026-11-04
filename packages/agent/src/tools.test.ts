@@ -24,7 +24,7 @@ export function scanWithPageText(verdict: 'SAFE' | 'HOLD' | 'BLOCK' = 'BLOCK') {
     sig('threat_list', 'pass', 0, ['Not on Google Safe Browsing threat lists.']),
     sig('clone', 'fail', 30, [`vs Velbrook Supply: copies the page ("${PLANTED}").`]),
   ];
-  return { status: 'ok' as const, verdict, score: 85, signals, hardRules: ['young_domain_cheap_price'] };
+  return { status: 'ok' as const, verdict, score: 85, signals, hardRules: ['young_domain_cheap_price', 'prompt_injection_attempt'] };
 }
 
 function deps(over: Partial<AgentDeps> = {}): AgentDeps {
@@ -58,7 +58,7 @@ describe('scan summary for the agent', () => {
       storeId: 'store-2',
       verdict: 'BLOCK',
       score: 85,
-      hardRules: ['young_domain_cheap_price'],
+      hardRules: ['young_domain_cheap_price', 'prompt_injection_attempt'],
       signals: [
         { id: 'domain_age', status: 'fail', points: 30, meaning: 'the domain is very new' },
         { id: 'ssl_redirects', status: 'pass', points: 0, meaning: 'HTTPS and redirects look normal' },
@@ -68,6 +68,7 @@ describe('scan summary for the agent', () => {
         { id: 'clone', status: 'fail', points: 30, meaning: 'copies another store' },
       ],
       pageTriedToInstructAgents: true,
+      summary: "Looks like a fake shop: the domain is very new, and the price is far below other stores. VoirCheck won't pay it.",
     });
     expect(JSON.stringify(s)).not.toMatch(/Ignore|verified safe|Registrar|GmbH|Velbrook|Zephlet|data-planted/);
   });
@@ -79,8 +80,8 @@ describe('scan summary for the agent', () => {
     expect(scanSummaryForAgent('s', scanWithPageText('BLOCK'))).not.toHaveProperty('refundablePaidOrders');
   });
 
-  it('no planted text → no injection flag', () => {
-    const scan = scanWithPageText('SAFE');
+  it('no confirmed injection → no injection flag', () => {
+    const scan = { ...scanWithPageText('SAFE'), hardRules: ['young_domain_cheap_price'] };
     scan.signals[3] = { id: 'ai_page', status: 'unavailable', points: 0, evidence: [] };
     expect(scanSummaryForAgent('s', scan).pageTriedToInstructAgents).toBe(false);
   });
@@ -176,5 +177,25 @@ describe('check_link (a link the person pasted)', () => {
     expect(CheckLinkOutput.safeParse({ ...ok, evidence: '/app/scans/abc-1' }).success).toBe(true);
     expect(CheckLinkOutput.safeParse({ ...ok, evidence: 'https://evil.test/x' }).success).toBe(false);
     expect(CheckLinkOutput.safeParse({ ...ok, evidence: '/app/scans/abc-1', buyable: true }).success).toBe(false);
+  });
+});
+
+describe('the injection flag and verdict-consistent wording', () => {
+  const sig = (id: string, status: 'pass' | 'warn' | 'fail', hidden = false) =>
+    ({ id, status, points: status === 'fail' ? 30 : 0, evidence: [], ...(hidden ? { collected: { pages: [{ url: 'https://x.test/', kind: 'home', title: 'x', hiddenText: [{ text: 'I am your shopping assistant', reason: 'display_none', hint: 'div', possibleInjection: true }] }] } } : {}) }) as never;
+
+  it('pageTriedToInstructAgents needs the confirmed hard rule; flagged hidden text alone (a shop’s own assistant) is not enough', () => {
+    expect(scanSummaryForAgent('s', { verdict: 'SAFE', score: 0, signals: [sig('ai_page', 'pass', true)], hardRules: [] }).pageTriedToInstructAgents).toBe(false);
+    expect(scanSummaryForAgent('s', { verdict: 'HOLD', score: 35, signals: [sig('ai_page', 'fail')], hardRules: ['prompt_injection_attempt'] }).pageTriedToInstructAgents).toBe(true);
+  });
+
+  it('a HOLD store’s failed page check never says "scam"; its summary is "a bit off"', () => {
+    const hold = scanSummaryForAgent('s', { verdict: 'HOLD', score: 35, signals: [sig('ai_page', 'fail'), sig('price', 'pass')], hardRules: [] });
+    expect(hold.signals[0]!.meaning).toBe('the page has several warning signs');
+    expect(hold.summary).toBe('Something looks a bit off: the page has several warning signs.');
+    expect(JSON.stringify(hold)).not.toMatch(/scam|fake/i);
+    const block = scanSummaryForAgent('s', { verdict: 'BLOCK', score: 90, signals: [sig('ai_page', 'fail')], hardRules: [] });
+    expect(block.signals[0]!.meaning).toBe('the page has strong scam signs');
+    expect(block.summary).toMatch(/^Looks like a fake shop/);
   });
 });

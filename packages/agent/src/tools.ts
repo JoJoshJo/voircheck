@@ -95,6 +95,8 @@ export const ScanSummary = z.object({
   signals: z.array(SignalSummary).max(SIGNAL_IDS.length),
   /** The page hid text that addresses AI agents (hidden-text extract). A flag only: the text itself never reaches the agent. */
   pageTriedToInstructAgents: z.boolean(),
+  /** The store in one hedged sentence, by its OVERALL verdict (our words): describe the store by this, not by one check. */
+  summary: z.string().max(240),
   /**
    * BLOCK only: the person's own paid orders at this store that can still be refunded (VoirCheck references, from our
    * rows). The agent offers request_refund; it never refunds.
@@ -115,7 +117,6 @@ export const CheckLinkOutput = z.union([
   ScanSummary.extend({
     status: z.literal('ok'),
     site: Site,
-    summary: z.string().max(240),
     evidence: z.string().regex(/^\/app\/scans\/[A-Za-z0-9-]{1,64}$/),
     buyable: z.literal(false),
   }),
@@ -144,17 +145,29 @@ const MEANING: Record<(typeof SIGNAL_IDS)[number], Record<SignalResult['status']
   clone: { pass: "doesn't copy another store", warn: 'looks a bit like another store', fail: 'copies another store', unavailable: "couldn't check for copies" },
 };
 
+/**
+ * A check line must not say more than the store's overall verdict: on a store that isn't BLOCK, a failed page check
+ * reads as warning signs, never as "scam" (live wig run, Nov 4: a HOLD shop was called "a scam").
+ */
+const NOT_BLOCK_FAIL: Partial<Record<(typeof SIGNAL_IDS)[number], string>> = { ai_page: 'the page has several warning signs' };
+const meaningFor = (id: (typeof SIGNAL_IDS)[number], status: SignalResult['status'], verdict: z.infer<typeof Verdict>) =>
+  (status === 'fail' && verdict !== 'BLOCK' && NOT_BLOCK_FAIL[id]) || MEANING[id][status];
+
 /** What a finished scan looks like to the agent. Built field by field; nothing from the page is copied. */
 export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[]; refundablePaidOrders?: readonly string[] }): ScanSummary {
   const refunds = scan.verdict === 'BLOCK' ? (scan.refundablePaidOrders ?? []).filter((r) => Ref.safeParse(r).success).slice(0, 5) : [];
-  const injection = scan.signals.some((s) => s.collected?.pages.some((p) => p.hiddenText?.some((h) => h.possibleInjection)));
+  // Both signs only (the prompt-injection hard rule: the page analysis found an attempt AND its quote matches our own
+  // rule). A hidden mention of an AI, such as a shop's own assistant widget, is not enough.
+  const injection = scan.hardRules.includes('prompt_injection_attempt');
+  const signals = scan.signals.map((s) => ({ id: s.id, status: s.status, points: s.points, meaning: meaningFor(s.id, s.status, scan.verdict) }));
   return ScanSummary.parse({
     storeId,
     verdict: scan.verdict,
     score: scan.score,
     hardRules: scan.hardRules.filter((r): r is (typeof HARD_RULES)[number] => (HARD_RULES as readonly string[]).includes(r)),
-    signals: scan.signals.map((s) => ({ id: s.id, status: s.status, points: s.points, meaning: MEANING[s.id][s.status] })),
+    signals,
     pageTriedToInstructAgents: injection,
+    summary: hedgedSummary({ verdict: scan.verdict, signals }),
     ...(refunds.length ? { refundablePaidOrders: refunds } : {}),
   });
 }
@@ -247,7 +260,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   };
   const verdict: AgentTool<{ storeId: string }, ScanOutput> = {
     name: 'get_scan_verdict',
-    description: "Check a store from the search results with VoirCheck's scanner. Returns the verdict (SAFE, HOLD or BLOCK), the risk score and each signal's status. Call it for every store before recommending one.",
+    description: "Check a store from the search results with VoirCheck's scanner. Returns the verdict (SAFE, HOLD or BLOCK), a one-sentence summary by that overall verdict, the risk score and each signal's status. Call it for every store before recommending one.",
     input: z.object({ storeId: Id }),
     output: ScanOutput,
     run: async ({ storeId }) => {
@@ -264,8 +277,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     run: async ({ url }) => {
       const r = await deps.checkLink(url);
       if (r.status !== 'ok') return { status: 'unavailable' as const, reason: r.reason };
-      const summary = scanSummaryForAgent(r.storeId, r);
-      return { ...summary, status: 'ok' as const, site: r.site, summary: hedgedSummary(summary), evidence: `/app/scans/${r.scanId}`, buyable: false as const };
+      return { ...scanSummaryForAgent(r.storeId, r), status: 'ok' as const, site: r.site, evidence: `/app/scans/${r.scanId}`, buyable: false as const };
     },
   };
   const order: AgentTool<{ storeId: string }, CreateOrderOutput> = {

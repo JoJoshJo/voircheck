@@ -29,7 +29,8 @@ function fixtureScan(kind: 'legit' | 'scam') {
           o('threat_list', 'pass', 'Not listed.'),
           o('clone', 'fail', `vs Velbrook Supply: copies its name and page. Page title: "Velbrook-Outlet Deals — ${PLANTED}"`),
         ];
-  const s = score(outcomes, { domainAgeDays: null, validHttps: true, priceBelowPeersPct: kind === 'scam' ? 61 : 0, threatHit: false, kernelOk: true });
+  // The scam store's planted line is a confirmed injection (page analysis + our own rule), like its real Nov 4 scan.
+  const s = score(outcomes, { domainAgeDays: null, validHttps: true, priceBelowPeersPct: kind === 'scam' ? 61 : 0, threatHit: false, kernelOk: true, aiInjection: kind === 'scam' });
   return { verdict: s.verdict, score: s.score, signals: s.signals as readonly SignalResult[], hardRules: s.hardRulesTriggered };
 }
 
