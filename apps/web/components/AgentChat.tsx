@@ -383,12 +383,25 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
         {s.refused && <p className="text-[14px] font-medium">{fmt(t.agent.refused, { reason: t.agent[`reason_${s.refused}` as 'reason_other'] ?? t.agent.reason_other })}</p>}
         {s.order && s.scan && (
           <div id={`order-${s.order.paymentId}`} className="space-y-3 border-t border-line pt-3">
-            <p className="text-[14px] font-medium">{t.agent.payTitle}</p>
-            <p className="text-[13px] leading-relaxed text-muted">{t.agent.payBody}</p>
-            {s.order.ref && <p className="text-[13px] text-muted">{fmt(t.agent.orderRef, { ref: s.order.ref })}</p>}
-            {paid && <p className="text-[13px] text-muted">{fmt(t.agent.paymentStatus, { status: t.agent[`st_${paid}` as 'st_failed'] ?? paid })}</p>}
-            {paid && SETTLED.has(paid) ? (
-              <Link href={`/app/pay/${s.order.paymentId}?from=chat`} className="text-[13px] text-ink underline underline-offset-4">
+            {paid === 'captured' ? (
+              <div className="space-y-1" role="status">
+                <p className="text-[16px] font-medium">{t.agent.paidTitle}</p>
+                <p className="text-[15px] leading-relaxed text-muted">{fmt(t.agent.paidBody, { amount: money, store: s.store.storeName, ref: s.order.ref ?? '' })}</p>
+              </div>
+            ) : (
+              <>
+                <p className="text-[15px] font-medium">{t.agent.payTitle}</p>
+                <p className="text-[14px] leading-relaxed text-muted">{t.agent.payBody}</p>
+                {s.order.ref && <p className="text-[14px] text-muted">{fmt(t.agent.orderRef, { ref: s.order.ref })}</p>}
+                {paid && <p className="text-[14px] text-muted">{fmt(t.agent.paymentStatus, { status: t.agent[`st_${paid}` as 'st_failed'] ?? paid })}</p>}
+              </>
+            )}
+            {paid === 'captured' ? (
+              <Link href="/app/history" className="inline-flex min-h-11 items-center text-[15px] text-ink underline underline-offset-4">
+                {t.agent.openHistory}
+              </Link>
+            ) : paid && SETTLED.has(paid) ? (
+              <Link href={`/app/pay/${s.order.paymentId}?from=chat`} className="inline-flex min-h-11 items-center text-[15px] text-ink underline underline-offset-4">
                 {t.agent.seePayment}
               </Link>
             ) : (

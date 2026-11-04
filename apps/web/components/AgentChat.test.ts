@@ -146,3 +146,14 @@ describe('while checking a shop', () => {
     expect(html).toContain('aria-live="polite"');
   });
 });
+
+describe('after paying', () => {
+  it.each(['en', 'fr'] as const)('a short warm confirmation with the order reference and a way to the receipt (%s)', (lang) => {
+    const t = DICTS[lang];
+    const html = renderToStaticMarkup(createElement(StoreCard, { t, lang, clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'done', signals: {}, scan: scan('SAFE'), order: { paymentId: 'pay-1', orderId: 'O1', ref: 'VC-7K2F' } }, payments: { 'pay-1': 'captured' }, busy: false, onBuy: () => {} }));
+    expect(html).toContain(t.agent.paidTitle);
+    expect(html).toContain('VC-7K2F');
+    expect(html).toContain('href="/app/history"');
+    expect(html).not.toContain(t.agent.payBody);
+  });
+});
