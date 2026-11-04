@@ -254,7 +254,8 @@ Revoke it there any time.
 **End-to-end check:** `VOIRCHECK_MCP_TOKEN=… pnpm mcp:e2e --url http://localhost:3000/api/mcp` runs the official SDK
 client through every tool (no token → 401, Block refused, wrong amount refused, a sandbox order for a Safe store) and
 writes a transcript with the token redacted. `pnpm mcp:e2e --local` runs the same client against the same server code
-in-process, with an in-memory token check; its transcript: [`eval/mcp/2026-11-04-local.md`](eval/mcp/2026-11-04-local.md).
+in-process, with an in-memory token check. Transcripts: against local dev with a real token, revoked afterwards
+([`eval/mcp/2026-11-04.md`](eval/mcp/2026-11-04.md)), and in-process ([`eval/mcp/2026-11-04-local.md`](eval/mcp/2026-11-04-local.md)).
 
 ## Chrome extension
 
