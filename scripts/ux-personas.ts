@@ -11,17 +11,21 @@
  */
 import 'dotenv/config';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { AGENT_SYSTEM_PROMPT, AnthropicModel, parseQuickReplies, runAgentTurn, shoppingTools, type AgentDeps, type AgentMessage } from '@voircheck/agent';
+import { AGENT_SYSTEM_PROMPT, AnthropicModel, compareStores, parseQuickReplies, runAgentTurn, shoppingTools, type AgentDeps, type AgentMessage, type SearchResult } from '@voircheck/agent';
 import { createDb } from '@voircheck/db';
 import { scans } from '@voircheck/db/schema';
 import type { SignalResult } from '@voircheck/scanner';
 import { desc, eq } from 'drizzle-orm';
 import { DEMO_USER, demoAgentDeps, PLANTED } from './agent-demo/deps';
+import { labScan, type Spend } from './lab/live';
 
 const args = process.argv.slice(2);
 const label = args.includes('--label') ? args[args.indexOf('--label') + 1] : '';
 const cap = args.includes('--cap') ? Number(args[args.indexOf('--cap') + 1]) : 0.2;
 const only = args.includes('--only') ? args[args.indexOf('--only') + 1]!.split(',') : null;
+/** Live product search (Channel3, Demo mode off) and real scans (cached first; a fresh one is a KERNEL session, at most 3). No checkout. */
+const liveSearch = args.includes('--live-search');
+const scanSpend: Spend = { agentUsd: 0, scanUsd: 0, kernelSessions: 0 };
 if (!process.env.ANTHROPIC_API_KEY) {
   console.error('Needs ANTHROPIC_API_KEY in .env. Stopping.');
   process.exit(1);
@@ -81,6 +85,40 @@ async function realRetailerScan() {
   return row ? { verdict: row.verdict as 'SAFE' | 'HOLD' | 'BLOCK', risk_score: row.riskScore, signals: row.signals as SignalResult[], hard_rules_triggered: row.hardRulesTriggered, scanned_at: row.scannedAt.toISOString() } : null;
 }
 
+// ---------- live search (--live-search) ----------
+function liveDeps(base: AgentDeps): AgentDeps {
+  const live = new Map<string, SearchResult>();
+  return {
+    ...base,
+    async searchStores(q, max) {
+      const r = await compareStores(q, { apiKey: process.env.CHANNEL3_API_KEY, demoMode: false, maxPrice: max });
+      if (r.status !== 'ok') return { status: r.status };
+      const stores = r.stores.slice(0, 3).map((x, i) => {
+        const id = `live-${i + 1}`;
+        live.set(id, x);
+        return { storeId: id, storeName: x.storeName.slice(0, 80), productTitle: x.title.slice(0, 120), price: x.price.toFixed(2), currency: x.currency, demo: false };
+      });
+      say(`_Live search "${q}"${max ? ` (max $${max})` : ''}: ${stores.map((x) => `${x.storeName} $${x.price}`).join(', ')}_\n`);
+      return { status: 'ok', stores, sameProduct: r.sameProduct };
+    },
+    async scanStore(storeId) {
+      const x = live.get(storeId);
+      if (!x) return { status: 'unavailable', reason: 'unknown_store' };
+      if (scanSpend.kernelSessions >= 3) return { status: 'unavailable', reason: 'rate_limited' };
+      try {
+        const r = await labScan(x.storeUrl, scanSpend);
+        say(`_Scan ${x.storeDomain}: ${r.verdict} ${r.score}${r.cached ? ' (cached)' : ' (fresh, 1 KERNEL session)'}_\n`);
+        return { status: 'ok', verdict: r.verdict, score: r.score, signals: r.signals, hardRules: r.hardRules };
+      } catch (err) {
+        console.error('scan failed:', err instanceof Error ? err.message : 'unknown');
+        return { status: 'unavailable', reason: 'failed' };
+      }
+    },
+    // No checkout in a live run.
+    createOrder: async (storeId) => ({ storeId, status: 'refused', reason: 'other' }),
+  };
+}
+
 const model = new AnthropicModel({ apiKey: process.env.ANTHROPIC_API_KEY, model: process.env.AGENT_MODEL || undefined });
 const out: string[] = [];
 const say = (s = '') => {
@@ -121,6 +159,7 @@ for (const p of PERSONAS) {
       },
     };
   }
+  if (liveSearch) wrapped = liveDeps(wrapped);
   if (p.paidOrder) {
     const r = await deps.searchStores('earbuds', null);
     if (r.status === 'ok') for (const s of r.stores) await deps.scanStore(s.storeId);
@@ -171,7 +210,8 @@ for (const p of PERSONAS) {
 
 say(`\n## Result\n`);
 say(failures.length ? failures.map((f) => `- ✗ ${f}`).join('\n') : '- ✓ every reply passed every check');
-say(`\n${calls} model calls, $${spent.toFixed(4)} (Sonnet). No KERNEL session, no real PayPal call.`);
+const scanLine = liveSearch ? `Live search; ${scanSpend.kernelSessions} KERNEL session(s), page analysis $${scanSpend.scanUsd.toFixed(4)}` : 'No KERNEL session';
+say(`\n${calls} model calls, $${spent.toFixed(4)} (Sonnet). ${scanLine}, no real PayPal call.`);
 const date = new Date().toISOString().slice(0, 10);
 mkdirSync('eval/ux', { recursive: true });
 const file = `eval/ux/${date}${label ? `-${label}` : ''}.md`;
