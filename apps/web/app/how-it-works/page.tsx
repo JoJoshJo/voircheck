@@ -13,6 +13,16 @@ const IDS = ['domain_age', 'ssl_redirects', 'price', 'ai_page', 'threat_list', '
 const KEYS = ['s1', 's2', 's3', 's4', 's5', 's6'] as const;
 
 // Published sources for "Why now" (the only ones cited; text in i18n `how.why1`–`why5`).
+/** Attack lab results (eval/attacks/2026-11-04.md): every row, including the miss. */
+const ATTACKS = [
+  ['attack1', 'hold'],
+  ['attack2', 'hold'],
+  ['attack3', 'hold'],
+  ['attack4a', 'missed'],
+  ['attack4b', 'hold'],
+  ['attack5', 'hold'],
+] as const;
+
 const WHY_NOW = [
   ['why1', 'https://guard.io/labs/scamlexity-we-put-agentic-ai-browsers-to-the-test-they-clicked-they-paid-they-failed'],
   ['why2', 'https://corporate.visa.com/en/sites/visa-perspectives/security-trust/the-threats-landscape-of-agentic-commerce.html'],
@@ -83,6 +93,38 @@ export default async function HowItWorks() {
           <p className="mt-3 text-[15px] leading-relaxed text-muted">
             <a href="https://github.com/JoJoshJo/voircheck/tree/main/eval/compare" className="underline underline-offset-4 hover:text-ink" rel="noopener noreferrer">
               {t.how.withoutLink}
+            </a>
+          </p>
+        </section>
+        <section className="mt-12">
+          <h2 className="text-[20px] font-medium">{t.how.attacksTitle}</h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.attacksBody}</p>
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[520px] text-left text-[14px]">
+              <thead className="text-muted">
+                <tr className="border-b border-line">
+                  <th className="py-2 pr-3 font-medium">{t.how.attacksColAttack}</th>
+                  <th className="py-2 pr-3 font-medium">{t.how.attacksColFlag}</th>
+                  <th className="py-2 pr-3 font-medium">{t.how.attacksColAgent}</th>
+                  <th className="py-2 font-medium">{t.how.attacksColMoney}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ATTACKS.map(([key, verdict]) => (
+                  <tr key={key} className="border-b border-line align-top">
+                    <td className="py-2 pr-3">{t.how[key]}</td>
+                    <td className="py-2 pr-3 whitespace-nowrap">{verdict === 'missed' ? t.how.attacksMissed : t.verdict.HOLD}</td>
+                    <td className="py-2 pr-3">{t.how.attacksNo}</td>
+                    <td className="py-2">{t.how.attacksNo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">{t.how.attacksNote}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            <a href="https://github.com/JoJoshJo/voircheck/tree/main/eval/attacks" className="underline underline-offset-4 hover:text-ink" rel="noopener noreferrer">
+              {t.how.attacksLink}
             </a>
           </p>
         </section>

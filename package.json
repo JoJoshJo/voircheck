@@ -21,7 +21,8 @@
     "eval:run": "tsx scripts/eval-run.ts",
     "kernel:proxy": "tsx scripts/kernel-proxy.ts",
     "agent:demo": "tsx scripts/agent-demo.ts",
-    "compare:demo": "tsx scripts/compare-demo.ts"
+    "compare:demo": "tsx scripts/compare-demo.ts",
+    "attacks:run": "tsx scripts/attacks-run.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -38,6 +39,7 @@
     "@voircheck/db": "workspace:*",
     "@voircheck/paypal": "workspace:*",
     "@voircheck/scanner": "workspace:*",
+    "@voircheck/shared": "workspace:*",
     "drizzle-orm": "^0.45.4"
   }
 }

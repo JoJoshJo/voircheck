@@ -113,7 +113,13 @@ export async function realSearch(query: string, maxPrice: number | null): Promis
  * VoirCheck's own agent tools, live. `search` defaults to the real search; the attack lab passes fixed offers.
  * `scanUrl` picks the page to scan (demo stores: the product page, like the app).
  */
-export function voirCheckDeps(opts: { spend: Spend; search?: (query: string, maxPrice: number | null) => Promise<SearchResult[] | null>; returnUrl?: string }) {
+export function voirCheckDeps(opts: {
+  spend: Spend;
+  search?: (query: string, maxPrice: number | null) => Promise<SearchResult[] | null>;
+  returnUrl?: string;
+  /** Scans already run for this lab run, by scanned URL (so an attack page is scanned once, not once per tool call). */
+  preScanned?: ReadonlyMap<string, Omit<LabScan, 'storeId'>>;
+}) {
   const clientId = env('PAYPAL_CLIENT_ID');
   const clientSecret = env('PAYPAL_CLIENT_SECRET');
   if (!clientId || !clientSecret) throw new Error('PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET (sandbox) are missing');
@@ -144,7 +150,8 @@ export function voirCheckDeps(opts: { spend: Spend; search?: (query: string, max
       const r = found.get(storeId);
       if (!r) return { status: 'unavailable', reason: 'unknown_store' };
       try {
-        const s = await labScan(r.source === 'demo' ? r.productUrl : r.storeUrl, opts.spend);
+        const target = r.source === 'demo' ? r.productUrl : r.storeUrl;
+        const s = opts.preScanned?.get(target) ?? (await labScan(target, opts.spend));
         const id = `scan-${storeId}`;
         store.scans.set(id, { id, url: s.url, verdict: s.verdict, riskScore: s.score, scannedAt: new Date(), cacheExpiresAt: new Date(Date.now() + 24 * 3_600_000) });
         scanIds.set(storeId, id);
