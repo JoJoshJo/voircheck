@@ -374,6 +374,7 @@ voircheck/
   2. `voircheck-stores`: one service serving all 6 demo stores, routed by domain/host
   3. Render Workflows: scans + test-set runs *(planned, not built)*
   - Confirm the credits cover Starter for both services Nov 11 → Dec 15.
+- **Keep-warm (✅ Nov 4):** a GitHub Actions schedule (`.github/workflows/keep-warm.yml`, free) GETs `voircheck.com/api/health` and the demo stores' `/robots.txt` every 10 min, so neither free instance sleeps before Nov 11 (measured Nov 4: a fresh scan of a sleeping demo store took 77 s, 66 s of it waiting for the store). Budget: ~340 of the 750 free instance hours until Nov 11; harmless on Starter; off after Dec 15 so two free services can't exceed the hours. GitHub may run schedules a few minutes late.
 - **Neon free plan:** compute auto-suspends after 5 min idle and wakes on the next request (first request slightly slower); no long-term pause, so **no keep-alive job needed**. Free plan: 100 CU-hours/project/month, 1 GB storage/project; monitor usage during judging.
 - **Uptime monitoring:** free monitor checks the app + all 6 demo stores every 5 min, with phone/email alerts. Watch closely Dec 1–15.
 - **Domains:** 3 fresh scam-store domains (5.8) point to `voircheck-stores`; legit demo stores use Render subdomains or older domains.

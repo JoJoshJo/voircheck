@@ -1,0 +1,33 @@
+# Keeps the two Render services awake while they are on the free plan (spec 5.16): a free instance sleeps after
+# 15 idle minutes and the next visit waits 30-60 s for it (a fresh scan of a sleeping demo store took 77 s, Nov 4).
+#
+# Free plan budget: 750 instance hours a month for the workspace. Both services awake 24/7 from Nov 4 to Nov 11 is
+# about 340 h; from Nov 11 to Dec 15 both are on Starter (always on, not counted), so these pings change nothing.
+# After Dec 15 the job stops itself: keeping two free services awake all month (~1,490 h) would exceed the budget.
+#
+# Only GETs of public, read-only paths. No secrets, no checkout.
+name: Keep warm
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Ping the app and the demo stores
+        run: |
+          if [ "$(date -u +%Y%m%d)" -gt 20261215 ]; then echo "Past Dec 15: keep-warm is off (free-plan hours)."; exit 0; fi
+          for url in https://voircheck.com/api/health https://voircheck-stores.onrender.com/robots.txt; do
+            # Up to 90 s: a sleeping instance takes 30-60 s to answer. A failed ping never fails the job.
+            curl -sS -o /dev/null --max-time 90 -w "$url %{http_code} %{time_total}s\n" "$url" || echo "$url unreachable"
+          done
