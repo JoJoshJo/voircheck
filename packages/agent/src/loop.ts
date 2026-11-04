@@ -22,6 +22,8 @@ export type AnyAgentTool = AgentTool<any, any>;
 
 export type LoopEvent =
   | { type: 'assistant_text'; text: string }
+  /** A piece of the reply as the model writes it; the step's `assistant_text` is the final text. */
+  | { type: 'assistant_delta'; text: string }
   | { type: 'tool_call'; id: string; name: string }
   | { type: 'tool_result'; id: string; name: string; isError: boolean };
 
@@ -76,7 +78,7 @@ export async function runAgentTurn(opts: {
   let modelCalls = 0;
 
   for (let step = 0; step < (opts.maxSteps ?? MAX_STEPS); step++) {
-    const turn = await opts.model.respond({ system: opts.system, messages, tools: specs, lang: opts.lang });
+    const turn = await opts.model.respond({ system: opts.system, messages, tools: specs, lang: opts.lang, ...(opts.onEvent ? { onText: (text: string) => emit({ type: 'assistant_delta', text }) } : {}) });
     modelCalls++;
     if (turn.usage) for (const k of Object.keys(usage) as (keyof ModelUsage)[]) usage[k] += turn.usage[k];
     messages.push({ role: 'assistant', text: turn.text, toolCalls: turn.toolCalls, ...(turn.raw !== undefined ? { raw: turn.raw } : {}) });

@@ -3,7 +3,7 @@ import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, F
 import { demoPeersForUrl } from '@voircheck/agent/search';
 import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
-import { agentTextEvents, neutralizeFakeNote, type AgentEvent } from './agent-view';
+import { agentTextEvents, draftText, neutralizeFakeNote, type AgentEvent } from './agent-view';
 import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './orders';
 import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
@@ -342,6 +342,7 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
   if (kind === 'claude' && (await anthropicCapReached())) throw new DailyCapError();
   const note = await statusNote(o).catch(() => null);
   const userText = [note, neutralizeFakeNote(o.text)].filter(Boolean).join('\n');
+  let draft = draftText();
   const { messages, stopped, usage, modelCalls } = await runAgentTurn({
     model,
     tools: shoppingTools(webDeps(o)),
@@ -350,7 +351,14 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
     userText,
     lang: o.lang,
     onEvent: (e) => {
-      if (e.type === 'assistant_text') for (const ev of agentTextEvents(e.text)) o.send(ev);
+      if (e.type === 'assistant_delta') {
+        const piece = draft(e.text);
+        if (piece) o.send({ type: 'text_delta', text: piece });
+      }
+      if (e.type === 'assistant_text') {
+        draft = draftText();
+        for (const ev of agentTextEvents(e.text)) o.send(ev);
+      }
     },
   });
   // Scans started when search returned finish inside this turn, so their cards never stay on "checking" after the

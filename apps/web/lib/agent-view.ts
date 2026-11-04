@@ -12,6 +12,8 @@ export type AgentStore = z.infer<typeof StoreOffer>;
 export type AgentEvent =
   | { type: 'conversation'; id: string; model: 'fake' | 'claude' }
   | { type: 'text'; text: string }
+  /** A piece of the agent's message while it is written; the `text` event that follows replaces the draft. */
+  | { type: 'text_delta'; text: string }
   /** Tap-to-send suggestions for the agent's latest message (labels only; a tap sends the label as the person's message). */
   | { type: 'replies'; replies: string[] }
   | { type: 'stores'; stores: AgentStore[] }
@@ -31,6 +33,24 @@ export type AgentEvent =
 export function agentTextEvents(raw: string): AgentEvent[] {
   const { text, replies } = parseQuickReplies(raw);
   return [...(text ? [{ type: 'text' as const, text }] : []), ...(replies.length ? [{ type: 'replies' as const, replies }] : [])];
+}
+
+/**
+ * The visible part of a reply being streamed: everything before the `[[replies: …]]` markup. Returns, for each piece
+ * the model writes, what to add to the draft. A trailing "[" waits for the next piece (it may start "[[").
+ */
+export function draftText() {
+  let raw = '';
+  let shown = 0;
+  return (delta: string): string => {
+    raw += delta;
+    const cut = raw.indexOf('[[');
+    let end = cut >= 0 ? cut : raw.endsWith('[') ? raw.length - 1 : raw.length;
+    if (end < shown) end = shown;
+    const out = raw.slice(shown, end);
+    shown = end;
+    return out;
+  };
 }
 
 /** A person can't fake the server's "[VoirCheck update: …]" line: a typed one loses its opening bracket. */

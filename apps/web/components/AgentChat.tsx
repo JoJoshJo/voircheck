@@ -17,7 +17,7 @@ import { VERDICT_CLASSES } from './Verdict';
 
 type Item =
   | { kind: 'user'; text: string }
-  | { kind: 'agent'; text: string; replies?: string[] }
+  | { kind: 'agent'; text: string; replies?: string[]; draft?: true }
   | { kind: 'stores'; ids: string[] }
   | { kind: 'refund'; paymentId: string; ref: string; store: string; amount: string; currency: string };
 
@@ -39,8 +39,21 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
     if (stores[id]) stores[id] = { ...stores[id]!, ...p };
   };
   switch (e.type) {
-    case 'text':
-      return { ...state, items: [...state.items, { kind: 'agent' as const, text: e.text }] };
+    case 'text_delta': {
+      // The reply as it is written: one draft bubble that grows.
+      const last = state.items.at(-1);
+      if (last?.kind === 'agent' && last.draft) return { ...state, items: [...state.items.slice(0, -1), { ...last, text: last.text + e.text }] };
+      const text = e.text.trimStart();
+      return text ? { ...state, items: [...state.items, { kind: 'agent' as const, text, draft: true as const }] } : state;
+    }
+    case 'text': {
+      // The finished message replaces its draft.
+      const i = state.items.map((x) => x.kind === 'agent' && !!x.draft).lastIndexOf(true);
+      const item = { kind: 'agent' as const, text: e.text };
+      return { ...state, items: i >= 0 ? state.items.map((x, j) => (j === i ? item : x)) : [...state.items, item] };
+    }
+    case 'done':
+      return dropDrafts(state);
     case 'replies': {
       // Quick replies belong to the agent's latest message; anything else in between drops them.
       const last = state.items.at(-1);
@@ -79,6 +92,11 @@ export function applyAgentEvent(state: { items: Item[]; stores: Record<string, S
     default:
       return state;
   }
+}
+
+/** A draft left by a turn that stopped early (error, lost connection) isn't a message: it goes. */
+export function dropDrafts<S extends { items: Item[] }>(state: S): S {
+  return state.items.some((x) => x.kind === 'agent' && x.draft) ? { ...state, items: state.items.filter((x) => !(x.kind === 'agent' && x.draft)) } : state;
 }
 
 /** What "Buy this" sends: the person's own words, so the agent orders (HOLD: their explicit go-ahead after seeing it). */
@@ -205,6 +223,7 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
     } catch {
       setError(t.agent.errorGeneric);
     } finally {
+      setChat((c) => dropDrafts(c));
       setBusy(false);
     }
   }

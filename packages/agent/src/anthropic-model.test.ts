@@ -147,3 +147,66 @@ describe('AnthropicModel in the loop', () => {
     expect(calls[1]!.messages[2]).toEqual({ role: 'user', content: [{ type: 'tool_result', tool_use_id: 't1', content: '{"status":"ok"}' }] });
   });
 });
+
+describe('AnthropicModel: streaming', () => {
+  function streamingClient(reply: Reply, pieces: string[]) {
+    const created: unknown[] = [];
+    const streamed: unknown[] = [];
+    const client: MessagesCreator = {
+      messages: {
+        async create(params) {
+          created.push(params);
+          return reply;
+        },
+        stream(params) {
+          streamed.push(params);
+          let cb: (d: string) => void = () => {};
+          return {
+            on(_e: 'text', f: (d: string) => void) {
+              cb = f;
+            },
+            async finalMessage() {
+              for (const p of pieces) cb(p);
+              return reply;
+            },
+          };
+        },
+      },
+    };
+    return { client, created, streamed };
+  }
+
+  it('with onText: streams the same request, passes the text on as written, and returns the same turn', async () => {
+    const reply: Reply = { content: [text('Looks safe to buy.')], stop_reason: 'end_turn', usage };
+    const { client, created, streamed } = streamingClient(reply, ['Looks ', 'safe ', 'to buy.']);
+    const pieces: string[] = [];
+    const turn = await new AnthropicModel({ apiKey: 'k', client }).respond({ ...req(), onText: (d) => pieces.push(d) });
+    expect(pieces).toEqual(['Looks ', 'safe ', 'to buy.']);
+    expect(created).toHaveLength(0);
+    expect(streamed).toHaveLength(1);
+    expect(turn.text).toBe('Looks safe to buy.');
+    const plain = await new AnthropicModel({ apiKey: 'k', client }).respond(req());
+    expect(created).toHaveLength(1);
+    expect(streamed[0]).toEqual(created[0]); // same model, effort, caching, tools, messages
+    expect(plain).toEqual(turn);
+  });
+
+  it('a streamed turn cut at max_tokens still runs no tools', async () => {
+    const reply: Reply = { content: [text('Let me'), toolUse('t1', 'search_products', { query: 'x' })], stop_reason: 'max_tokens', usage };
+    const { client } = streamingClient(reply, ['Let me']);
+    const turn = await new AnthropicModel({ apiKey: 'k', client }).respond({ ...req(), onText: () => {} });
+    expect(turn.toolCalls).toEqual([]);
+  });
+
+  it('the loop forwards the pieces as assistant_delta, then the final assistant_text', async () => {
+    const reply: Reply = { content: [text('Hi there')], stop_reason: 'end_turn', usage };
+    const { client } = streamingClient(reply, ['Hi ', 'there']);
+    const events: unknown[] = [];
+    await runAgentTurn({ model: new AnthropicModel({ apiKey: 'k', client }), tools: [], system: 's', history: [], userText: 'hi', lang: 'en', onEvent: (e) => events.push(e) });
+    expect(events).toEqual([
+      { type: 'assistant_delta', text: 'Hi ' },
+      { type: 'assistant_delta', text: 'there' },
+      { type: 'assistant_text', text: 'Hi there' },
+    ]);
+  });
+});

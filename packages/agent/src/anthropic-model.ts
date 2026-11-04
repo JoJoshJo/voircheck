@@ -16,8 +16,14 @@ import { AGENT_MODEL_ID, MissingModelKeyError, ModelUnavailableError, type Agent
 export const AGENT_MAX_TOKENS = 2_048;
 
 /** The slice of the SDK client we use (lets tests pass a fake). */
+type ApiTurn = Pick<Anthropic.Message, 'content' | 'stop_reason' | 'usage'>;
+
+/** The slice of the SDK client we use (lets tests pass a fake). `stream` is used when the caller wants the text live. */
 export interface MessagesCreator {
-  messages: { create(params: Anthropic.MessageCreateParamsNonStreaming): PromiseLike<Pick<Anthropic.Message, 'content' | 'stop_reason' | 'usage'>> };
+  messages: {
+    create(params: Anthropic.MessageCreateParamsNonStreaming): PromiseLike<ApiTurn>;
+    stream?(params: Anthropic.MessageStreamParams): { on(event: 'text', cb: (delta: string) => void): unknown; finalMessage(): PromiseLike<ApiTurn> };
+  };
 }
 
 const LANG_LINE = { en: 'The person’s app language is English: reply in the language they write in, English when unclear.', fr: 'The person’s app language is French: reply in the language they write in, French when unclear, always with “vous”.' } as const;
@@ -76,9 +82,10 @@ export class AnthropicModel implements ModelClient {
   async respond(req: ModelRequest): Promise<ModelTurn> {
     if (!this.opts.apiKey && !this.opts.client) throw new MissingModelKeyError();
     this.client ??= new Anthropic({ apiKey: this.opts.apiKey, maxRetries: 2 });
-    let res: Awaited<ReturnType<MessagesCreator['messages']['create']>>;
+    const client = this.client;
+    let res: ApiTurn;
     try {
-      res = await this.client.messages.create({
+      const params = {
         model: this.id,
         max_tokens: this.opts.maxTokens ?? AGENT_MAX_TOKENS,
         output_config: { effort: 'low' },
@@ -89,7 +96,15 @@ export class AnthropicModel implements ModelClient {
         ],
         tools: apiTools(req.tools),
         messages: toApiMessages(req.messages),
-      });
+      } satisfies Anthropic.MessageCreateParamsNonStreaming;
+      // Streaming changes only when the person sees the text: the turn is used once it is complete, exactly as before
+      // (stop_reason checks, tools only on a whole tool_use turn).
+      if (req.onText && client.messages.stream) {
+        const onText = req.onText;
+        const stream = client.messages.stream(params);
+        stream.on('text', (delta) => onText(delta));
+        res = await stream.finalMessage();
+      } else res = await client.messages.create(params);
     } catch (err) {
       throw unavailable(err);
     }

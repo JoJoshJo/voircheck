@@ -36,6 +36,8 @@ export interface ModelRequest {
   tools: readonly ToolSpec[];
   /** The user's app language; the real model gets it in the system prompt too. */
   lang: 'en' | 'fr';
+  /** Called with each piece of the reply's text as it is written (streaming). The turn's returned text is final. */
+  onText?: (delta: string) => void;
 }
 
 export interface ModelUsage {

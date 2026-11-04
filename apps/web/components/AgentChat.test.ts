@@ -3,12 +3,27 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { AgentEvent } from '../lib/agent-view';
 import { DICTS } from '../lib/i18n';
-import { AgentChat, applyAgentEvent, applyRefundResult, buyMessage, pendingApproval, StoreCard } from './AgentChat';
+import { AgentChat, applyAgentEvent, applyRefundResult, buyMessage, dropDrafts, pendingApproval, StoreCard } from './AgentChat';
 
 const store = (storeId: string, storeName: string, price: string) => ({ storeId, storeName, productTitle: 'Zephlet Buds', price, currency: 'USD', demo: true });
 const scan = (verdict: 'SAFE' | 'BLOCK') => ({ id: `scan-${verdict}`, url: 'https://x.test/', domain: 'x.test', verdict, score: verdict === 'SAFE' ? 5 : 85, signals: [], hardRules: [], cantVerify: null, scannedAt: '2026-10-31T10:00:00Z' });
 
 describe('chat state', () => {
+  it('a streamed reply grows in one draft bubble, then the finished message replaces it', () => {
+    const start = { items: [{ kind: 'user' as const, text: 'hi' }], stores: {}, payments: {} };
+    const events: AgentEvent[] = [
+      { type: 'text_delta', text: 'Looks ' },
+      { type: 'text_delta', text: 'safe.' },
+    ];
+    const draft = events.reduce(applyAgentEvent, start);
+    expect(draft.items).toEqual([{ kind: 'user', text: 'hi' }, { kind: 'agent', text: 'Looks safe.', draft: true }]);
+    const done = [{ type: 'text', text: 'Looks safe.' } as AgentEvent, { type: 'replies', replies: ['Buy it'] } as AgentEvent].reduce(applyAgentEvent, draft);
+    expect(done.items).toEqual([{ kind: 'user', text: 'hi' }, { kind: 'agent', text: 'Looks safe.', replies: ['Buy it'] }]);
+    // A turn that stopped mid-reply leaves no half message.
+    expect(dropDrafts(draft).items).toEqual([{ kind: 'user', text: 'hi' }]);
+    expect(applyAgentEvent(draft, { type: 'done' }).items).toEqual([{ kind: 'user', text: 'hi' }]);
+  });
+
   it('follows a search → scans → order → refusal → payment run', () => {
     const events: AgentEvent[] = [
       { type: 'text', text: 'Looking for wireless earbuds.' },

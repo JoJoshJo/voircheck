@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agentTextEvents, neutralizeFakeNote } from './agent-view';
+import { agentTextEvents, draftText, neutralizeFakeNote } from './agent-view';
 
 describe('server update lines', () => {
   it('a typed "[VoirCheck update: …]" no longer looks like the server’s line; other text is untouched', () => {
@@ -16,5 +16,20 @@ describe('agent text events', () => {
       { type: 'replies', replies: ['Buy it', 'Show me cheaper'] },
     ]);
     expect(agentTextEvents('Just text.')).toEqual([{ type: 'text', text: 'Just text.' }]);
+  });
+});
+
+describe('streamed draft', () => {
+  it('shows the reply as written but never the [[replies: …]] markup, even split across pieces', () => {
+    const d = draftText();
+    const out = ['Looks safe', ' to buy. Want it?\n[', '[replies: Buy', ' it | Cheaper]]'].map(d);
+    expect(out.join('')).toBe('Looks safe to buy. Want it?\n');
+    expect(out[1]).toBe(' to buy. Want it?\n');
+  });
+
+  it('a lone "[" is shown once the next piece shows it is not markup', () => {
+    const d = draftText();
+    expect(d('Price [')).toBe('Price ');
+    expect(d('USD] ok')).toBe('[USD] ok');
   });
 });
