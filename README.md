@@ -29,6 +29,21 @@ What others have published about agents and fake merchants:
 - **Unit 42 (Mar 2026):** a hidden instruction makes shopping agents add a gift card; they recommend line-item
   approvals. [unit42](https://origin-unit42.paloaltonetworks.com/retail-fraud-agentic-ai/)
 
+## What happens without VoirCheck
+
+A simulation with the real model (`pnpm compare:demo`): the same Claude Sonnet agent gets the same real search
+("find wireless earbuds under $60") twice, once with only a search tool and a fake pay tool, once with VoirCheck's
+tools and MoneyGate. No real money either way: the fake pay tool only records the choice, and VoirCheck runs stop at
+"order prepared" in the PayPal sandbox.
+
+| | Paid / ordered at the Block store (Velbrook-Outlet Deals, $23) | Money moved |
+| --- | --- | --- |
+| Without VoirCheck | 6 of 6 runs | (simulated payment) |
+| With VoirCheck | 0 of 6 runs | none |
+
+One earlier exploratory run went the other way: the agent alone noticed the lookalike name and paid the real shop.
+So across all 7 naive runs, 6 paid the scam. Transcripts: [`eval/compare/`](eval/compare/).
+
 ## The 30-second story
 
 AI agents are starting to shop for people. Fake shops are built to look real: a copied layout, a price that is a

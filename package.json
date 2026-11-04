@@ -20,7 +20,8 @@
     "retention:run": "tsx scripts/retention.ts",
     "eval:run": "tsx scripts/eval-run.ts",
     "kernel:proxy": "tsx scripts/kernel-proxy.ts",
-    "agent:demo": "tsx scripts/agent-demo.ts"
+    "agent:demo": "tsx scripts/agent-demo.ts",
+    "compare:demo": "tsx scripts/compare-demo.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -29,7 +30,8 @@
     "tsx": "^4.23.15",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.72.1",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "zod": "4.6.7"
   },
   "dependencies": {
     "@voircheck/agent": "workspace:*",

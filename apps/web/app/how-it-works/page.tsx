@@ -71,6 +71,21 @@ export default async function HowItWorks() {
             ))}
           </ul>
         </section>
+        <section className="mt-12">
+          <h2 className="text-[20px] font-medium">{t.how.withoutTitle}</h2>
+          <p className="mt-1 text-[13px] font-medium uppercase tracking-wide text-faint">{t.how.withoutTag}</p>
+          <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.withoutBody}</p>
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-[15px] leading-relaxed text-muted">
+            <li>{t.how.without1}</li>
+            <li>{t.how.without2}</li>
+            <li>{t.how.without3}</li>
+          </ul>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            <a href="https://github.com/JoJoshJo/voircheck/tree/main/eval/compare" className="underline underline-offset-4 hover:text-ink" rel="noopener noreferrer">
+              {t.how.withoutLink}
+            </a>
+          </p>
+        </section>
         <section className="mt-14 rounded-card bg-surface p-7">
           <h2 className="text-[20px] font-medium">{t.how.accuracyTitle}</h2>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">{t.how.accuracyBody}</p>
