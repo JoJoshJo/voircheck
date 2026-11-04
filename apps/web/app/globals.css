@@ -92,7 +92,27 @@ body {
 @keyframes vc-hero-bg { from { background-color: var(--color-surface); } to { background-color: var(--color-white); } }
 .vc-hero-bg { animation: vc-hero-bg 600ms ease-out 2200ms both; }
 
+/*
+ * Check icons (SignalIcon.tsx): grey outline glyphs move while a check runs (one 600 ms loop each),
+ * then a verdict-coloured disc scales in and its mark draws (300 ms).
+ */
+@keyframes vc-turn { to { transform: rotate(360deg); } }
+@keyframes vc-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.2px); } }
+@keyframes vc-swing { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes vc-scanline { from { transform: translateY(-3px); } to { transform: translateY(5px); } }
+@keyframes vc-redraw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes vc-slide { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-2.5px, -2.5px); } }
+.vc-run-domain_age .vc-m { transform-origin: 12px 12px; animation: vc-turn 600ms linear infinite; }
+.vc-run-ssl_redirects .vc-m { animation: vc-bob 600ms ease-in-out infinite; }
+.vc-run-price .vc-m { transform-origin: 8px 8px; animation: vc-swing 600ms ease-in-out infinite; }
+.vc-run-ai_page .vc-m { animation: vc-scanline 600ms ease-in-out infinite alternate; }
+.vc-run-threat_list .vc-m { stroke-dasharray: 1; animation: vc-redraw 600ms ease-out infinite; }
+.vc-run-clone .vc-m { animation: vc-slide 600ms ease-in-out infinite; }
+.vc-done .vc-disc { transform-origin: 12px 12px; animation: vc-pop 300ms ease-out both; }
+.vc-done .vc-mark { stroke-dasharray: 1; animation: vc-draw 250ms ease-out 100ms both; }
+
 @media (prefers-reduced-motion: reduce) {
+  .vc-run .vc-m, .vc-done .vc-disc, .vc-done .vc-mark { animation: none; }
   .vc-float, .vc-scan, .vc-tick, .vc-asm .vc-part, .vc-asm .vc-eyes, .vc-asm .vc-fill, .vc-face-in .vc-face .vc-part, .vc-hero-bg { animation: none; }
   .vc-part, .vc-eyes, .vc-fill { transition: none; }
 }

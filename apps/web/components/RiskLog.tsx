@@ -83,7 +83,7 @@ function VerdictPill({ verdict, t }: { verdict: Verdict | null; t: Dict }) {
   );
 }
 
-const MARK = { pass: '✓', warn: '⚠︎', fail: '✗', unavailable: '–' } as const;
+const MARK = { pass: '✓', warn: '–', fail: '✕', unavailable: '–' } as const; // same marks as SignalIcon: amber – a bit off, grey – not checked
 const MARK_STYLE = { pass: VERDICT_STYLE.SAFE, warn: VERDICT_STYLE.HOLD, fail: VERDICT_STYLE.BLOCK, unavailable: { bg: '#F5F5F4', fg: '#A8A29E' } } as const;
 
 function Signals({ signals, t }: { signals: RiskRow['signals']; t: Dict }) {
