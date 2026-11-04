@@ -21,6 +21,7 @@
     "eval:run": "tsx scripts/eval-run.ts",
     "kernel:proxy": "tsx scripts/kernel-proxy.ts",
     "agent:demo": "tsx scripts/agent-demo.ts",
+    "ux:personas": "tsx scripts/ux-personas.ts",
     "compare:demo": "tsx scripts/compare-demo.ts",
     "attacks:run": "tsx scripts/attacks-run.ts",
     "mcp:e2e": "tsx scripts/mcp-e2e.ts"
