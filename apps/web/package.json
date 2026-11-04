@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ag-grid-community/locale": "36.2.0",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "@neondatabase/auth": "0.7.0-beta",
     "@voircheck/agent": "workspace:*",
     "@voircheck/db": "workspace:*",

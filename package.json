@@ -22,9 +22,11 @@
     "kernel:proxy": "tsx scripts/kernel-proxy.ts",
     "agent:demo": "tsx scripts/agent-demo.ts",
     "compare:demo": "tsx scripts/compare-demo.ts",
-    "attacks:run": "tsx scripts/attacks-run.ts"
+    "attacks:run": "tsx scripts/attacks-run.ts",
+    "mcp:e2e": "tsx scripts/mcp-e2e.ts"
   },
   "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
     "@types/node": "^22.10.0",
     "dotenv": "^16.4.7",
     "eslint": "^10.13.0",

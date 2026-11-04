@@ -5,6 +5,8 @@ import { ownedBy } from '@voircheck/shared';
 import { and, eq } from 'drizzle-orm';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
+import { createApiToken, revokeApiToken } from '../../../lib/api-tokens';
 import { getDb } from '../../../lib/db';
 import { AutopayForm, LangForm } from '../../../lib/profile-input';
 import { getCurrentUser, LANG_COOKIE } from '../../../lib/user';
@@ -37,4 +39,29 @@ export async function removeSavedPayPal() {
     .returning({ id: vaultTokens.id });
   await db.insert(auditLog).values({ userId: user.id, actor: 'user', action: 'vault.removed', entity: 'vault_token', entityId: null, details: { count: removed.length } });
   redirect('/app/settings?removed=1');
+}
+
+export type AgentTokenState = { token: string } | { error: 'limit' | 'unavailable' } | null;
+
+/** "Connect an AI agent": creates an MCP API token and returns it ONCE to this response. Only its hash is stored. */
+export async function createAgentToken(_prev: AgentTokenState, form: FormData): Promise<AgentTokenState> {
+  const user = await getCurrentUser();
+  if (!user) redirect('/auth/sign-in');
+  const name = String(form.get('name') ?? '').slice(0, 60);
+  const created = await createApiToken(user.id, name);
+  if (typeof created === 'string') return { error: created };
+  await getDb().insert(auditLog).values({ userId: user.id, actor: 'user', action: 'api_token.created', entity: 'api_token', entityId: created.view.id, details: { prefix: created.view.prefix } });
+  revalidatePath('/app/settings');
+  return { token: created.token };
+}
+
+export async function revokeAgentToken(form: FormData) {
+  const user = await getCurrentUser();
+  if (!user) redirect('/auth/sign-in');
+  const id = String(form.get('id') ?? '');
+  if (/^[0-9a-f-]{36}$/i.test(id)) {
+    await revokeApiToken(user.id, id);
+    await getDb().insert(auditLog).values({ userId: user.id, actor: 'user', action: 'api_token.revoked', entity: 'api_token', entityId: id, details: {} });
+  }
+  redirect('/app/settings?revoked=1');
 }

@@ -37,6 +37,9 @@ importers:
         specifier: ^0.45.4
         version: 0.45.4(@neondatabase/serverless@1.2.0)(@opentelemetry/api@1.9.0)(kysely@0.29.7)
     devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: 1.32.2
+        version: 1.32.2(@cfworker/json-schema@4.1.4)(zod@4.6.7)
       '@types/node':
         specifier: ^22.10.0
         version: 22.20.5
@@ -101,6 +104,9 @@ importers:
       '@ag-grid-community/locale':
         specifier: 36.2.0
         version: 36.2.0
+      '@modelcontextprotocol/sdk':
+        specifier: 1.32.2
+        version: 1.32.2(@cfworker/json-schema@4.1.4)(zod@4.6.7)
       '@neondatabase/auth':
         specifier: 0.7.0-beta
         version: 0.7.0-beta(5f0345fcef47d2af0b2345ae8347e862)
@@ -5406,6 +5412,30 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@modelcontextprotocol/sdk@1.32.2(@cfworker/json-schema@4.1.4)(zod@4.6.7)':
+    dependencies:
+      '@hono/node-server': 2.1.5(hono@4.13.16)
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
+      content-type: 1.0.5
+      cors: 2.8.6
+      cross-spawn: 7.0.6
+      eventsource: 3.0.7
+      eventsource-parser: 3.1.1
+      express: 5.3.0
+      express-rate-limit: 8.7.2(express@5.3.0)
+      hono: 4.13.16
+      jose: 6.2.5
+      json-schema-typed: 8.0.2
+      pkce-challenge: 5.0.1
+      raw-body: 3.0.2
+      zod: 4.6.7
+      zod-to-json-schema: 3.25.2(zod@4.6.7)
+    optionalDependencies:
+      '@cfworker/json-schema': 4.1.4
+    transitivePeerDependencies:
+      - supports-color
+
   '@neondatabase/auth-ui@0.4.0-beta(3da52360ba5a61a9f5cb9b51eef33ba1)':
     dependencies:
       '@better-auth/passkey': 1.7.6(@better-auth/core@1.7.15(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(@opentelemetry/api@1.9.0)(better-call@1.4.0(zod@4.6.7))(jose@6.2.5)(kysely@0.29.7)(nanostores@1.5.5))(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.2)(better-auth@1.7.15(@opentelemetry/api@1.9.0)(drizzle-kit@0.31.11)(drizzle-orm@0.45.4(@neondatabase/serverless@1.2.0)(@opentelemetry/api@1.9.0)(kysely@0.29.7))(next@16.4.3(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(vitest@5.0.5(@opentelemetry/api@1.9.0)(@types/node@22.20.5)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))))(better-call@1.4.0(zod@4.6.7))(nanostores@1.5.5)
@@ -8456,6 +8486,10 @@ snapshots:
   zod-to-json-schema@3.25.2(zod@3.25.76):
     dependencies:
       zod: 3.25.76
+
+  zod-to-json-schema@3.25.2(zod@4.6.7):
+    dependencies:
+      zod: 4.6.7
 
   zod@3.25.76: {}
 

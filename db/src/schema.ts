@@ -224,3 +224,20 @@ export const dailySpend = pgTable('daily_spend', {
   anthropicUsd: numeric('anthropic_usd', { precision: 12, scale: 6 }).notNull().default('0'),
   kernelScans: integer('kernel_scans').notNull().default(0),
 });
+
+// Per-user API tokens for AI agents over MCP (POST /api/mcp). Only the SHA-256 of the token is stored; the token itself
+// is shown once, when it's created. `prefix` (first characters) lets the person tell their tokens apart.
+export const apiTokens = pgTable(
+  'api_tokens',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: ownerId(),
+    name: text('name').notNull(),
+    prefix: text('prefix').notNull(),
+    tokenHash: char('token_hash', { length: 64 }).notNull().unique(),
+    createdAt: createdAt(),
+    lastUsedAt: timestamp('last_used_at', { withTimezone: true }),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  },
+  (t) => [index('api_tokens_user_idx').on(t.userId, t.createdAt)],
+);

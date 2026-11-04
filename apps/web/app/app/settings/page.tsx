@@ -1,9 +1,13 @@
+import { AgentTokens } from '../../../components/AgentTokens';
 import { btnPrimary, btnSecondary, card, input, label } from '../../../components/ui';
+import { listApiTokens } from '../../../lib/api-tokens';
+import { publicOrigin } from '../../../lib/app-origin';
 import { getPayPal } from '../../../lib/paypal';
 import { DICTS } from '../../../lib/i18n';
 import { requireOnboardedUser } from '../../../lib/user';
 import { signOut } from '../../actions';
-import { removeSavedPayPal, saveSettings } from './actions';
+import { headers } from 'next/headers';
+import { createAgentToken, removeSavedPayPal, revokeAgentToken, saveSettings } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +16,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const t = DICTS[lang];
   const { saved, error, removed } = await searchParams;
   const hasWallet = !!(await getPayPal().store.getActiveVaultToken(user.id));
+  const date = new Intl.DateTimeFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { dateStyle: 'medium', timeZone: 'UTC' });
+  const tokens = (await listApiTokens(user.id))?.map((k) => ({ id: k.id, name: k.name, prefix: k.prefix, created: date.format(k.createdAt), lastUsed: k.lastUsedAt ? date.format(k.lastUsedAt) : null })) ?? null;
+  const endpoint = `${publicOrigin(await headers())}/api/mcp`;
   return (
     <main className="mx-auto max-w-xl px-4 pb-20 sm:px-6">
       <h1 className="text-[28px] font-medium tracking-tight">{t.settings.title}</h1>
@@ -61,6 +68,9 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
           )}
         </section>
       )}
+      <section className={`${card} mt-6 p-6`}>
+        <AgentTokens t={t.settings.agent} endpoint={endpoint} tokens={tokens} createAction={createAgentToken} revokeAction={revokeAgentToken} />
+      </section>
       <form action={signOut} className="mt-6">
         <button className={btnSecondary}>{t.nav.signOut}</button>
       </form>

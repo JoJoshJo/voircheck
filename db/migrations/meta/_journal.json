@@ -43,6 +43,13 @@
       "when": 1793726969151,
       "tag": "0005_spicy_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793754673584,
+      "tag": "0006_blue_dreaming_celestial",
+      "breakpoints": true
     }
   ]
 }
