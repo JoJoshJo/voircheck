@@ -1,3 +1,4 @@
+import { plainVerdict } from '../../../../lib/plain-verdict';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AiFindings, CollectedEvidence } from '../../../../components/CollectedEvidence';
@@ -37,7 +38,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
       <div className={`mt-5 flex items-center justify-between gap-6 rounded-card px-6 py-6 ${VERDICT_CLASSES[scan.verdict]}`}>
         <div className="min-w-0">
           <VerdictLabel verdict={scan.verdict} t={t} />
-          <h1 className="mt-1 text-[22px] font-medium tracking-tight">{t.verdict[`${scan.verdict}_line`]}</h1>
+          <h1 className="mt-1 text-[22px] font-medium tracking-tight">{plainVerdict(t, scan).line}</h1>
           <p className="mt-1 truncate text-[14px] opacity-80">{scan.url}</p>
           <p className="mt-1 text-[13px] opacity-80">
             {scoreLine(t, scan)} · {whenBefore}

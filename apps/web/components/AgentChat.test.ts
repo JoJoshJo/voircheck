@@ -51,8 +51,8 @@ describe('chat state', () => {
     const card = (verdict: 'SAFE' | 'HOLD' | 'BLOCK', extra: object = {}) =>
       renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'done', signals: {}, scan: { ...scan(verdict === 'BLOCK' ? 'BLOCK' : 'SAFE'), verdict }, ...extra }, payments: { 'pay-1': 'captured' }, busy: false, onBuy: () => {} }));
     expect(card('SAFE')).toContain('>Buy this<');
-    expect(card('HOLD')).toContain('>Buy this<');
-    expect(card('BLOCK')).not.toContain('Buy this');
+    expect(card('HOLD')).toContain('>Buy anyway<');
+    expect(card('BLOCK')).not.toMatch(/Buy this|Buy anyway/);
     expect(card('SAFE', { refused: 'other' })).not.toContain('Buy this');
     expect(card('SAFE', { order: { paymentId: 'pay-1', orderId: 'O1', ref: 'VC-7K2F' } })).not.toContain('>Buy this<');
   });
@@ -118,5 +118,22 @@ describe('quick replies', () => {
 
   it.each(['en', 'fr'] as const)('the button group has a label for screen readers (%s)', (lang) => {
     expect(DICTS[lang].agent.quickReplies.length).toBeGreaterThan(3);
+  });
+});
+
+describe('store card', () => {
+  const card = (verdict: 'SAFE' | 'HOLD' | 'BLOCK', lang: 'en' | 'fr' = 'en') =>
+    renderToStaticMarkup(createElement(StoreCard, { t: DICTS[lang], lang, clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'done', signals: {}, scan: { ...scan('SAFE'), verdict, signals: [{ id: 'price', status: 'pass', evidence: [] }] } as never }, payments: {}, busy: false, onBuy: () => {} }));
+
+  it.each(['en', 'fr'] as const)('leads with one hedged plain sentence, details behind "Why?", no labels or score (%s)', (lang) => {
+    const t = DICTS[lang];
+    const html = card('SAFE', lang);
+    expect(html.indexOf(t.plain.safe)).toBeLessThan(html.indexOf('Velbrook Supply'));
+    expect(html).toContain(`<summary`);
+    expect(html).toContain(t.plain.why);
+    expect(html).not.toMatch(/>(SAFE|HOLD|BLOCK|Safe|Hold|Block|Fiable|En attente|Bloquée)</);
+    expect(html).not.toMatch(/Risk score|Score de risque/i);
+    expect(card('HOLD', lang)).toContain(t.plain.holdAsk.replaceAll('’', '’'));
+    expect(card('BLOCK', lang)).toContain(t.plain.block.split('.')[0]!);
   });
 });

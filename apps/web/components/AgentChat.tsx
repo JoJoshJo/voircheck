@@ -4,14 +4,14 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { AgentEvent, AgentStore } from '../lib/agent-view';
 import { fmt, type Dict } from '../lib/i18n';
-import { scoreLine } from '../lib/score-line';
+import { plainVerdict } from '../lib/plain-verdict';
 import type { ScanView } from '../lib/scan-view';
 import { Checkout } from './Checkout';
 import { Mascot } from './Mascot';
 import { RefundButton } from './RefundButton';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
 import { btnPrimary, btnSecondary, input } from './ui';
-import { VERDICT_CLASSES, VerdictLabel } from './Verdict';
+import { VERDICT_CLASSES } from './Verdict';
 
 type Item =
   | { kind: 'user'; text: string }
@@ -317,54 +317,56 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
   const verdict = s.scan?.verdict;
   const signals = s.scan ? (Object.fromEntries(s.scan.signals.map((x) => [x.id, x.status])) as Record<string, SignalState>) : s.signals;
   const paid = s.order ? payments[s.order.paymentId] : undefined;
+  const plain = s.scan ? plainVerdict(t, s.scan) : null;
   return (
     <div className="overflow-hidden rounded-control border border-line bg-white">
-      <div className={`flex items-start justify-between gap-3 px-4 py-3 ${verdict ? VERDICT_CLASSES[verdict] : ''}`}>
-        <div className="min-w-0">
-          <p className="truncate text-[15px] font-medium">
-            {s.store.storeName}
-            {s.store.demo && <span className="ml-2 rounded-full border border-current px-2 py-0.5 text-[11px] font-normal opacity-70">{t.agent.demoStore}</span>}
-          </p>
-          <p className="truncate text-[13px] opacity-80">
-            {s.store.productTitle} · {money}
-          </p>
+      {verdict && plain && (
+        <div className={`px-4 py-3 ${VERDICT_CLASSES[verdict]}`}>
+          <p className="text-[17px] font-medium leading-snug">{plain.line}</p>
+          {plain.ask && <p className="mt-0.5 text-[15px] opacity-90">{plain.ask}</p>}
         </div>
-        {verdict && (
-          <div className="shrink-0 text-right">
-            <VerdictLabel verdict={verdict} t={t} />
-            <p className="text-[12px] opacity-80">
-              {scoreLine(t, s.scan!)}
-            </p>
-          </div>
-        )}
-      </div>
+      )}
       <div className="space-y-3 px-4 py-3">
-        {(s.phase === 'scanning' || s.phase === 'done') && (
-          <ul className="flex flex-wrap gap-x-4 gap-y-1.5" aria-label={s.phase === 'scanning' ? t.agent.scanning : t.evidence.title}>
-            {SIGNAL_ORDER.map((id) => {
-              const st = signals[id] ?? 'pending';
-              return (
-                <li key={id} className="flex items-center gap-1.5 text-[12px] text-muted" title={t.signals[`status_${st}`]}>
-                  <SignalIcon state={st} />
-                  {t.signals[id]}
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {s.phase === 'failed' && <p className="text-[13px] text-muted">{s.failure === 'rate_limited' ? t.agent.scanRate : t.agent.scanFailed}</p>}
-        {s.scan && (
-          <p className="flex flex-wrap items-center justify-between gap-2 text-[13px] text-muted">
-            <span>{s.cached ? t.agent.cachedScan : ''}</span>
-            <Link href={`/app/scans/${s.scan.id}`} className="text-ink underline underline-offset-4">
-              {t.workspace.viewEvidence}
-            </Link>
-          </p>
-        )}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[16px] font-medium">
+              {s.store.storeName}
+              {s.store.demo && <span className="ml-2 whitespace-nowrap rounded-full border border-current px-2 py-0.5 text-[11px] font-normal text-muted">{t.agent.demoStore}</span>}
+            </p>
+            <p className="truncate text-[14px] text-muted">{s.store.productTitle}</p>
+          </div>
+          <p className="shrink-0 text-[20px] font-medium">{money}</p>
+        </div>
+        {s.phase === 'failed' && <p className="text-[14px] text-muted">{s.failure === 'rate_limited' ? t.agent.scanRate : t.agent.scanFailed}</p>}
         {s.scan && !s.order && !s.refused && (s.scan.verdict === 'SAFE' || s.scan.verdict === 'HOLD') && (
-          <button type="button" className={btnPrimary} disabled={busy} onClick={() => onBuy(buyMessage(t, s.store.storeName, s.scan!.verdict as 'SAFE' | 'HOLD'))}>
-            {t.agent.buyThis}
+          <button type="button" className={`${btnPrimary} min-h-12 w-full !text-[16px]`} disabled={busy} onClick={() => onBuy(buyMessage(t, s.store.storeName, s.scan!.verdict as 'SAFE' | 'HOLD'))}>
+            {s.scan.verdict === 'HOLD' ? t.agent.buyAnyway : t.agent.buyThis}
           </button>
+        )}
+        {(s.phase === 'scanning' || s.phase === 'done') && (
+          <details open={s.phase === 'scanning'}>
+            <summary className="flex min-h-11 cursor-pointer items-center text-[15px] text-ink underline underline-offset-4">{t.plain.why}</summary>
+            <ul className="flex flex-wrap gap-x-4 gap-y-1.5 pt-1" aria-label={s.phase === 'scanning' ? t.agent.scanning : t.evidence.title}>
+              {SIGNAL_ORDER.map((id) => {
+                const st = signals[id] ?? 'pending';
+                return (
+                  <li key={id} className="flex items-center gap-1.5 text-[13px] text-muted" title={t.signals[`status_${st}`]}>
+                    <SignalIcon state={st} />
+                    {t.signals[id]}
+                    <span className="sr-only">: {t.signals[`status_${st}`]}</span>
+                  </li>
+                );
+              })}
+            </ul>
+            {s.scan && (
+              <p className="pt-2 text-[13px] text-muted">
+                {s.cached ? `${t.agent.cachedScan} · ` : ''}
+                <Link href={`/app/scans/${s.scan.id}`} className="text-ink underline underline-offset-4">
+                  {t.workspace.viewEvidence}
+                </Link>
+              </p>
+            )}
+          </details>
         )}
         {s.refused && <p className="text-[14px] font-medium">{fmt(t.agent.refused, { reason: t.agent[`reason_${s.refused}` as 'reason_other'] ?? t.agent.reason_other })}</p>}
         {s.order && s.scan && (

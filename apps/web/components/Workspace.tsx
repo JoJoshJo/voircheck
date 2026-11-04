@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { fmt, type Dict } from '../lib/i18n';
+import { plainVerdict } from '../lib/plain-verdict';
 import { scoreLine } from '../lib/score-line';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
@@ -320,7 +321,7 @@ function ResultCard({ t, scan, cached, onRescan }: { t: Dict; scan: ScanView; ca
       <div className={`flex items-center justify-between gap-4 px-5 py-5 ${VERDICT_CLASSES[scan.verdict]}`}>
         <div>
           <VerdictLabel verdict={scan.verdict} t={t} />
-          <p className="mt-1 text-[16px] font-medium">{t.verdict[`${scan.verdict}_line`]}</p>
+          <p className="mt-1 text-[16px] font-medium">{plainVerdict(t, scan).line}</p>
           <p className="mt-1 text-[13px] opacity-80">
             {scoreLine(t, scan)}
           </p>
