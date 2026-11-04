@@ -2,7 +2,7 @@
 
 /*
  * VoirCheck design tokens (spec 5.12, "Mono ink"). No brand accent color: the only color in the UI is a verdict.
- * Two weights only: regular (400) and medium (500).
+ * Two weights: regular (400) and medium (500); only the landing hero headline is semibold (600, spec 5.12).
  */
 @theme {
   --color-*: initial;
@@ -111,7 +111,18 @@ body {
 .vc-done .vc-disc { transform-origin: 12px 12px; animation: vc-pop 300ms ease-out both; }
 .vc-done .vc-mark { stroke-dasharray: 1; animation: vc-draw 250ms ease-out 100ms both; }
 
+/* Landing: scroll reveals (Reveal.tsx) and the hero ghost's line weight on small screens. */
+.vc-rv { opacity: 0; transform: translateY(16px); transition: opacity 600ms ease-out, transform 600ms ease-out; }
+.vc-rv.vc-in { opacity: 1; transform: none; }
+.vc-rv .vc-draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 600ms ease-out 150ms; }
+.vc-rv.vc-in .vc-draw { stroke-dashoffset: 0; }
+@media (max-width: 1023px) {
+  .vc-hero-ghost { --vc-k: 0.8 !important; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .vc-rv { opacity: 1; transform: none; transition: none; }
+  .vc-rv .vc-draw { stroke-dashoffset: 0; transition: none; }
   .vc-run .vc-m, .vc-done .vc-disc, .vc-done .vc-mark { animation: none; }
   .vc-float, .vc-scan, .vc-tick, .vc-asm .vc-part, .vc-asm .vc-eyes, .vc-asm .vc-fill, .vc-face-in .vc-face .vc-part, .vc-hero-bg { animation: none; }
   .vc-part, .vc-eyes, .vc-fill { transition: none; }

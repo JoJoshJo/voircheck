@@ -266,7 +266,7 @@
 - Guest accounts get rate limits (set in piece 17) to protect AI/KERNEL/Channel3 credits.
 
 ### 5.11 Screens & layout ✅
-1. **Landing page:** pitch, "Try the demo" button, sign in
+1. **Landing page:** pitch, "Try the demo" button, sign in. **Layout (✅ Nov 4, J picked option A from mockups):** white hero, the tagline as a large semibold headline on the left, the ghost assembling on the right (above the text on phones), kicker "Know Your Merchant for AI agents", a one-line subline, "Try the demo" + "How it works"; then a 6-tile feature grid (Shopping agent · 6 store checks · PayPal holds the money · Chrome extension · Works with other AI agents · Receipts) and two proof cards (6 of 7 runs paid the fake shop without VoirCheck; 0 of 5 published attacks moved money, with the one first scored Safe named). Sections fade up as they scroll into view (600 ms; shown at once under reduced motion or without JavaScript). EN + FR.
 2. **Onboarding:** language (first) → auto-pay on/off + limit
 3. **Agent workspace (main):** **split view, chat on the left | results on the right.** Includes check-a-link box, Demo-mode toggle, 3 store cards with live scan checklist, KERNEL live browser view, mascot animation
 4. **Store evidence view:** six signals, risk score, hard rules triggered, AI explanation
@@ -289,7 +289,7 @@
     - HOLD: bg `#FAEEDA` / text `#633806`
     - BLOCK: bg `#FCEBEB` / text `#791F1F`
   - Primary button: solid ink `#0C0C0C` with white text.
-- **Font:** system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`) falling back to **Inter**. Never embed SF Pro (Apple's license doesn't allow web embedding). Two weights: regular and medium.
+- **Font:** system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, ...`) falling back to **Inter**. Never embed SF Pro (Apple's license doesn't allow web embedding). Two weights: regular and medium; **the one exception is the landing hero headline, semibold (600)** (J, Nov 4).
 - **Mascot:** a little ghost holding a magnifying glass, **minimal black line art** (SVG). Floats over each store card while scanning; expression follows the verdict: smile (SAFE, looks safe), raised brow (HOLD, a bit off), frown (BLOCK, looks fake). **Motion (✅ Nov 4, J picked from mockups):** drawn as six strokes (left side, right side, hem, eyes, glass, handle). Landing hero: assembles once on load (each step ≤ 450 ms, 2.2 s in all), then the hero background shifts stone → white. During a store check: one stroke per finished check over a faint dotted outline, then the verdict face. Pure SVG/CSS; under `prefers-reduced-motion` every step still shows, without motion.
 - **Logo:** "VoirCheck" wordmark in the system font, medium weight. The ghost icon alone is the favicon / app icon.
 - **Tone of voice:** calm, plain and direct, like a sharp friend. Example: "This store is 6 days old and copied Velbrook's site. I'd skip it." No jargon, no fear-mongering, no exclamation marks.
