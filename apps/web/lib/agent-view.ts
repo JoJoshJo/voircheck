@@ -1,4 +1,5 @@
-import { parseQuickReplies, type RefusalReason, type StoreOffer } from '@voircheck/agent';
+import type { RefusalReason, StoreOffer } from '@voircheck/agent';
+import { parseQuickReplies } from '@voircheck/agent/quick-replies';
 import type { z } from 'zod';
 import type { ScanView } from './scan-view';
 

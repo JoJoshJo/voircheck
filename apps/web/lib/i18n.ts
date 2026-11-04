@@ -181,6 +181,14 @@ const en = {
     slow: 'PayPal is taking longer than usual. Check back in a moment: reload this page to see whether the refund went through.',
     notRefundable: 'This order can’t be refunded from VoirCheck.',
   },
+  stage: {
+    visiting: 'Looking at the shop…',
+    reading: 'Reading its pages…',
+    price: 'Checking the price…',
+    almost: 'Almost done…',
+    thinking: 'Looking around for you…',
+    shops: 'Checking the shops. This takes about 20 seconds.',
+  },
   plain: {
     safe: 'Looks safe to buy.',
     noWarnings: 'no warning signs',
@@ -745,6 +753,14 @@ const fr: Dict = {
     panelBody: 'Demandez à PayPal de vous rendre la totalité ({amount}) sur votre compte PayPal. Vous seul pouvez le faire, ici ou dans l’Historique.',
     slow: 'PayPal met plus de temps que d’habitude. Revenez dans un instant : rechargez la page pour voir si le remboursement est passé.',
     notRefundable: 'Cette commande ne peut pas être remboursée depuis VoirCheck.',
+  },
+  stage: {
+    visiting: 'Je regarde la boutique…',
+    reading: 'Je lis ses pages…',
+    price: 'Je vérifie le prix…',
+    almost: 'Presque fini…',
+    thinking: 'Je cherche pour vous…',
+    shops: 'Je vérifie les boutiques. Cela prend environ 20 secondes.',
   },
   plain: {
     safe: 'Ça semble sûr pour acheter.',

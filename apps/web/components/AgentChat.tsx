@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { AgentEvent, AgentStore } from '../lib/agent-view';
 import { fmt, type Dict } from '../lib/i18n';
 import { plainVerdict } from '../lib/plain-verdict';
+import { scanStage } from '../lib/scan-stage';
 import type { ScanView } from '../lib/scan-view';
 import { Checkout } from './Checkout';
 import { Mascot } from './Mascot';
@@ -266,7 +267,12 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
             ),
           )
         )}
-        {busy && <p className="text-[14px] text-muted">{t.agent.working}</p>}
+        {busy && (
+          <p className="flex items-center gap-2 text-[15px] text-muted" role="status" aria-live="polite">
+            <Mascot mood="scanning" size={32} title="" />
+            {Object.values(chat.stores).some((x) => x.phase === 'scanning') ? t.stage.shops : t.stage.thinking}
+          </p>
+        )}
         {error && <p className="text-[14px] text-muted">{error}</p>}
       </div>
       {fake && <p className="mb-2 text-[12px] text-faint">{t.agent.fakeNote}</p>}
@@ -337,6 +343,12 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
           </div>
           <p className="shrink-0 text-[20px] font-medium">{money}</p>
         </div>
+        {s.phase === 'scanning' && (
+          <p className="flex items-center gap-2 text-[15px] text-muted" role="status" aria-live="polite">
+            <Mascot mood="scanning" size={28} title="" />
+            {scanStage(t, signals)}
+          </p>
+        )}
         {s.phase === 'failed' && <p className="text-[14px] text-muted">{s.failure === 'rate_limited' ? t.agent.scanRate : t.agent.scanFailed}</p>}
         {s.scan && !s.order && !s.refused && (s.scan.verdict === 'SAFE' || s.scan.verdict === 'HOLD') && (
           <button type="button" className={`${btnPrimary} min-h-12 w-full !text-[16px]`} disabled={busy} onClick={() => onBuy(buyMessage(t, s.store.storeName, s.scan!.verdict as 'SAFE' | 'HOLD'))}>

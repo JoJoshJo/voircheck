@@ -137,3 +137,12 @@ describe('store card', () => {
     expect(card('BLOCK', lang)).toContain(t.plain.block.split('.')[0]!);
   });
 });
+
+describe('while checking a shop', () => {
+  it('shows the ghost and a friendly stage line, announced politely', () => {
+    const html = renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s: { store: store('a', 'Velbrook Supply', '59.00'), phase: 'scanning', signals: { domain_age: 'pass' } }, payments: {}, busy: true, onBuy: () => {} }));
+    expect(html).toContain('Reading its pages…');
+    expect(html).toContain('role="status"');
+    expect(html).toContain('aria-live="polite"');
+  });
+});

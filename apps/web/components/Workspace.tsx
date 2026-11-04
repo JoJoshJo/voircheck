@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { fmt, type Dict } from '../lib/i18n';
 import { plainVerdict } from '../lib/plain-verdict';
+import { scanStage } from '../lib/scan-stage';
 import { scoreLine } from '../lib/score-line';
 import type { CandidateView, ScanEvent, ScanView } from '../lib/scan-view';
 import { AgentChat } from './AgentChat';
@@ -247,7 +248,10 @@ function ScanningCard({ t, url, signals, liveViewUrl }: { t: Dict; url: string; 
       <div className="absolute -top-7 right-6">
         <Mascot mood="scanning" size={64} title={t.workspace.checking} />
       </div>
-      <p className="truncate pr-20 text-[13px] text-faint">{url}</p>
+      <p className="pr-20 text-[16px] font-medium" role="status" aria-live="polite">
+        {scanStage(t, signals)}
+      </p>
+      <p className="mt-1 truncate pr-20 text-[13px] text-faint">{url}</p>
       <div className="mt-3">
         <Checklist t={t} signals={signals} />
       </div>
