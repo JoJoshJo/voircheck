@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { demoTryLinks } from '../lib/demo-links';
 import { DICTS } from '../lib/i18n';
-import { Workspace } from './Workspace';
+import { BuyCard, Workspace } from './Workspace';
 
 const render = (lang: 'en' | 'fr' = 'en', initialDemoMode = true) =>
   renderToStaticMarkup(createElement(Workspace, { t: DICTS[lang], lang, clientId: 'sb', initialDemoMode, autopay: false, initialCheck: null, autoStart: false, demoLinks: demoTryLinks() }));
@@ -33,5 +33,18 @@ describe('first visit in Demo mode', () => {
       scam: 'https://voircheck-stores.onrender.com/s/velbrook-outlet-deals/products/zephlet-buds',
     });
     expect(demoTryLinks('http://localhost:4000/').safe).toBe('http://localhost:4000/s/velbrook-supply/products/zephlet-buds');
+  });
+});
+
+describe('buying from a BLOCK result', () => {
+  const scan = { id: 'scan-1', url: 'https://x.test/', domain: 'x.test', verdict: 'BLOCK' as const, score: 100, signals: [], hardRules: [], cantVerify: null, scannedAt: '2026-11-04T10:00:00Z' };
+  const candidate = { id: 'c-1', storeName: 'Velbrook-Outlet Deals', productTitle: 'Zephlet Buds', price: '23.00', currency: 'USD' };
+
+  it.each(['en', 'fr'] as const)('says VoirCheck won’t pay, links the evidence and keeps "Pay anyway" behind a click (%s)', (lang) => {
+    const html = renderToStaticMarkup(createElement(BuyCard, { t: DICTS[lang], lang, clientId: 'sb', scan, candidate, autopay: false }));
+    expect(html).toContain(DICTS[lang].pay.blockedTitle);
+    expect(html).toContain('href="/app/scans/scan-1"');
+    expect(html).toContain(DICTS[lang].pay.blockedAnyway);
+    expect(html).not.toContain(candidate.price);
   });
 });

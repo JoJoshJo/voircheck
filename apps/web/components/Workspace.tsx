@@ -272,7 +272,24 @@ function LiveView({ t, url }: { t: Dict; url: string | null }) {
 }
 
 /** Product, price, store and "Pay with PayPal" when we know the price; otherwise a plain explanation. */
-function BuyCard({ t, lang, clientId, scan, candidate, autopay }: { t: Dict; lang: string; clientId: string; scan: ScanView; candidate: CandidateView; autopay: boolean }) {
+export function BuyCard({ t, lang, clientId, scan, candidate, autopay }: { t: Dict; lang: string; clientId: string; scan: ScanView; candidate: CandidateView; autopay: boolean }) {
+  // BLOCK: say plainly that VoirCheck won't pay; the usual checkout (with its own Pay anyway step) stays one click away.
+  const [anyway, setAnyway] = useState(false);
+  if (candidate.price && scan.verdict === 'BLOCK' && !anyway)
+    return (
+      <div className={`${card} space-y-3 p-5`} data-testid="blocked-buy">
+        <p className="text-[16px] font-medium">{t.pay.blockedTitle}</p>
+        <p className="text-[14px] leading-relaxed text-muted">{t.pay.blockedBody}</p>
+        <div className="flex flex-wrap items-center gap-4 pt-1">
+          <Link href={`/app/scans/${scan.id}`} className={btnPrimary}>
+            {t.workspace.viewEvidence}
+          </Link>
+          <button type="button" onClick={() => setAnyway(true)} className="text-[13px] text-muted underline underline-offset-4">
+            {t.pay.blockedAnyway}
+          </button>
+        </div>
+      </div>
+    );
   if (!candidate.price) return <div className={`${card} p-5 text-[14px] leading-relaxed text-muted`}>{t.pay.noPrice}</div>;
   const money = new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: candidate.currency }).format(Number(candidate.price));
   return (
