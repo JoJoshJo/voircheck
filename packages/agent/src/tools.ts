@@ -105,6 +105,36 @@ export type ScanSummary = z.infer<typeof ScanSummary>;
 export const ScanOutput = z.union([ScanSummary, z.object({ storeId: Id, status: z.literal('unavailable'), reason: z.enum(['unknown_store', 'rate_limited', 'failed']) })]);
 export type ScanOutput = z.infer<typeof ScanOutput>;
 
+/**
+ * check_link: a link the person pasted, checked like "Check a store link". Our summary only (a hedged sentence in our
+ * words, the verdict, each check's meaning, the evidence page's path), never page text. Pasted links are check-only:
+ * nothing can be bought from them (buyable is always false; create_order doesn't know the store).
+ */
+const Site = z.string().max(253).regex(/^[a-z0-9.-]+$/);
+export const CheckLinkOutput = z.union([
+  ScanSummary.extend({
+    status: z.literal('ok'),
+    site: Site,
+    summary: z.string().max(240),
+    evidence: z.string().regex(/^\/app\/scans\/[A-Za-z0-9-]{1,64}$/),
+    buyable: z.literal(false),
+  }),
+  z.object({ status: z.literal('unavailable'), reason: z.enum(['invalid_url', 'rate_limited', 'failed']) }),
+]);
+export type CheckLinkOutput = z.infer<typeof CheckLinkOutput>;
+
+/** The hedged sentence for a checked link: how the shop LOOKS, in our own words (spec 5.12). */
+export function hedgedSummary(scan: { verdict: z.infer<typeof Verdict>; signals: readonly { id: string; status: string; meaning: string }[] }): string {
+  const warned = scan.signals.filter((s) => s.status === 'warn' || s.status === 'fail');
+  if (scan.verdict === 'BLOCK') {
+    const why = scan.signals.filter((s) => s.status === 'fail').slice(0, 2).map((s) => s.meaning);
+    return `Looks like a fake shop${why.length ? `: ${why.join(', and ')}` : ''}. VoirCheck won't pay it.`;
+  }
+  if (scan.verdict === 'HOLD') return `Something looks a bit off${warned[0] ? `: ${warned[0].meaning}` : ''}.`;
+  const parts = [!warned.length ? 'no warning signs' : null, scan.signals.some((s) => s.id === 'price' && s.status === 'pass') ? 'fair price' : null].filter(Boolean);
+  return `Looks safe to buy${parts.length ? `, ${parts.join(', ')}` : ''}.`;
+}
+
 const MEANING: Record<(typeof SIGNAL_IDS)[number], Record<SignalResult['status'], string>> = {
   domain_age: { pass: 'the domain is not new', warn: 'the domain is fairly new', fail: 'the domain is very new', unavailable: "couldn't check the domain age" },
   ssl_redirects: { pass: 'HTTPS and redirects look normal', warn: 'something is off with HTTPS or redirects', fail: 'no valid HTTPS or a suspicious redirect', unavailable: "couldn't check HTTPS" },
@@ -184,6 +214,14 @@ export type RequestRefundOutput = z.infer<typeof RequestRefundOutput>;
 /** What the server provides. Each call is already scoped to the signed-in user and this conversation. */
 export interface AgentDeps {
   searchStores(query: string, maxPrice: number | null): Promise<SearchOutput>;
+  /**
+   * A link the person pasted: SSRF-checked, rate-limited, budget-reserved and cached like "Check a store link". Its
+   * store card shows in the chat; it is never added to the stores create_order knows.
+   */
+  checkLink(url: string): Promise<
+    | { status: 'ok'; storeId: string; scanId: string; site: string; verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[] }
+    | { status: 'unavailable'; reason: 'invalid_url' | 'rate_limited' | 'failed' }
+  >;
   /** The finished scan (fresh or cached) of a store from this conversation's search. */
   scanStore(storeId: string): Promise<{ status: 'ok'; verdict: z.infer<typeof Verdict>; score: number; signals: readonly SignalResult[]; hardRules: readonly string[]; refundablePaidOrders?: readonly string[] } | { status: 'unavailable'; reason: 'unknown_store' | 'rate_limited' | 'failed' }>;
   /** MoneyGate.agentStartPurchase: AUTHORIZE order at our price, or a refusal. */
@@ -215,6 +253,19 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     run: async ({ storeId }) => {
       const r = await deps.scanStore(storeId);
       return r.status === 'ok' ? scanSummaryForAgent(storeId, r) : { storeId, status: 'unavailable' as const, reason: r.reason };
+    },
+  };
+  const link: AgentTool<{ url: string }, CheckLinkOutput> = {
+    name: 'check_link',
+    description:
+      "Check a store link the person pasted in the chat (copy their link exactly). Returns VoirCheck's summary of that shop: a plain sentence, the verdict, what each check found, and the evidence page. Check-only: you can't buy from a pasted link; offer to search for the item instead.",
+    input: z.object({ url: z.string().trim().min(1).max(2048) }),
+    output: CheckLinkOutput,
+    run: async ({ url }) => {
+      const r = await deps.checkLink(url);
+      if (r.status !== 'ok') return { status: 'unavailable' as const, reason: r.reason };
+      const summary = scanSummaryForAgent(r.storeId, r);
+      return { ...summary, status: 'ok' as const, site: r.site, summary: hedgedSummary(summary), evidence: `/app/scans/${r.scanId}`, buyable: false as const };
     },
   };
   const order: AgentTool<{ storeId: string }, CreateOrderOutput> = {
@@ -256,7 +307,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
     output: RequestRefundOutput,
     run: ({ ref }) => deps.requestRefund(ref),
   };
-  return [search, verdict, order, pay, status, recent, refund];
+  return [search, verdict, link, order, pay, status, recent, refund];
 }
 
-export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'create_order', 'request_payment', 'get_order', 'list_my_recent_orders', 'request_refund'] as const;
+export const TOOL_NAMES = ['search_products', 'get_scan_verdict', 'check_link', 'create_order', 'request_payment', 'get_order', 'list_my_recent_orders', 'request_refund'] as const;

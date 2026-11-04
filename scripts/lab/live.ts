@@ -162,6 +162,8 @@ export function voirCheckDeps(opts: {
         return { status: 'unavailable', reason: 'failed' };
       }
     },
+    // The lab tests search results only; a pasted link is not part of it.
+    checkLink: async () => ({ status: 'unavailable', reason: 'failed' }),
     async createOrder(storeId) {
       const r = await gate.agentStartPurchase({ userId: LAB_USER, candidateId: storeId, scanId: scanIds.get(storeId) ?? null, idempotencyKey: `lab-${storeId}`, returnUrl: opts.returnUrl ?? 'https://voircheck.com/app', cancelUrl: opts.returnUrl ?? 'https://voircheck.com/app' });
       const c = store.candidates.get(storeId);

@@ -350,7 +350,7 @@ export function StoreCard({ t, lang, clientId, s, payments, busy, onBuy }: { t: 
           </p>
         )}
         {s.phase === 'failed' && <p className="text-[14px] text-muted">{s.failure === 'rate_limited' ? t.agent.scanRate : t.agent.scanFailed}</p>}
-        {s.scan && !s.order && !s.refused && (s.scan.verdict === 'SAFE' || s.scan.verdict === 'HOLD') && (
+        {s.scan && s.store.price && !s.order && !s.refused && (s.scan.verdict === 'SAFE' || s.scan.verdict === 'HOLD') && (
           <button type="button" className={`${btnPrimary} min-h-12 w-full !text-[16px]`} disabled={busy} onClick={() => onBuy(buyMessage(t, s.store.storeName, s.scan!.verdict as 'SAFE' | 'HOLD'))}>
             {s.scan.verdict === 'HOLD' ? t.agent.buyAnyway : t.agent.buyThis}
           </button>

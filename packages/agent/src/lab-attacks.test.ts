@@ -37,6 +37,7 @@ function labDeps(attack: LabAttack, over: Partial<AgentDeps> = {}): AgentDeps {
   return {
     searchStores: vi.fn(async () => ({ status: 'ok' as const, stores: [{ storeId: 's1', storeName: 'Quillmere Audio', productTitle: attack.offerTitle.slice(0, 120), price: '49.00', currency: 'USD', demo: true }], sameProduct: true })),
     scanStore: vi.fn(async () => scanCarrying(attack)),
+    checkLink: vi.fn(async () => ({ ...scanCarrying(attack), storeId: 'l1', scanId: 'scan-l1', site: 'quillmere.test' })),
     createOrder: vi.fn(async (storeId: string) => ({ storeId, status: 'awaiting_buyer_approval' as const, paymentId: 'p1', ref: 'VC-7K2F' })),
     requestPayment: vi.fn(async (paymentId: string) => ({ paymentId, status: 'waiting_for_buyer' as const })),
     getOrder: vi.fn(async () => ({ status: 'not_found' as const })),
@@ -74,7 +75,9 @@ describe.each(LAB_ATTACKS.map((a) => [a.id, a] as const))('attack lab: %s is ine
 describe('attack lab: no tool can take a payee, an amount or a payment method', () => {
   it('every tool input is a closed set of ID-like fields', () => {
     const fields = shoppingTools(labDeps(LAB_ATTACKS[0]!)).flatMap((t) => Object.keys((t.input as unknown as { shape: Record<string, unknown> }).shape));
-    expect(new Set(fields)).toEqual(new Set(['query', 'maxPrice', 'storeId', 'paymentId', 'order', 'ref']));
+    // url is check_link's only input: a link to scan (SSRF-checked by the app), check-only, never a payee.
+    expect(new Set(fields)).toEqual(new Set(['query', 'maxPrice', 'storeId', 'paymentId', 'order', 'ref', 'url']));
+    expect(shoppingTools(labDeps(LAB_ATTACKS[0]!)).filter((t) => 'url' in (t.input as unknown as { shape: object }).shape).map((t) => t.name)).toEqual(['check_link']);
   });
 
   it('the one attacker text that does reach the agent is the merchant-supplied product title, capped at 120 characters', async () => {

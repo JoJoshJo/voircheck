@@ -1,6 +1,7 @@
 import 'server-only';
 import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
-import { assertSafeUrlShape } from '@voircheck/scanner';
+import { demoPeersForUrl } from '@voircheck/agent/search';
+import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
 import { agentTextEvents, neutralizeFakeNote, type AgentEvent } from './agent-view';
 import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './orders';
@@ -8,7 +9,7 @@ import { getPayPal } from './paypal';
 import { checkScanLimits } from './rate-limit';
 import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend';
 import { runStoreScan, ScanBusyError } from './scan-runner';
-import { canonicalUrl, findFreshScan, recordSearchRequest } from './scans';
+import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest, recordSearchRequest } from './scans';
 import { toScanView } from './scan-view';
 
 /**
@@ -91,9 +92,19 @@ function orderReader() {
   return (gr.__voircheckOrderReader ??= toolkitOrderReader({ clientId: process.env.PAYPAL_CLIENT_ID ?? '', clientSecret: process.env.PAYPAL_CLIENT_SECRET ?? '' }));
 }
 
+/** A pasted link, through the same guards as "Check a store link": URL shape, then the SSRF-safe canonical form. */
+function safeLinkUrl(raw: string): string | null {
+  if (!StoreUrl.safeParse(raw).success) return null;
+  try {
+    return canonicalUrl(assertSafeUrlShape(raw).href);
+  } catch {
+    return null;
+  }
+}
+
 const PAYMENT_STATUSES = new Set(['authorized', 'captured', 'capture_pending', 'capture_denied', 'voided', 'cancelled', 'failed']);
 
-function webDeps(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; send: (e: AgentEvent) => void }): AgentDeps {
+export function webDeps(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; send: (e: AgentEvent) => void }): AgentDeps {
   const { conv, userId, send } = o;
   const { gate, store } = getPayPal();
   return {
@@ -149,6 +160,39 @@ function webDeps(o: { convId: string; conv: Conversation; userId: string; isGues
         }
         console.error('agent scan failed:', err instanceof Error ? err.message : 'unknown error');
         send({ type: 'scan_failed', storeId, reason: 'failed' });
+        return { status: 'unavailable', reason: 'failed' };
+      }
+    },
+
+    async checkLink(raw) {
+      // Same path as /api/scans: SSRF-safe URL, cache, the person's scan limits, then runStoreScan (which reserves the
+      // KERNEL session and page analysis against today's caps). Check-only: price null and never put in conv.stores,
+      // so create_order can't find it and the card shows no Buy button.
+      const url = safeLinkUrl(raw);
+      if (!url) return { status: 'unavailable', reason: 'invalid_url' };
+      const cached = await findFreshScan(url);
+      const limit = await checkScanLimits({ userId, isGuest: o.isGuest, ip: o.ip, fresh: !cached });
+      if (!limit.ok) return { status: 'unavailable', reason: 'rate_limited' };
+      // A link to one of our fictional demo stores gets its name from our config (and is scanned in demo mode).
+      const demo = demoPeersForUrl(url, process.env.DEMO_STORES_BASE_URL);
+      const site = new URL(url).hostname;
+      const fields = { storeName: (demo?.storeName ?? site).slice(0, 80), storeUrl: demo?.storeUrl ?? url, productTitle: (demo?.productTitle ?? site).slice(0, 120), price: null, source: demo ? ('demo' as const) : ('link' as const) };
+      const { sessionId, candidateId: storeId } = await recordLinkRequest({ userId, url, demoMode: !!demo, ...fields });
+      send({ type: 'stores', stores: [{ storeId, storeName: fields.storeName, productTitle: fields.productTitle, price: null, currency: 'USD', demo: !!demo }] });
+      send({ type: 'scan_start', storeId });
+      try {
+        const row = cached ?? (await runStoreScan({ url, demoMode: !!demo, liveView: false, onProgress: (e) => e.type === 'signal' && send({ type: 'scan_signal', storeId, id: e.id, status: e.status }) }));
+        await finishLinkRequest(userId, sessionId, 'done');
+        const view = toScanView(row);
+        send({ type: 'scan_done', storeId, scan: view, cached: !!cached });
+        return { status: 'ok', storeId, scanId: row.id, site, verdict: view.verdict, score: view.score, signals: view.signals, hardRules: view.hardRules };
+      } catch (err) {
+        await finishLinkRequest(userId, sessionId, 'failed').catch(() => {});
+        const busy = err instanceof DailyCapError || err instanceof ScanBusyError;
+        send({ type: 'scan_failed', storeId, reason: busy ? 'rate_limited' : 'failed' });
+        if (err instanceof SsrfError) return { status: 'unavailable', reason: 'invalid_url' };
+        if (busy) return { status: 'unavailable', reason: 'rate_limited' };
+        console.error('agent check_link failed:', err instanceof Error ? err.message : 'unknown error');
         return { status: 'unavailable', reason: 'failed' };
       }
     },

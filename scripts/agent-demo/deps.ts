@@ -73,6 +73,7 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
   const found = new Map<string, SearchResult>();
   const scanIds = new Map<string, string>();
   const scanStoreCalls: string[] = [];
+  const linkChecks: string[] = [];
   const approved = paypal.isApproved;
 
   const deps: AgentDeps = {
@@ -97,6 +98,21 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
       store.scans.set(id, { id, url: r.productUrl, verdict: fixture.verdict, riskScore: fixture.score, scannedAt: now, cacheExpiresAt: new Date(now.getTime() + 24 * 3_600_000) });
       scanIds.set(storeId, id);
       return { status: 'ok', ...fixture };
+    },
+    async checkLink(url) {
+      // Offline stand-in for "Check a store link": a link to one of the fictional demo stores gets its fixture scan.
+      let u: URL;
+      try {
+        u = new URL(url);
+      } catch {
+        return { status: 'unavailable', reason: 'invalid_url' };
+      }
+      if (u.protocol !== 'https:') return { status: 'unavailable', reason: 'invalid_url' };
+      const slug = u.pathname.match(/^\/s\/([a-z0-9-]+)/)?.[1];
+      const fixture = slug ? FIXTURE_SCANS[slug as keyof typeof FIXTURE_SCANS] : undefined;
+      if (!fixture) return { status: 'unavailable', reason: 'failed' };
+      linkChecks.push(url);
+      return { status: 'ok', storeId: `link-${slug}`, scanId: `scan-${slug}`, site: u.hostname, ...fixture };
     },
     async createOrder(storeId) {
       const r = await gate.agentStartPurchase({ userId: DEMO_USER, candidateId: storeId, scanId: scanIds.get(storeId) ?? null, idempotencyKey: `demo-${storeId}`, returnUrl: 'https://voircheck.test/app', cancelUrl: 'https://voircheck.test/app' });
@@ -140,5 +156,5 @@ export function demoAgentDeps(opts: { now?: Date } = {}) {
       return { status: 'awaiting_person_confirmation', ref, store: store.candidates.get(row.candidateId)?.storeName ?? row.storeSlug, amount: row.amount, currency: row.currency };
     },
   };
-  return { deps, gate, store, paypal, scanStoreCalls };
+  return { deps, gate, store, paypal, scanStoreCalls, linkChecks };
 }

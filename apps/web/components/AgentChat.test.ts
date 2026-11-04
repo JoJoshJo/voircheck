@@ -57,6 +57,14 @@ describe('chat state', () => {
     expect(card('SAFE', { order: { paymentId: 'pay-1', orderId: 'O1', ref: 'VC-7K2F' } })).not.toContain('>Buy this<');
   });
 
+  it('a pasted link’s card (no price) shows the plain sentence and "Why?", never a Buy button', () => {
+    for (const verdict of ['SAFE', 'HOLD'] as const) {
+      const html = renderToStaticMarkup(createElement(StoreCard, { t: DICTS.en, lang: 'en', clientId: 'x', s: { store: store('l', 'velbrook-outlet.test', null as never), phase: 'done', signals: {}, scan: { ...scan('SAFE'), verdict } }, payments: {}, busy: false, onBuy: () => {} }));
+      expect(html).not.toMatch(/>Buy this<|>Buy anyway</);
+      expect(html).toContain(DICTS.en.plain.why);
+    }
+  });
+
   it('"Buy this" sends the person’s own choice; on HOLD it says they saw what looks off', () => {
     expect(buyMessage(DICTS.en, 'Velbrook Supply', 'SAFE')).toBe('Buy it at Velbrook Supply.');
     expect(buyMessage(DICTS.en, 'Nyuie Market', 'HOLD')).toBe('Buy it at Nyuie Market. I saw what looks off and want to buy anyway.');
