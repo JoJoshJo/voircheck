@@ -7,8 +7,10 @@ import { getDb } from '../../lib/db';
 import { AutopayForm, LangForm } from '../../lib/profile-input';
 import { getCurrentUser, LANG_COOKIE } from '../../lib/user';
 import { PREF_COOKIE } from '../../lib/workspace';
+import { requireSameOrigin } from '../../lib/origin-check';
 
 export async function chooseLanguage(form: FormData) {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const parsed = LangForm.safeParse({ language: form.get('language') });
@@ -18,6 +20,7 @@ export async function chooseLanguage(form: FormData) {
 }
 
 export async function finishOnboarding(form: FormData) {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const lang = LangForm.safeParse({ language: (await cookies()).get(LANG_COOKIE)?.value });

@@ -10,6 +10,7 @@ import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest } fro
 import { toScanView, type ScanEvent } from '../../../lib/scan-view';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
+import { crossOriginRefusal } from '../../../lib/origin-check';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -19,6 +20,8 @@ const Body = z.object({ url: z.string().max(2048), rescan: z.boolean().default(f
 
 /** Check-a-link (spec 5.3 / 5.5). The scan itself runs in runStoreScan (KERNEL only). Streams NDJSON progress to the owner. */
 export async function POST(req: Request) {
+  const crossOrigin = crossOriginRefusal(req);
+  if (crossOrigin) return crossOrigin;
   const user = await getCurrentUser();
   const encoder = new TextEncoder();
   const line = (e: ScanEvent) => encoder.encode(`${JSON.stringify(e)}\n`);

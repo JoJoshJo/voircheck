@@ -10,6 +10,7 @@ import { DailyCapError } from '../../../lib/spend';
 import { allowAgentRequest } from '../../../lib/rate-limit';
 import { getCurrentUser, getProfile } from '../../../lib/user';
 import { DEMO_COOKIE, demoModeFrom } from '../../../lib/workspace';
+import { crossOriginRefusal } from '../../../lib/origin-check';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,6 +23,8 @@ const Body = z.object({ conversationId: z.string().uuid().nullable().default(nul
  * Streams NDJSON events. Money actions inside the turn go through MoneyGate only.
  */
 export async function POST(req: Request) {
+  const crossOrigin = crossOriginRefusal(req);
+  if (crossOrigin) return crossOrigin;
   const encoder = new TextEncoder();
   const line = (e: AgentEvent) => encoder.encode(`${JSON.stringify(e)}\n`);
   const oneShot = (e: AgentEvent, status: number) => new Response(line(e), { status, headers: { 'content-type': 'application/x-ndjson' } });

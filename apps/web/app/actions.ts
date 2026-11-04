@@ -11,6 +11,7 @@ import { GUEST_EMAIL_DOMAIN } from '../lib/guest';
 import { allowDemoCreation } from '../lib/rate-limit';
 import { LANG_COOKIE } from '../lib/user';
 import { DEMO_COOKIE, PREF_COOKIE } from '../lib/workspace';
+import { requireSameOrigin } from '../lib/origin-check';
 
 /**
  * "Try the demo" (spec 5.10): a real, private, temporary account per visitor. Random email on the reserved guest
@@ -18,6 +19,7 @@ import { DEMO_COOKIE, PREF_COOKIE } from '../lib/workspace';
  * Preset: English, Demo mode ON, Auto-pay OFF. Onboarding is skipped.
  */
 export async function startDemo(): Promise<{ error: string } | never> {
+  await requireSameOrigin();
   const ip = clientIp(await headers());
   if (!allowDemoCreation(ip)) return { error: 'rate' };
 
@@ -38,6 +40,7 @@ export async function startDemo(): Promise<{ error: string } | never> {
 }
 
 export async function signOut() {
+  await requireSameOrigin();
   await getAuth().signOut();
   redirect('/');
 }

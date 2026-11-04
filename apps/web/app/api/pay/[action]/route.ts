@@ -7,6 +7,7 @@ import { getPayPal } from '../../../../lib/paypal';
 import { upsertPaymentReceipt } from '../../../../lib/receipts';
 import { getCurrentUser, getProfile } from '../../../../lib/user';
 import { isLang } from '../../../../lib/i18n';
+import { crossOriginRefusal } from '../../../../lib/origin-check';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,8 @@ const appOrigin = async () => publicOrigin(await headers());
 const json = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'cache-control': 'no-store' } });
 
 export async function POST(req: Request, ctx: { params: Promise<{ action: string }> }) {
+  const crossOrigin = crossOriginRefusal(req);
+  if (crossOrigin) return crossOrigin;
   const { action } = await ctx.params;
   if (!(action in bodies)) return json({ error: 'not_found' }, 404);
   const user = await getCurrentUser();

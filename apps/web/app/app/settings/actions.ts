@@ -11,8 +11,10 @@ import { getDb } from '../../../lib/db';
 import { AutopayForm, LangForm } from '../../../lib/profile-input';
 import { getCurrentUser, LANG_COOKIE } from '../../../lib/user';
 import { PREF_COOKIE } from '../../../lib/workspace';
+import { requireSameOrigin } from '../../../lib/origin-check';
 
 export async function saveSettings(form: FormData) {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const lang = LangForm.safeParse({ language: form.get('language') });
@@ -29,6 +31,7 @@ export async function saveSettings(form: FormData) {
  * this sandbox app doesn't have yet; the token is useless to anyone without our server credentials either way.
  */
 export async function removeSavedPayPal() {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const db = getDb();
@@ -45,6 +48,7 @@ export type AgentTokenState = { token: string } | { error: 'guest' | 'limit' | '
 
 /** "Connect an AI agent": creates an MCP API token and returns it ONCE to this response. Only its hash is stored. */
 export async function createAgentToken(_prev: AgentTokenState, form: FormData): Promise<AgentTokenState> {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const name = String(form.get('name') ?? '').slice(0, 60);
@@ -56,6 +60,7 @@ export async function createAgentToken(_prev: AgentTokenState, form: FormData): 
 }
 
 export async function revokeAgentToken(form: FormData) {
+  await requireSameOrigin();
   const user = await getCurrentUser();
   if (!user) redirect('/auth/sign-in');
   const id = String(form.get('id') ?? '');
