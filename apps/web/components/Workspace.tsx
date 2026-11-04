@@ -102,7 +102,7 @@ export function Workspace({ t, lang, clientId, initialDemoMode, autopay, initial
         {tabBtn('chat', t.workspace.tabChat)}
         {tabBtn('results', t.workspace.tabResults)}
       </div>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         {/* LEFT: chat */}
         <section className={`${card} flex max-h-[85vh] min-h-[540px] flex-col p-6 ${tab === 'chat' ? '' : 'hidden lg:flex'}`} aria-label={t.workspace.chatTitle}>
           <h2 className="text-[17px] font-medium">{t.workspace.chatTitle}</h2>
