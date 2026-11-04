@@ -325,7 +325,7 @@
 Eligible for three sponsor prizes; only one can be won.
 | Sponsor | Role | Effort | Priority |
 |---|---|---|---|
-| **Channel3** | Product search **+ product enrichment** (images, variants, availability) **+ Channel3 MCP server** exposed to the agent | ~1 day beyond core | **Primary: polish hardest** |
+| **Channel3** | Product search **+ product enrichment** (images, variants, availability) **+ Channel3 MCP server** exposed to the agent *(planned, not built)* | ~1 day beyond core | **Primary: polish hardest** |
 | **APIMatic** | Context Plugin used in Claude Code to build the PayPal integration; documented in README; claim form submitted | ~none | Free eligibility |
 | **AG Grid** | **Risk review dashboard** in AG Studio (all scans, verdicts, voided/captured payments, accuracy), with custom widgets/theming + Studio Agent Framework | 3–4 days | Stretch only (core must work by ~Nov 6). Start the 45-day trial only when starting it |
 | KERNEL | Isolated cloud browser for every scan + live view/replay | core | No prize listed; core product |
@@ -372,7 +372,7 @@ voircheck/
 - **Render free plan during the build; switch `voircheck-stores` and `voircheck-web` to the Starter instance ($7/mo each) on Nov 11, before recording, and keep it through Dec 15** (paid with the $50 hackathon credits; Starter is always-on, so no cold starts during recording or judging). Free instances sleep when idle, so expect a slow first load until Nov 11.
   1. `voircheck-web`: main app
   2. `voircheck-stores`: one service serving all 6 demo stores, routed by domain/host
-  3. Render Workflows: scans + test-set runs
+  3. Render Workflows: scans + test-set runs *(planned, not built)*
   - Confirm the credits cover Starter for both services Nov 11 → Dec 15.
 - **Neon free plan:** compute auto-suspends after 5 min idle and wakes on the next request (first request slightly slower); no long-term pause, so **no keep-alive job needed**. Free plan: 100 CU-hours/project/month, 1 GB storage/project; monitor usage during judging.
 - **Uptime monitoring:** free monitor checks the app + all 6 demo stores every 5 min, with phone/email alerts. Watch closely Dec 1–15.
@@ -395,7 +395,7 @@ voircheck/
 **Automated tests**
 - **Unit (Vitest):** scoring + every threshold + every hard rule; money gate (a BLOCK store can never be captured without override; never in Auto-pay).
 - **Sandbox integration:** real PayPal sandbox authorize / capture / void / reauthorize.
-- **End-to-end (Playwright):** (1) SAFE: pay Velbrook; (2) HOLD: Nyuie Clearance, user decides; (3) BLOCK: Velbrook-Outlet voided, injection detected, override path.
+- **End-to-end (Playwright) *(planned, not built)*:** (1) SAFE: pay Velbrook; (2) HOLD: Nyuie Clearance, user decides; (3) BLOCK: Velbrook-Outlet voided, injection detected, override path.
 - **CI:** GitHub Actions runs unit tests on every push; status badge in README.
 
 **Core rule: if VoirCheck can't verify a store, it is never SAFE.**
@@ -452,12 +452,12 @@ Availability: J builds 8+ h/day, every day. Deadline **Thu Nov 12, 2026, 3:00 PM
 | Oct 27 (tonight) | Accounts: PayPal sandbox app + 7 business + 1 buyer + Vault enabled ✅ (done); Neon + Neon Auth; Anthropic key + spend limit; Channel3 (promo); KERNEL credits; Render credits; Resend; Safe Browsing key; Google OAuth client; uptime monitor; APIMatic plugin |
 | Oct 28 | **PayPal spike (half day, `scripts/paypal-spike.ts`)** → update 5.7 from results; pnpm monorepo scaffold; Neon migrations + RLS + seed |
 | Oct 29–30 | `apps/stores`: one template, 6 themes, planted tells + hidden injection, demo banner, noindex; deploy to Render |
-| Oct 31–Nov 2 | `packages/scanner`: five non-AI signals first, AI page-analysis signal behind a placeholder until the Anthropic key arrives (by Nov 3); full scanner: scoring + hard rules, KERNEL integration, SSRF guards, Render Workflows, unit tests |
-| Nov 3 | Channel3 search + enrichment + MCP; **buy 3 scam-store domains** and point them at `voircheck-stores` |
+| Oct 31–Nov 2 | `packages/scanner`: five non-AI signals first, AI page-analysis signal behind a placeholder until the Anthropic key arrives (by Nov 3); full scanner: scoring + hard rules, KERNEL integration, SSRF guards, Render Workflows *(planned, not built)*, unit tests |
+| Nov 3 | Channel3 search + enrichment + MCP *(planned, not built)*; **buy 3 scam-store domains** and point them at `voircheck-stores` |
 | Nov 4–5 | `packages/agent` + `packages/paypal`: Sonnet agent, Toolkit + custom tools, money gate, JS SDK v6 checkout, webhooks, HOLD/BLOCK/override, auto-pay + vault |
 | Nov 6 | Workspace UI (split view), mascot, Trust Receipt + Resend email, EN/FR i18n. **🚦 Checkpoint: full SAFE/HOLD/BLOCK flow works end to end? → decide AG Grid / mobile** |
 | Nov 7 | Auth (magic link, Google, password, guest demo), onboarding, history, settings, accuracy page; **run real-world test set** + tune weights |
-| Nov 8 | Playwright e2e, GitHub Actions CI, failure-case handling; **decide narration / on-camera** |
+| Nov 8 | Playwright e2e *(planned, not built)*, GitHub Actions CI, failure-case handling; **decide narration / on-camera** |
 | Nov 9 | Stretch (AG Grid dashboard) **or** polish buffer |
 | Nov 10 | Security self-audit + fixes, `SECURITY.md`, `pnpm audit` |
 | Nov 11 | **Switch `voircheck-stores` + `voircheck-web` to Render Starter ($7/mo) before recording**; record + edit video, README + GIF, Devpost draft; deploy freeze begins after final deploy |
