@@ -8,7 +8,7 @@ services:
     name: voircheck-stores
     runtime: node
     region: virginia
-    plan: free
+    plan: starter # since Nov 5, through Dec 15 (spec 5.16); keep it here so a Blueprint sync never reverts it
     buildCommand: npx -y pnpm@10.18.3 install --frozen-lockfile --prod=false && npx -y pnpm@10.18.3 --filter @voircheck/stores build
     startCommand: npx -y pnpm@10.18.3 --filter @voircheck/stores start
     healthCheckPath: /robots.txt
@@ -28,7 +28,7 @@ services:
     name: voircheck-web
     runtime: node
     region: virginia
-    plan: free # Starter from Nov 11 through Dec 15 (spec 5.16)
+    plan: starter # since Nov 5, through Dec 15 (spec 5.16); keep it here so a Blueprint sync never reverts it
     buildCommand: npx -y pnpm@10.18.3 install --frozen-lockfile --prod=false && npx -y pnpm@10.18.3 --filter @voircheck/web build
     # The start script binds $PORT (next start --port ${PORT:-3000}).
     startCommand: npx -y pnpm@10.18.3 --filter @voircheck/web start

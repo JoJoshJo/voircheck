@@ -9,7 +9,7 @@ import { DailyCapError } from './spend';
  * Keeps the demo stores' scans fresh (spec 5.16), so a Demo-mode shopping turn finds them cached (9.9 s on Nov 4)
  * instead of scanning them fresh (13.5 s each, or 77 s when the store was asleep).
  *
- * At most once an hour (kicked off by /api/health, which the keep-warm schedule and Render's health check call), it
+ * At most once an hour (kicked off by /api/health, which Render's health check calls), it
  * re-scans each Demo-mode product page whose latest scan is older than 20 hours, one at a time, through the normal
  * runStoreScan path: same KERNEL isolation, same daily KERNEL/AI caps, same limit of scans at once. It never runs
  * while people's scans fill most of the slots, and stops for the day at the KERNEL cap. Production only;
