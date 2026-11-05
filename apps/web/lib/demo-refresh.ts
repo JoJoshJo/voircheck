@@ -14,6 +14,11 @@ import { DailyCapError } from './spend';
  * runStoreScan path: same KERNEL isolation, same daily KERNEL/AI caps, same limit of scans at once. It never runs
  * while people's scans fill most of the slots, and stops for the day at the KERNEL cap. Production only;
  * DEMO_SCAN_REFRESH=off turns it off.
+ *
+ * Neon compute: each database check wakes the database for ~5 minutes (its idle suspend), so checking hourly cost
+ * ~24 wakes a day. The pass remembers, in memory, when each page's scan turns 20 hours old and asks the database
+ * only once one could be (after a restart, once): about 1-2 wakes a day. A scan someone else ran meanwhile is found
+ * at that check and moves the due time on.
  */
 
 export const REFRESH_AFTER_MS = 20 * 3_600_000;
@@ -34,24 +39,36 @@ export interface RefreshDeps {
   scan(url: string): Promise<unknown>;
   busySlots(): number;
   now(): number;
+  /** When each page's latest known scan turns REFRESH_AFTER_MS old. Before that time the page is skipped unread. */
+  dueAt?: Map<string, number>;
 }
+
+const g = globalThis as typeof globalThis & { __voircheckDemoRefresh?: { lastCheck: number; running: boolean }; __voircheckDemoDueAt?: Map<string, number> };
 
 const liveDeps: RefreshDeps = {
   latestScanAt: async (url) => (await findFreshScan(url))?.scannedAt ?? null,
   scan: (url) => runStoreScan({ url, demoMode: true, liveView: false }),
   busySlots: freshScansRunning,
   now: Date.now,
+  get dueAt() {
+    return (g.__voircheckDemoDueAt ??= new Map());
+  },
 };
 
 /** One pass: re-scan the stale demo pages, one at a time. Returns what it re-scanned. */
 export async function refreshDemoScans(urls: string[], deps: RefreshDeps = liveDeps): Promise<string[]> {
   const done: string[] = [];
   for (const url of urls) {
+    if ((deps.dueAt?.get(url) ?? 0) > deps.now()) continue; // known fresh: no database query
     const last = await deps.latestScanAt(url);
-    if (last && deps.now() - last.getTime() < REFRESH_AFTER_MS) continue;
+    if (last && deps.now() - last.getTime() < REFRESH_AFTER_MS) {
+      deps.dueAt?.set(url, last.getTime() + REFRESH_AFTER_MS);
+      continue;
+    }
     if (deps.busySlots() >= MAX_BUSY_SLOTS) break;
     try {
       await deps.scan(url);
+      deps.dueAt?.set(url, deps.now() + REFRESH_AFTER_MS);
       done.push(url);
     } catch (err) {
       if (err instanceof DailyCapError) break; // today's KERNEL cap: people's scans come first; try again tomorrow
@@ -60,8 +77,6 @@ export async function refreshDemoScans(urls: string[], deps: RefreshDeps = liveD
   }
   return done;
 }
-
-const g = globalThis as typeof globalThis & { __voircheckDemoRefresh?: { lastCheck: number; running: boolean } };
 
 export function demoRefreshEnabled(env: Record<string, string | undefined> = process.env): boolean {
   return env.NODE_ENV === 'production' && !!env.KERNEL_API_KEY && env.DEMO_SCAN_REFRESH !== 'off';

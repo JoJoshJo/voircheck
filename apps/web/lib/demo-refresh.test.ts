@@ -36,6 +36,53 @@ describe('demo scan refresh', () => {
     expect(scanned).toEqual(['b', 'c']);
   });
 
+  it('remembers when each scan turns 20 h old and asks the database only then', async () => {
+    let t = NOW;
+    const reads: string[] = [];
+    const scanned: string[] = [];
+    const dueAt = new Map<string, number>();
+    const d = {
+      latestScanAt: async (u: string) => (reads.push(u), u === 'a' ? new Date(NOW - 60 * 60_000) : null), // a: 1 h old; b: never scanned
+      scan: async (u: string) => void scanned.push(u),
+      busySlots: () => 0,
+      now: () => t,
+      dueAt,
+    };
+    expect(await refreshDemoScans(['a', 'b'], d)).toEqual(['b']);
+    expect(reads).toEqual(['a', 'b']);
+    // The next hourly passes read nothing while both are known fresh.
+    for (let h = 1; h < 19; h++) {
+      t = NOW + h * CHECK_EVERY_MS;
+      expect(await refreshDemoScans(['a', 'b'], d)).toEqual([]);
+    }
+    expect(reads).toEqual(['a', 'b']);
+    // a turns 20 h old at NOW + 19 h: only a is read (and here re-scanned).
+    t = NOW + 19 * CHECK_EVERY_MS;
+    d.latestScanAt = async (u: string) => (reads.push(u), new Date(NOW - 60 * 60_000));
+    expect(await refreshDemoScans(['a', 'b'], d)).toEqual(['a']);
+    expect(reads).toEqual(['a', 'b', 'a']);
+    expect(dueAt.get('a')).toBe(t + REFRESH_AFTER_MS);
+  });
+
+  it('a newer scan found at the due check moves the due time on, without re-scanning', async () => {
+    const dueAt = new Map([['a', NOW - 1]]);
+    const { scanned, d } = deps({ a: 2 * 3_600_000 }, { dueAt });
+    expect(await refreshDemoScans(['a'], d)).toEqual([]);
+    expect(scanned).toEqual([]);
+    expect(dueAt.get('a')).toBe(NOW - 2 * 3_600_000 + REFRESH_AFTER_MS);
+  });
+
+  it('a failed or skipped scan stays due, so the next pass tries again', async () => {
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const dueAt = new Map<string, number>();
+    const failed = deps({ a: null }, { dueAt, scan: async () => { throw new Error('boom'); } });
+    await refreshDemoScans(['a'], failed.d);
+    const busy = deps({ b: null }, { dueAt, busySlots: () => 2 });
+    await refreshDemoScans(['b'], busy.d);
+    expect(dueAt.size).toBe(0);
+    errors.mockRestore();
+  });
+
   it('leaves the scan slots to people when two are busy, and stops at the daily KERNEL cap', async () => {
     const busy = deps({ a: null, b: null }, { busySlots: () => 2 });
     expect(await refreshDemoScans(['a', 'b'], busy.d)).toEqual([]);
