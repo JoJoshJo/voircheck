@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { googleRedirectUrls } from './oauth';
+import { googleRedirectUrls, magicLinkRedirectUrls } from './oauth';
 
 describe('Google sign-in redirect URLs', () => {
   it.each(['http://localhost:3000', 'https://voircheck-web.onrender.com', 'https://voircheck.com'])('built from the current origin: %s', (origin) => {
@@ -16,5 +16,15 @@ describe('Google sign-in redirect URLs', () => {
 
   it('refuses non-http origins', () => {
     expect(() => googleRedirectUrls('javascript:alert(1)')).toThrow();
+  });
+});
+
+describe('magic-link redirect URLs', () => {
+  it('land on /app, new users on /onboarding (never on the landing page)', () => {
+    expect(magicLinkRedirectUrls('https://voircheck.com')).toEqual({
+      callbackURL: 'https://voircheck.com/app',
+      newUserCallbackURL: 'https://voircheck.com/onboarding',
+      errorCallbackURL: 'https://voircheck.com/auth/sign-in?link=expired',
+    });
   });
 });

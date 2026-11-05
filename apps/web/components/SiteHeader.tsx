@@ -2,7 +2,8 @@ import Link from 'next/link';
 import type { Dict } from '../lib/i18n';
 import { Logo } from './Logo';
 
-export function SiteHeader({ t, signedIn }: { t: Dict; signedIn: boolean }) {
+/** `workspaceLabel`: the signed-in link's text where a page wants more than "Workspace" (the landing page). */
+export function SiteHeader({ t, signedIn, workspaceLabel }: { t: Dict; signedIn: boolean; workspaceLabel?: string }) {
   return (
     <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
       <Logo />
@@ -11,7 +12,7 @@ export function SiteHeader({ t, signedIn }: { t: Dict; signedIn: boolean }) {
           {t.nav.howItWorks}
         </Link>
         <Link href={signedIn ? '/app' : '/auth/sign-in'} className="hover:text-ink">
-          {signedIn ? t.nav.workspace : t.nav.signIn}
+          {signedIn ? (workspaceLabel ?? t.nav.workspace) : t.nav.signIn}
         </Link>
       </nav>
     </header>

@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { DemoButton } from '../components/DemoButton';
 import { Mascot } from '../components/Mascot';
 import { Reveal } from '../components/Reveal';
 import { SiteHeader } from '../components/SiteHeader';
-import { btnSecondary } from '../components/ui';
+import { btnPrimary, btnSecondary } from '../components/ui';
 import { shareCard } from '../lib/og';
 import { dictFor, getCurrentUser, guessLang } from '../lib/user';
 
@@ -53,7 +52,9 @@ const TILE_ICONS: Record<string, ReactNode> = {
 };
 
 export default async function Landing() {
-  if (await getCurrentUser()) redirect('/app');
+  // Signed-in visitors see the landing page too (J, Nov 5), with "Open my workspace" instead of the demo and sign-in.
+  // Same session read as before (the proxy has already refreshed it), so no extra cost for anyone.
+  const signedIn = !!(await getCurrentUser());
   const t = dictFor(await guessLang());
   const l = t.landing;
   const tiles = [
@@ -73,7 +74,7 @@ export default async function Landing() {
       <noscript>
         <style>{'.vc-rv{opacity:1!important;transform:none!important}.vc-rv .vc-draw{stroke-dashoffset:0!important}'}</style>
       </noscript>
-      <SiteHeader t={t} signedIn={false} />
+      <SiteHeader t={t} signedIn={signedIn} workspaceLabel={l.openWorkspace} />
       <main>
         {/* Hero (option A, J Nov 4): large type left, the ghost assembling on the right; stone → white once it's done. */}
         <section className="vc-hero-bg">
@@ -87,12 +88,18 @@ export default async function Landing() {
               <h1 className="text-[44px] font-[600] leading-[1.02] tracking-[-0.035em] sm:text-[60px] lg:text-[80px] xl:text-[88px]">{t.meta.tagline}</h1>
               <p className="mt-7 max-w-xl text-[19px] leading-relaxed text-muted sm:text-[20px]">{l.subline}</p>
               <div className="mt-9 flex flex-wrap items-start gap-3">
-                <DemoButton label={l.tryDemo} working={t.auth.working} errorText={l.demoError} />
+                {signedIn ? (
+                  <Link href="/app" className={btnPrimary}>
+                    {l.openWorkspace}
+                  </Link>
+                ) : (
+                  <DemoButton label={l.tryDemo} working={t.auth.working} errorText={l.demoError} />
+                )}
                 <Link href="/how-it-works" className={btnSecondary}>
                   {l.howItWorks}
                 </Link>
               </div>
-              <p className="mt-4 text-[13px] text-faint">{l.tryDemoNote}</p>
+              {!signedIn && <p className="mt-4 text-[13px] text-faint">{l.tryDemoNote}</p>}
             </div>
           </div>
         </section>
