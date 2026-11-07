@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { DemoButton } from '../components/DemoButton';
 import { HeroDemo } from '../components/HeroDemo';
+import { Mascot } from '../components/Mascot';
 import { Reveal } from '../components/Reveal';
 import { SiteHeader } from '../components/SiteHeader';
 import { btnPrimary, btnSecondary } from '../components/ui';
@@ -69,6 +70,11 @@ export default async function Landing() {
     { pill: l.proofWithout, cls: 'bg-block-bg text-block', n: '6', of: l.proofWithoutOf, body: l.proofWithoutBody, note: l.proofNote },
     { pill: l.proofWith, cls: 'bg-safe-bg text-safe', n: '0', of: l.proofWithOf, body: l.proofWithBody, note: l.proofWithNote },
   ];
+  const answers = [
+    { mood: 'SAFE', label: l.threeSafeLabel, body: l.threeSafeBody, disc: 'bg-safe-bg', text: 'text-safe' },
+    { mood: 'HOLD', label: l.threeHoldLabel, body: l.threeHoldBody, disc: 'bg-hold-bg', text: 'text-hold' },
+    { mood: 'BLOCK', label: l.threeBlockLabel, body: l.threeBlockBody, disc: 'bg-block-bg', text: 'text-block' },
+  ] as const;
   return (
     <>
       <noscript>
@@ -101,6 +107,24 @@ export default async function Landing() {
             <div className="flex justify-center lg:justify-end">
               <HeroDemo t={t} />
             </div>
+          </div>
+        </section>
+
+        {/* Three simple answers (design-pass item 2): the three ghost faces with verdict-coloured labels. */}
+        <section className="mx-auto max-w-6xl border-t border-line px-6 py-16 lg:py-24">
+          <Reveal>
+            <h2 className="mb-10 text-[32px] font-medium leading-[1.08] tracking-[-0.025em] lg:mb-14 lg:text-[48px]">{l.threeTitle}</h2>
+          </Reveal>
+          <div className="grid gap-10 text-center sm:grid-cols-3 sm:gap-6">
+            {answers.map(({ mood, label, body, disc, text }, i) => (
+              <Reveal key={mood} delay={i * 80}>
+                <span className={`mx-auto grid h-[112px] w-[112px] place-items-center rounded-full ${disc}`}>
+                  <Mascot mood={mood} size={72} title="" />
+                </span>
+                <h3 className={`mt-5 text-[20px] font-medium ${text}`}>{label}</h3>
+                <p className="mx-auto mt-2 max-w-[22ch] text-[15px] leading-relaxed text-muted">{body}</p>
+              </Reveal>
+            ))}
           </div>
         </section>
 

@@ -65,6 +65,16 @@ describe('landing page', () => {
     expect(html).toContain(t.proofWithNote.replace(/'/g, '&#x27;'));
   });
 
+  it.each(['en', 'fr'] as const)('the three-answers strip shows all three ghost faces and verdict-coloured labels (%s)', async (l) => {
+    const html = await landing(l);
+    const t = DICTS[l].landing;
+    for (const s of [t.threeTitle, t.threeSafeLabel, t.threeHoldLabel, t.threeBlockLabel]) expect(html).toContain(s.replace(/'/g, '&#x27;'));
+    for (const face of ['SAFE', 'HOLD', 'BLOCK']) expect(html).toContain(`data-face="${face}"`);
+    expect(html).toContain('text-safe');
+    expect(html).toContain('text-hold');
+    expect(html).toContain('text-block');
+  });
+
   it('content that fades in on scroll is visible without JavaScript', async () => {
     const html = await landing('en');
     expect(html).toContain('<noscript><style>.vc-rv{opacity:1!important');
