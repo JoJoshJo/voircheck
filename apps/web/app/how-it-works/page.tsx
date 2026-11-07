@@ -113,7 +113,7 @@ export default async function HowItWorks() {
                 {ATTACKS.map(([key, verdict]) => (
                   <tr key={key} className="border-b border-line align-top">
                     <td className="py-2 pr-3">{t.how[key]}</td>
-                    <td className="py-2 pr-3 whitespace-nowrap">{verdict === 'missed' ? t.how.attacksMissed : t.verdict.HOLD}</td>
+                    <td className="py-2 pr-3 whitespace-nowrap">{verdict === 'missed' ? t.how.attacksMissed : t.how.attackHold}</td>
                     <td className="py-2 pr-3">{t.how.attacksNo}</td>
                     <td className="py-2">{t.how.attacksNo}</td>
                   </tr>
@@ -137,7 +137,6 @@ export default async function HowItWorks() {
             <li>{t.how.tune2}</li>
             <li>{t.how.tune3}</li>
           </ul>
-          <p className="mt-4 text-[15px] leading-relaxed text-muted">{t.how.holdout}</p>
         </section>
       </main>
     </>
