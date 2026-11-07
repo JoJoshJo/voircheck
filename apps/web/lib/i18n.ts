@@ -79,7 +79,7 @@ const en = {
     languageTitle: 'Choose your language',
     languageBody: 'You can change it later in Settings.',
     autopayTitle: 'Auto-pay',
-    autopayBody: 'With Auto-pay on, VoirCheck pays a SAFE store by itself, up to your limit. HOLD and BLOCK stores always wait for you.',
+    autopayBody: 'With Auto-pay on, VoirCheck pays a store that looks safe by itself, up to your limit. Stores on hold or blocked always wait for you.',
     autopayOn: 'Turn on Auto-pay',
     limit: 'Limit per purchase (USD)',
     continue: 'Continue',
@@ -385,7 +385,7 @@ const en = {
   },
   wallet: {
     title: 'Saved PayPal for Auto-pay',
-    saved: 'Your PayPal is saved. Auto-pay can pay SAFE stores under your limit.',
+    saved: 'Your PayPal is saved. Auto-pay can pay stores that look safe, under your limit.',
     nextPurchase: 'Your PayPal will be saved for Auto-pay on your next purchase.',
     tokenOnly: 'VoirCheck keeps only a PayPal token, never your login or card details.',
     remove: 'Remove saved PayPal',

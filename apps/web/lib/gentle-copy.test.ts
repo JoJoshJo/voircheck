@@ -11,3 +11,12 @@ describe('gentle errors', () => {
     }
   });
 });
+
+describe('Auto-pay copy uses plain verdict words, not ALL-CAPS labels', () => {
+  it.each(['en', 'fr'] as const)('no standalone SAFE/HOLD/BLOCK in the Auto-pay strings (%s)', (lang) => {
+    const t = DICTS[lang];
+    for (const m of [t.onboarding.autopayBody, t.wallet.saved]) {
+      expect(m).not.toMatch(/\b(SAFE|HOLD|BLOCK)\b/);
+    }
+  });
+});
