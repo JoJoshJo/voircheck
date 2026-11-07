@@ -101,7 +101,10 @@ describe('chat panel', () => {
     expect(html).not.toMatch(/arrives soon|arrive bientôt/);
     expect(html).toContain(DICTS[lang].agent.inputLabel);
     expect(html).toContain(DICTS[lang].agent.send);
+    // Empty state: three starter chips, centred.
     expect(html).toContain(DICTS[lang].agent.example);
+    expect(html).toContain(DICTS[lang].agent.starter2);
+    expect(html).toContain(DICTS[lang].agent.starter3);
     // Empty-state promise: never touch your money; no "last word on the money" slop.
     expect(html).not.toMatch(/last word|dernier mot/);
     expect(html).toMatch(lang === 'en' ? /never touch your money/ : /ne touche jamais à votre argent/);

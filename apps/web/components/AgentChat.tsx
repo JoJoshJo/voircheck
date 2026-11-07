@@ -12,7 +12,7 @@ import { builtStrokes } from '../lib/ghost';
 import { Mascot } from './Mascot';
 import { RefundButton } from './RefundButton';
 import { SignalIcon, SIGNAL_ORDER, type SignalState } from './SignalIcon';
-import { btnPrimary, btnSecondary, input } from './ui';
+import { btnPrimary, input } from './ui';
 import { VERDICT_CLASSES } from './Verdict';
 
 type Item =
@@ -248,12 +248,22 @@ export function AgentChat({ t, lang, clientId, ask = null }: { t: Dict; lang: st
     <div className="flex min-h-0 flex-1 flex-col">
       <div ref={list} className="flex-1 space-y-4 overflow-y-auto py-4" role="log" aria-live="polite" aria-label={t.workspace.chatTitle}>
         {chat.items.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-5 py-10 text-center">
-            <Mascot mood="idle" size={72} />
+          <div className="flex h-full flex-col items-center justify-center gap-4 py-6 text-center">
+            <Mascot mood="idle" size={64} />
             <p className="max-w-xs text-[15px] leading-relaxed text-muted">{t.workspace.chatPlaceholder}</p>
-            <button type="button" className={btnSecondary} onClick={() => void send(t.agent.example)} disabled={busy}>
-              {fmt(t.agent.tryExample, { example: t.agent.example })}
-            </button>
+            <div className="flex flex-wrap justify-center gap-2">
+              {[t.agent.example, t.agent.starter2, t.agent.starter3].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => void send(s)}
+                  disabled={busy}
+                  className="min-h-9 rounded-full border border-line bg-white px-4 text-[14px] text-ink transition hover:border-ink disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           chat.items.map((item, i) =>

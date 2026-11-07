@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { AppNavLinks } from '../../components/AppNavLinks';
 import { Logo } from '../../components/Logo';
 import { requireOnboardedUser } from '../../lib/user';
 import { DICTS } from '../../lib/i18n';
@@ -22,11 +22,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-5 sm:px-6">
         <Logo href="/app" />
         <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] text-muted">
-          {links.map(([href, label, show]) => (
-            <Link key={href} href={href} className={`${show} hover:text-ink`.trim()}>
-              {label}
-            </Link>
-          ))}
+          <AppNavLinks links={links} />
           <form action={signOut} className="hidden sm:block">
             <button className="hover:text-ink">{t.nav.signOut}</button>
           </form>
