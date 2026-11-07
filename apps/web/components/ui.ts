@@ -1,6 +1,8 @@
 /** Shared class strings: primary = solid ink with white text (spec 5.12). */
 export const btnPrimary =
   'inline-flex min-h-11 items-center justify-center rounded-full bg-ink px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-ink/85 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
+export const btnPrimarySm =
+  'inline-flex min-h-9 items-center justify-center rounded-full bg-ink px-4 py-1.5 text-[14px] font-medium text-white transition hover:bg-ink/85 disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
 export const btnSecondary =
   'inline-flex min-h-11 items-center justify-center rounded-full border border-line bg-white px-5 py-2.5 text-[15px] font-medium text-ink transition hover:bg-surface disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
 export const input =

@@ -39,6 +39,17 @@ export async function startDemo(): Promise<{ error: string } | never> {
   redirect('/app');
 }
 
+/** EN/FR switch on public pages: set the language cookie, then return to where the visitor was. */
+export async function setPublicLang(form: FormData): Promise<never> {
+  await requireSameOrigin();
+  const lang = form.get('lang') === 'fr' ? 'fr' : 'en';
+  (await cookies()).set(LANG_COOKIE, lang, PREF_COOKIE);
+  const next = form.get('next');
+  // Only ever redirect to a path on this site (never an absolute or protocol-relative URL).
+  const dest = typeof next === 'string' && next.startsWith('/') && !next.startsWith('//') ? next : '/';
+  redirect(dest);
+}
+
 export async function signOut() {
   await requireSameOrigin();
   await getAuth().signOut();

@@ -4,14 +4,14 @@ import { useState, useTransition } from 'react';
 import { startDemo } from '../app/actions';
 import { btnPrimary } from './ui';
 
-export function DemoButton({ label, working, errorText }: { label: string; working: string; errorText: string }) {
+export function DemoButton({ label, working, errorText, className = btnPrimary }: { label: string; working: string; errorText: string; className?: string }) {
   const [pending, start] = useTransition();
   const [failed, setFailed] = useState(false);
   return (
     <div>
       <button
         type="button"
-        className={btnPrimary}
+        className={className}
         disabled={pending}
         onClick={() =>
           start(async () => {

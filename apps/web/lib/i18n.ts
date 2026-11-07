@@ -601,7 +601,7 @@ const en = {
     tune3: 'Run-to-run noise on the same page: up to about 20 points.',
   },
 
-  footer: { privacy: 'Privacy', terms: 'Terms', howItWorks: 'How it works' },
+  footer: { privacy: 'Privacy', terms: 'Terms', howItWorks: 'How it works', builtFor: 'Built for the PayPal AI Hackathon', github: 'GitHub' },
   common: { yes: 'Yes', no: 'No', english: 'English', french: 'Français', demoBanner: 'Demo account · sandbox money only' },
 };
 
@@ -1200,7 +1200,7 @@ const fr: Dict = {
     tune3: 'Variation d’une exécution à l’autre sur la même page : jusqu’à environ 20 points.',
   },
 
-  footer: { privacy: 'Confidentialité', terms: 'Conditions', howItWorks: 'Comment ça marche' },
+  footer: { privacy: 'Confidentialité', terms: 'Conditions', howItWorks: 'Comment ça marche', builtFor: 'Réalisé pour le PayPal AI Hackathon', github: 'GitHub' },
   common: { yes: 'Oui', no: 'Non', english: 'English', french: 'Français', demoBanner: 'Compte de démo · argent fictif (sandbox) uniquement' },
 };
 

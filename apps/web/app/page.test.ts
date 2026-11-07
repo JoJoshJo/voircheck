@@ -5,9 +5,9 @@ import { DICTS, type Lang } from '../lib/i18n';
 let lang: Lang = 'en';
 let user: { id: string } | null = null;
 const redirect = vi.fn();
-vi.mock('next/navigation', () => ({ redirect: (...a: unknown[]) => redirect(...a) }));
+vi.mock('next/navigation', () => ({ redirect: (...a: unknown[]) => redirect(...a), usePathname: () => '/' }));
 vi.mock('../lib/user', () => ({ getCurrentUser: async () => user, guessLang: async () => lang, dictFor: (l: Lang) => DICTS[l] }));
-vi.mock('../app/actions', () => ({ startDemo: async () => undefined }));
+vi.mock('../app/actions', () => ({ startDemo: async () => undefined, setPublicLang: async () => undefined }));
 
 async function landing(l: Lang) {
   lang = l;
@@ -73,6 +73,16 @@ describe('landing page', () => {
     expect(html).toContain('text-safe');
     expect(html).toContain('text-hold');
     expect(html).toContain('text-block');
+  });
+
+  it.each(['en', 'fr'] as const)('header has GitHub, an EN/FR switch and a demo CTA; footer credits the hackathon (%s)', async (l) => {
+    const html = await landing(l);
+    const t = DICTS[l];
+    expect(html).toContain('github.com/JoJoshJo/voircheck');
+    expect(html).toContain('name="lang"');
+    expect(html).toContain('value="en"');
+    expect(html).toContain('value="fr"');
+    expect(html).toContain(t.landing.tryDemo); // signed-out demo CTA (hero + header)
   });
 
   it('content that fades in on scroll is visible without JavaScript', async () => {
