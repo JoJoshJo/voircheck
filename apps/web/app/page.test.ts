@@ -49,7 +49,8 @@ describe('landing page', () => {
     const t = DICTS[l];
     for (const s of [t.meta.tagline, t.landing.subline, t.landing.tryDemo, t.landing.howItWorks]) expect(html).toContain(s.replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
     expect(html).toMatch(/<h1 class="[^"]*font-\[600\]/);
-    expect(html).toContain('class="vc-asm vc-hero-ghost');
+    // The hero demo renders its finished Safe state on the server (no JS / reduced motion).
+    expect(html).toContain(t.agent.example);
     expect(html).toContain('data-face="SAFE"');
     expect(html).toContain('vc-hero-bg');
   });

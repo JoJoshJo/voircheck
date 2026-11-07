@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { DemoButton } from '../components/DemoButton';
-import { Mascot } from '../components/Mascot';
+import { HeroDemo } from '../components/HeroDemo';
 import { Reveal } from '../components/Reveal';
 import { SiteHeader } from '../components/SiteHeader';
 import { btnPrimary, btnSecondary } from '../components/ui';
@@ -76,12 +76,10 @@ export default async function Landing() {
       </noscript>
       <SiteHeader t={t} signedIn={signedIn} workspaceLabel={l.openWorkspace} />
       <main>
-        {/* Hero (option A, J Nov 4): large type left, the ghost assembling on the right; stone → white once it's done. */}
+        {/* Hero (design-pass item 1): large type left, a looping demo of a check on the right
+            (below the buttons on phone); stone → white as the page settles. */}
         <section className="vc-hero-bg">
-          <div className="mx-auto grid max-w-6xl items-center gap-6 px-6 pb-16 pt-8 lg:grid-cols-[1.3fr_0.7fr] lg:gap-12 lg:pb-28 lg:pt-20">
-            <div className="lg:order-last lg:flex lg:justify-center">
-              <Mascot mood="SAFE" size={320} assemble title="" className="vc-hero-ghost h-24 w-24 lg:h-[320px] lg:w-[320px]" />
-            </div>
+          <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-8 lg:grid-cols-[1.3fr_0.7fr] lg:gap-12 lg:pb-28 lg:pt-20">
             <div>
               {/* The one place semibold (600) is allowed (spec 5.12). */}
               <h1 className="text-[44px] font-[600] leading-[1.02] tracking-[-0.035em] sm:text-[60px] lg:text-[80px] xl:text-[88px]">{t.meta.tagline}</h1>
@@ -99,6 +97,9 @@ export default async function Landing() {
                 </Link>
               </div>
               {!signedIn && <p className="mt-4 text-[13px] text-faint">{l.tryDemoNote}</p>}
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              <HeroDemo t={t} />
             </div>
           </div>
         </section>
