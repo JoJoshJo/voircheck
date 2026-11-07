@@ -23,7 +23,10 @@ export function Reveal({ children, className = '', delay = 0 }: { children: Reac
           io.disconnect();
         }
       },
-      { threshold: 0.15 },
+      // Trigger a little before the element is fully in view (grow the viewport
+      // 15% past the bottom edge) and at the first sliver, so it has settled by
+      // the time it is centred — no blank boxes while scrolling.
+      { threshold: 0, rootMargin: '0px 0px 15% 0px' },
     );
     io.observe(el);
     return () => io.disconnect();
