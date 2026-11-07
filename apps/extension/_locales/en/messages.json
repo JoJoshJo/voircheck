@@ -4,7 +4,7 @@
   "actionTitle": { "message": "Check this store with VoirCheck", "description": "Toolbar icon tooltip" },
   "storeLabel": { "message": "Store on this tab", "description": "Label above the store's host" },
   "checkButton": { "message": "Check this store", "description": "Popup button" },
-  "checkNote": { "message": "Opens VoirCheck in a new tab and starts checking this store: Safe, Hold or Block. Signed out? Sign in, then press Check.", "description": "Under the button when the tab is a store page" },
+  "checkNote": { "message": "Opens VoirCheck in a new tab and checks this store: looks safe, a bit off, or looks fake. Signed out? Sign in, then press Check.", "description": "Under the button when the tab is a store page" },
   "notAStore": { "message": "Open a store page first. VoirCheck checks web shops, not browser pages or files.", "description": "When the tab can't be checked" },
   "checkOnly": { "message": "Check only: this never pays and never reads the page.", "description": "Footer promise" },
   "howLink": { "message": "How VoirCheck checks", "description": "Footer link to the how-it-works page" }

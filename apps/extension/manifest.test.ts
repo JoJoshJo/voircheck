@@ -54,4 +54,11 @@ describe('extension locales', () => {
     expect(en.extDescription!.message.length).toBeLessThanOrEqual(132);
     expect(fr.extDescription!.message.length).toBeLessThanOrEqual(132);
   });
+
+  it('the popup note uses the plain verdict words, not the old Safe/Hold/Block labels', () => {
+    expect(en.checkNote!.message).toContain('looks safe, a bit off, or looks fake');
+    expect(en.checkNote!.message).not.toMatch(/Safe, Hold or Block/);
+    expect(fr.checkNote!.message).toContain('semble fiable, un doute, ou semble faux');
+    expect(fr.checkNote!.message).not.toMatch(/Fiable, En attente ou Bloquée/);
+  });
 });
