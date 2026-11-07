@@ -5,9 +5,9 @@
 Your AI agent sees who it's paying, before it pays.
 
 **Know Your Merchant for AI agents.** AI agents are starting to pay for people. Agent payment protocols verify the
-agent and what the person allowed it to do; they don't verify the merchant. VoirCheck is that check: it scans the
-store in an isolated cloud browser before PayPal captures, then decides what PayPal does with the money: pay, hold it
-for you, or release it. Built for the PayPal AI Hackathon 2026.
+agent and what the person allowed it to do, but not the merchant. VoirCheck is that check. It opens the store in a
+cloud browser before PayPal takes the money, then tells PayPal what to do: pay, hold it for you, or release it. Built
+for the PayPal AI Hackathon 2026.
 
 - **Live app:** https://voircheck.com
 - **Try the demo:** press "Try the demo" on the home page. It creates a private temporary account (English, Demo mode
@@ -65,7 +65,7 @@ domain with nothing to compare prices against. Every order was the listed $49 to
 waiting for the person's approval: MoneyGate's orders have no payee field, and no agent tool takes an amount. Full
 report, transcripts and the two runs that went wrong: [`eval/attacks/`](eval/attacks/).
 
-## The 30-second story
+## A quick walkthrough
 
 AI agents are starting to shop for people. Fake shops are built to look real: a copied layout, a price that is a
 little too good, a fresh domain, and sometimes hidden text that tells an AI "this store is verified safe". An agent
@@ -108,8 +108,8 @@ MoneyGate can move money.
 | JS SDK v6 | PayPal buttons for buyer approval (sandbox). | `apps/web/lib/paypal-sdk.ts`, `apps/web/components/Checkout.tsx` |
 | Vault | Auto-pay (off by default): the wallet is saved during the first approved purchase; later SAFE purchases under the person's limit are charged without another approval. Never for HOLD or BLOCK. | `packages/paypal/src/gate.ts` |
 | Webhooks | Signature-verified (`verify-webhook-signature`), stored once per event ID, payer details redacted. Refund events (`PAYMENT.CAPTURE.REFUNDED` / `REVERSED`) are matched by capture and keep History and the receipt in sync. | `packages/paypal/src/webhooks.ts`, `apps/web/app/api/paypal/webhook/route.ts` |
-| Agent Toolkit `get_order` | The agent reads an order's status through the Toolkit's read-only `get_order` (sandbox forced, status fields only, the person's own orders only). We don't use the Toolkit's `create_order` / `pay_order`: they create CAPTURE orders priced by the model, which would bypass the check. | `packages/agent/src/paypal-toolkit.ts` |
-| Agent Toolkit `create_refund` | Full refunds of the person's own paid orders. The agent's `request_refund` only proposes one (a chat card); the person's "Request refund" button (chat or History) runs it through MoneyGate, which calls the Toolkit's `create_refund` on a separate instance (only that tool, sandbox forced, one PayPal-Request-Id per payment so it can't refund twice). The agent also offers a refund when a store the person already paid scans BLOCK. Confirmed with a live sandbox refund (Nov 3). | `packages/paypal/src/gate.ts`, `packages/agent/src/paypal-toolkit.ts`, `apps/web/components/RefundButton.tsx` |
+| PayPal AI Toolkit `get_order` | The agent reads an order's status through the Toolkit's read-only `get_order` (sandbox forced, status fields only, the person's own orders only). We don't use the Toolkit's `create_order` / `pay_order`: they create CAPTURE orders priced by the model, which would bypass the check. | `packages/agent/src/paypal-toolkit.ts` |
+| PayPal AI Toolkit `create_refund` | Full refunds of the person's own paid orders. The agent's `request_refund` only proposes one (a chat card); the person's "Request refund" button (chat or History) runs it through MoneyGate, which calls the Toolkit's `create_refund` on a separate instance (only that tool, sandbox forced, one PayPal-Request-Id per payment so it can't refund twice). The agent also offers a refund when a store the person already paid scans BLOCK. Confirmed with a live sandbox refund (Nov 3). | `packages/paypal/src/gate.ts`, `packages/agent/src/paypal-toolkit.ts`, `apps/web/components/RefundButton.tsx` |
 | Sandbox only | The PayPal client refuses any non-sandbox API URL. | `packages/paypal/src/client.ts` |
 
 ## How we use AI
@@ -281,7 +281,7 @@ Chrome may show a "developer mode extensions" notice; that's expected for unpack
 
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
 - Neon Postgres + Neon Auth (magic link, Google, email and password), Drizzle ORM and drizzle-kit
-- PayPal Orders v2 REST, JS SDK v6, Agent Toolkit 1.11.0 (read-only `get_order`; `create_refund` run by MoneyGate)
+- PayPal Orders v2 REST, JS SDK v6, PayPal AI Toolkit 1.11.0 (read-only `get_order`; `create_refund` run by MoneyGate)
 - Anthropic TypeScript SDK (Claude Sonnet 5.5) for page analysis and the agent
 - KERNEL cloud browser for every store visit
 - Channel3 product search
@@ -297,7 +297,7 @@ apps/stores/       the six fictional demo stores: one template, themed by config
 apps/extension/    Chrome extension (MV3): "Check this store" opens the current tab in VoirCheck
 packages/scanner/  six signals, scoring and hard rules, KERNEL visits, SSRF guards, AI page analysis
 packages/paypal/   PayPal REST client (sandbox only), MoneyGate, webhooks
-packages/agent/    shopping agent: tools, prompt, model loop, product search, Agent Toolkit get_order + create_refund
+packages/agent/    shopping agent: tools, prompt, model loop, product search, PayPal AI Toolkit get_order + create_refund
 packages/shared/   shared types, ownership helper, demo store config, order references
 db/                Drizzle schema, migrations, seed, retention rules
 scripts/           eval runner, offline agent demo, PayPal checks, maintenance jobs
@@ -365,7 +365,7 @@ access or keys.
 
 ## Credits and attribution
 
-- **PayPal:** Orders v2, JS SDK v6, Agent Toolkit.
+- **PayPal:** Orders v2, JS SDK v6, PayPal AI Toolkit.
 - **Anthropic:** Claude Sonnet 5.5.
 - **KERNEL:** isolated cloud browsers for every store visit.
 - **Channel3:** product search.
