@@ -132,14 +132,29 @@ export default async function Landing() {
           <Reveal>
             <h2 className="mb-8 max-w-3xl text-[32px] font-medium leading-[1.08] tracking-[-0.025em] lg:mb-12 lg:text-[48px]">{l.gridTitle}</h2>
           </Reveal>
-          <div className="grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
-            {tiles.map(([icon, title, body], i) => (
-              <Reveal key={icon} delay={(i % 3) * 80} className="bg-white p-6 sm:p-8 lg:min-h-[220px]">
-                <svg viewBox="0 0 32 32" className="h-10 w-10 text-ink" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          {/* Top three: large tiles, each with its own visual. */}
+          <div className="grid gap-px overflow-hidden rounded-t-[18px] border border-line bg-line sm:grid-cols-3">
+            {tiles.slice(0, 3).map(([icon, title, body], i) => (
+              <Reveal key={icon} delay={i * 80} className="bg-white p-6 sm:p-8 lg:min-h-[240px]">
+                <svg viewBox="0 0 32 32" className="h-11 w-11 text-ink" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                   {TILE_ICONS[icon]}
                 </svg>
-                <h3 className="mt-6 text-[19px] font-medium tracking-[-0.01em]">{title}</h3>
+                <h3 className="mt-6 text-[21px] font-medium tracking-[-0.01em]">{title}</h3>
                 <p className="mt-2 text-[15px] leading-relaxed text-muted">{body}</p>
+              </Reveal>
+            ))}
+          </div>
+          {/* Other three: a compact row. */}
+          <div className="grid gap-px overflow-hidden rounded-b-[18px] border border-t-0 border-line bg-line sm:grid-cols-3">
+            {tiles.slice(3).map(([icon, title, body], i) => (
+              <Reveal key={icon} delay={i * 80} className="flex items-start gap-3 bg-white p-5 sm:p-6">
+                <svg viewBox="0 0 32 32" className="mt-0.5 h-6 w-6 flex-none text-ink" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  {TILE_ICONS[icon]}
+                </svg>
+                <div>
+                  <h3 className="text-[16px] font-medium tracking-[-0.01em]">{title}</h3>
+                  <p className="mt-1 text-[14px] leading-relaxed text-muted">{body}</p>
+                </div>
               </Reveal>
             ))}
           </div>
