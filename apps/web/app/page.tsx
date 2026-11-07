@@ -67,8 +67,8 @@ export default async function Landing() {
     ['receipts', l.tileReceiptsTitle, l.tileReceiptsBody],
   ] as const;
   const proof = [
-    { pill: l.proofWithout, cls: 'bg-block-bg text-block', n: '6', of: l.proofWithoutOf, body: l.proofWithoutBody, note: l.proofNote },
-    { pill: l.proofWith, cls: 'bg-safe-bg text-safe', n: '0', of: l.proofWithOf, body: l.proofWithBody, note: l.proofWithNote },
+    { pill: l.proofWithout, cls: 'bg-block-bg text-block', num: 'text-block', n: '6', of: l.proofWithoutOf, body: l.proofWithoutBody, note: l.proofNote },
+    { pill: l.proofWith, cls: 'bg-safe-bg text-safe', num: 'text-safe', n: '0', of: l.proofWithOf, body: l.proofWithBody, note: l.proofWithNote },
   ];
   const answers = [
     { mood: 'SAFE', label: l.threeSafeLabel, body: l.threeSafeBody, disc: 'bg-safe-bg', text: 'text-safe' },
@@ -168,7 +168,7 @@ export default async function Landing() {
             {proof.map((p, i) => (
               <Reveal key={p.pill} delay={i * 80} className="rounded-card bg-surface p-6 sm:p-10">
                 <span className={`inline-block rounded-full px-2.5 py-1 text-[13px] font-medium ${p.cls}`}>{p.pill}</span>
-                <p className="mt-6 text-[84px] font-medium leading-[0.9] tracking-[-0.05em] tabular-nums sm:text-[120px]">
+                <p className={`mt-6 text-[84px] font-medium leading-[0.9] tracking-[-0.05em] tabular-nums sm:text-[120px] ${p.num}`}>
                   {p.n}
                   <span className="ml-2 text-[0.38em] tracking-[-0.02em] text-muted">{p.of}</span>
                 </p>
