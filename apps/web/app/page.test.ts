@@ -47,7 +47,7 @@ describe('landing page', () => {
   it.each(['en', 'fr'] as const)('hero: the tagline as the headline, the subline, Try the demo, the assembling ghost (%s)', async (l) => {
     const html = await landing(l);
     const t = DICTS[l];
-    for (const s of [t.meta.tagline, t.landing.kicker, t.landing.subline, t.landing.tryDemo, t.landing.howItWorks]) expect(html).toContain(s.replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
+    for (const s of [t.meta.tagline, t.landing.subline, t.landing.tryDemo, t.landing.howItWorks]) expect(html).toContain(s.replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
     expect(html).toMatch(/<h1 class="[^"]*font-\[600\]/);
     expect(html).toContain('class="vc-asm vc-hero-ghost');
     expect(html).toContain('data-face="SAFE"');
@@ -60,7 +60,8 @@ describe('landing page', () => {
     for (const k of ['Agent', 'Checks', 'Paypal', 'Extension', 'Agents', 'Receipts'] as const) expect(html).toContain(t[`tile${k}Title`].replace(/'/g, '&#x27;'));
     expect((html.match(/vc-draw/g) ?? []).length).toBeGreaterThanOrEqual(6);
     for (const s of [t.proofWithoutOf, t.proofWithOf, t.proofWithout, t.proofWith]) expect(html).toContain(s);
-    expect(t.proofWithBody).toMatch(l === 'en' ? /One first scored Safe/ : /d’abord obtenu Fiable/);
+    expect(t.proofWithNote).toMatch(l === 'en' ? /first looked safe/ : /d’abord semblé fiable/);
+    expect(html).toContain(t.proofWithNote.replace(/'/g, '&#x27;'));
   });
 
   it('content that fades in on scroll is visible without JavaScript', async () => {

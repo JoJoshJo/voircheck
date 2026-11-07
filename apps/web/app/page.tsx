@@ -67,7 +67,7 @@ export default async function Landing() {
   ] as const;
   const proof = [
     { pill: l.proofWithout, cls: 'bg-block-bg text-block', n: '6', of: l.proofWithoutOf, body: l.proofWithoutBody, note: l.proofNote },
-    { pill: l.proofWith, cls: 'bg-safe-bg text-safe', n: '0', of: l.proofWithOf, body: l.proofWithBody, note: null },
+    { pill: l.proofWith, cls: 'bg-safe-bg text-safe', n: '0', of: l.proofWithOf, body: l.proofWithBody, note: l.proofWithNote },
   ];
   return (
     <>
@@ -83,7 +83,6 @@ export default async function Landing() {
               <Mascot mood="SAFE" size={320} assemble title="" className="vc-hero-ghost h-24 w-24 lg:h-[320px] lg:w-[320px]" />
             </div>
             <div>
-              <p className="mb-5 text-[13px] font-medium uppercase tracking-widest text-muted">{l.kicker}</p>
               {/* The one place semibold (600) is allowed (spec 5.12). */}
               <h1 className="text-[44px] font-[600] leading-[1.02] tracking-[-0.035em] sm:text-[60px] lg:text-[80px] xl:text-[88px]">{t.meta.tagline}</h1>
               <p className="mt-7 max-w-xl text-[19px] leading-relaxed text-muted sm:text-[20px]">{l.subline}</p>
