@@ -102,6 +102,9 @@ describe('chat panel', () => {
     expect(html).toContain(DICTS[lang].agent.inputLabel);
     expect(html).toContain(DICTS[lang].agent.send);
     expect(html).toContain(DICTS[lang].agent.example);
+    // Empty-state promise: never touch your money; no "last word on the money" slop.
+    expect(html).not.toMatch(/last word|dernier mot/);
+    expect(html).toMatch(lang === 'en' ? /never touch your money/ : /ne touche jamais à votre argent/);
   });
 });
 
