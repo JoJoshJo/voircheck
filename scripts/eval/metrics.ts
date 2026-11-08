@@ -57,6 +57,12 @@ export type EvalRow =
       research?: { costUsd: number; searches: number; ms: number | null };
       /** The same scan scored without the AI signal (and its hard rule): the "before AI" comparison. */
       withoutAi?: { verdict: Verdict; score: number };
+      /** The same scan scored without the web row's points and rules (how much depends on the warning lists). */
+      withoutWeb?: { verdict: Verdict; score: number };
+      /** It sent us to an unrelated site: by plain-HTTP redirect (`http`) or in the cloud browser (`browser`). */
+      sentElsewhere?: { via: 'http' | 'browser'; to: string };
+      /** HTTP 404/410 at the reachability check: offline in the counting since 2026-11-08. */
+      gone?: number;
     };
 export type ScannedRow = Extract<EvalRow, { outcome: 'scanned' }>;
 

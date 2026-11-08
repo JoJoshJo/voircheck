@@ -9,6 +9,8 @@ export interface SignalOutcome {
   collected?: CollectedEvidence;
   /** ai_page only. */
   findings?: AiFinding[];
+  /** ai_page only: the model's overall risk 0–100 (feeds the young-domain rule; the status already reflects it). */
+  risk?: number;
   /** ai_page only: plain-language summary (EN + FR). */
   summary?: AiSummary;
   /** ai_page only: tokens and cost of the model call (operational; never part of the result). */
@@ -43,6 +45,12 @@ export interface ScanFacts {
   aiInjection?: boolean;
   /** The research step found what other sites say about the store (sourced findings). Unchecked → see unchecked_core_signals. */
   reputationChecked?: boolean;
+  /** Strong evidence from the research step (spec 5.6, Nov 8): an authority warning or scam reports from 2+ sites. */
+  webStrength?: 'authority' | 'reports' | null;
+  /** AI page analysis risk 0–100, when it ran on the shop's page. */
+  aiRisk?: number | null;
+  /** The AI reported missing legal info (who runs the shop) at high severity. */
+  aiMissingIdentity?: boolean;
 }
 
 export type Fetch = typeof fetch;

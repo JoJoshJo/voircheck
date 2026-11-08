@@ -20,7 +20,7 @@ import { WEB_FINDING_KINDS, WebReputation, type SignalStatus, type WebFinding } 
  * timeout or no budget → "Not checked", never a guess.
  */
 
-export const RESEARCH_PROMPT_VERSION = 'r2';
+export const RESEARCH_PROMPT_VERSION = 'r3';
 export const REPUTATION_MAX_SEARCHES = 3;
 export const PRICE_MAX_SEARCHES = 2;
 /** Anthropic's web search price: $10 per 1,000 searches (docs, read 2026-11-07), on top of tokens. */
@@ -33,6 +33,54 @@ const MAX_OUTPUT_TOKENS = 1_500;
 
 /** What a source says that points at a fake shop. Ordinary buyer complaints are not on this list: every real shop has them. */
 const STRONG_KINDS = new Set<string>(['scam_report', 'warning_list']);
+
+/**
+ * Recognized consumer-protection and authority warning sources (spec 5.5, Nov 8). A scam report or warning-list
+ * finding from one of these, with a URL that really came back from the search, is a strong red flag. Matched on the
+ * source's registrable domain (and path, where only one part of the site is a warning list); never on what the model
+ * calls the source.
+ */
+export const AUTHORITY_SOURCES: ReadonlyArray<{ name: string; site: RegExp; path?: RegExp }> = [
+  { name: 'Watchlist Internet', site: /^watchlist-internet\.at$/ },
+  { name: 'Verbraucherzentrale', site: /^verbraucherzentrale(-[a-z-]+)?\.de$/ },
+  { name: 'Fakeshop-Finder (Verbraucherzentrale)', site: /^fakeshop-finder\.de$/ },
+  { name: 'Polizei (polizei-beratung.de)', site: /^polizei-beratung\.de$/ },
+  { name: 'BBB Scam Tracker', site: /^bbb\.org$/, path: /^\/scamtracker/i },
+  { name: 'FTC', site: /^ftc\.gov$/ },
+  { name: 'Scamwatch (ACCC)', site: /^(scamwatch|accc)\.gov\.au$/ },
+  { name: 'CCPC', site: /^ccpc\.ie$/ },
+  { name: 'Action Fraud', site: /^actionfraud\.police\.uk$/ },
+  { name: 'Canadian Anti-Fraud Centre', site: /^antifraudcentre-centreantifraude\.ca$/ },
+  { name: 'Cybermalveillance.gouv.fr', site: /^cybermalveillance\.gouv\.fr$/ },
+  { name: 'DGCCRF', site: /^economie\.gouv\.fr$/, path: /dgccrf/i },
+  { name: 'Fraudehelpdesk', site: /^fraudehelpdesk\.nl$/ },
+];
+
+/** The authority source a URL belongs to, if any. */
+export function authoritySource(sourceUrl: string): string | null {
+  let path = '/';
+  try {
+    path = new URL(sourceUrl).pathname;
+  } catch {
+    return null;
+  }
+  const site = siteOf(sourceUrl);
+  return AUTHORITY_SOURCES.find((a) => a.site.test(site) && (!a.path || a.path.test(path)))?.name ?? null;
+}
+
+/** Points for the web row (spec 5.6, Nov 8): an authority warning reaches BLOCK, scam reports from 2+ sites HOLD. */
+export const WEB_POINTS = { authority: 65, reports: 30 } as const;
+
+/**
+ * How strong the web's evidence against the store is: an authority warning, scam reports or warning-list entries from
+ * 2+ different sites, or neither. Complaints, good reviews and neutral mentions never count.
+ */
+export function webEvidenceStrength(findings: ReadonlyArray<Pick<WebFinding, 'kind' | 'sourceUrl'>>): { strength: 'authority' | 'reports' | null; source: string | null } {
+  const strong = findings.filter((f) => STRONG_KINDS.has(f.kind));
+  const authority = strong.map((f) => authoritySource(f.sourceUrl)).find((a): a is string => !!a);
+  if (authority) return { strength: 'authority', source: authority };
+  return { strength: new Set(strong.map((f) => siteOf(f.sourceUrl))).size >= 2 ? 'reports' : null, source: null };
+}
 
 export interface ResearchUsage extends AiUsage {
   searches: number;
@@ -91,7 +139,7 @@ Findings: only what a source says about THIS exact domain (not a similarly named
 At most 6 findings, the most important first, each with the exact source_url from your results and a short calm note (max 160 characters) in English and in French ("vous"). If nothing is written about this domain, return no findings.
 summary_en / summary_fr: 1–2 calm sentences of what the web says (max 250 characters), never a verdict, never "safe". French uses "vous" and keeps its accents.`;
 
-export const PRICE_SYSTEM_PROMPT = `You find what other online stores charge for one product, to compare with a shop's price. You get the product name, its currency and the shop's domain. Use web search (at most ${PRICE_MAX_SEARCHES} searches) for the same model new, e.g. "<product> price".
+export const PRICE_SYSTEM_PROMPT = `You find what other online stores charge for one product, to compare with a shop's price. You get the product name, its currency and the shop's domain. Always search before you answer, at least once (at most ${PRICE_MAX_SEARCHES} searches), for the same model new, e.g. "<product> price" or "<product> preis"; never answer from memory.
 ${SHARED_RULES}
 Offers: only the SAME model, new, from a store's own product page or a price-comparison listing that names the store (not the shop we check, not used or refurbished, not accessories or bundles, not a different model or size). Each offer: the exact source_url from your results, the product title as that result shows it, the price as a number, and its ISO currency. At most 8 offers, one per store. If you can't find prices, return no offers.`;
 
@@ -188,11 +236,9 @@ export function verifyFindings(raw: z.infer<typeof ReputationOutput>, results: M
 export function reputationStatus(findings: WebFinding[]): SignalStatus {
   // Tuned 2026-11-08 (tune + holdout legit): with complaints counted as warnings, REI, Currys, Newegg, Conrad and
   // Galaxus all came out "Red flag". Ordinary complaints now never raise it; only scam reports or warning lists do.
-  const strong = findings.filter((f) => STRONG_KINDS.has(f.kind));
-  if (strong.length) {
-    const sites = new Set(strong.map((f) => siteOf(f.sourceUrl)));
-    return sites.size >= 2 || strong.some((f) => f.kind === 'warning_list') ? 'fail' : 'warn';
-  }
+  // Since the web row has points (Nov 8), Red flag means exactly what scores: an authority warning, or 2+ sites.
+  if (webEvidenceStrength(findings).strength) return 'fail';
+  if (findings.some((f) => STRONG_KINDS.has(f.kind))) return 'warn';
   const positive = findings.some((f) => f.kind === 'positive_review');
   const complaints = findings.some((f) => f.kind === 'complaint');
   // Real buyers write about real shops: good reviews → fine; only complaints, with no good word anywhere → worth a look.

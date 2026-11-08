@@ -144,7 +144,7 @@ describe('research step inside the scan', () => {
       ...over,
     }) as never;
 
-  it('what the web says is part of the result (no points), and starts before the page visit ends', async () => {
+  it('what the web says is part of the result (a single report scores 0 points), and starts before the page visit ends', async () => {
     const r = researcher();
     const d = deps(SENT_AWAY, { researcher: r });
     let researchedBeforeVisitEnded = false;
@@ -156,8 +156,8 @@ describe('research step inside the scan', () => {
     const { result, meta } = await scanStore({ url: HENSARO_AD_URL, peers: [] }, d);
     expect(r.reputation).toHaveBeenCalledWith('hensaro.com');
     expect(researchedBeforeVisitEnded).toBe(true);
-    expect(result.webReputation).toEqual(warned);
-    expect(result.score).toBe(25); // unchanged: evidence only
+    expect(result.webReputation).toEqual({ ...warned, points: 0 });
+    expect(result.score).toBe(25); // unchanged: one site's report scores 0 points
     expect(meta.research[0]!.costUsd).toBe(0.06);
   });
 
@@ -215,6 +215,6 @@ describe('research step inside the scan', () => {
   it('a slow web search never holds up the scan: past the deadline it is "not checked"', async () => {
     const r = researcher({ reputation: vi.fn(() => new Promise<never>(() => {})) });
     const { result } = await scanStore({ url: HENSARO_CLEAN_URL, peers: [] }, deps(plain, { researcher: r, researchDeadlineMs: 20 }));
-    expect(result.webReputation).toEqual(notChecked("The web search took too long, so what the web says wasn't checked."));
+    expect(result.webReputation).toEqual({ ...notChecked("The web search took too long, so what the web says wasn't checked."), points: 0 });
   });
 });

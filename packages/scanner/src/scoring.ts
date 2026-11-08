@@ -34,7 +34,13 @@ export const WEIGHTS: Record<SignalId, Record<SignalStatus, number>> = {
 /** 0–29 SAFE, 30–64 HOLD, 65–100 BLOCK. */
 export const THRESHOLDS = { hold: 30, block: 65 } as const;
 
-export const HARD_RULE_LIMITS = { youngDomainDays: 30, cheapPricePct: 40 } as const;
+export const HARD_RULE_LIMITS = { youngDomainDays: 30, cheapPricePct: 40, weakPageDomainDays: 180, weakPageAiRisk: 30 } as const;
+
+/** Points of the web row (spec 5.6, Nov 8); a Tranco top-100k store gets HOLD-level points for an authority warning. */
+export function webPoints(strength: ScanFacts['webStrength'], wellKnownRank: number | null | undefined): number {
+  if (strength === 'authority') return wellKnownRank ? 30 : 65;
+  return strength === 'reports' ? 30 : 0;
+}
 
 const ORDER: Verdict[] = ['SAFE', 'HOLD', 'BLOCK'];
 const atLeast = (v: Verdict, floor: Verdict): Verdict => (ORDER.indexOf(v) >= ORDER.indexOf(floor) ? v : floor);
@@ -59,6 +65,19 @@ export function hardRules(facts: ScanFacts): Array<{ rule: HardRule; floor: Verd
   if (!facts.kernelOk) out.push({ rule: 'cant_verify', floor: 'HOLD' });
   // Spec 5.6 (Nov 1): a page that tries to instruct AI agents is never SAFE.
   if (facts.aiInjection) out.push({ rule: 'prompt_injection_attempt', floor: 'HOLD' });
+  // Spec 5.6 (Nov 8): what the web says, strong evidence only. An authority's warning is someone else's confirmed
+  // finding (like a threat list); for a well-known site it may be about a copy of it, so only HOLD there.
+  if (facts.webStrength === 'authority') out.push({ rule: 'authority_warning', floor: facts.wellKnownRank ? 'HOLD' : 'BLOCK' });
+  else if (facts.webStrength === 'reports') out.push({ rule: 'scam_reports', floor: 'HOLD' });
+  // Spec 5.6 (Nov 8): a young domain whose page also looks weak. None of the 30 real shops of the Nov 8 eval matched
+  // (none is under 180 days); 14 of the 54 online fake shops did.
+  if (
+    facts.domainAgeDays !== null &&
+    facts.domainAgeDays < HARD_RULE_LIMITS.weakPageDomainDays &&
+    ((facts.aiRisk ?? 0) >= HARD_RULE_LIMITS.weakPageAiRisk || facts.aiMissingIdentity)
+  ) {
+    out.push({ rule: 'young_domain_weak_page', floor: 'HOLD' });
+  }
   return out;
 }
 
@@ -85,7 +104,7 @@ export function score(outcomes: SignalOutcome[], facts: ScanFacts): { signals: S
     const base = { id, status: o.status, points: WEIGHTS[id][o.status], evidence: o.evidence.map((e) => e.slice(0, 500)).slice(0, 20) };
     return { ...base, ...(o.collected ? { collected: o.collected } : {}), ...(o.findings ? { findings: o.findings } : {}), ...(o.summary ? { summary: o.summary } : {}) };
   });
-  const total = Math.min(100, signals.reduce((sum, s) => sum + s.points, 0));
+  const total = Math.min(100, signals.reduce((sum, s) => sum + s.points, 0) + webPoints(facts.webStrength, facts.wellKnownRank));
   const rules = hardRules(facts);
   if (uncheckedCoreSignals(signals, facts.kernelOk, facts.reputationChecked)) rules.push({ rule: 'unchecked_core_signals', floor: 'HOLD' });
   const verdict = rules.reduce((v, r) => atLeast(v, r.floor), verdictForScore(total));

@@ -78,11 +78,79 @@ export function evaluateDomainAge(domain: DomainInfo, facts: RdapFacts, now: Dat
   return { outcome: { id, status, evidence }, ageDays };
 }
 
-export async function domainAgeSignal(domain: DomainInfo, now: Date, fetchImpl: Fetch = fetch): Promise<{ outcome: SignalOutcome; ageDays: number | null }> {
-  if (!domain.registrable) return { outcome: unavailable('domain_age', `${domain.hostname} is not a registered domain name.`), ageDays: null };
-  try {
-    return evaluateDomainAge(domain, await lookupRdap(domain.registrable, fetchImpl), now);
-  } catch (err) {
-    return { outcome: unavailable('domain_age', `Couldn't look up the registration of ${domain.registrable} (${errorMessage(err)}).`), ageDays: null };
+// ---------- first seen (certificate), spec 5.5 Nov 8 ----------
+
+/**
+ * crt.sh: the public certificate-transparency logs. It has no published API, rate limit or terms; throttling shows up
+ * as 502s, empty answers or hangs (community reports, Nov 8). So: one request per domain, 15 s at most, cached 7 days
+ * per domain (failures 1 hour), and anything doubtful (no certificates, a result at its ~1,000-row cap) is "not
+ * checked". In a Nov 8 test the earliest certificate matched the RDAP registration date exactly (3 of 3).
+ */
+export const CRT_SH = { url: 'https://crt.sh/', timeoutMs: 15_000, rowCap: 999, cacheMs: 7 * DAY_MS, failCacheMs: 3_600_000 } as const;
+const firstSeenCache = new Map<string, { at: number; ttl: number; value: FirstSeen }>();
+
+export type FirstSeen = { first: Date } | { first: null; why: string };
+
+/** Pure: crt.sh's JSON → the earliest certificate's start date, or why there is none. */
+export function parseCrtSh(json: unknown): FirstSeen {
+  if (!Array.isArray(json)) return { first: null, why: 'unexpected answer' };
+  if (!json.length) return { first: null, why: 'no certificates found' };
+  if (json.length >= CRT_SH.rowCap) return { first: null, why: 'too many certificates to tell' };
+  let min = Infinity;
+  for (const c of json as Array<{ not_before?: unknown }>) {
+    const t = typeof c?.not_before === 'string' ? Date.parse(`${c.not_before.replace(/Z?$/, '')}Z`) : NaN;
+    if (Number.isFinite(t) && t < min) min = t;
   }
+  return Number.isFinite(min) ? { first: new Date(min) } : { first: null, why: 'no certificate dates' };
+}
+
+export async function lookupFirstCertificate(registrable: string, fetchImpl: Fetch = fetch, now = Date.now()): Promise<FirstSeen> {
+  const hit = firstSeenCache.get(registrable);
+  if (hit && now - hit.at < hit.ttl) return hit.value;
+  let value: FirstSeen;
+  try {
+    const res = await fetchImpl(`${CRT_SH.url}?q=${encodeURIComponent(registrable)}&output=json`, {
+      headers: { accept: 'application/json', 'user-agent': 'VoirCheck/1.0 (store check: domain age)' },
+      signal: AbortSignal.timeout(CRT_SH.timeoutMs),
+    });
+    value = res.ok ? parseCrtSh(await res.json()) : { first: null, why: `crt.sh HTTP ${res.status}` };
+  } catch (err) {
+    value = { first: null, why: /abort|timeout/i.test(errorMessage(err)) ? 'crt.sh took too long' : 'crt.sh failed' };
+  }
+  firstSeenCache.set(registrable, { at: now, ttl: value.first ? CRT_SH.cacheMs : CRT_SH.failCacheMs, value });
+  return value;
+}
+
+/** Pure: a first-certificate date as the age, labelled as "first seen", never as the registration date. */
+export function evaluateFirstSeen(domain: DomainInfo, first: Date, now: Date, rdapWhy: string): { outcome: SignalOutcome; ageDays: number } {
+  const ageDays = Math.max(0, Math.floor((now.getTime() - first.getTime()) / DAY_MS));
+  const evidence = [
+    `Couldn't look up the registration of ${domain.registrable} (${rdapWhy}).`,
+    `${domain.registrable} was first seen on ${first.toISOString().slice(0, 10)} (${formatAge(ageDays)} ago): its first certificate in the public certificate logs (crt.sh). This is not the registration date; the domain may be older.`,
+  ];
+  const status = ageDays < DOMAIN_AGE.failBelowDays ? 'fail' : ageDays < DOMAIN_AGE.warnBelowDays ? 'warn' : 'pass';
+  return { outcome: { id: 'domain_age', status, evidence }, ageDays };
+}
+
+/**
+ * Domain age: RDAP first; when it has no registration date (no RDAP server for the TLD, e.g. .de/.at, or a failed
+ * lookup), the first certificate (crt.sh) as "first seen". Well-known sites (Tranco top 100k) skip the fallback: they
+ * aren't new, and their certificate lists can be too long to read.
+ */
+export async function domainAgeSignal(domain: DomainInfo, now: Date, fetchImpl: Fetch = fetch, opts: { wellKnown?: boolean; firstSeen?: boolean } = {}): Promise<{ outcome: SignalOutcome; ageDays: number | null }> {
+  if (!domain.registrable) return { outcome: unavailable('domain_age', `${domain.hostname} is not a registered domain name.`), ageDays: null };
+  let rdapWhy: string;
+  try {
+    const r = evaluateDomainAge(domain, await lookupRdap(domain.registrable, fetchImpl), now);
+    if (r.ageDays !== null) return r;
+    rdapWhy = 'its record has no registration date';
+  } catch (err) {
+    rdapWhy = errorMessage(err);
+  }
+  const notChecked = unavailable('domain_age', `Couldn't look up the registration of ${domain.registrable} (${rdapWhy}).`);
+  // Shared hosting (*.onrender.com…): the provider's certificates say nothing about this store.
+  if (opts.firstSeen === false || opts.wellKnown || domain.sharedHosting) return { outcome: notChecked, ageDays: null };
+  const seen = await lookupFirstCertificate(domain.registrable, fetchImpl, now.getTime());
+  if (!seen.first) return { outcome: { ...notChecked, evidence: [...notChecked.evidence, `No first certificate date either (${seen.why}).`] }, ageDays: null };
+  return evaluateFirstSeen(domain, seen.first, now, rdapWhy);
 }

@@ -49,7 +49,9 @@ describe('what the web says (research step)', () => {
     expect(reputationStatus([f('complaint', 'https://a.example/x'), f('complaint', 'https://b.example/x')])).toBe('warn'); // no good word anywhere
     expect(reputationStatus([f('complaint', 'https://a.example/x'), f('scam_report', 'https://a.example/y'), f('positive_review', 'https://b.example/x')])).toBe('warn'); // one site says scam
     expect(reputationStatus([f('scam_report', 'https://a.example/x'), f('scam_report', 'https://b.example/y')])).toBe('fail');
-    expect(reputationStatus([f('warning_list', 'https://watch.example/x'), f('positive_review', 'https://b.example/x')])).toBe('fail');
+    // Nov 8: one list entry that isn't a recognized authority is only worth a look (it scores 0 points).
+    expect(reputationStatus([f('warning_list', 'https://watch.example/x'), f('positive_review', 'https://b.example/x')])).toBe('warn');
+    expect(reputationStatus([f('warning_list', 'https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/x'), f('positive_review', 'https://b.example/x')])).toBe('fail');
   });
 
   it('nothing written about the shop → not checked (no sourced findings), said plainly', async () => {

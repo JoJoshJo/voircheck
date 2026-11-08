@@ -263,6 +263,7 @@ export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome
       ...a.findings.map((f) => (f.quoteVerified ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"` : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.note?.en ?? f.quote}`)),
     ],
     findings: a.findings,
+    risk: a.risk,
     ...(a.summary ? { summary: a.summary } : {}),
     ...(a.product ? { product: { ...a.product, currency: a.product.currency?.toUpperCase() ?? null } } : {}),
   };

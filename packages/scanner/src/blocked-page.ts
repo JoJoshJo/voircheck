@@ -56,12 +56,52 @@ const siteName = (u: string) => {
 };
 const label = (site: string) => site.split('.')[0]!;
 
-/** The store sent the cloud browser to a search engine or portal instead of showing its page. */
+/**
+ * Where a real shop may send a shopper's browser on its own: its shop platform, checkout and payment providers, CDNs
+ * and site builders (spec 5.5, Nov 8). Matched on the registrable domain's name, like DECOY_SITES.
+ */
+export const PLATFORM_SITES = [
+  'shopify', 'myshopify', 'shop', 'shopifypreview', 'bigcommerce', 'mybigcommerce', 'wix', 'wixsite', 'squarespace', 'webflow', 'jimdo', 'jimdosite', 'ecwid', 'bigcartel', 'godaddysites', 'weebly', 'strikingly', 'shopware', 'plentymarkets', 'jtl', 'woocommerce', 'wordpress',
+  'paypal', 'stripe', 'klarna', 'adyen', 'mollie', 'sumup', 'checkout', 'squareup', 'square', 'braintreegateway', 'worldpay', 'payone', 'unzer', 'computop', 'paydirekt', 'giropay', 'sofort', 'trustly', 'ratepay', 'afterpay', 'clearpay', 'affirm', 'paddle', 'lemonsqueezy', 'gumroad',
+  'cloudflare', 'cloudflareaccess', 'akamai', 'akamaized', 'akamaihd', 'edgekey', 'edgesuite', 'fastly', 'cloudfront', 'azureedge', 'azurefd', 'bunny', 'b-cdn', 'cdn77', 'netlify', 'vercel', 'herokuapp', 'onrender',
+] as const;
+
+/**
+ * Links that only forward to a shop: short links, ad clicks and affiliate networks. A pasted link like this ends on the
+ * real shop, and the shop is what gets judged, so it isn't "sent away". By registrable name, or a click/go/track host.
+ */
+export const REDIRECTOR_SITES = ['bit', 'amzn', 'tinyurl', 'ow', 'buff', 'lnkd', 'rebrand', 'cutt', 'shorturl', 'awin1', 'linksynergy', 'shareasale', 'sjv', 'anrdoezrs', 'dpbolvw', 'jdoqocy', 'kqzyfj', 'tkqlhce', 'pjtra', 'avantlink', 'rstyle', 'skimresources', 'redirectingat', 'googleadservices', 'doubleclick', 'tradedoubler', 'webgains', 'partnerize', 'prf', 'impactradius', 'ojrq', 'evyy', 'idealo', 'geizhals', 'pricerunner'] as const;
+const REDIRECTOR_HOST = /^(click|clicks|go|track|tracking|trk|redirect|r|links?|out|aff|affiliate)\./i;
+
+function isRedirector(url: string, site: string): boolean {
+  if ((REDIRECTOR_SITES as readonly string[]).includes(label(site))) return true;
+  if (site === 't.co') return true;
+  try {
+    return REDIRECTOR_HOST.test(new URL(url).hostname);
+  } catch {
+    return false;
+  }
+}
+
+const bare = (l: string) => l.toLowerCase().replace(/[^a-z0-9]/g, '');
+/** The same shop name: equal, or one contains the other (werksraeder-24 / werksraeder, galeria-kaufhof / galeria). */
+export function sameShopName(a: string, b: string): boolean {
+  const x = bare(a);
+  const y = bare(b);
+  return x === y || (Math.min(x.length, y.length) >= 4 && (x.includes(y) || y.includes(x)));
+}
+
+/**
+ * The store sent the cloud browser somewhere that isn't the store: a search engine or portal (Nov 7), or since Nov 8
+ * any unrelated site that isn't the shop's own name (another country version, a longer or shorter form of it) or a
+ * shop platform, checkout, payment or CDN provider (PLATFORM_SITES).
+ */
 export function detectSentAway(requestedUrl: string, finalUrl: string): BlockedReason | null {
   const from = siteName(requestedUrl);
   const to = siteName(finalUrl);
-  if (!from || !to || from === to || label(from) === label(to)) return null;
-  if (!(DECOY_SITES as readonly string[]).includes(label(to))) return null;
+  if (!from || !to || from === to || sameShopName(label(from), label(to))) return null;
+  if (isRedirector(requestedUrl, from)) return null;
+  if (!(DECOY_SITES as readonly string[]).includes(label(to)) && (PLATFORM_SITES as readonly string[]).includes(label(to))) return null;
   const what = new URL(requestedUrl).pathname.replace(/\/+$/, '') ? 'its product page' : 'its shop';
   return {
     kind: 'sent_away',

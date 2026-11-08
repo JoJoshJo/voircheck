@@ -103,7 +103,7 @@ export function CollectedEvidence({ collected, t }: { collected: Collected; t: D
 }
 
 /**
- * "What the web says" (research step, no points). The notes are the AI's words about search results (untrusted
+ * "What the web says" (research step; points only for strong evidence, spec 5.6 Nov 8). The notes are the AI's words about search results (untrusted
  * pages), so everything is plain text; each source is shown as its address, never as a clickable link.
  */
 export function WebReputationRow({ web, t, lang }: { web: WebReputation; t: Dict; lang: Lang }) {
@@ -112,7 +112,7 @@ export function WebReputationRow({ web, t, lang }: { web: WebReputation; t: Dict
       <div className="flex items-center justify-between gap-4">
         <h3 className="text-[15px] font-medium">{t.evidence.webTitle}</h3>
         <span className="flex items-center gap-2 text-[13px] text-muted">
-          {t.signals[`status_${web.status}`]} · {fmt(t.evidence.points, { n: 0 })}
+          {t.signals[`status_${web.status}`]} · {fmt(t.evidence.points, { n: web.points ?? 0 })}
           <SignalIcon state={web.status} />
         </span>
       </div>

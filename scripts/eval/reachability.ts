@@ -1,12 +1,24 @@
 /**
  * Cheap reachability check before a KERNEL scan: plain HTTP requests from the runner (no browser, no JavaScript,
  * nothing rendered or saved), same SSRF guards as the scanner on every redirect hop. A site is dead ONLY when its
- * name doesn't resolve, the connection is refused or times out, it's a parked/for-sale page, or it redirects to an
- * unrelated domain. Everything else (certificate problems, HTTP errors, bot walls) is scanned and judged.
+ * name doesn't resolve, the connection is refused or times out, or it's a parked/for-sale page. Since 2026-11-08 (J)
+ * a redirect to an unrelated live domain is NOT offline: it's scanned and counted as "sent elsewhere"; and HTTP
+ * 404/410 is offline in the new counting (`gone`), but still scanned so the old counting can be reported next to it.
+ * Everything else (certificate problems, other HTTP errors, bot walls) is scanned and judged.
  */
 import { assertSafeUrlShape, domainInfo, resolvePublicHost, SsrfError, type Resolver } from '@voircheck/scanner';
 
-export type Reachability = { alive: true; finalUrl: string; note?: string } | { alive: false; reason: string };
+export type Reachability =
+  | {
+      alive: true;
+      finalUrl: string;
+      note?: string;
+      /** The plain-HTTP redirects ended on an unrelated domain (offline in the counting before 2026-11-08). */
+      sentElsewhere?: string;
+      /** HTTP 404/410: offline in the counting since 2026-11-08 (scanned anyway for the old counting). */
+      gone?: number;
+    }
+  | { alive: false; reason: string };
 
 /** Network failures that mean nobody is there. Anything else (TLS/certificate errors included) is the scanner's job. */
 export const DEAD_ERRORS = new Set([
@@ -41,10 +53,12 @@ export function classify(input: { startUrl: string; finalUrl?: string; status?: 
     // e.g. CERT_HAS_EXPIRED: the site is there; an invalid certificate is a finding for the scanner, not a dead site.
     return { alive: true, finalUrl, note: `HTTP check failed (${input.error}); scanning anyway` };
   }
-  if (!relatedDomains(input.startUrl, finalUrl)) return { alive: false, reason: `redirects to unrelated domain ${new URL(finalUrl).hostname}` };
   if (input.body && PARKED_RE.test(input.body)) return { alive: false, reason: 'parked / for-sale page' };
-  // HTTP errors (403 bot walls, 404, 5xx) are scanned too: the scanner turns pages it can't read into "couldn't verify".
-  return input.status && input.status >= 400 ? { alive: true, finalUrl, note: `HTTP ${input.status}` } : { alive: true, finalUrl };
+  const elsewhere = relatedDomains(input.startUrl, finalUrl) ? undefined : new URL(finalUrl).hostname;
+  const extra = { ...(elsewhere ? { sentElsewhere: elsewhere } : {}), ...(input.status === 404 || input.status === 410 ? { gone: input.status } : {}) };
+  const notes = [elsewhere && `redirects to unrelated domain ${elsewhere} (sent elsewhere; scanned)`, input.status && input.status >= 400 && `HTTP ${input.status}`].filter(Boolean).join('; ');
+  // HTTP errors (403 bot walls, 5xx) are scanned too: the scanner turns pages it can't read into "couldn't verify".
+  return { alive: true, finalUrl, ...(notes ? { note: notes } : {}), ...extra };
 }
 
 const MAX_HOPS = 6;

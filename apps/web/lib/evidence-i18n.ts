@@ -74,6 +74,11 @@ const FR: Rule[] = [
   ],
   [/^(\S+) is not a registered domain name\.$/, '$1 n’est pas un nom de domaine enregistré.'],
   [/^Couldn't look up the registration of (\S+) \((.*)\)\.$/, 'Impossible de consulter l’enregistrement de $1 ($2).'],
+  [
+    /^(\S+) was first seen on (\d{4}-\d{2}-\d{2}) \((.+) ago\): its first certificate in the public certificate logs \(crt\.sh\)\. This is not the registration date; the domain may be older\.$/,
+    (_, d, date, age) => `${d} est apparu pour la première fois le ${date} (il y a ${ageFr(age!)}) : son premier certificat dans les journaux publics de certificats (crt.sh). Ce n’est pas la date d’enregistrement ; le domaine peut être plus ancien.`,
+  ],
+  [/^No first certificate date either \((.+)\)\.$/, (_, why) => `Pas de date de premier certificat non plus (${({ 'no certificates found': 'aucun certificat trouvé', 'too many certificates to tell': 'trop de certificats pour conclure', 'unexpected answer': 'réponse inattendue', 'no certificate dates': 'aucune date de certificat', 'crt.sh took too long': 'crt.sh a mis trop de temps', 'crt.sh failed': 'crt.sh a échoué' } as Record<string, string>)[why!] ?? why}).`],
   [/^Couldn't check the Tranco top-sites list \(list (\S+) not available\)\.$/, 'Impossible de consulter la liste Tranco des sites les plus visités (liste $1 indisponible).'],
   [
     /^This store lives on a shared host \((\S+)\); the host's popularity says nothing about the store, so the Tranco top-sites list isn't used\.$/,
@@ -122,6 +127,8 @@ const FR: Rule[] = [
   [/^Couldn't read the store page: (.+), so its price is unknown\.$/, (_, why) => `Impossible de lire la page de la boutique : ${blockedFr(why!)}, son prix est donc inconnu.`],
   [/^Couldn't find one product and its price on this page, so prices weren't compared\.$/, 'Impossible de trouver un produit et son prix sur cette page : les prix n’ont pas été comparés.'],
   [/^Couldn't search other stores for (.+) right now, so its price wasn't compared\.$/, 'Impossible de chercher $1 dans d’autres boutiques pour le moment : son prix n’a pas été comparé.'],
+  [/^Couldn't search other stores for (.+) \(no price search is set up\), so its price wasn't compared\.$/, 'Impossible de chercher $1 dans d’autres boutiques (aucune recherche de prix n’est configurée) : son prix n’a pas été comparé.'],
+  [/^Couldn't search other stores for (.+) \(the price search failed\), so its price wasn't compared\.$/, 'Impossible de chercher $1 dans d’autres boutiques (la recherche de prix a échoué) : son prix n’a pas été comparé.'],
   [
     /^Compared with: (.+) \(found with (a product search \(Channel3\) and a web search|a web search|a product search \(Channel3\)) for the same item(; web prices read by AI from search results)?\)\.$/,
     (_, sites, how, web) =>
@@ -155,6 +162,8 @@ const FR: Rule[] = [
   [/^vs (.+?): (.*)$/, (_, label, rest) => `Face à ${label} : ${cloneFindingsFr(rest!)}`],
 
   // What the web says (research step)
+  [/^Counts (\d+) points: (.+) lists this shop as a warning\.$/, (_, n, src) => `Compte ${n} points : ${src} signale cette boutique dans ses avertissements.`],
+  [/^Counts (\d+) points: scam reports or warnings about this shop on 2 or more different sites\.$/, (_, n) => `Compte ${n} points : des signalements d’arnaque ou des avertissements sur cette boutique sur au moins 2 sites différents.`],
   [/^From a web search about (\S+) \((\d+) searches?; the shop's own site is never searched\)\.$/, (_, d, n) => `D’après une recherche web sur ${d} (${n} ${plural(n!, 'recherche', 'recherches')} ; le site de la boutique elle-même n’est jamais consulté).`],
   [/^The web search \((\d+) searches?\) found nothing written about (\S+) by other sites\.$/, (_, n, d) => `La recherche web (${n} ${plural(n!, 'recherche', 'recherches')}) n’a rien trouvé d’écrit sur ${d} par d’autres sites.`],
   [/^The web search \((\d+) searches?\) found only passing mentions of (\S+), no reviews or warnings\.$/, (_, n, d) => `La recherche web (${n} ${plural(n!, 'recherche', 'recherches')}) n’a trouvé que de simples mentions de ${d}, ni avis ni alerte.`],

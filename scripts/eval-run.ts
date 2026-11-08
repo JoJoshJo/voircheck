@@ -10,7 +10,8 @@ import 'dotenv/config';
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
-import { anthropicAnalyzer, anthropicResearcher, costUsd, DEFAULT_SCAN_MODEL, kernelVisitor, scanStore } from '@voircheck/scanner';
+import { createSearchCache, searchProducts } from '@voircheck/agent/search';
+import { anthropicAnalyzer, anthropicResearcher, costUsd, DEFAULT_SCAN_MODEL, kernelVisitor, scanStore, type FindOffers } from '@voircheck/scanner';
 import { fileAiCache } from './ai-cache';
 import { computeMetrics, loadStores, SPLITS, type EvalRow, type Split } from './eval/metrics';
 import { checkReachability } from './eval/reachability';
@@ -66,6 +67,22 @@ console.log(
     : 'AI page analysis is OFF (no ANTHROPIC_API_KEY).',
 );
 const research = !!anthropicKey && !args.includes('--no-research');
+/**
+ * The same product search as production (apps/web/lib/scan-runner.ts findOffers), for pages with one product; the
+ * eval had none until 2026-11-08, so every pasted-link price came from the web search alone. No per-store verdict
+ * lookup here (the eval doesn't read the scans table), so BLOCK stores aren't left out of its comparisons.
+ */
+const channel3Key = process.env.CHANNEL3_API_KEY;
+const offersCache = createSearchCache();
+const findOffers: FindOffers | undefined = channel3Key
+  ? async (name) => {
+      const found = await searchProducts(name, 20, { apiKey: channel3Key, cache: offersCache });
+      if (found.status === 'no_results') return [];
+      if (found.status !== 'ok') return null;
+      return found.results.map((o) => ({ title: o.title, price: o.price, currency: o.currency, storeUrl: o.storeUrl }));
+    }
+  : undefined;
+console.log(channel3Key ? 'Product search (Channel3) is ON for pages with one product: at most one search per store.' : 'Product search (Channel3) is OFF (no CHANNEL3_API_KEY).');
 /** Upper bound per scan: 3 reputation + 2 price searches ($0.05) plus their result tokens. */
 const RESEARCH_MAX_PER_SCAN = 0.15;
 console.log(
@@ -97,8 +114,8 @@ const rows: EvalRow[] = await mapPool(stores, CONCURRENCY, CHECK_DELAY_MS, async
   await new Promise((r) => setTimeout(r, SCAN_DELAY_MS));
   const t0 = performance.now();
   try {
-    const report = await scanStore({ url: store.url }, { visitor, safeBrowsingKey, researcher, ...(analyzer ? { analyzer } : {}) });
-    const row = toRow(store, report, performance.now() - t0);
+    const report = await scanStore({ url: store.url }, { visitor, safeBrowsingKey, researcher, findOffers, ...(analyzer ? { analyzer } : {}) });
+    const row = toRow(store, report, performance.now() - t0, reach);
     console.log(`[${++done}/${stores.length}] ${store.url}: ${report.result.verdict} (${report.result.score})`);
     return row;
   } catch (err) {

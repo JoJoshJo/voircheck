@@ -2,14 +2,14 @@ import { detectBlockedPage, detectSentAway } from './blocked-page';
 import { productFromPage, type PageProduct } from './page-facts';
 import { retailerOnPage, withRetailerHit } from './signals/brand-on-page';
 import { stripTracking } from './tracking';
-import { notChecked, type ResearchUsage, type WebResearcher } from './research';
+import { notChecked, webEvidenceStrength, type ResearchUsage, type WebResearcher } from './research';
 import { domainInfo } from './domain';
 import { extractFacts, keepInScope, pickEvidenceLinks, type CollectedEvidence } from './evidence-pages';
 import { filterHiddenText } from './hidden-text';
 import { popularity, trancoLookup, type RankLookup } from './reputation';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
 import { ScanInput, ScanResult, type SignalId, type SignalStatus, type Verdict, type WebReputation } from './schema';
-import { score, WEIGHTS } from './scoring';
+import { score, webPoints, WEIGHTS } from './scoring';
 import { confirmedInjection, placeholderAnalyzer, type PageAnalyzer } from './signals/ai-page';
 import { brandInDomain, defaultBrandLookup, withBrandHit, type BrandLookup } from './signals/brand-domain';
 import { evaluateClone, type CloneSubject } from './signals/clone';
@@ -37,6 +37,8 @@ export interface ScannerDeps {
   onProgress?: (event: ScanProgress) => void;
   /** Product search for pasted links (no peers): other stores' offers for the page's product. Absent = not compared. */
   findOffers?: FindOffers;
+  /** Domain-age fallback via crt.sh when RDAP has no date (default on; tests and offline runs turn it off). */
+  firstSeen?: boolean;
   /** Research step (Claude + web search): what the web says about the store, and a price fallback. Absent = not checked. */
   researcher?: WebResearcher | null;
   /** A store's own latest VoirCheck verdict (web-search price offers from BLOCK stores are left out). */
@@ -135,7 +137,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     deps.visitor
       ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession, evidenceLinks: (p) => (detectSentAway(p.requestedUrl, p.finalUrl) || detectBlockedPage(p) ? [] : pickEvidenceLinks(p.links, p.finalUrl)) }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
       : Promise.resolve(new Error('no cloud browser configured')),
-    domainAgeSignal(domain, now, fetchImpl).then((r) => {
+    domainAgeSignal(domain, now, fetchImpl, { wellKnown: !!pop.rank, ...(deps.firstSeen === false ? { firstSeen: false } : {}) }).then((r) => {
       // Reputation is evidence only (no points): it rides along with domain age.
       r.outcome.evidence.push(pop.evidence);
       emit(r.outcome);
@@ -272,8 +274,25 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     aiInjection: confirmedInjection(ai.findings),
     reputationChecked: false,
   };
-  const webReputation = await reputationP;
-  facts.reputationChecked = webReputation.status !== 'unavailable';
+  const reputation = await reputationP;
+  facts.reputationChecked = reputation.status !== 'unavailable';
+  const web = webEvidenceStrength(reputation.findings);
+  facts.webStrength = web.strength;
+  facts.aiRisk = targetPage && ai.status !== 'unavailable' ? (ai.risk ?? null) : null;
+  facts.aiMissingIdentity = !!targetPage && !!ai.findings?.some((f) => f.kind === 'missing_legal_info' && f.severity === 'high');
+  const points = webPoints(web.strength, pop.rank);
+  const webReputation: WebReputation = points
+    ? {
+        ...reputation,
+        points,
+        evidence: [
+          ...reputation.evidence.slice(0, 5),
+          web.strength === 'authority'
+            ? `Counts ${points} points: ${web.source} lists this shop as a warning.`
+            : `Counts ${points} points: scam reports or warnings about this shop on 2 or more different sites.`,
+        ],
+      }
+    : { ...reputation, points: 0 };
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {
     scored.signals
@@ -305,18 +324,21 @@ interface PriceDeps {
  * Other stores come from the product search (Channel3); with fewer than 3 comparable offers there, from a web search
  * too (research step). Without enough comparable offers it stays "not checked" and says why, with no numbers.
  */
-async function pastedLinkPrice(product: PageProduct | null, storeUrl: string, d: PriceDeps): Promise<{ outcome: SignalOutcome; belowPct: number | null }> {
+export async function pastedLinkPrice(product: PageProduct | null, storeUrl: string, d: PriceDeps): Promise<{ outcome: SignalOutcome; belowPct: number | null }> {
   if (!product) return { outcome: unavailable('price', "Couldn't find one product and its price on this page, so prices weren't compared."), belowPct: null };
   const item = `"${product.name}"`;
-  const fromChannel3 = d.findOffers ? await d.findOffers(product.name).catch(() => null) : null;
+  // undefined = no product search set up; null = it failed; [] = it ran and found nothing.
+  const fromChannel3 = d.findOffers ? await d.findOffers(product.name).catch(() => null) : undefined;
   let offers = fromChannel3 ?? [];
   const compare = () => comparablePrices({ name: product.name, currency: product.currency, storeUrl, offers });
   let cmp = compare();
   let usedWeb = false;
+  let webAnswered = false; // the web price search ran and answered, even with no offers
   if (cmp.prices.length < PRICE.minComparisonOffers && d.researcher) {
     const site = domainInfo(storeUrl);
     const web = await d.researcher.prices({ name: product.name, currency: product.currency, domain: site.registrable ?? site.hostname }).catch(() => ({ offers: null, usage: null }));
     if (web.usage) d.research.push(web.usage);
+    if (web.offers) webAnswered = true;
     if (web.offers?.length) {
       const verdicts = await Promise.all(web.offers.map((o) => (d.verdictFor ? d.verdictFor(new URL(o.storeUrl).origin).catch(() => undefined) : undefined)));
       offers = [...offers, ...web.offers.map((o, i) => ({ ...o, verdict: verdicts[i] }))];
@@ -324,7 +346,12 @@ async function pastedLinkPrice(product: PageProduct | null, storeUrl: string, d:
       usedWeb = true;
     }
   }
-  if (!fromChannel3 && !usedWeb) return { outcome: unavailable('price', `Couldn't search other stores for ${item} right now, so its price wasn't compared.`), belowPct: null };
+  // 2026-11-08: this said "right now" on all 20 eval misses although nothing had failed (the eval had no product
+  // search and the web search had found no offers). Only a search that didn't run or didn't answer lands here.
+  if (!Array.isArray(fromChannel3) && !webAnswered) {
+    const why = fromChannel3 === undefined && !d.researcher ? 'no price search is set up' : 'the price search failed';
+    return { outcome: unavailable('price', `Couldn't search other stores for ${item} (${why}), so its price wasn't compared.`), belowPct: null };
+  }
   const r = evaluatePrice({ price: product.price, title: product.name, peerPrices: cmp.prices, excludedBlocked: cmp.excludedBlocked });
   if (r.outcome.status !== 'unavailable') {
     const how = usedWeb ? (fromChannel3?.length ? 'a product search (Channel3) and a web search' : 'a web search') : 'a product search (Channel3)';

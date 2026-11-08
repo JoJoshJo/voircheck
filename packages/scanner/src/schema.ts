@@ -124,9 +124,13 @@ export const WebFinding = z.object({
 });
 export type WebFinding = z.infer<typeof WebFinding>;
 
-/** "What the web says": evidence only (0 points). */
+/**
+ * "What the web says". Points only for strong evidence (spec 5.5/5.6, Nov 8): an authority warning (65, BLOCK level) or
+ * scam reports from 2+ sites (30, HOLD level); everything else 0. Absent on scans stored before Nov 8 = 0.
+ */
 export const WebReputation = z.object({
   status: SignalStatus,
+  points: z.number().int().min(0).max(100).optional(),
   findings: z.array(WebFinding).max(6),
   summary: z.object({ en: z.string().max(400), fr: z.string().max(400) }).optional(),
   /** Plain-text lines (why it wasn't checked, how many searches ran). */
@@ -137,7 +141,17 @@ export type WebReputation = z.infer<typeof WebReputation>;
 export const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
 export type Verdict = z.infer<typeof Verdict>;
 
-export const HARD_RULES = ['threat_list_hit', 'no_valid_https', 'young_domain_cheap_price', 'cant_verify', 'prompt_injection_attempt', 'unchecked_core_signals'] as const;
+export const HARD_RULES = [
+  'threat_list_hit',
+  'no_valid_https',
+  'young_domain_cheap_price',
+  'cant_verify',
+  'prompt_injection_attempt',
+  'unchecked_core_signals',
+  'authority_warning',
+  'scam_reports',
+  'young_domain_weak_page',
+] as const;
 export const HardRule = z.enum(HARD_RULES);
 export type HardRule = z.infer<typeof HardRule>;
 

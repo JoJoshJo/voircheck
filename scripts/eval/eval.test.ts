@@ -4,7 +4,7 @@ import { SIGNAL_IDS, type ScanReport, type SignalStatus, type Verdict } from '@v
 import { computeMetrics, loadStores, median, type EvalRow, type Label } from './metrics';
 import { checkReachability, classify, relatedDomains } from './reachability';
 import { aiCost, aiLines, markdownReport } from './report';
-import { mapPool, scoreWithoutAi, selectStores, toRow } from './run';
+import { mapPool, scoreWithoutAi, selectStores, toRow, scoreWithoutWeb } from './run';
 
 const signals = (over: Partial<Record<(typeof SIGNAL_IDS)[number], SignalStatus>> = {}) =>
   SIGNAL_IDS.map((id) => ({ id, status: over[id] ?? (id === 'ai_page' ? 'unavailable' : 'pass'), points: 0, evidence: [`${id} evidence`] }));
@@ -160,13 +160,16 @@ describe('reachability (dead-site detection)', () => {
     expect(classify({ startUrl: 'https://a.test/', error: 'ENOTFOUND' })).toEqual({ alive: false, reason: 'unreachable: ENOTFOUND' });
     for (const error of ['EAI_AGAIN', 'ECONNREFUSED', 'ETIMEDOUT', 'TimeoutError', 'UND_ERR_CONNECT_TIMEOUT']) expect(classify({ startUrl: 'https://a.test/', error }).alive).toBe(false);
     expect(classify({ startUrl: 'https://shop.de/', status: 200, body: '<h1>Diese Domain kaufen</h1> sedo' })).toEqual({ alive: false, reason: 'parked / for-sale page' });
-    expect(classify({ startUrl: 'https://shop.de/', finalUrl: 'https://other-thing.com/', status: 200 }).alive).toBe(false);
+    // Since 2026-11-08 (J): a redirect to an unrelated live domain is not offline; it's scanned, as "sent elsewhere".
+    expect(classify({ startUrl: 'https://shop.de/', finalUrl: 'https://other-thing.com/', status: 200 })).toMatchObject({ alive: true, sentElsewhere: 'other-thing.com' });
   });
   it('certificate problems and HTTP errors are NOT dead: they are scanned and judged', () => {
     for (const error of ['CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'ERR_TLS_CERT_ALTNAME_INVALID', 'ECONNRESET']) {
       expect(classify({ startUrl: 'https://dieroester.at/', error })).toMatchObject({ alive: true, finalUrl: 'https://dieroester.at/' });
     }
-    for (const status of [404, 410, 502, 503]) expect(classify({ startUrl: 'https://a.test/', status })).toEqual({ alive: true, finalUrl: 'https://a.test/', note: `HTTP ${status}` });
+    // 404/410: offline in the new counting (gone), still scanned for the old one; other errors are scanned and judged.
+    for (const status of [404, 410]) expect(classify({ startUrl: 'https://a.test/', status })).toEqual({ alive: true, finalUrl: 'https://a.test/', note: `HTTP ${status}`, gone: status });
+    for (const status of [502, 503]) expect(classify({ startUrl: 'https://a.test/', status })).toEqual({ alive: true, finalUrl: 'https://a.test/', note: `HTTP ${status}` });
   });
   it('an expired certificate from fetch (error.cause.code) is scanned, not dead', async () => {
     const fetchMock = vi.fn(async () => {
@@ -263,5 +266,13 @@ describe('before vs after AI', () => {
     expect(lines[2]).toContain('$0.0003 per scan');
     expect(aiLines(rows, { runAt: '', split: 'tune', commit: 'abc', aiAnalysis: 'off' })).toEqual([]);
     expect(markdownReport(computeMetrics(rows), rows, { runAt: '2026-11-01T00:00:00Z', split: 'tune', commit: 'abc', aiAnalysis: 'on', aiModel: 'claude-haiku-5-5' })).toContain('## Before vs after AI');
+  });
+});
+
+describe('catch rate without the web row (2026-11-08)', () => {
+  it('removes the web points and its two rules, keeps everything else', () => {
+    expect(scoreWithoutWeb(65, 65, ['authority_warning'])).toEqual({ verdict: 'SAFE', score: 0 });
+    expect(scoreWithoutWeb(55, 30, ['scam_reports', 'young_domain_weak_page'])).toEqual({ verdict: 'HOLD', score: 25 });
+    expect(scoreWithoutWeb(25, 0, ['cant_verify'])).toEqual({ verdict: 'HOLD', score: 25 });
   });
 });
