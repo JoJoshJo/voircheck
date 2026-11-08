@@ -22,7 +22,7 @@ export const ReceiptSnapshot = z.object({
   score: z.number(),
   hardRules: z.array(z.string()),
   /** HOLD only because the store couldn't be verified: why (optional; older receipts don't have it). */
-  cantVerify: z.object({ reason: z.enum(['bot_check', 'error_page', 'empty_page', 'visit_failed']), httpStatus: z.number().optional() }).nullable().optional(),
+  cantVerify: z.object({ reason: z.enum(['bot_check', 'error_page', 'empty_page', 'sent_away', 'visit_failed']), httpStatus: z.number().optional() }).nullable().optional(),
   signals: z.array(z.object({ id: z.string(), status: z.string(), points: z.number(), summary: z.string() })),
   action: z.enum(['captured', 'held', 'voided', 'override', 'cancelled', 'declined', 'pending', 'refund_pending', 'refunded']),
   actionAt: z.string(),

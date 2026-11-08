@@ -831,6 +831,15 @@
       "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/",
       "addedOn": "2026-11-02",
       "notes": "Small certified shop, certified since 2024 (hard case: new and small)."
+    },
+    {
+      "url": "https://hensaro.com/products/canon-powershot-sx740-hs-digital-camera-black-wnsre11755bm?currency=USD&country=US&variant=42899115409454",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "J (VoirCheck team), live find",
+      "sourceUrl": "https://github.com/JoJoshJo/voircheck/blob/main/eval/misses/2026-11-07-hensaro.md",
+      "addedOn": "2026-11-07",
+      "notes": "Found by J via Google Shopping ad 2026-11-07"
     }
   ]
 }

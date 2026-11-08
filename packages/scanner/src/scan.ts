@@ -1,16 +1,20 @@
-import { detectBlockedPage } from './blocked-page';
+import { detectBlockedPage, detectSentAway } from './blocked-page';
+import { productFromPage, type PageProduct } from './page-facts';
+import { retailerOnPage, withRetailerHit } from './signals/brand-on-page';
+import { stripTracking } from './tracking';
+import { notChecked, type ResearchUsage, type WebResearcher } from './research';
 import { domainInfo } from './domain';
 import { extractFacts, keepInScope, pickEvidenceLinks, type CollectedEvidence } from './evidence-pages';
 import { filterHiddenText } from './hidden-text';
 import { popularity, trancoLookup, type RankLookup } from './reputation';
 import type { PageSnapshot, PageVisit, PageVisitor, KernelVisit } from './kernel';
-import { ScanInput, ScanResult, type SignalId, type SignalStatus } from './schema';
+import { ScanInput, ScanResult, type SignalId, type SignalStatus, type Verdict, type WebReputation } from './schema';
 import { score, WEIGHTS } from './scoring';
 import { confirmedInjection, placeholderAnalyzer, type PageAnalyzer } from './signals/ai-page';
 import { brandInDomain, defaultBrandLookup, withBrandHit, type BrandLookup } from './signals/brand-domain';
 import { evaluateClone, type CloneSubject } from './signals/clone';
 import { domainAgeSignal } from './signals/domain-age';
-import { evaluatePrice, findPriceNear, normalizeTitle } from './signals/price';
+import { comparablePrices, evaluatePrice, findPriceNear, normalizeTitle, PRICE, type FindOffers } from './signals/price';
 import { evaluateSsl, makeTlsChecker, safeTlsCheck, type TlsChecker } from './signals/ssl';
 import { threatListSignal } from './signals/threat-list';
 import { errorMessage, unavailable, type AiUsage, type Fetch, type ScanFacts, type SignalOutcome } from './signals/types';
@@ -31,16 +35,36 @@ export interface ScannerDeps {
   brands?: BrandLookup | null;
   /** Live progress for the scan UI: the browser session as soon as it opens, then each signal as it finishes. */
   onProgress?: (event: ScanProgress) => void;
+  /** Product search for pasted links (no peers): other stores' offers for the page's product. Absent = not compared. */
+  findOffers?: FindOffers;
+  /** Research step (Claude + web search): what the web says about the store, and a price fallback. Absent = not checked. */
+  researcher?: WebResearcher | null;
+  /** A store's own latest VoirCheck verdict (web-search price offers from BLOCK stores are left out). */
+  verdictFor?: (storeUrl: string) => Promise<Verdict | undefined>;
+  /** How long the scan waits for the research step after it starts (default RESEARCH_DEADLINE_MS). */
+  researchDeadlineMs?: number;
+}
+
+/** The scan never waits longer than this for what the web says; after it, the row is "not checked". */
+export const RESEARCH_DEADLINE_MS = 35_000;
+
+function withDeadline<T>(p: Promise<T>, ms: number, fallback: T): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const late = new Promise<T>((resolve) => {
+    timer = setTimeout(() => resolve(fallback), ms);
+  });
+  return Promise.race([p, late]).finally(() => clearTimeout(timer));
 }
 
 export type ScanProgress =
   | { type: 'browser'; sessionId: string; liveViewUrl?: string }
-  | { type: 'signal'; id: SignalId; status: SignalStatus; points: number };
+  | { type: 'signal'; id: SignalId; status: SignalStatus; points: number }
+  | { type: 'research'; status: SignalStatus };
 
 export interface ScanReport {
   result: ScanResult;
   /** Operational info for logs/cost tracking; not part of the user-facing result. */
-  meta: { kernelSessionSeconds: number | null; kernelError: string | null; ai: AiUsage | null };
+  meta: { kernelSessionSeconds: number | null; kernelError: string | null; ai: AiUsage | null; research: ResearchUsage[]; researchMs: number | null };
 }
 
 const okPage = (v: PageVisit | undefined): PageSnapshot | null => (v?.ok ? v.page : null);
@@ -63,8 +87,9 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   const tlsCheck = deps.tlsCheck ?? makeTlsChecker(deps.resolve);
 
   // SSRF (spec 5.17): shape-check every URL and resolve-then-check every host before anything else runs.
-  const url = assertSafeUrlShape(input.url);
-  const peerUrls = input.peers.map((p) => assertSafeUrlShape(p.url));
+  // Ad/click tracking (gclid, utm_*, ...) never changes the page and is one person's click: never scanned or stored.
+  const url = assertSafeUrlShape(stripTracking(input.url));
+  const peerUrls = input.peers.map((p) => assertSafeUrlShape(stripTracking(p.url)));
   await Promise.all([url, ...peerUrls].map((u) => resolvePublicHost(u.hostname, deps.resolve)));
   const domain = domainInfo(url.href);
   const pop = popularity(domain, deps.popularity === undefined ? trancoLookup : deps.popularity);
@@ -84,9 +109,31 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     }
   };
 
+  // Research step: what the web says about the store. It needs only the domain, so it runs alongside the page visit.
+  const research: ResearchUsage[] = [];
+  const startedAt = Date.now();
+  let researchMs: number | null = null;
+  const reputationP: Promise<WebReputation> = (deps.researcher
+    ? withDeadline(
+        deps.researcher.reputation(domain.registrable ?? domain.hostname).catch(() => ({ reputation: notChecked("The web search didn't complete, so what the web says wasn't checked."), usage: null })),
+        deps.researchDeadlineMs ?? RESEARCH_DEADLINE_MS,
+        { reputation: notChecked('The web search took too long, so what the web says wasn\'t checked.'), usage: null },
+      )
+    : Promise.resolve({ reputation: notChecked('The web search is off, so what the web says wasn\'t checked.'), usage: null })
+  ).then(({ reputation, usage }) => {
+    if (usage) research.push(usage);
+    if (deps.researcher) researchMs = Date.now() - startedAt;
+    try {
+      deps.onProgress?.({ type: 'research', status: reputation.status });
+    } catch {
+      // ignore
+    }
+    return reputation;
+  });
+
   const [visit, domainAge, tlsInput] = await Promise.all([
     deps.visitor
-      ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession, evidenceLinks: (p) => (detectBlockedPage(p) ? [] : pickEvidenceLinks(p.links, p.finalUrl)) }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
+      ? deps.visitor.visit([url.href, ...peerUrls.map((u) => u.href)], { onSession, evidenceLinks: (p) => (detectSentAway(p.requestedUrl, p.finalUrl) || detectBlockedPage(p) ? [] : pickEvidenceLinks(p.links, p.finalUrl)) }).catch((err): KernelVisit | Error => (err instanceof Error ? err : new Error(String(err))))
       : Promise.resolve(new Error('no cloud browser configured')),
     domainAgeSignal(domain, now, fetchImpl).then((r) => {
       // Reputation is evidence only (no points): it rides along with domain age.
@@ -102,7 +149,8 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   // What the browser actually loaded (for redirects/HTTPS), and the page content signals may judge: a bot check,
   // error page or empty shell isn't the store, so content signals get nothing and the scan can't verify it.
   const loadedPage = okPage(targetVisit);
-  const blocked = loadedPage ? detectBlockedPage(loadedPage) : null;
+  // A store that sends us to a search engine or portal hides its page: that page is not the store either.
+  const blocked = loadedPage ? (detectSentAway(url.href, loadedPage.finalUrl) ?? detectBlockedPage(loadedPage)) : null;
   const targetPage = blocked ? null : loadedPage;
   const kernelError = visit instanceof Error ? errorMessage(visit) : targetVisit && !targetVisit.ok ? targetVisit.error : blocked ? blocked.message : null;
   const peerPages = input.peers.map((_, i) => okPage(kernel?.pages[i + 1]));
@@ -121,6 +169,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     }
   }
   const ssl = evaluateSsl({ url: url.href, navigation: loadedPage && { finalUrl: loadedPage.finalUrl, redirectChain: loadedPage.redirectChain }, tls, now });
+  if (blocked?.detail) ssl.outcome.evidence.push(blocked.detail);
   emit(ssl.outcome);
 
   // Price: the item title comes from the caller, the peers, or the product page's heading.
@@ -139,11 +188,16 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return page && peerTitle ? findPriceNear(page.visibleText, peerTitle) : null;
     })
     .filter((x): x is number => x !== null);
-  const price =
-    ownPrice === null && !targetPage
-      ? { outcome: unavailable('price', blocked ? `Couldn't read the store page: ${blocked.message}, so its price is unknown.` : `Couldn't load the store page in the cloud browser, so its price is unknown.`), belowPct: null }
-      : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct, excludedBlocked });
-  emit(price.outcome);
+  const noPage = { outcome: unavailable('price', blocked ? `Couldn't read the store page: ${blocked.message}, so its price is unknown.` : `Couldn't load the store page in the cloud browser, so its price is unknown.`), belowPct: null };
+  // With peers (Demo mode, the agent's comparison) the price is judged now; a pasted link waits for its product
+  // (page data, else the AI's reading) and a product search below.
+  const pasted = input.peers.length === 0 && input.price === undefined;
+  const pageProduct: PageProduct | null = targetPage ? productFromPage(targetPage.pageFacts, targetPage.h1) : null;
+  let price: { outcome: SignalOutcome; belowPct: number | null } | null = null;
+  if (!pasted || !targetPage) {
+    price = ownPrice === null && !targetPage ? noPage : evaluatePrice({ price: ownPrice, title, peerPrices, sameProduct: input.sameProduct, excludedBlocked });
+    emit(price.outcome);
+  }
 
   // Extra pages of the scanned store (same KERNEL session), and fixed-pattern facts over them: evidence only for now.
   const evidencePages = targetPage ? keepInScope(kernel?.evidencePages ?? [], targetPage.finalUrl) : [];
@@ -168,6 +222,10 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       }
     : undefined;
 
+  // A pasted link whose page names its product: the price search (Channel3, then web search) runs alongside the AI.
+  const priceDeps = { findOffers: deps.findOffers, researcher: deps.researcher ?? null, verdictFor: deps.verdictFor, research };
+  const earlyPrice = pasted && targetPage && pageProduct ? pastedLinkPrice(pageProduct, targetPage.finalUrl, priceDeps) : null;
+
   const threatUrls = [...new Set([url.href, targetPage?.finalUrl].filter((u): u is string => !!u))];
   const [threat, ai] = await Promise.all([
     threatListSignal(threatUrls, deps.safeBrowsingKey, fetchImpl).then((r) => {
@@ -175,7 +233,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return r;
     }),
     (deps.analyzer ?? placeholderAnalyzer)
-      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText, wellKnownRank: pop.rank })
+      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText, wellKnownRank: pop.rank, productOnPage: pageProduct && { name: pageProduct.name, price: pageProduct.price, currency: pageProduct.currency } })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
       .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
       .then((o): SignalOutcome => (collected ? { ...o, collected } : o))
@@ -184,6 +242,9 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
         return o;
       }),
   ]);
+
+  price ??= await (earlyPrice ?? pastedLinkPrice(ai.product ? { ...ai.product, source: 'ai' as const } : null, targetPage!.finalUrl, priceDeps));
+  if (pasted && targetPage) emit(price.outcome);
 
   const subject = (u: string, page: PageSnapshot | null): CloneSubject => ({
     url: u,
@@ -195,7 +256,10 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     peerUrls.map((u, i) => subject(u.href, peerPages[i] ?? null)),
   );
   if (blocked && input.peers.length) compared.evidence.unshift(`Couldn't read the store page: ${blocked.message}; only the web addresses were compared.`);
-  const clone = withBrandHit(compared, brandInDomain(url.href, deps.brands === undefined ? defaultBrandLookup() : deps.brands, pop.rank));
+  const branded = withBrandHit(compared, brandInDomain(url.href, deps.brands === undefined ? defaultBrandLookup() : deps.brands, pop.rank));
+  // A big retailer's name in this page's own site name, logo or banner, on someone else's address.
+  const retailer = targetPage ? retailerOnPage({ url: targetPage.finalUrl, siteName: targetPage.siteName, title: targetPage.title, facts: targetPage.pageFacts, wellKnownRank: pop.rank }) : null;
+  const clone = withRetailerHit(branded, retailer, targetPage?.finalUrl ?? url.href);
   emit(clone);
 
   const facts: ScanFacts = {
@@ -206,7 +270,10 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     kernelOk: !!targetPage,
     wellKnownRank: pop.rank,
     aiInjection: confirmedInjection(ai.findings),
+    reputationChecked: false,
   };
+  const webReputation = await reputationP;
+  facts.reputationChecked = webReputation.status !== 'unavailable';
   const scored = score([domainAge.outcome, ssl.outcome, price.outcome, ai, threat.outcome, clone], facts);
   if (!targetPage) {
     scored.signals
@@ -218,8 +285,50 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     url: url.href,
     domain: domain.site ?? domain.hostname,
     ...scored,
+    webReputation,
     kernel: { sessionId: kernel?.sessionId ?? null, liveViewUrl: kernel?.liveViewUrl, replayUrl: kernel?.replayUrl },
     scannedAt: now.toISOString(),
   });
-  return { result, meta: { kernelSessionSeconds: kernel?.sessionSeconds ?? null, kernelError, ai: ai.usage ?? null } };
+  return { result, meta: { kernelSessionSeconds: kernel?.sessionSeconds ?? null, kernelError, ai: ai.usage ?? null, research, researchMs } };
+}
+
+interface PriceDeps {
+  findOffers: FindOffers | undefined;
+  researcher: WebResearcher | null;
+  verdictFor?: (storeUrl: string) => Promise<Verdict | undefined>;
+  research: ResearchUsage[];
+}
+
+/**
+ * Price for a pasted link (spec 5.6, Nov 7): the page's product (JSON-LD, meta, else the AI's reading) against the
+ * same item at other stores, with the usual rule (3+ offers, median, never this store or a store VoirCheck blocked).
+ * Other stores come from the product search (Channel3); with fewer than 3 comparable offers there, from a web search
+ * too (research step). Without enough comparable offers it stays "not checked" and says why, with no numbers.
+ */
+async function pastedLinkPrice(product: PageProduct | null, storeUrl: string, d: PriceDeps): Promise<{ outcome: SignalOutcome; belowPct: number | null }> {
+  if (!product) return { outcome: unavailable('price', "Couldn't find one product and its price on this page, so prices weren't compared."), belowPct: null };
+  const item = `"${product.name}"`;
+  const fromChannel3 = d.findOffers ? await d.findOffers(product.name).catch(() => null) : null;
+  let offers = fromChannel3 ?? [];
+  const compare = () => comparablePrices({ name: product.name, currency: product.currency, storeUrl, offers });
+  let cmp = compare();
+  let usedWeb = false;
+  if (cmp.prices.length < PRICE.minComparisonOffers && d.researcher) {
+    const site = domainInfo(storeUrl);
+    const web = await d.researcher.prices({ name: product.name, currency: product.currency, domain: site.registrable ?? site.hostname }).catch(() => ({ offers: null, usage: null }));
+    if (web.usage) d.research.push(web.usage);
+    if (web.offers?.length) {
+      const verdicts = await Promise.all(web.offers.map((o) => (d.verdictFor ? d.verdictFor(new URL(o.storeUrl).origin).catch(() => undefined) : undefined)));
+      offers = [...offers, ...web.offers.map((o, i) => ({ ...o, verdict: verdicts[i] }))];
+      cmp = compare();
+      usedWeb = true;
+    }
+  }
+  if (!fromChannel3 && !usedWeb) return { outcome: unavailable('price', `Couldn't search other stores for ${item} right now, so its price wasn't compared.`), belowPct: null };
+  const r = evaluatePrice({ price: product.price, title: product.name, peerPrices: cmp.prices, excludedBlocked: cmp.excludedBlocked });
+  if (r.outcome.status !== 'unavailable') {
+    const how = usedWeb ? (fromChannel3?.length ? 'a product search (Channel3) and a web search' : 'a web search') : 'a product search (Channel3)';
+    r.outcome.evidence.push(`Compared with: ${cmp.sites.slice(0, 6).join(', ')} (found with ${how} for the same item${usedWeb ? '; web prices read by AI from search results' : ''}).`);
+  }
+  return r;
 }

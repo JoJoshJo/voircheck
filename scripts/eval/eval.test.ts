@@ -115,9 +115,9 @@ describe('eval metrics', () => {
 
 describe('dataset', () => {
   const stores = loadStores(JSON.parse(readFileSync(new URL('../../eval/stores.json', import.meta.url), 'utf8')));
-  it('every entry has a named source; outside holdout, split is ~1/3 tune per label', () => {
+  it('every entry has a named source; outside holdout and live finds, split is ~1/3 tune per label', () => {
     for (const label of ['scam', 'legit'] as const) {
-      const xs = stores.filter((s) => s.label === label && s.split !== 'holdout');
+      const xs = stores.filter((s) => s.label === label && s.split !== 'holdout' && s.split !== 'live-2026-11');
       expect(xs.length).toBeGreaterThanOrEqual(25);
       const tune = xs.filter((s) => s.split === 'tune').length / xs.length;
       expect(tune).toBeGreaterThan(0.25);
@@ -125,6 +125,12 @@ describe('dataset', () => {
     }
     expect(stores.every((s) => s.sourceUrl.startsWith('https://'))).toBe(true);
     expect(stores.some((s) => s.url.includes('voircheck'))).toBe(false); // no demo stores
+  });
+  it('live finds are their own split, with their write-up as the source (hensaro, 2026-11-07)', () => {
+    const live = stores.filter((s) => s.split === 'live-2026-11');
+    expect(live.map((s) => [new URL(s.url).hostname, s.label])).toContainEqual(['hensaro.com', 'scam']);
+    expect(live.every((s) => !/[?&](utm_|gclid|gad_|stkn)/.test(s.url))).toBe(true);
+    expect(live.every((s) => s.sourceUrl.includes('/eval/misses/'))).toBe(true);
   });
   it('the seen test split is kept and marked; holdout scams must be first reported after 2026-10-31', () => {
     expect(stores.filter((s) => s.split === 'seen-2026-10-31')).toHaveLength(40);
@@ -205,7 +211,7 @@ describe('runner rows', () => {
         kernel: { sessionId: 'sess_secret', liveViewUrl: 'https://live.kernel.example/x?jwt=SECRET', replayUrl: 'https://replay.kernel.example/y?token=SECRET' },
         scannedAt: '2026-10-30T00:00:00.000Z',
       },
-      meta: { kernelSessionSeconds: 12, kernelError: null, ai: null },
+      meta: { kernelSessionSeconds: 12, kernelError: null, ai: null, research: [], researchMs: null },
     };
     const row = toRow({ url: 'https://a.test/', label: 'legit', split: 'holdout', source: 's', sourceUrl: 'https://s.test', addedOn: '', notes: '' }, report, 1234.6);
     const json = JSON.stringify(row);

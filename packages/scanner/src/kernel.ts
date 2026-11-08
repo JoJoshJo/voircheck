@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { CHALLENGE_RE, MAX_CHALLENGE_TEXT } from './blocked-page';
 import { EVIDENCE_BUDGET_MS, EvidencePage, MAX_EVIDENCE_TEXT, PageLink, type EvidenceKind } from './evidence-pages';
 import { HiddenCandidate, HIDDEN_TEXT_JS } from './hidden-text';
+import { PAGE_FACTS_JS, PageFacts } from './page-facts';
 import { errorMessage } from './signals/types';
 
 /**
@@ -30,6 +31,8 @@ export const PageSnapshot = z.object({
   /** Text in the DOM but hidden from people (raw; filtered and flagged on our server). Untrusted. */
   // A malformed hidden-text report must never cost us the page itself.
   hiddenCandidates: z.array(HiddenCandidate).max(100).catch([]),
+  /** Product (JSON-LD / meta price) and identity (logo alt, banner text) facts. Optional: a bad report costs nothing. */
+  pageFacts: PageFacts.nullable().optional().catch(null),
 });
 export type PageSnapshot = z.infer<typeof PageSnapshot>;
 
@@ -125,6 +128,7 @@ const data = await page.evaluate(() => {
 });
 // The store's own About/Contact page (same origin only): clones copy it word for word, and it's where contact info lives.
 const hiddenCandidates = await page.evaluate(${HIDDEN_TEXT_JS}).catch(() => []);
+const pageFacts = await page.evaluate(${PAGE_FACTS_JS}).catch(() => null);
 const aboutUrl = await page.evaluate(() => {
   const here = location.href.split('#')[0];
   const links = [...document.querySelectorAll('a[href]')].filter((a) => a.origin === location.origin && a.href.split('#')[0] !== here);
@@ -138,7 +142,7 @@ if (aboutUrl) {
     aboutText = (await page.evaluate(() => document.body?.innerText || '')).slice(0, 100000);
   } catch {}
 }
-return { requestedUrl, finalUrl, redirectChain: chain.slice(0, 30), httpStatus: res ? res.status() : null, ...data, aboutUrl, aboutText, hiddenCandidates };
+return { requestedUrl, finalUrl, redirectChain: chain.slice(0, 30), httpStatus: res ? res.status() : null, ...data, aboutUrl, aboutText, hiddenCandidates, pageFacts };
 };
 return await Promise.all(urls.map(async (u, i) => {
   try {

@@ -62,6 +62,24 @@ const LINES = [
   'Payment red flags (high, terms 2), AI note: Pushes bank transfer for a discount',
   "Couldn't read the store page: blocked by a bot check.",
   'Signal did not run.',
+  "This shop sent our check to google.com instead of showing its product page. Real shops don't hide their pages.",
+  "Couldn't verify this store: it sent our check to google.com instead of showing its shop, so the cloud browser never saw the shop itself.",
+  "Couldn't read the store page: it sent our check to google.com instead of showing its product page, so its price is unknown.",
+  "Couldn't find one product and its price on this page, so prices weren't compared.",
+  `Couldn't search other stores for "Canon PowerShot SX740 HS" right now, so its price wasn't compared.`,
+  'Compared with: bhphotovideo.com, adorama.com, bestbuy.com (found with a product search (Channel3) for the same item).',
+  'Compared with: store-a.test, store-b.test, store-c.test (found with a web search for the same item; web prices read by AI from search results).',
+  'Compared with: bhphotovideo.com, store-a.test, store-b.test (found with a product search (Channel3) and a web search for the same item; web prices read by AI from search results).',
+  `This page presents itself as Costco (banner: "Costco Wholesale | Member Exclusive"), but its address is hensaro.com, not Costco's. Fake shops often borrow a big store's name.`,
+  "From a web search about hensaro.com (3 searches; the shop's own site is never searched).",
+  'The web search (3 searches) found nothing written about shop.test by other sites.',
+  'The web search (3 searches) found only passing mentions of shop.test, no reviews or warnings.',
+  '2 findings without a real source link were left out.',
+  "The web search didn't give a usable answer (refusal), so what the web says wasn't checked.",
+  "The web search didn't complete, so what the web says wasn't checked.",
+  "The web search took too long, so what the web says wasn't checked.",
+  "The web search is off, so what the web says wasn't checked.",
+  "Today's web search budget is used up, so what the web says wasn't checked.",
 ];
 
 // English words that only appear if a line (or part of one) wasn't translated.
@@ -73,7 +91,7 @@ describe('evidence lines in French', () => {
       const fr = evidenceLine(line, 'fr');
       expect(fr, line).not.toBe(line);
       // Names, quotes and values aside, no English is left.
-      const rest = fr.replace(/"[^"]*"/g, '').replace(/\([^)]*\)/g, '').replace(/[\w.-]+\.(?:test|com|de)\b/g, '').replace(/Velbrook Supply|Ondaya Home|Google Safe Browsing|VoirCheck/g, '');
+      const rest = fr.replace(/"[^"]*"/g, '').replace(/\([^)]*\)/g, '').replace(/[\w.-]+\.(?:test|com|de)\b/g, '').replace(/Velbrook Supply|Ondaya Home|Google Safe Browsing|VoirCheck|Costco/g, '');
       expect(rest, fr).not.toMatch(ENGLISH);
     }
   });

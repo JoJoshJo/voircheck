@@ -1,7 +1,7 @@
 // @voircheck/scanner — six signals + scoring + hard rules (spec 5.5 / 5.6 / 5.17 / 5.18).
 export * from './schema';
 export { scanStore, type ScannerDeps, type ScanReport, type ScanProgress } from './scan';
-export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, verdictForScore } from './scoring';
+export { WEIGHTS, THRESHOLDS, HARD_RULE_LIMITS, score, hardRules, uncheckedCoreSignals, verdictForScore } from './scoring';
 export { cantVerifyOnly, type CantVerify, type CantVerifyReason } from './cant-verify';
 export { kernelVisitor, browserCreateParams, ensureIspProxy, ISP_PROXY_COUNTRIES, WAKING_RE, type PageVisitor, type KernelVisit, type PageSnapshot, type VisitHooks } from './kernel';
 export {
@@ -32,8 +32,32 @@ export {
 export { ADDRESS_RE, filterHiddenText, INJECTION_CANDIDATE_RE, INSTRUCTION_RE, looksLikeInjection, ORDER_RE, HiddenText, HiddenCandidate, type HiddenReason } from './hidden-text';
 export { domainInfo, type DomainInfo } from './domain';
 export { CollectedEvidence, CollectedFacts, EvidencePage, extractFacts, pickEvidenceLinks, EVIDENCE_BUDGET_MS, type EvidenceKind } from './evidence-pages';
-export { detectBlockedPage, type BlockedReason } from './blocked-page';
+export { DECOY_SITES, detectBlockedPage, detectSentAway, type BlockedReason } from './blocked-page';
+export { isTrackingParam, stripTracking } from './tracking';
+export { PageFacts, PAGE_FACTS_JS, parseAmount, productFromPage, type PageProduct } from './page-facts';
+export { RETAILERS, retailerOnPage, withRetailerHit, type Retailer, type RetailerHit } from './signals/brand-on-page';
+export { comparablePrices, sameProductTitle, type ComparableOffer, type FindOffers } from './signals/price';
 export { TRANCO, trancoLookup, trancoRanks, popularity, type RankLookup } from './reputation';
 export { SsrfError, assertSafeUrlShape, resolvePublicHost, isPublicIp, type Resolver } from './ssrf';
 export type { SignalOutcome, ScanFacts, AiUsage } from './signals/types';
 export { BRAND, SHOP_WORDS, brandIndex, brandInDomain, brandOf, defaultBrandLookup, withBrandHit, type Brand, type BrandHit, type BrandLookup } from './signals/brand-domain';
+export {
+  anthropicResearcher,
+  memoryResearchCache,
+  normalizeResultUrl,
+  notChecked,
+  PRICE_MAX_SEARCHES,
+  REPUTATION_MAX_SEARCHES,
+  RESEARCH_PROMPT_VERSION,
+  reputationStatus,
+  searchResultUrls,
+  verifyFindings,
+  verifyOffers,
+  WEB_SEARCH_USD,
+  type ResearchCache,
+  type ResearchClient,
+  type ResearchUsage,
+  type WebResearcher,
+} from './research';
+export { WEB_FINDING_KINDS, WebFinding, WebReputation } from './schema';
+export { RESEARCH_DEADLINE_MS } from './scan';

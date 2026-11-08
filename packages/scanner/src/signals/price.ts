@@ -71,3 +71,72 @@ export function evaluatePrice(input: {
   if (status === 'fail') evidence.push('A price this far below everyone else is a common sign of a fake shop.');
   return { outcome: { id, status, evidence }, belowPct };
 }
+
+// ---------- pasted links: compare with other stores found by product search (Channel3) ----------
+
+/** One offer from a product search, as the caller's search returns it. */
+export interface ComparableOffer {
+  title: string;
+  price: number;
+  currency: string | null;
+  storeUrl: string;
+  /** That store's own latest VoirCheck verdict, if it was scanned. */
+  verdict?: 'SAFE' | 'HOLD' | 'BLOCK';
+}
+
+/** Search for offers of a product by its name. null = product search isn't available (no key, error). */
+export type FindOffers = (productName: string) => Promise<ComparableOffer[] | null>;
+
+/** Words that mark an accessory or part for the item ("case for Canon SX740"), never the item itself. */
+const ACCESSORY = /\b(case|cover|sleeve|bag|pouch|strap|battery|batteries|charger|cable|adapter|screen protector|protector|skin|mount|tripod|lens cap|filter|replacement|compatible|for)\b/i;
+/** Words that don't identify the product (colours, filler). */
+const FILLER = new Set(['the', 'and', 'with', 'for', 'new', 'black', 'white', 'silver', 'grey', 'gray', 'blue', 'red', 'green', 'gold', 'pink', 'edition', 'version', 'inch', 'in', 'of', 'a', 'an', 'de', 'la', 'le', 'et', 'und', 'mit']);
+
+const words = (s: string) => normalizeTitle(s).split(' ').filter((w) => w.length > 1 && !FILLER.has(w));
+/** Model numbers and other tokens with digits ("sx740", "wh1000xm5", "128gb"): the item's identity. */
+const modelTokens = (ws: string[]) => ws.filter((w) => /\d/.test(w) && /[a-z]/.test(w));
+
+/**
+ * Is this offer the same item? Every model number in our item's name must be in the offer's title, at least 60% of
+ * our name's words must be there too, and the offer must not be an accessory for it.
+ */
+export function sameProductTitle(ours: string, theirs: string): boolean {
+  const a = words(ours);
+  if (a.length < 2) return false;
+  const b = new Set(words(theirs));
+  if (ACCESSORY.test(theirs) && !ACCESSORY.test(ours)) return false;
+  if (!modelTokens(a).every((w) => b.has(w))) return false;
+  const shared = a.filter((w) => b.has(w)).length;
+  return shared / a.length >= 0.6;
+}
+
+const siteOf = (u: string) => {
+  try {
+    return new URL(u).hostname.toLowerCase().replace(/^www\./, '');
+  } catch {
+    return u;
+  }
+};
+
+/**
+ * The comparison prices for a pasted link: offers of the same item, in the same currency, from other stores, never a
+ * store VoirCheck blocked, one price per store (its lowest).
+ */
+export function comparablePrices(input: { name: string; currency: string | null; storeUrl: string; offers: ComparableOffer[] }): { prices: number[]; sites: string[]; excludedBlocked: number } {
+  const self = siteOf(input.storeUrl);
+  const byStore = new Map<string, number>();
+  let excludedBlocked = 0;
+  for (const o of input.offers) {
+    const site = siteOf(o.storeUrl);
+    if (site === self || site.endsWith(`.${self}`) || self.endsWith(`.${site}`)) continue;
+    if (!Number.isFinite(o.price) || o.price <= 0) continue;
+    if (input.currency && o.currency && o.currency.toUpperCase() !== input.currency.toUpperCase()) continue;
+    if (!sameProductTitle(input.name, o.title)) continue;
+    if (o.verdict === 'BLOCK') {
+      excludedBlocked++;
+      continue;
+    }
+    byStore.set(site, Math.min(byStore.get(site) ?? Infinity, o.price));
+  }
+  return { prices: [...byStore.values()], sites: [...byStore.keys()], excludedBlocked };
+}

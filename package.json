@@ -19,6 +19,7 @@
     "webhooks:redact": "tsx scripts/redact-webhook-events.ts",
     "retention:run": "tsx scripts/retention.ts",
     "eval:run": "tsx scripts/eval-run.ts",
+    "research:check": "tsx scripts/research-check.ts",
     "kernel:proxy": "tsx scripts/kernel-proxy.ts",
     "agent:demo": "tsx scripts/agent-demo.ts",
     "ux:personas": "tsx scripts/ux-personas.ts",

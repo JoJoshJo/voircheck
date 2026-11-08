@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detectBlockedPage } from './blocked-page';
+import { detectBlockedPage, detectSentAway } from './blocked-page';
 
 const page = (visibleText: string, over: { title?: string; h1?: string | null; httpStatus?: number | null } = {}) => ({
   title: over.title ?? '',
@@ -36,5 +36,25 @@ describe('bot-check / interstitial detection', () => {
     const shop = 'Willkommen bei unserem Shop. '.repeat(40) + 'Verify you are human — our contact form uses a captcha. Performance & security by Cloudflare.';
     expect(detectBlockedPage(page(shop))).toBeNull();
     expect(detectBlockedPage(page('Fictional demo store. Velbrook Supply. Zephlet Buds $59.00 Clear calls, all-day battery.'))).toBeNull();
+  });
+});
+
+describe('a store that sends our check to a search engine or portal', () => {
+  it('product link → google.com: said plainly, with the site', () => {
+    const r = detectSentAway('https://hensaro.com/products/cam?variant=1', 'https://www.google.com/?variant=1');
+    expect(r?.kind).toBe('sent_away');
+    expect(r?.detail).toBe("This shop sent our check to google.com instead of showing its product page. Real shops don't hide their pages.");
+    expect(r?.message).toBe('it sent our check to google.com instead of showing its product page');
+  });
+  it('a home page link says "its shop"; country versions and subdomains count', () => {
+    expect(detectSentAway('https://fake.example/', 'https://consent.google.de/ml')?.detail).toBe("This shop sent our check to google.de instead of showing its shop. Real shops don't hide their pages.");
+    expect(detectSentAway('https://fake.example/', 'https://search.yahoo.co.jp/')?.kind).toBe('sent_away');
+  });
+  it('normal redirects are not this: own domains, a brand\'s other country site, a retailer, the site itself', () => {
+    expect(detectSentAway('https://shop.example.com/', 'https://www.example.com/shop')).toBeNull();
+    expect(detectSentAway('https://nike.de/', 'https://www.nike.com/de/')).toBeNull();
+    expect(detectSentAway('https://click.affiliate.example/r/1', 'https://www.bestbuy.com/site/x')).toBeNull();
+    expect(detectSentAway('https://www.google.com/', 'https://www.google.com/?hl=de')).toBeNull();
+    expect(detectSentAway('https://youtube.com/x', 'https://www.youtube.com/x')).toBeNull();
   });
 });

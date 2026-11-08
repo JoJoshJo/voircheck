@@ -2,6 +2,7 @@ import type Anthropic from '@anthropic-ai/sdk';
 import { describe, expect, it } from 'vitest';
 import { score } from '../scoring';
 import {
+  AI_PROMPT_VERSION,
   AI_SYSTEM_PROMPT,
   aiCacheKey,
   anthropicAnalyzer,
@@ -308,5 +309,27 @@ describe('AI page analysis: hard rule', () => {
   it('findings are kept on the scored ai_page signal', () => {
     const r = score([...rest, { ...o('ai_page', 'warn'), findings: [{ kind: 'missing_legal_info', severity: 'med', quote: 'no company name', page: 'legal' }] }], clean);
     expect(r.signals.find((s) => s.id === 'ai_page')?.findings).toHaveLength(1);
+  });
+});
+
+describe('AI page analysis: v7 rules and the product', () => {
+  it('prompt v7: a big-brand item at 70%+ off and another retailer\'s banner are strong signs; the model reports the product', () => {
+    expect(AI_PROMPT_VERSION).toBe('v7');
+    expect(AI_SYSTEM_PROMPT).toMatch(/70% or more below its usual price is a strong fake-shop sign/);
+    expect(AI_SYSTEM_PROMPT).toMatch(/another retailer's name, logo or banner as its own \(for example a Costco, Walmart or Amazon banner\)/);
+    expect(AI_SYSTEM_PROMPT).toMatch(/A product's maker \(Canon on a camera page\) is not another retailer/);
+    expect(AI_SYSTEM_PROMPT).toMatch(/"product": \{"name", "price", "currency"\} or null/);
+  });
+  it('the page\'s declared product and price reach the model in the trusted context', () => {
+    const input = buildAnalysisInput({ ...page(), productOnPage: { name: 'Canon PowerShot SX740 HS', price: 77, currency: 'USD' } });
+    expect(input).toContain('"productOnPage":{"name":"Canon PowerShot SX740 HS","price":77,"currency":"USD"}');
+  });
+  it('the model\'s product rides on the outcome; a malformed one is dropped, never the analysis', async () => {
+    const ok = fakeClient({ parsed_output: { ...injection, product: { name: 'Canon PowerShot SX740 HS', price: 77, currency: 'usd' } } });
+    expect((await anthropicAnalyzer({ client: ok.client, log: quiet }).analyze(page())).product).toEqual({ name: 'Canon PowerShot SX740 HS', price: 77, currency: 'USD' });
+    const bad = fakeClient({ parsed_output: { ...injection, product: { name: 'x', price: -1, currency: 'dollars' } } });
+    const r = await anthropicAnalyzer({ client: bad.client, log: quiet }).analyze(page());
+    expect(r.status).toBe('fail');
+    expect(r.product).toBeUndefined();
   });
 });

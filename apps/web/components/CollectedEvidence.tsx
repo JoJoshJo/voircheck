@@ -1,5 +1,7 @@
-import type { SignalResult } from '@voircheck/scanner';
-import { pageLabel } from '../lib/evidence-i18n';
+import type { SignalResult, WebReputation } from '@voircheck/scanner';
+import { evidenceLine, pageLabel } from '../lib/evidence-i18n';
+import { SignalIcon } from './SignalIcon';
+import { card } from './ui';
 import { fmt, type Dict, type Lang } from '../lib/i18n';
 
 type Collected = NonNullable<SignalResult['collected']>;
@@ -97,5 +99,53 @@ export function CollectedEvidence({ collected, t }: { collected: Collected; t: D
         ))}
       </dl>
     </div>
+  );
+}
+
+/**
+ * "What the web says" (research step, no points). The notes are the AI's words about search results (untrusted
+ * pages), so everything is plain text; each source is shown as its address, never as a clickable link.
+ */
+export function WebReputationRow({ web, t, lang }: { web: WebReputation; t: Dict; lang: Lang }) {
+  return (
+    <li className={`${card} p-5`}>
+      <div className="flex items-center justify-between gap-4">
+        <h3 className="text-[15px] font-medium">{t.evidence.webTitle}</h3>
+        <span className="flex items-center gap-2 text-[13px] text-muted">
+          {t.signals[`status_${web.status}`]} · {fmt(t.evidence.points, { n: 0 })}
+          <SignalIcon state={web.status} />
+        </span>
+      </div>
+      <ul className="mt-3 space-y-1.5">
+        {web.evidence.map((e, i) => (
+          <li key={i} className="text-[14px] leading-relaxed text-muted">
+            {evidenceLine(e, lang)}
+          </li>
+        ))}
+      </ul>
+      {web.findings.length ? (
+        <div className="mt-4 border-t border-line pt-4">
+          <p className="text-[13px] text-faint">{t.evidence.webNote}</p>
+          {web.summary ? (
+            <p className="mt-2 text-[14px] leading-relaxed">
+              <span className="font-medium">{t.evidence.webSummary}{t.evidence.colon}</span> {web.summary[lang]}
+            </p>
+          ) : null}
+          <ul className="mt-3 space-y-3">
+            {web.findings.map((f, i) => (
+              <li key={i}>
+                <p className="text-[14px] font-medium">{t.evidence[`webKind_${f.kind}`]}</p>
+                <p className="mt-1 pl-3 text-[14px] leading-relaxed break-words text-muted">{f.note[lang]}</p>
+                <p className="mt-1 pl-3 text-[13px] break-all text-faint">
+                  {t.evidence.webSource}
+                  {t.evidence.colon} {f.sourceTitle ? `${f.sourceTitle} · ` : ''}
+                  {f.sourceUrl}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </li>
   );
 }

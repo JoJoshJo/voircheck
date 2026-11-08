@@ -109,10 +109,35 @@ export const SignalResult = z.object({
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 
+// ---------- research step: what the web says about the store (evidence only, never points) ----------
+
+export const WEB_FINDING_KINDS = ['scam_report', 'complaint', 'warning_list', 'positive_review', 'neutral'] as const;
+
+export const WebFinding = z.object({
+  kind: z.enum(WEB_FINDING_KINDS),
+  /** The model's short note per UI language (plain text). */
+  note: z.object({ en: z.string().max(240), fr: z.string().max(240) }),
+  /** A URL that came back from the web search (checked by us). Shown as plain text, never as a link. */
+  sourceUrl: z.string().url().max(600),
+  /** The search result's own title (from the search, not the model). */
+  sourceTitle: z.string().max(200),
+});
+export type WebFinding = z.infer<typeof WebFinding>;
+
+/** "What the web says": evidence only (0 points). */
+export const WebReputation = z.object({
+  status: SignalStatus,
+  findings: z.array(WebFinding).max(6),
+  summary: z.object({ en: z.string().max(400), fr: z.string().max(400) }).optional(),
+  /** Plain-text lines (why it wasn't checked, how many searches ran). */
+  evidence: z.array(z.string().max(500)).max(6),
+});
+export type WebReputation = z.infer<typeof WebReputation>;
+
 export const Verdict = z.enum(['SAFE', 'HOLD', 'BLOCK']);
 export type Verdict = z.infer<typeof Verdict>;
 
-export const HARD_RULES = ['threat_list_hit', 'no_valid_https', 'young_domain_cheap_price', 'cant_verify', 'prompt_injection_attempt'] as const;
+export const HARD_RULES = ['threat_list_hit', 'no_valid_https', 'young_domain_cheap_price', 'cant_verify', 'prompt_injection_attempt', 'unchecked_core_signals'] as const;
 export const HardRule = z.enum(HARD_RULES);
 export type HardRule = z.infer<typeof HardRule>;
 
@@ -126,6 +151,8 @@ export const ScanResult = z.object({
   score: z.number().int().min(0).max(100),
   verdict: Verdict,
   hardRulesTriggered: z.array(HardRule),
+  /** Research step: what other sites say about the store (no points). Missing on scans before Nov 7 or without research. */
+  webReputation: WebReputation.optional(),
   kernel: z.object({
     sessionId: z.string().nullable(),
     liveViewUrl: z.string().url().optional(),

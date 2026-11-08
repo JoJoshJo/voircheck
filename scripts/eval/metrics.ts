@@ -9,8 +9,9 @@ export type Label = 'scam' | 'legit';
 /**
  * tune: may inform rules. seen-2026-10-31: the original test split, run once as the before-AI baseline; seen, so never
  * a final number. holdout: final reported numbers; scams first reported after HOLDOUT_AFTER + fresh legit shops.
+ * live-2026-11: misses found in real use (e.g. hensaro); a regression set, never a reported accuracy number.
  */
-export const SPLITS = ['tune', 'seen-2026-10-31', 'holdout'] as const;
+export const SPLITS = ['tune', 'seen-2026-10-31', 'holdout', 'live-2026-11'] as const;
 export type Split = (typeof SPLITS)[number];
 export const HOLDOUT_AFTER = '2026-10-31';
 
@@ -51,6 +52,9 @@ export type EvalRow =
       collected?: CollectedEvidence;
       /** AI page analysis tokens and cost for this scan (null when it was off or didn't call the model). */
       ai?: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; costUsd: number; cached: boolean } | null;
+      /** Research step: what the web says (status, how many sourced findings), its cost, searches and time. */
+      web?: { status: SignalStatus; findings: number; kinds: string[]; details?: Array<{ kind: string; sourceUrl: string; note: string }> };
+      research?: { costUsd: number; searches: number; ms: number | null };
       /** The same scan scored without the AI signal (and its hard rule): the "before AI" comparison. */
       withoutAi?: { verdict: Verdict; score: number };
     };

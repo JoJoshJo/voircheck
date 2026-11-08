@@ -1,7 +1,7 @@
 import { plainVerdict } from '../../../../lib/plain-verdict';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { AiFindings, CollectedEvidence } from '../../../../components/CollectedEvidence';
+import { AiFindings, CollectedEvidence, WebReputationRow } from '../../../../components/CollectedEvidence';
 import { LocalTime } from '../../../../components/LocalTime';
 import { Mascot } from '../../../../components/Mascot';
 import { SignalIcon } from '../../../../components/SignalIcon';
@@ -83,6 +83,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
             {s.id === 'ai_page' && s.collected ? <CollectedEvidence collected={s.collected} t={t.evidence} /> : null}
           </li>
         ))}
+        {scan.webReputation ? <WebReputationRow web={scan.webReputation} t={t} lang={lang} /> : null}
       </ul>
     </main>
   );

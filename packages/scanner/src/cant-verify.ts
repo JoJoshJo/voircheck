@@ -2,7 +2,7 @@ import type { HardRule, SignalResult, Verdict } from './schema';
 import { THRESHOLDS } from './scoring';
 
 /** Why a scan couldn't verify the store, as a short code the UI translates (the scan writes the sentence in scan.ts). */
-export type CantVerifyReason = 'bot_check' | 'error_page' | 'empty_page' | 'visit_failed';
+export type CantVerifyReason = 'bot_check' | 'error_page' | 'empty_page' | 'sent_away' | 'visit_failed';
 export interface CantVerify {
   reason: CantVerifyReason;
   httpStatus?: number;
@@ -25,6 +25,8 @@ export function cantVerifyOnly(scan: { verdict: Verdict; score: number; hardRule
       ? 'error_page'
       : line.startsWith('the page showed no content')
         ? 'empty_page'
-        : 'visit_failed';
+        : line.startsWith('it sent our check to')
+          ? 'sent_away'
+          : 'visit_failed';
   return { reason, ...(status && reason !== 'visit_failed' ? { httpStatus: Number(status) } : {}) };
 }

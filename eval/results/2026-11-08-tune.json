@@ -1,0 +1,3035 @@
+{
+  "runAt": "2026-11-08T00:58:21.773Z",
+  "split": "tune",
+  "commit": "63fbf27",
+  "aiAnalysis": "on",
+  "aiModel": "claude-sonnet-5-5",
+  "limit": null,
+  "rows": [
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "dead",
+      "deadReason": "unreachable: UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [
+        "unchecked_core_signals"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "messtool.com was registered on 2026-02-13 (about 9 months ago).",
+            "Registrar: Ultahost, Inc.",
+            "messtool.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "The browser accepted the HTTPS certificate, but our own check didn't (80BFA5F001000000:error:0A00010B:SSL routines:tls_validate_record_header:wrong version number:ssl/record/methods/tlsany_meth.c:78:\n).",
+            "Redirects stay on messtool.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Parkside PKLLP 360 B3\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 55/100, 6 findings.",
+            "Missing legal information (high, home), AI note: A German shop must show an imprint with a registration or VAT number; none was found.",
+            "Unrealistic discounts (med, product): \"Parkside PKLLP 360 B3 ... €35.00\"",
+            "Copied or generic text (med, product): \"Fantastic quality, unbeatable price!\"",
+            "Payment red flags (low, product): \"We accept credit cards, debit cards, and bank transfers for your convenience.\"",
+            "Company details inconsistent (low, product): \"Nov 08, 2026\"",
+            "Fake scarcity or urgency (low, home): \"VALID THROUGH November\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16549,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://messtool.com/en",
+            "kind": "home",
+            "title": "Construction Lasers, Rangefinders | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/contact",
+            "kind": "contact",
+            "title": "Contact Us | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/returns",
+            "kind": "terms",
+            "title": "Return & Exchange Policy | MessTool"
+          },
+          {
+            "url": "https://messtool.com/en/product/parkside-pkllp-360-b3",
+            "kind": "product",
+            "title": "Parkside PKLLP 360 B3 | MessTool",
+            "hiddenText": [
+              {
+                "text": "1 / 13Parkside PKLLP 360 B3Buy new Parkside PKLLP 360 B3Parkside5.0 (131)€35.00Price includes VATIn Stock • Ships from Germany warehouse within 1 business dayNew original unopened productFree delivery to GermanyFree returns within 14 days2-year warrantyQuantity:1Buy NowDescriptionProduct TypeCross Line LaserLaser Class2Max. Range (without receiver)20 mMeasuring FunctionsAngular Degree, Vertical, HorizontalSelf-levellingyesSelf-Levelling Range (±)3 °DisplayLEDTripod Thread1/4 InchIncluded in Deli",
+                "reason": "display_none",
+                "hint": "div.lg:hidden.space-y-6",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "MessTool GmbH"
+          ],
+          "addresses": [
+            "Luisenstraße 21, 10117 Berlin, Deutschland"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "email@messtool.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 6304,
+        "outputTokens": 1100,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 3051,
+        "costUsd": 0.031236,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://pureshoerack.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 25,
+      "hardRules": [
+        "unchecked_core_signals"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "pureshoerack.com was registered on 2026-09-23 (45 days ago).",
+            "Registrar: TuringSign Inc. d/b/a Cosmotown.",
+            "pureshoerack.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 44 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Tête de lit accessoire couchage chambre à coucher meuble 2 parties 80 x 5 x 78/88 cm synthétique noir TDL0206248\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 38/100, 5 findings.",
+            "Copied or generic text (med, contact): \"Pureshoerack est une petite maison française qui sélectionne du mobilier d'entrée et du rangement pour les intérieurs d'aujourd'hui.\"",
+            "Company details inconsistent (med, legal): \"Numéro d'enregistrement: FR72506975 (France)\"",
+            "Copied or generic text (low, home), AI note: The menu categories are in English on a French shop and do not match the headboards actually sold.",
+            "Language mismatch (low, product): \"44% OFF\"",
+            "Unrealistic discounts (low, product), AI note: Nearly every product is marked as on sale at 35-45% off, a large discount repeated across the catalog."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 19327,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://pureshoerack.com/",
+            "kind": "home",
+            "title": "Pureshoerack — Rangement d'entrée et mobilier fonctionnel"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/mentions-legales",
+            "kind": "legal",
+            "title": "Mentions légales — Pureshoerack"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/a-propos",
+            "kind": "contact",
+            "title": "À propos de Pureshoerack — Mobilier d'entrée et rangement"
+          },
+          {
+            "url": "https://pureshoerack.com/pages/livraison-et-retours",
+            "kind": "terms",
+            "title": "Livraison et retours — Pureshoerack"
+          },
+          {
+            "url": "https://pureshoerack.com/products/tete-de-lit-accessoire-couchage-chambre-a-coucher-meuble-2-parties-80-x-5-x-7888-cm-synthetique-noir-tdl0206248",
+            "kind": "product",
+            "title": "Tête de lit accessoire couchage chambre à coucher meuble 2 parties 80 x 5 x 78/88 cm synthétique noir TDL0206248 | Pureshoerack"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Pureshoerack EURL"
+          ],
+          "addresses": [],
+          "phones": [
+            "+33 7 41 20 39 67"
+          ],
+          "emails": [
+            {
+              "address": "support@pureshoerack.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            44
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5788,
+        "outputTokens": 990,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.022086,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://missmodaberlin.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of missmodaberlin.de (no RDAP server listed for .de).",
+            "missmodaberlin.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 26 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Minirock Pailletten Rund Beige Rosa\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 22/100, 3 findings.",
+            "Missing legal information (med, legal), AI note: The imprint shows no VAT or trade register number, which German shops normally list.",
+            "Unrealistic discounts (low, home): \"Flache Sandalen Zehenschlinge Gold Schwarz €10,00\"",
+            "Company details inconsistent (low, contact): \"Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 20529,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://missmodaberlin.de/",
+            "kind": "home",
+            "title": "MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Flache Sandalen Zehenschlinge Gold Schwarz",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jeanshose Hochtailliert Umlegbar Hellblau",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kniestiefel Umlegbar Wildleder-Imitat Beige",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Minikleid Metallic Rüschendetail Schwarz",
+                "reason": "display_none",
+                "hint": "div.product-grid-view-zoom-out--details",
+                "possibleInjection": false
+              },
+              {
+                "text": "Abholung derzeit nicht verfügbar Shop-Informationen anzeigen",
+                "reason": "display_none",
+                "hint": "local-pickup.spacing-style.product__pickup-availabilities[data-section-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/impressum",
+            "kind": "legal",
+            "title": "Impressum – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/kontakt",
+            "kind": "contact",
+            "title": "Kontakt – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/pages/ruckgaberecht",
+            "kind": "terms",
+            "title": "Rückgaberecht – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://missmodaberlin.de/products/flache-sandalen-zehenschlinge-gold-schwarz",
+            "kind": "product",
+            "title": "Flache Sandalen Zehenschlinge Gold Schwarz – MISS MODA Berlin",
+            "hiddenText": [
+              {
+                "text": ".header__underlay { --color-submenu: rgb(255 255 255); }",
+                "reason": "display_none",
+                "hint": "div.header__row.header__navigation-bar-row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftsname: MISS MODA BerlinAdresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, DeutschlandTelefon: +4917664991301E-Mail: info@missmodaberlin.deÖffnungszeiten:Montag: 10:30 – 19:00 UhrDienstag: GeschlossenMittwoch – Sonntag: 10:30 – 19:00 UhrZeitzone: MEZ (Mitteleuropäische Zeit)Antwortzeit: Wir beantworten Anfragen rund um die Uhr.",
+                "reason": "same_color",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Deutschland",
+            "Adresse: Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Deutschland",
+            "Herzbergstr. 128-139, Halle 6, Raum 636, 10365 Berlin, Germany"
+          ],
+          "phones": [
+            "+49 176 6499 1301"
+          ],
+          "emails": [
+            {
+              "address": "info@missmodaberlin.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 8698,
+        "outputTokens": 711,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.025116,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://rimowa-store.de/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 55,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of rimowa-store.de (no RDAP server listed for .de).",
+            "rimowa-store.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 28 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Classic Twelve Bottle Case\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 78/100, 6 findings.",
+            "Payment red flags (high, terms): \"Da im Checkout derzeit Vorkasse verfügbar ist, erfolgt die Rückzahlung per Überweisung.\"",
+            "Company details inconsistent (high, legal): \"Email: info@rimowa-store.de\"",
+            "Copied or generic text (high, legal): \"Anbieterkennzeichnung laut offizieller deutscher RIMOWA-Seite.\"",
+            "Company details inconsistent (med, legal): \"Umsatzsteueridentifikationsnummer nach § 27a des Umsatzsteuergesetzes: DE-122804506\"",
+            "Copied or generic text (med, legal): \"Dieses Impressum gilt auch für die Facebookseiten http://www.facebook.com/Rimowa\"",
+            "Unrealistic discounts (low, product), AI note: The same flat €450 discount appears on every featured product, a sign of staged pricing."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "warn",
+          "points": 20,
+          "evidence": [
+            "Uses the brand name \"rimowa\" but isn't rimowa's site (rimowa.com, #56,024 in the Tranco top-sites list). Real resellers exist, so this alone is a warning, not proof."
+          ]
+        }
+      ],
+      "scanMs": 17416,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://rimowa-store.de/",
+            "kind": "home",
+            "title": "RIMOWA Koffer mit bis zu 450 € Rabatt | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/impressum/",
+            "kind": "legal",
+            "title": "Impressum | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/faq/rueckgabe-und-umtausch/",
+            "kind": "terms",
+            "title": "Rückgabe und Umtausch | RIMOWA.DE"
+          },
+          {
+            "url": "https://rimowa-store.de/produkte/classic-twelve-bottle-case-97390001/",
+            "kind": "product",
+            "title": "Classic Twelve Bottle Case #97390001 | RIMOWA.DE"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "RIMOWA GmbH",
+            "Google Inc.",
+            "Twitter Inc.",
+            "Hotjar Ltd."
+          ],
+          "addresses": [
+            "Auf unseren Seiten sind Plugins des sozialen Netzwerks Facebook, 1601 South California Avenue, Palo Alto, CA 94304, USA integriert."
+          ],
+          "phones": [
+            "+49 221-967 5910"
+          ],
+          "emails": [
+            {
+              "address": "info@rimowa-store.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 14213"
+            }
+          ],
+          "paymentMethods": [
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 10358,
+        "outputTokens": 1072,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.032046,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 20
+      }
+    },
+    {
+      "url": "https://scandiwarm.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "unchecked_core_signals"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "kinderschatz.com was registered on 2026-09-21 (47 days ago).",
+            "Registrar: Porkbun LLC.",
+            "kinderschatz.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "The browser accepted the HTTPS certificate, but our own check didn't (80BFA5F001000000:error:0A00010B:SSL routines:tls_validate_record_header:wrong version number:ssl/record/methods/tlsany_meth.c:78:\n).",
+            "Redirects stay on kinderschatz.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Blueys Mega Haus mit Licht und Überraschungen 73,5 cm\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 22/100, 4 findings.",
+            "Company details inconsistent (med, legal): \"Kinderschatz ist eine Marke der französischen Gesellschaft MONFILS GAMES SAS (Sitz: 138 Avenue Victor Hugo, 75016 Paris)\"",
+            "Payment red flags (low, home): \"Bei Banküberweisung erhältst du unsere Bankverbindung per E-Mail und der Versand erfolgt nach Zahlungseingang.\"",
+            "Copied or generic text (low, home): \"Set your categories menu in Header builder -> Mobile -> Mobile menu element -> Show/Hide -> Choose menu\"",
+            "Missing legal information (low, product): \"REZENSIONEN (0)\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 23159,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.kinderschatz.com/",
+            "kind": "home",
+            "title": "Kinderschatz – Onlineshop für Spielzeug & Familienprodukte",
+            "hiddenText": [
+              {
+                "text": "Liebevoll ausgestattetes Puppenhaus zur beliebten Vorschulserie Bluey Mit Figuren von Bluey Heeler und ihrer Familie, Mutter Chilli, Vater Bandit und der kleinen Schwester Bingo Mit Sound- und Lichteffekten 3 Sound-Einstellungen: Geräusche und Sätze auf englischer Sprache, nur Geräusche und stumm Das fünfstöckige Haus der Heelers bietet 10 Spielbereiche und kommt mit über 20 Zubehörteilen wie Möbeln für alle Zimmer Einfach zusammenzubauen Inhalt: 1x Bluey Puppenhaus, 4x Figuren (Bluey, Bandit, B",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Bleib ruhig, bleib wachsam und überlebe die 99 Nächte, um die Geheimnisse des Waldes zu entdecken Die Sammleredition enthält das Plüschtier und die Miniaturfiguren von 99 Nights, sowie weitere Sammlerstücke Traust du dich, das Bundle zu öffnen? Inhalt:: 1x Aufbewahrungsbox, 2x Stofftiere, 2x Miniaturfiguren, 1x Stickerbogen Altersempfehlung: ab 6 JahrenBleib ruhig, bleib wachsam und überlebe die 99 Nächte, um die Geheimnisse des Waldes zu entdeckenDie Sammleredition enthält das Plüschtier und di",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Altersempfehlung: ab 3 JahrenHöchste Alarmstufe in der BRIO World: Ein Druck auf den Knopf, und die Brücke stürzt einJetzt aber schnell die Schienen wieder hochklappen, bevor die nächste Lokomotive kommtDurch die eingestanzte Holzplatte sind weitere Streckenverläufe unter der Brücke möglichMacht jeden BRIO World Liebhaber glücklichBRIO-Spielwaren tragen das FSC® (FSC-C133361) Label und enthalten ausschließlich Holz aus nachhaltiger ForstwirtschaftInhalt: 1x BRIO Einsturzbrücke Add to wishlist In",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ein kreatives All-in-One-Touchpad! Nimm deine Fotos auf und gestalte sie individuell Schreibe in dein Tagebuch Erstellt Karten, Collagen, Notizen usw. Inhalt : 1x Tablette interaktive Pad Schöpfer, Papier FotoEin kreatives All-in-One-Touchpad!Nimm deine Fotos auf und gestalte sie individuellSchreibe in dein TagebuchErstellt Karten, Collagen, Notizen usw.Inhalt : 1x Tablette interaktive Pad Schöpfer, Papier FotoProduktdetails Ein innovatives Kreativtablett zum Zeichnen, Fotografieren und vielem m",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Superstylischer L.O.L. Surprise! Koffer mit tollen Spielmöglichkeiten Öffnet sich zu einem großen Frisiersalon Inkl. Hair Beads Tots Püppchen und jeder Menge Stylingzubehör Haarperlen haften mit Wasser an den Haarteilen Weitere Puppen der L.O.L. Surprise! Hair Beads Serie separat erhältlich Inhalt: 1x Koffer, 1x L.O.L. Surprise! Tots Puppe, 100x Haarperlen, 1x Sprühfalsche, Haarteile, Haarteilhalter und weiteres Zubehör Maße Koffer: ca. L 16 x B 43,2 x H 33 cm Maße aufgeklappt: ca. B 74 x H 43 c",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Tragetasche im Zelda Design für die Nintendo Switch 2 Zum 40. Jubiläum von \"The Legend of Zelda\" Stabile Transporttasche mit charakteristischem Triforce Motiv Zuverlässiger Schutz für deine Nintendo Switch 2 unterwegs Bietet Platz für bis zu sechs Spielkarten und zwei Schlaufen für Joy-Con 2 Nintendo Switch 2 Konsole, Spielkarten sowie weiteres Zubehör nicht enthalten Inhalt: 1x Tragetasche, 1x Displayschutz, 1x Reinigungstuch Altersempfehlung: ab 6 JahrenTragetasche im Zelda Design für die Nint",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Offiziell lizenzierte Pennywise-Figur aus Stephen Kings \"ES\" Detailreiche PVC-Sammelfigur im Maßstab 1:10 von ABYstyle Studio Pennywise in seiner charakteristischen Dancing Clown Erscheinung Kommt in seinem viktorianisch inspirierten Kostüm mit Rüschenkragen Unheimliche Pose mit gefalteten Händen und charakteristischem Lächeln Verpackung mit Sichtfenster - ideal zum Präsentieren und Aufbewahren Inhalt: 1x ABYstyle Studio ES Figur Pennywise Maße Pennywise: ca. H 19 cm Altersempfehlung: ab 14 Jahr",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Altersempfehlung: ab 4 JahrenAccessoires wie Kühlschrank, BBQ-Grill, Essenszubehör, Frisiertisch, Frisiertischstuhl, Etagenbetten, Handyhalter in der DJ-Kabine, Decken, Kissen, Behälter für Make-up-Bürsten, Lippenstifte und mehrWohnwagen Spielzeugset mit über 50 Überraschungen und 360° SpielspaßCamper besteht aus Auto, Wohnmobil, Laufsteg, Pool und 8 Hangout-AreasEignet sich für O.M.G. und Tweens Modepuppe sowie die kleinen Tots (jew. separat erhältlich)Camper lässt sich zu einem L.O.L. Puppenha",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kinderfahrrad im MTB-Stil mit 12 Zoll Rädern in passenden Farben Felgenbremsen vorne und hinten Einstellbarer Sattel und Hi-Rise Lenker Vollständig geschlossener Kettenkasten und Schutzbleche vorne und hinten Inkl. abnehmbarer Stützräder Mit Stahlrahmen und Stahlfelgen Metallkugellager Passend für Innenbeinlänge: ca. 33-38 cm Inhalt: 1x 12 Zoll Kinderfahrrad Strike, 2x Stützräder, 1x Fahrradklingel, 1x Montageanleitung Altersempfehlung: ab 3 JahrenKinderfahrrad im MTB-Stil mit 12 Zoll Rädern in ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Experimentieren mit Galileo Professionelles Mikroskop 1200-fache Vergrößerung Wissenschaft spielerisch entdecken Inhalt: 1x Set Natur unter dem Mikroskop Altersempfehlung: ab 8 JahrenExperimentieren mit GalileoProfessionelles Mikroskop1200-fache VergrößerungWissenschaft spielerisch entdeckenInhalt: 1x Set Natur unter dem MikroskopAltersempfehlung: ab 8 JahrenProduktdetails Ein echtes professionelles Mikroskop, das einfach zu bedienen ist, um den Mikrokosmos zu erforschen und bis zu 1200-fach zu ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.kinderschatz.com/impressum/",
+            "kind": "legal",
+            "title": "Kinderschatz Impressum – 9 Informations légales essentielles"
+          },
+          {
+            "url": "https://www.kinderschatz.com/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt – Kinderschatz | Wir helfen dir gerne weiter"
+          },
+          {
+            "url": "https://www.kinderschatz.com/shop/",
+            "kind": "terms",
+            "title": "Shop - Kinderschatz",
+            "hiddenText": [
+              {
+                "text": "Ergebnisse 1–12 von 2354 werden angezeigt",
+                "reason": "display_none",
+                "hint": "p.woocommerce-result-count",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kinderfahrrad im MTB-Stil mit 12 Zoll Rädern in passenden Farben Felgenbremsen vorne und hinten Einstellbarer Sattel und Hi-Rise Lenker Vollständig geschlossener Kettenkasten und Schutzbleche vorne und hinten Inkl. abnehmbarer Stützräder Mit Stahlrahmen und Stahlfelgen Metallkugellager Passend für Innenbeinlänge: ca. 33-38 cm Inhalt: 1x 12 Zoll Kinderfahrrad Strike, 2x Stützräder, 1x Fahrradklingel, 1x Montageanleitung Altersempfehlung: ab 3 JahrenKinderfahrrad im MTB-Stil mit 12 Zoll Rädern in ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zwei Handbremsen für einfaches Bremsen Abnehmbare Stützräder für junge Fahranfänger Entwickelt, um Kindern das Radfahren schnell und sicher beizubringen Abgedeckter Kettenkasten zum Schutz kleiner Finger Höhenverstellbarer Sattel und Lenker Mit Puppensitz (hinten) für all die Lieblingsspielsachen Kombiniert Sicherheit, Stil und Funktionalität Inhalt: 1x 12 Zoll Kinderfahrrad Disney Minnie Maus mit Stützrädern pink/lila Altersempfehlung: ab 3 JahrenZwei Handbremsen für einfaches BremsenAbnehmbare",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Inklusive Stützräder Stabiler Stahlrahmen Stahlfelgen mit luftgefüllten Reifen Schutzbleche vorne und hinten Vorder- und Hinterrad-Felgenbremsen Vollständig geschützte Kette Inhalt: 1x 12 Zoll Kinderfahrrad Marvel Spidey mit Stützrädern rot/blau Altersempfehlung: ab 3 JahrenInklusive StützräderStabiler StahlrahmenStahlfelgen mit luftgefüllten ReifenSchutzbleche vorne und hintenVorder- und Hinterrad-FelgenbremsenVollständig geschützte KetteInhalt: 1x 12 Zoll Kinderfahrrad Marvel Spidey mit Stützr",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Passend für Innenbeinlänge: ca. 33–38 cm Dessin: Suzy (rosa) Mit Vorderrad- und Hinterrad-Felgenbremse Geschlossener Kettenkasten Citylenker mit Sicherheitsgriffen Felgen: Stahl Reifen: Luftreifen Rahmen: Stahl Inhalt: 12 Zoll Kinderfahrrad Suzy mit Stützrädern Altersempfehlung: ab 3 JahrenPassend für Innenbeinlänge: ca. 33–38 cmDessin: Suzy (rosa)Mit Vorderrad- und Hinterrad-FelgenbremseGeschlossener KettenkastenCitylenker mit SicherheitsgriffenFelgen: StahlReifen: LuftreifenRahmen: StahlInhalt",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Robuster Stahlrahmen Stahlfelgen mit Luftreifen Vorder- und Hinterradfelgenbremsen Mit Schutzblech (vorne und hinten) Vollständig geschlossener Kettenschutz Mit Klingel und Reflektoren (vorne/hinten/Speichen) Passend für Innenbeinlänge: ca. 33-38 cm Inhalt: 1x 12 Zoll Kinderfahrrad Verve Max blau/grün Altersempfehlung: ab 3 JahrenRobuster StahlrahmenStahlfelgen mit LuftreifenVorder- und HinterradfelgenbremsenMit Schutzblech (vorne und hinten)Vollständig geschlossener KettenschutzMit Klingel und ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Robuster Stahlrahmen Stahlfelgen mit Luftreifen Vorder- und Hinterradfelgenbremsen Mit Schutzblechen (vorne und hinten) Vollständig geschlossener Kettenschutz Abnehmbare Stützräder Mit Klingel und Reflektoren (vorne / hinten / Speichen) Passend für Innenbeinlänge: ca. 33-38 cm Inhalt: 1x 12 Zoll Kinderfahrrad Verve Max mit Stützrädern blau/grün Altersempfelung: ab 3 JahrenRobuster StahlrahmenStahlfelgen mit LuftreifenVorder- und HinterradfelgenbremsenMit Schutzblechen (vorne und hinten)Vollständ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schickes und robustes erstes Fahrrad mit Stützrädern Robuster Rahmen und einwandige Stahlfelgen Cremefarbene Luftreifen und Stahlfelgen Ausgestattet mit einer Stahl BMX Lenkstange Vorder- und Hinterradbremsen für volle Kontrolle Schutzbleche halten Schuhe und Kleidung sauber Brauner Stahlkorb auf der Vorderseite für Spielzeug oder Snacks Abnehmbare Stützräder für zusätzliche Unterstützung Maximales Benutzergewicht: 20 kg Inhalt: 1x 12 Zoll Kinderfahrrad Verve Summer mit Stützrädern rosaSchickes ",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Pinkes Laufrad für Kleinkinder mit Minnie-Maus-Motiv Stabiler Stahlrahmen Pannensichere EVA-Reifen Verstellbarer Sitz mit Ledersattel Höhe des Lenkers (vom Boden bis zum Lenker): ca. 55 cm Schutzbleche vorne und hinten Max. Benutzergewicht: 25 kg Maße: ca. L 78 x B 39,5 x H 55 cm Passend für Innenbeinlänge: 30-38 cm Altersempfehlung: ab 2 JahrenPinkes Laufrad für Kleinkinder mit Minnie-Maus-MotivStabiler StahlrahmenPannensichere EVA-ReifenVerstellbarer Sitz mit LedersattelHöhe des Lenkers (vom B",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              },
+              {
+                "text": "Stabiler Stahlrahmen Mit Frontkorb aus Weidengeflecht Ideal für Training des Gleichgewichtssinns Passend für Innenbeinlänge 30-38 cm Inhalt: 1x Laufrad mit Weidenkörbchen Altersempfehlung: ab 3 JahrenStabiler StahlrahmenMit Frontkorb aus WeidengeflechtIdeal für Training des GleichgewichtssinnsPassend für Innenbeinlänge 30-38 cmInhalt: 1x Laufrad mit WeidenkörbchenAltersempfehlung: ab 3 JahrenProduktdetails Kleine Fahrten, große Freude Das pinke 12 Zoll Laufrad mit Weidenkörbchen ist für die ganz",
+                "reason": "visibility_hidden",
+                "hint": "div.fade-in-block.wd-scroll",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.kinderschatz.com/produkt/blueys-mega-haus-mit-licht-und-ueberraschungen-735-cm/",
+            "kind": "product",
+            "title": "Blueys Mega Haus mit Licht und Überraschungen 73 5 cm",
+            "hiddenText": [
+              {
+                "text": "Menge für Blueys Mega Haus mit Licht und Überraschungen 73,5 cm",
+                "reason": "tiny_font",
+                "hint": "div.quantity",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kinderkamera mit Schutzhülle in großartigem Bluey und Bingo-Design Mit eingebautem Flash-Speicher 2-Zoll-LCD-Bildschirm Bildauflösung von bis zu 40 Megapixel Videoqualität von bis zu 1080P (1920x 1080) Speicherkapazität von bis zu 500 Bildern 1x Kamera mit Schutzhülle, 1x USB-C-Ladekabel, 1x Handschlaufe, 1x Bedienungsanleitung Maße: ca. L 13 x B 10 x H 6 cm Benötigte Batterie: 1x Li-Ion Akku (enthalten) Altersempfehlung: ab 3 JahrenKinderkamera mit Schutzhülle in großartigem Bluey und Bingo-Des",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Großes Set mit 14 beliebten Bluey-Charakteren und 4 Zubehörteilen Mit Bluey, Bingo, Bandit, Chilli, Socken, Muffin, Opa, Oma und weiteren Figuren Bewegliche Arme und Beine für lebendiges Spielen Perfekte Größe für kleine Kinderhände Fördert Fantasie und kreative Rollenspiele Inspiriert zu eigenen Geschichten und Abenteuern Ideal zum Nachspielen bekannter Serienmomente Inhalt: 14x Figuren, 4x Zubehörteile Altersempfehlung: ab 3 JahrenGroßes Set mit 14 beliebten Bluey-Charakteren und 4 Zubehörteil",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Kunterbuntes Bluey Haus zum Aufklappen mit Licht und Musik Oktopus drücken, um Lichter und über 20 Sounds zu aktivieren Sieben bunte Zimmer auf insgesamt drei Ebenen Mit Kinderzimmer, Schlafzimmer, Bad, Küche, Esszimmer und Wohnzimmer Mit beweglicher Tanzfläche zum Nachspielen des Bluey Serienintros Bluey Figuren: Bingo, Bluey und Chattermax Inhalt: 1x Bluey Haus, 3x Figuren, 15x Zubehörteile, 1x Stickerblatt, 1x Anleitung Maße Haus aufgeklappt: ca. L 76 x B 13 x H 43 cm Maße Haus geschlossen: c",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Das Autowaschanlagen-Spielset wurde von der ersten Staffel der Bluey Vorschul-Serie inspiriert Lass Bandit Heeler mit dem Auto durch die Waschstraße fahren, Tanken und erfinde im Spiel tolle Geschichten Die Bandit-Figur hat bewegliche Arme und kann im Auto sitzen Die Autowaschanlage hat realistische Walzen aus weichem Material und einen Hebel, um ihre Funktion zu aktivieren Die Anzeige an der Tanksäule bewegt sich, wenn du im Spiel tankst Inhalt: 1x Autowaschanlagen-Spielset, 1x Auto, 1x Bandit ",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Erlebe lustige Camping-Abenteuer mit Bluey und dem Wohnwagen Mit den Charakteren Bandit und Bluey Heeler sowie ihrem Freund Jean Luc Die Bluey-Figuren haben bewegliche Arme und Körper Das Wohnmobil lässt sich aufklappen und enthält mehrere Spielbereiche, wie Stockbetten und Küche 2 Surfbretter passen auf den Dachgepäckträger und jede Figur kann darauf stehen Inhalt: 1x Wohnwagen-Spielset aus Wohn- und Geländewagen, 3x Spielfiguren, 7x Zubehörteile, 1x Stickerbogen Maße Bluey Figuren: ca. H 6 cm ",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Interaktives 2-in-1-Spielzeug für Fans von Bluey für viele lustige Familienaktivitäten Das Spielzeughaus aus der TV-Serie Bluey lädt Kleinkinder zu Memory-Spielen ein Beinhaltet Mama, Bingo und Bluey sowie viele erkennbare Details Das Lernspielzeug bringt Vorschulkindern das Vergleichen bei und fördert ihre Fingerfertigkeit Tolles Geschenk für Kleinkinder, die Bluey und Rollenspiele lieben Inhalt: 1x LEGO DUPLO Bluey 10459 Blueys Familienhaus mit Memory-Spiel Maße Haus: ca. H 30 x B 51 x T 37 cm",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Lernlaptop mit ausklappbarer Tastatur und spannenden Spielen und den Charakteren aus Blueys Welt Mit den Originalstimmen von Bluey und ihrer Schwester Bingo und Originalmusik aus der Serie 3 Spielmodi: 10 vorinstallierte interaktive Rollen- und Logikspiele aus 5 verschiedenen Kategorien Lerninhalte: Formen, Musik, Buchstaben, Zahlen, Zuordnen, Logik und Hand-Auge-Koordination QWERTZ-Tastatur mit 26 Buchstabentasten, 10 Zahlentasten, Enter-Taste, Einstellungen-Taste, Beenden-Taste und Hilfe-Taste",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Interaktives Spielzeug mit Bluey und Scooter Mit der Originalstimme von Bluey und 11 tollen Melodien 3 Spielmodi (Entdeckungsmodus, Imitationsmodus, Showmodus) Bluey fährt selbstständig und schiebt den Scooter an Fördert die Fantasie, Nachahmung, Hand-Augen-Koordination, Musik und das Hörverstehen Hinderniserkennung durch Sensoren vorne und hinten Kindersicheres Batteriefach, Abschaltautomatik, Lautstärkeregler Inhalt: 1x VTech Bluey Scooterabenteuer Benötigte Batterien: 4x AA (Demobatterien ent",
+                "reason": "display_none",
+                "hint": "div.hover-content.wd-more-desc",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Gesellschaft MONFILS GAMES SAS",
+            "MONFILS GAMES SAS"
+          ],
+          "addresses": [
+            "Edisonstraße 2, 40789 Monheim am Rhein"
+          ],
+          "phones": [
+            "+49 152 17519763"
+          ],
+          "emails": [
+            {
+              "address": "kontakt@kinderschatz.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "FR16989262811"
+            }
+          ],
+          "paymentMethods": [
+            "Visa",
+            "Mastercard",
+            "Sofort",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 13346,
+        "outputTokens": 902,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.036322,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://steadyhandtooling.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [
+        "unchecked_core_signals"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "steadyhandtooling.com was registered on 2025-11-03 (about 12 months ago).",
+            "Registrar: Web Commerce Communications Limited dba WebNic.cc.",
+            "steadyhandtooling.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 14 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on steadyhandtooling.com (2 hops)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Sechskant Abstand-/Distanzbolzen – M6x12 – 13 mm – ISK / SW 10 – verzinkt – 100 Stück\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 68/100, 6 findings.",
+            "Unrealistic discounts (high, home), AI note: Almost every item is marked down about 75-80%, far beyond normal retail discounts.",
+            "Missing legal information (high, contact), AI note: No imprint or company identity is shown, which a real German-language shop should provide.",
+            "Company details inconsistent (med, contact): \"TheodoreKratzim@outlook.com\"",
+            "Copied or generic text (med, contact): \"Wir liefern nicht nur – wir überzeugen. Durch Kompetenz. Durch Verlässlichkeit.\"",
+            "Copied or generic text (low, terms), AI note: The return policy talks about worn or washed items, which makes no sense for a hardware shop.",
+            "Language mismatch (low, home), AI note: Some menu labels are in French on an otherwise German shop."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 27523,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.steadyhandtooling.com/",
+            "kind": "home",
+            "title": "Befestigung, Elektrik & Werkzeug | Technischer Bedarf | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/uber-uns/",
+            "kind": "contact",
+            "title": "Über uns | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/ruckgaberichtlinie/",
+            "kind": "terms",
+            "title": "Rückgaberichtlinie | Steady Hand Tooling"
+          },
+          {
+            "url": "https://www.steadyhandtooling.com/product/sechskant-abstand-distanzbolzen-m6x12-13-mm-isk-sw-10-verzinkt-100-stueck/",
+            "kind": "product",
+            "title": "Sechskant Abstand-/Distanzbolzen – M6x12 – 13 mm – ISK / SW 10 – verzinkt – 100 Stück | Steady Hand Tooling",
+            "hiddenText": [
+              {
+                "text": "Sechskant Abstand-/Distanzbolzen – M6x12 – 13 mm – ISK / SW 10 – verzinkt – 100 Stück Menge",
+                "reason": "clipped",
+                "hint": "label.screen-reader-text",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "theodorekratzim@outlook.com",
+              "freeMail": true,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": true,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Sofort"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 6161,
+        "outputTokens": 1097,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.023902,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://werkstatt-teile.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 10,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "warn",
+          "points": 10,
+          "evidence": [
+            "werkstatt-teile.com was registered on 2026-05-22 (about 6 months ago).",
+            "Registrar: Spaceship, Inc.",
+            "werkstatt-teile.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 51 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on werkstatt-teile.com (2 hops).",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 7865,
+      "kernelError": "blocked by a bot check (HTTP 403)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 10
+      }
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "rei.com was registered on 1996-03-13 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: rei.com is #4,772 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 137 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 5/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14466,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.rei.com/",
+            "kind": "home",
+            "title": "REI: A Life Outdoors is a Life Well Lived | REI Co-op",
+            "hiddenText": [
+              {
+                "text": "1189 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "2331 reviews with an average rating of 4.7 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "138 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "341 reviews with an average rating of 4.5 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "276 reviews with an average rating of 4.7 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "167 reviews with an average rating of 4.5 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "97 reviews with an average rating of 4.3 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "122 reviews with an average rating of 4.4 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "1585 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "630 reviews with an average rating of 4.3 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Mastercard",
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50,
+            40
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5639,
+        "outputTokens": 241,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.014298,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "johnlewis.com was registered on 1997-12-31 (about 28 years ago).",
+            "Registrar: Ascio Technologies, Inc. Danmark - Filial af Ascio technologies, Inc. USA.",
+            "Well-known site: johnlewis.com is #4,937 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 269 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 3/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 20838,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.johnlewis.com/",
+            "kind": "home",
+            "title": "John Lewis & Partners | Never Knowingly Undersold",
+            "hiddenText": [
+              {
+                "text": "100s of deals on Tech. Plus 20% off selected Beauty. Shop now",
+                "reason": "visibility_hidden",
+                "hint": "span.banner-elements__sizer[aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Discover gifts that will make their Christmas",
+                "reason": "same_color",
+                "hint": "p.hero-banner-heroBanner_subHeading--4f0e9.hero-banner-heroBanner_subHeading__isDarkModeMobile--b29f1",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/contact-us",
+            "kind": "contact",
+            "title": "Contact Us | Customer Services | John Lewis & Partners"
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/returns",
+            "kind": "terms",
+            "title": "Returns & Refunds | Customer Services | John Lewis & Partners"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "John Lewis Finance Limited",
+            "Creation Consumer Finance Limited",
+            "Creation Consumer Finance Ltd",
+            "General Insurance PLC",
+            "JOHN LEWIS PLC"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Company number",
+              "value": "15785347"
+            },
+            {
+              "type": "Company number",
+              "value": "NI032565"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            30,
+            20,
+            15,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5654,
+        "outputTokens": 213,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.014048,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://www.currys.co.uk/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "currys.co.uk was registered on 1996-11-13 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: currys.co.uk is #6,254 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 101 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"DREAME L50 Ultra AE Robot Vacuum Cleaner - Black\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 3/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 23055,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.currys.co.uk/",
+            "kind": "home",
+            "title": "Currys | Washing Machines, Laptops, TVs, Consoles",
+            "hiddenText": [
+              {
+                "text": "Sign up Subscribe to our newsletter for the latest news & unmissable offers",
+                "reason": "display_none",
+                "hint": "div.home-email-signup.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "Saved items limit reached (20/20) To save this item, try removing something else from your Saved items.",
+                "reason": "display_none",
+                "hint": "div.max-limit-reached-container.d-none",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.currys.co.uk/help-and-support.html",
+            "kind": "contact",
+            "title": "Help & Support | Currys"
+          },
+          {
+            "url": "https://www.currys.co.uk/services/shopping-with-us/returns-refunds.html",
+            "kind": "terms",
+            "title": "Returns & Refunds | Currys",
+            "hiddenText": [
+              {
+                "text": "Need help with a tech problem? Our RepairLive experts will help diagnose and fix your problem over a call or arrange a repair or return if needed Call a RepairLive expert Welcome to RepairLive! Video call Need help with something? Let us diagnose & fix your issue over a video call. What do you need help with? Computing TV Mobile/Tablet White goods Need help with something else? Speak to our Webchat team. By clicking “Computing”, “TV” or “Mobile”, you agree to the Terms of Service, Privacy Policy",
+                "reason": "zero_size",
+                "hint": "div.repairLive",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.currys.co.uk/products/dreame-l50-ultra-ae-robot-vacuum-cleaner-black-10306430.html",
+            "kind": "product",
+            "title": "Buy DREAME L50 Ultra AE Robot Vacuum Cleaner - Black | Currys",
+            "hiddenText": [
+              {
+                "text": "10306437,10306459,10306885,10306957,10306958,10306967,10306434",
+                "reason": "display_none",
+                "hint": "div.js-comparator-einstein-product-ids.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "DREAME L50 Ultra AE Robot Vacuum Cleaner - Black",
+                "reason": "display_none",
+                "hint": "div.pdp-sticky-header-wrapper.js-pdp-sticky-header-container",
+                "possibleInjection": false
+              },
+              {
+                "text": ".promise-price { line-height: 21px; text-align: left; } .promise-price div { color: #213038; } .promise-price .price-match-link { margin: 0; color: #4c12a1; text-decoration: underline; } .promise-price a { font-weight: 500; font-stretch: normal; font-style: normal; line-height: 1.5; letter-spacing: normal; color: #4c12a1 !important; } Found it cheaper? We’ll match it. We’ll price match against any other UK retailer, online or in-store. Exclusions (eg. ink) and conditions apply. Claim within 7 da",
+                "reason": "display_none",
+                "hint": "div.pdp-price-promise-copy-text.d-none",
+                "possibleInjection": false
+              },
+              {
+                "text": "Free standard delivery on orders over £40 Buy any computing item & save £50 on McAfee LiveSafe Buy any computing item & save £50 on McAfee LiveSafe £399.00 Save£150.00 Was £549.00 (from 07/10/26 to 27/10/26) Spread the cost with Currys flexpay Your available credit to spend: -1.0 Make monthly payments From £16.17 per month for 36 months* Or buy now, pay later Pay as much or as little as you like for 9 months. Settle in full by 07 August 2027 & pay no interest View all flexpay options *Illustrati",
+                "reason": "visibility_hidden",
+                "hint": "div.col-12.attributes-section",
+                "possibleInjection": false
+              },
+              {
+                "text": "Saved items limit reached (20/20) To save this item, try removing something else from your Saved items.",
+                "reason": "display_none",
+                "hint": "div.max-limit-reached-container.d-none",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Currys Group Limited",
+            "Creation Consumer Finance Ltd.",
+            "Wales No.07105905. Currys Retail Limited",
+            "Wales No.2142673. Currys Group Limited"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            65,
+            30
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 9450,
+        "outputTokens": 253,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.02204,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://bettenreiter.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of bettenreiter.at (no RDAP server listed for .at).",
+            "bettenreiter.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 25 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on bettenreiter.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 4/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15552,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bettenreiter.at/",
+            "kind": "home",
+            "title": "Betten Reiter Online-Shop » Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Die richtige Bettwäsche für ausgezeichnetes Schlafgefühl Seit mehr als 60 Jahren steht Bettenreiter für hochwertigen Schlafkomfort und stilvolle Wohntextilien. Als österreichisches Familienunternehmen legen wir besonderen Wert auf Qualität, unsere Umwelt und persönliche Beratung – online wie in unseren Filialen. Unsere Produkte sind sorgfältig ausgewählt und verbinden Tradition mit modernem Design. Große Auswahl an Bettwäsche, Heimtextilien und Wohnaccessoires Hochwertige Materialien – von Baumw",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hochwertige Materialien Unsere Bettwäsche wird aus sorgfältig ausgewählten Materialien gefertigt – langlebig, hautfreundlich und mit viel Liebe zum Detail verarbeitet. Für traumhaften Schlaf, Nacht für Nacht. Große Auswahl Ob Baumwolle, Satin, Leinen oder Flanell – bei Bettenreiter findest du Bettwäsche für jede Jahreszeit und jeden Stil. Von zeitlos schlicht bis modern gemustert ist für jeden Geschmack etwas dabei. Geprüfte Qualität Viele unserer Produkte tragen das OEKO-TEX® Standard 100 Siege",
+                "reason": "opacity_0",
+                "hint": "section.usps.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Bewusst wohnen Bettenreiter steht für Qualität mit gutem Gewissen. Ausgezeichnet als Green Brand, mit regionaler Manufaktur in Oberösterreich, Fairtrade Cotton und unsere veganen Produkten verbinden wir bewusstes Handeln mit erholsamem Schlaf.",
+                "reason": "opacity_0",
+                "hint": "section.text-picture.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Deine Vorteile mit der Reiter Vorteilscard Profitiere von exklusiven Rabatten, besonderen Aktionen und attraktiven Bonusvorteilen. Mit der Reiter Vorteilscard sparst du bei jedem Einkauf – online und in unseren Filialen. Alle Infos zur Vorteilscard",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Betten Reiter. Hier liegen Sie richtig! Wir möchten, dass Sie gut schlafen! Weil jeder Mensch anders schläft, beraten wir Sie individuell zu Matratzen, Pölstern, Decken, Bettwäsche und Co. Unsere ausgebildeten SchlafberaterInnen berücksichtigen Ihre natürliche Liegeposition und fertigen maßgeschneiderte Matratzen für Sie an. Kurzum, wir legen uns ins Zeug, damit Sie jeden Morgen frisch und ausgeruht aufstehen können! Zusätzlich finden Sie bei uns eine große Auswahl an Vorhängen, Wohndecken, Zier",
+                "reason": "opacity_0",
+                "hint": "section.text-picture.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Newsletter abonnieren Mit diesem Newsletter liegen Sie richtig:Abonnieren Sie unseren kostenlosen Newsletter und sichern Sie sich einen € 7,77 Gutschein! „*“ zeigt erforderliche Felder an PhoneDieses Feld dient zur Validierung und sollte nicht verändert werden.Anrede* Frau Herr Divers Vorname*Nachname*E-Mail* Datenschutz* Ich möchte aktuelle Informationen über Angebote, Aktionen und Neuheiten per E-Mail erhalten (siehe Datenschutzhinweis). Diese Einwilligung kann jederzeit widerrufen werden. *Gu",
+                "reason": "opacity_0",
+                "hint": "section.newsletter.aos-init[data-aos]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bettenreiter.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Betten Reiter Online-Shop – Hier liegen Sie richtig!"
+          },
+          {
+            "url": "https://www.bettenreiter.at/ueber-uns/",
+            "kind": "contact",
+            "title": "Über uns - Betten Reiter Online-Shop – Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Wir stellen uns vor Was als kleines Familienunternehmen 1953 begann, wuchs über die Jahrzehnte zu einem österreichischen Traditionsunternehmen, das aus der heimischen Textil- und Bettenszene nicht mehr wegzudenken ist. Wer sich eine neue Decke gönnt, der geht zum Reiter. Wer für sein Wohnzimmer neue Vorhänge sucht, der geht zum Reiter. Der Spezialist ist Profi auf diesen Gebieten und bietet seinen Kunden viele weitere hochwertige Textilien, die das Zuhause ein Stückchen gemütlicher machen.",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wer sind wir? Wir sind ein österreichisches Familienunternehmen mit Sitz in Leonding/Oberösterreich. Seit 1953 schlägt unser ganzes Herz für gesundes Schlafen und trendiges Wohnen. Zunächst nur im Raum Linz vertreten, sind wir mittlerweile in 18 Filialen für unsere Kunden da. Diese Dinge sind uns dabei von Anfang an wichtig: Kundennähe und persönliche Beratung, Top-Qualität zu besten Preisen und eine Firmenphilosophie, die den Mensch und unsere Umwelt in den Mittelpunkt stellt. Wohnen und Schlaf",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Was ist uns wichtig? Ein respektvoller Umgang mit Mensch und Natur: Dafür steht Betten Reiter. Das zeigt sich in unserem Handeln und Tun. Nicht nur was Produkte angeht, auch was die Unternehmensführung betrifft. Langjährige Mitarbeiter, ein stabiles Wachstum aus eigener Kraft zählen ebenso dazu, wie hochwertig produzierte Ware, Fairtrade oder Strom aus Wasserkraft. Wir versuchen stets Vorreiter zu sein und neue Trends zu setzen. So waren wir zum Beispiel die ersten, die Plastikverpackungen, wo m",
+                "reason": "opacity_0",
+                "hint": "section.picture-text.aos-init[data-aos]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wer sind die führenden Köpfe? Cornelia Hildebrand und ihr Ehemann DI Peter Hildebrand halten 66,6% der Firmengruppe. 33,3% sind im Eigentum der Familie Dibelka. Die Führung der Unternehmensgruppe bilden Monika Zechmeister und DI Peter Hildebrand, welche Modernisierung und Expansion der Firma erfolgreich vorantreiben. Die Firma Reiter ist zu 100 % in österreichischem Besitz.",
+                "reason": "opacity_0",
+                "hint": "section.text.aos-init[data-aos]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bettenreiter.at/sortiment/",
+            "kind": "terms",
+            "title": "Sortiment - Betten Reiter Online-Shop – Hier liegen Sie richtig!",
+            "hiddenText": [
+              {
+                "text": "Entdecken Sie das vielfältige Olfactory Sortiment von Betten-Reiter und finden Sie hochwertige Raumdüfte, Duftkerzen und Home-Fr... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jetzt coole Bettwaren zu heißen Preisen shoppen! Damit Sie auch in heißen Nächten erholsamen Schlaf finden und gut erholt aufwac... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schmücken Sie Ihre Oase! Ein entspannendes Bad, die Dusche nach dem Sport oder das tägliche Frischmachen – das Bad ist ein Refug... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schöner essen Der Esstisch ist ein besonderer Ort: Hier kommt die Familie zusammen und man empfängt Freunde und Gäste. Wenn Sie ... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Schlaf Kindlein, schlaf &#8230; Für Kinder ist das Leben ein Abenteuer. Sie wollen spielen, sich bewegen und etwas erleben. Dami... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hoppeln Sie zu Betten Reiter! Bald ist Ostern und damit DIE Gelegenheit, um frischen Frühlingswind in Ihr Zuhause zu bringen. Ob... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Der Schlaf ist die wichtigste Erholungsphase. Hier gönnen wir uns eine Auszeit und schöpfen Kraft für den nächsten Tag. Hochwert... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Neue Vorhänge schaffen Atmosphäre, schützen vor neugierigen Blicken und lassen genau so viel Licht herein, wie Sie möchten. Ob f... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ideen für ein weihnachtliches Zuhause Mit edler Tischwäsche, stimmungsvoller Beleuchtung und Dekoelementen entsteht im Handumdre... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              },
+              {
+                "text": "Willkommen zu Hause! Nach einem langen Tag heimkommen und den Stress wie einen Mantel abstreifen – ein schönes Gefühl oder? Ein... Jetzt entdecken",
+                "reason": "clipped",
+                "hint": "div.subcategory-desc",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Vorhänge GmbH",
+            "Lemontec GmbH"
+          ],
+          "addresses": [
+            "Straße: Kornstraße 14, PLZ: 4060 Leonding, Österreich"
+          ],
+          "phones": [
+            "050 810 777",
+            "+43 50 810 777",
+            "+43 732 6799 7701"
+          ],
+          "emails": [
+            {
+              "address": "office@bettenreiter.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU 65118106"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 256860 k"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 10605,
+        "outputTokens": 198,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.0238,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://bikepalast.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bikepalast.com was registered on 1997-04-14 (about 29 years ago).",
+            "Registrar: Ascio Technologies, Inc. Danmark - Filial af Ascio technologies, Inc. USA.",
+            "bikepalast.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 44 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on bikepalast.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 8/100, 2 findings.",
+            "Unrealistic discounts (low, home): \"Trikot Shimano W Kaede Thermal Jersey, Einzelstück... -83% UVP 89,95 EUR Nur 15,00 EUR\"",
+            "Unrealistic discounts (low, home): \"Mountainbike Propain Hugene 2 CF, gebraucht... -68% UVP 6.294,00 EUR Nur 2.000,00 EUR\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15734,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bikepalast.com/",
+            "kind": "home",
+            "title": "Bikepalast - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "C:62® Monocoque Advanced Twin Mold Technology, Aluminium 6061 T6 Rear Triangle, Efficient Trail Control, FSP 4-Link, Agile Trail Geometry, Boost 148, UDH™, Full Integrated Battery, Advanced Internal Cable Routing",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Das Beste vereint. Alles ist möglich – mit dem Patron eRIDE 920.Bezwinge jeden Anstieg mit Leichtigkeit und fahre dann dank des sicheren Handlings selbstbewusst wieder nach unten. 150 mm Federweg vorne und hinten bewältigen jedes Gelände und unsere TracLoc-Technologie ermöglicht es, die Federung im Handumdrehen anzupassen, damit du unter allen Bedingungen effizient fahren kannst.",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "LED-Licht mit bis zu 1300 Lumen Leuchtkraft und 7 Lichtfunktionen inklusive SOS-Signal. Das CNC-gefräste ACID LED Licht HPA 1300 lässt sich mittels Helmhalter oder Stirnband mit X-Lock System befestigen und ist mit GoPro Halterungen kompatibel. Leuchten der Kategorie \"Outdoor\" dürfen in Deutschland nicht an Fahrzeugen befestigt und im öffentlichen Straßenverkehr verwendet werden.",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium 6061 T4/T6 Superlite, Road Comfort Geometry, Integrated Cable Routing, Flat Mount Disc, Integrated Seatpost Clamp, 12x142mm, AXH",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Lieferzeit: von 4-7 Werktage bis Verfügbar ab: 10.02.2027",
+                "reason": "display_none",
+                "hint": "div.shipping.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminum Superlite, Agile Ride Geometry, Boost 148, UDH™, Integrated Battery, Advanced Internal Cable Routing, Kickstand/Fender/Carrier Mounting Points",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Gravity Casting Technology, Efficient Comfort Geometry, Boost148, UDH™, Fully Integrated Battery, Integrated Carrier 3.0, Advanced Internal Cable Routing, Integrated Seatclamp",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Efficient Comfort Geometry, Fixed Integrated Battery, Advanced Internal Cable Routing, Slider Dropout",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium Superlite, Comfort Ride Geometry, Premium Comfort And Safety, Semi-Integrated Carrier, Fully Integrated Battery, Advanced Internal Cable Routing",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              },
+              {
+                "text": "Aluminium 6061 T6 Superlite, Gravel Comfort Geometry, Flat Mount Disc, Fender & Rack Option, QR",
+                "reason": "display_none",
+                "hint": "div.description.hidden-grid",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/impressum.html",
+            "kind": "legal",
+            "title": "Impressum - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/mein-kontakt.html",
+            "kind": "contact",
+            "title": "Kontakt - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bikepalast.com/info/Widerrufsrecht-und-Muster-Widerrufsformular.html",
+            "kind": "terms",
+            "title": "Widerrufsrecht & Muster-Widerrufsformular - Fahrräder und Zubehör online kaufen - Bikepalast Österreich",
+            "hiddenText": [
+              {
+                "text": "Diesen Text können Sie im Gambio Admin unter Content Manager -> Footer 4. Spalte bearbeiten.",
+                "reason": "display_none",
+                "hint": "div.footer-col-4",
+                "possibleInjection": false
+              },
+              {
+                "text": "{{#title}} {{title}} {{/title}} {{{items.src}}} {{#showButtons}} {{#buttons}} {{name}} {{/buttons}} {{/showButtons}} {{#content}} {{.}} {{/content}} Modal form field {{#content}} {{{.}}} {{/content}}",
+                "reason": "display_none",
+                "hint": "div.layer",
+                "possibleInjection": false
+              },
+              {
+                "text": "× Jetzt anmelden und einen 10 € Gutschein sofort per Mail erhalten! E-Mail Vorname Nachname Anmelden DSGVO-Erklärung Für den Versand unserer Newsletter nutzen wir rapidmail. Mit Ihrer Anmeldung stimmen Sie zu, dass die eingegebenen Daten an rapidmail übermittelt werden. Beachten Sie bitte auch die AGB und Datenschutzbestimmungen. Vielen Dank für Ihre Anmeldung! Eine E-Mail mit einem Aktivierungslink wurde an Ihre E-Mail-Adresse geschickt! .rmBody.rmBody--embed { background: #f9f6f8; } #rmOrganis",
+                "reason": "offscreen",
+                "hint": "div#rmOrganism",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Style GmbH"
+          ],
+          "addresses": [
+            "Marktstraße 10, 5061 Elsbethen"
+          ],
+          "phones": [
+            "+43 (0) 662 633 030 30",
+            "+43(0)5224/21211"
+          ],
+          "emails": [
+            {
+              "address": "info@bikepalast.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU71319708"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 458406b"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            83,
+            68,
+            35,
+            30,
+            25,
+            20,
+            15,
+            5
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 11440,
+        "outputTokens": 555,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.02904,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://messerkoenig.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of messerkoenig.at (no RDAP server listed for .at).",
+            "messerkoenig.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 9 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on messerkoenig.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 4/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13931,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.messerkoenig.at/",
+            "kind": "home",
+            "title": "Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "aria_hidden",
+                "hint": "header.elementor.elementor-5683[data-elementor-type][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Home Shop Know how Über uns Kontakt FAQ Messer Schwerter Scheren Maniküre Zubehör Dienstleistungen Wissenswertes Workshops Mein Konto Wunschliste Impressum Datenschutzerklärung Widerrufsbelehrung Vertrag widerrufen AGB AGB - Online Shop Zahlung im WebshopZahlung vor Ort – Diese Zahlungsart ist nur bei Abholung möglich.Rechnung – Sie erhalten eine Rechnung, mit der Bitte um sofortige Überweisungper Kreditkarte – Bei der Kreditkartenzahlung gibt der Kunde folgende Daten an: Karteninhaber, Kartennu",
+                "reason": "aria_hidden",
+                "hint": "footer.elementor.elementor-3205[data-elementor-type][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es folgt eine Liste der Service-Gruppen, für die eine Einwilligung erteilt werden kann. Die erste Service-Gruppe ist essenziell und kann nicht abgewählt werden.",
+                "reason": "clipped",
+                "hint": "legend.brlbs-sr-only",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.messerkoenig.at/widerrufsbelehrung/",
+            "kind": "terms",
+            "title": "Widerrufs­belehrung - Der Messerkönig - Messerschmiede und Schleifservice",
+            "hiddenText": [
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen",
+                "reason": "display_none",
+                "hint": "div#hover-html",
+                "possibleInjection": false
+              },
+              {
+                "text": "Zentrale 1150 Wien Sechshauser Straße 101150 Wien Ihr Weg zu uns auf Google Maps Telefon: E-Mail: +43 1 / 893 41 72 knifeking@messerkoenig.at Öffnungszeiten: Mo bis Do: 9:00 - 12:00 & 14:30 - 18:00Fr: 9:00 - 18:00, Sa: 9:00 - 12:00Juli & August samstags geschlossen Know-how Shop Home Know-how Shop Home Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb .st0{display:none;} .st1{display:inline;opacity:0.45;} .st2{display:inline;} .st3{display:inline;fill:#CF0000;str",
+                "reason": "visibility_hidden",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Es befinden sich momentan keine Produkte im Warenkorb. Zum Shop € 0,00 0 Warenkorb",
+                "reason": "display_none",
+                "hint": "section.elementor-section.elementor-top-section[data-id]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Vorgartenstraße 213, 1020 Wien"
+          ],
+          "phones": [
+            "+43 1 893 4172",
+            "+43 1 893 41 72 20"
+          ],
+          "emails": [
+            {
+              "address": "knifeking@messerkoenig.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "office@messerkoenig.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU12141902"
+            }
+          ],
+          "paymentMethods": [
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 8404,
+        "outputTokens": 233,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.019748,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://tee-shop.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of tee-shop.at (no RDAP server listed for .at).",
+            "tee-shop.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 40 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Sparkling Tea bio in Variationen\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 6/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15368,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://tee-shop.at/",
+            "kind": "home",
+            "title": "Matcha, japanischer Tee & Ronnefeldt – Moses Tee Shop Österreich",
+            "hiddenText": [
+              {
+                "text": "Tee-Raritäten & Klassiker. Persönlich ausgewählt. Mit Liebe verpackt.",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Moses Tee Shop: Ihr Tee-Experte in Österreich",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wenn die Tage kürzer werden, ist Zeit für Teegenuss",
+                "reason": "same_color",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Tee, wie wir ihn lieben - seit fünf GenerationenDer Moses Tee Shop ist ein familiengeführtes Fachgeschäft in Dornbirn – seit fünf Generationen vor Ort verwurzelt und seit über 25 Jahren mit echter Leidenschaft dem hochwertigen Tee verschrieben. Was finden Sie bei uns? Neben einem großen Ronnefeldt Sortiment führen wir edlen Matcha, sorgfältig ausgewählte japanische Tees, aromatischen Chai, Mate und ausgesuchtes Zubehör für Ihre persönliche Teeauszeit.Wir legen Wert auf Herkunft, traditionelle Ve",
+                "reason": "opacity_0",
+                "hint": "div.animation-contents",
+                "possibleInjection": false
+              },
+              {
+                "text": "Matcha, japanischer Tee & Ronnefeldt – Moses Tee Shop Österreich",
+                "reason": "display_none",
+                "hint": "tool-tip[data-tool-tip]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Kühle Tage, warme Momente. 🍂 Entdecke im Moses Tee Shop unsere herbstliche Auswahl an feinen Teesorten, edlem Kandiszucker und dem perfekten Zubehör für deine Auszeit zu Hause. Hol dir die Gemütlichkeit direkt in die Tasse! ☕️✨ 📍 Marktstraße 14, 6850 Dornbirn, Österreich 📞 +43 664 2584578 🌐 https://tee-shop.at/ #Teezeit #herbstvibes #Dornbirn #tee November 7",
+                "reason": "display_none",
+                "hint": "div#18401222743201659-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop 🍂 Unser Tee der Woche: Der Dornbirner Früchtekorb! 🍐🥥🍊 Passend zur gemütlichen Herbstzeit haben wir wieder eine ganz besondere Empfehlung für euch. Unsere milde Früchtetee-Komposition „Edle Birne“ (Dornbirner Früchtekorb) verführt mit einer wunderbaren Mischung aus: ✨ weicher Birne ✨ saftiger Orange ✨ exotischen Kokosraspeln ✨ und süßen Mangostückchen Ein wunderbar runder Geschmack und der perfekte Begleiter für die kühlen Herbsttage. Kommt vorbei, genießt eine Tasse und sch",
+                "reason": "display_none",
+                "hint": "div#18103795958633570-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Das perfekte Geschenk für jemanden, der schon alles hat? 🎁 Die Antwort ist einfach: Verschenke Ruhe und Entspannung. Im Moses Tea Shop in Dornbirn haben wir für jeden Anlass die passende Lösung. Von kleinen Aufmerksamkeiten wie feinem Chai über liebevolle Sets mit Tasse und Tee bis hin zur großen, individuell zusammengestellten Geschenkbox. Wir verpacken alles direkt bei uns im Laden mit viel Liebe zum Detail – so ist die Freude beim Auspacken garantiert. Komm bei uns in Dornbi",
+                "reason": "display_none",
+                "hint": "div#18452561188132621-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Schon unzählige Male an unserem Schaufenster in der Dornbirner Innenstadt vorbeigeschlendert und dich gefragt, was dich drinnen erwartet? 🍵✨ Ich bin Nan, Tee-Sommelier hier bei Moses, und ich lade dich auf eine kleine Entdeckungsreise in die Welt des Tees ein. Komm vorbei, lass dich beraten und entdecke deinen neuen Lieblingstee! 👇 📍 Moses Tee-Shop, Dornbirn 🔗 Mehr Infos auf www.tee-shop.at #teeliebe #dornbirn #teesommelier #teeliebe #teegenuss October 23",
+                "reason": "display_none",
+                "hint": "div#17983905858121120-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              },
+              {
+                "text": "✕ moses_tee_shop Ruhe in einer hektischen Welt finden. Mit der Moses tea selection bringen wir besondere Teekultur in deinen Alltag. 🌿✨ Entdecke unsere drei liebsten Kompositionen für deine Teeauszeit – natürlich, rein und komplett plastikfrei verpackt: 1️⃣ Griechischer Bergtee: Ein aromatischer Kräutertee mit würzigen Zitrus-Noten und Honig-Salbei-Nuancen. 2️⃣ China Tie Guan Yin: Ein hochwertiger Oolong-Tee mit blumigem Aroma und langanhaltendem Nachgeschmack. 3️⃣ Holunder mit Orange & Vanille",
+                "reason": "display_none",
+                "hint": "div#18038042501841583-insta-feed.instafeed-lightbox[data-instafeed-close-id]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://tee-shop.at/policies/legal-notice",
+            "kind": "legal",
+            "title": "Impressum – Moses Tee Shop"
+          },
+          {
+            "url": "https://tee-shop.at/policies/refund-policy",
+            "kind": "terms",
+            "title": "Widerrufsrecht – Moses Tee Shop"
+          },
+          {
+            "url": "https://tee-shop.at/products/sparkling-tea",
+            "kind": "product",
+            "title": "Sparkling Tea bio aus Dänemark – Moses Tee Shop",
+            "hiddenText": [
+              {
+                "text": "Vielen Dank für Ihr Interesse. Wir benachrichtigen Sie, sobald der Artikel wieder verfügbar ist. Etwas ging schief. Bitte versuchen Sie es nochmals. Bei Verfügbarkeit benachrichtigen: Senden",
+                "reason": "display_none",
+                "hint": "div#da-restock-alerts-container-v1.da-restock-alerts-container-v1[data-daeligiblevariants]",
+                "possibleInjection": false
+              },
+              {
+                "text": "[{\"id\":39394675621962,\"title\":\"Lyserod alkoholfrei\",\"option1\":\"Lyserod alkoholfrei\",\"option2\":null,\"option3\":null,\"sku\":\"810-0001\",\"requires_shipping\":true,\"taxable\":true,\"featured_image\":{\"id\":28190207377482,\"product_id\":6660274356298,\"position\":1,\"created_at\":\"2021-09-12T11:38:42+02:00\",\"updated_at\":\"2021-09-12T11:39:16+02:00\",\"alt\":\"Sparkling Tea Lyserod bio#flasche_lyserod-alkoholfrei\",\"width\":1000,\"height\":1000,\"src\":\"\\/\\/tee-shop.at\\/cdn\\/shop\\/products\\/lyserod_sparkling_tea.pro.jpg?v=163",
+                "reason": "display_none",
+                "hint": "textarea.hide[data-variant-json][aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Durchschnittliche Nährwerte pro 100ml Brennwert [kJ/kcal] 83/20 Fett [g] 0 davon gesättigte Fettsäuren [g] 0 Kohlenhydrate [g] 5 davon Zucker [g] 5 Eiweiß [g] 0 Salz [g] 0",
+                "reason": "display_none",
+                "hint": "li#tab2",
+                "possibleInjection": false
+              },
+              {
+                "text": "Verantwortliches Lebensmittelunternehmen: Copenhagen Sparkling Tea CompanyKAdmiralgade 21DK-1066 Kopenhagen",
+                "reason": "display_none",
+                "hint": "li#tab3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Sortieren Filter löschenSortieren nachNeuesteÄltesteAm BeliebtestenAm Besten BewertetAufschlüsselung00000Suchen:Produktbewertungen",
+                "reason": "display_none",
+                "hint": "div.ElementsWidget__subheader",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "CHA Ye GmbH",
+            "J.T. Ronnefeldt KG"
+          ],
+          "addresses": [
+            "A-6850 Dornbirn, Marktstraße 14"
+          ],
+          "phones": [
+            "+43 664 2584578",
+            "+43 5572 35114"
+          ],
+          "emails": [
+            {
+              "address": "kontakt@tee-shop.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU83246569"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            15,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 12776,
+        "outputTokens": 281,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.028972,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://tauchversand.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 40,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "tauchversand.com was registered on 2000-02-09 (about 26 years ago).",
+            "Registrar: INWX GmbH.",
+            "tauchversand.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 69 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on tauchversand.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't search other stores for \"Tauchen & Schnorcheln mit der passenden Tauchausrüstung | Divestore\" right now, so its price wasn't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 12/100, 1 finding.",
+            "Company details inconsistent (low, legal): \"Mailorder & Service GmbH ... E-Mail: info@ws-billiger.de\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "fail",
+          "points": 40,
+          "evidence": [
+            "This page presents itself as Amazon (logo: \"Amazon pay\"), but its address is tauchversand.com, not Amazon's. Fake shops often borrow a big store's name."
+          ]
+        }
+      ],
+      "scanMs": 13916,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.tauchversand.com/",
+            "kind": "home",
+            "title": "Tauchen & Schnorcheln mit der passenden Tauchausrüstung | Divestore"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/impressum/",
+            "kind": "legal",
+            "title": "Impressum | Divestore & tauchversand.com"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt"
+          },
+          {
+            "url": "https://www.tauchversand.com/informationen/widerrufsrecht/",
+            "kind": "terms",
+            "title": "Widerrufsrecht bei Divestore & tauchversand.com"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Service GmbH",
+            "PORTICA GmbH"
+          ],
+          "addresses": [
+            "Beethovenstr. 9, 78234 Engen"
+          ],
+          "phones": [
+            "07733-99 69 550"
+          ],
+          "emails": [
+            {
+              "address": "info@divestore.de",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            },
+            {
+              "address": "info@ws-billiger.de",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE812841203"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 706714"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Sofort",
+            "Invoice",
+            "Cash on delivery"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 11903,
+        "outputTokens": 349,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.027906,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 40
+      }
+    },
+    {
+      "url": "https://dieroester.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of dieroester.at (no RDAP server listed for .at).",
+            "dieroester.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "The browser accepted the HTTPS certificate, but our own check didn't (CERT_HAS_EXPIRED).",
+            "Certificate issued by catchall.",
+            "Certificate is 775 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: the store returned an error page (HTTP 500), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 500), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 500).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 2665,
+      "kernelError": "the store returned an error page (HTTP 500)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      }
+    },
+    {
+      "url": "https://naehprinz.at/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of naehprinz.at (no RDAP server listed for .at).",
+            "naehprinz.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 45 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on naehprinz.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (claude-sonnet-5-5): risk 7/100, 1 finding.",
+            "Copied or generic text (low, terms): \"Widerrufsbelehrung Text. Editierbar im Admin-Backend unter Inhalte -> AGB/WRB.\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13322,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.naehprinz.at/",
+            "kind": "home",
+            "title": ""
+          },
+          {
+            "url": "https://www.naehprinz.at/Impressum",
+            "kind": "legal",
+            "title": "Impressum"
+          },
+          {
+            "url": "https://www.naehprinz.at/Wir-ueber-uns",
+            "kind": "contact",
+            "title": "Wir über uns"
+          },
+          {
+            "url": "https://www.naehprinz.at/Widerrufsrecht",
+            "kind": "terms",
+            "title": ""
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "F. Pflänzel GmbH"
+          ],
+          "addresses": [
+            "Gumpendorferstraße 151, A - 1060 Wien"
+          ],
+          "phones": [
+            "+43 1 597 41 65",
+            "+43 1 597 41 65 16"
+          ],
+          "emails": [
+            {
+              "address": "info@naehprinz.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU62531148"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 7904,
+        "outputTokens": 342,
+        "cacheReadTokens": 3051,
+        "cacheWriteTokens": 0,
+        "costUsd": 0.019838,
+        "cached": false
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      }
+    }
+  ]
+}

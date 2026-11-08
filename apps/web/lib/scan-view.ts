@@ -1,4 +1,4 @@
-import { cantVerifyOnly, type CantVerify, type HardRule, type SignalResult, type Verdict } from '@voircheck/scanner';
+import { cantVerifyOnly, WebReputation, type CantVerify, type HardRule, type SignalResult, type Verdict } from '@voircheck/scanner';
 
 /** What the browser gets about a finished scan. Plain data; evidence is rendered as text, never HTML. */
 export interface ScanView {
@@ -11,6 +11,8 @@ export interface ScanView {
   hardRules: HardRule[];
   /** Set when the verdict is HOLD only because the store couldn't be verified (spec 5.18). */
   cantVerify: CantVerify | null;
+  /** What the web says about the store (research step, no points); null on older scans or when it didn't run. */
+  webReputation?: WebReputation | null;
   scannedAt: string;
 }
 
@@ -31,7 +33,8 @@ export type ScanEvent =
   | { type: 'cached'; scan: ScanView; candidate: CandidateView }
   | { type: 'error'; code: 'auth' | 'rate' | 'cap' | 'url' | 'failed' };
 
-export function toScanView(row: { id: string; url: string; storeDomain: string; verdict: Verdict; riskScore: number; signals: unknown; hardRulesTriggered: string[]; scannedAt: Date }): ScanView {
+export function toScanView(row: { id: string; url: string; storeDomain: string; verdict: Verdict; riskScore: number; signals: unknown; hardRulesTriggered: string[]; scannedAt: Date; explanation?: unknown }): ScanView {
+  const web = WebReputation.safeParse((row.explanation as { webReputation?: unknown } | null | undefined)?.webReputation);
   const signals = row.signals as SignalResult[];
   const hardRules = row.hardRulesTriggered as HardRule[];
   return {
@@ -43,6 +46,7 @@ export function toScanView(row: { id: string; url: string; storeDomain: string; 
     signals,
     hardRules,
     cantVerify: cantVerifyOnly({ verdict: row.verdict, score: row.riskScore, hardRules, signals }),
+    webReputation: web.success ? web.data : null,
     scannedAt: row.scannedAt.toISOString(),
   };
 }

@@ -62,6 +62,22 @@ export function hardRules(facts: ScanFacts): Array<{ rule: HardRule; floor: Verd
   return out;
 }
 
+/**
+ * Spec 5.6 (Nov 7, narrowed the same day): the page itself couldn't be judged (page analysis didn't run on it), AND
+ * price, copycat and what the web says (research step) all couldn't be checked, AND another check found something
+ * worth a look → never SAFE ("We couldn't check everything. Be careful."). When page analysis did read the shop's real
+ * page, a lone "worth a look" (a young domain, a redirect) stays SAFE: the 2026-11-08 eval held funstasy.at, a
+ * certified shop, on that alone. When we were sent away or the page didn't load, cant_verify already holds the store
+ * and says why, so this rule isn't added on top. `reputationChecked` false/absent = not checked.
+ */
+export function uncheckedCoreSignals(signals: ReadonlyArray<Pick<SignalResult, 'id' | 'status'>>, kernelOk: boolean, reputationChecked = false): boolean {
+  if (!kernelOk || reputationChecked) return false;
+  const st = (id: SignalId) => signals.find((s) => s.id === id)?.status ?? 'unavailable';
+  if (st('ai_page') !== 'unavailable') return false; // the page was judged
+  if (st('price') !== 'unavailable' || st('clone') !== 'unavailable') return false;
+  return (['domain_age', 'ssl_redirects', 'threat_list'] as const).some((id) => st(id) === 'warn' || st(id) === 'fail');
+}
+
 export function score(outcomes: SignalOutcome[], facts: ScanFacts): { signals: SignalResult[]; score: number; verdict: Verdict; hardRulesTriggered: HardRule[] } {
   const signals = SIGNAL_IDS.map((id): SignalResult => {
     const o = outcomes.find((x) => x.id === id);
@@ -71,6 +87,7 @@ export function score(outcomes: SignalOutcome[], facts: ScanFacts): { signals: S
   });
   const total = Math.min(100, signals.reduce((sum, s) => sum + s.points, 0));
   const rules = hardRules(facts);
+  if (uncheckedCoreSignals(signals, facts.kernelOk, facts.reputationChecked)) rules.push({ rule: 'unchecked_core_signals', floor: 'HOLD' });
   const verdict = rules.reduce((v, r) => atLeast(v, r.floor), verdictForScore(total));
   return { signals, score: total, verdict, hardRulesTriggered: rules.map((r) => r.rule) };
 }

@@ -58,7 +58,9 @@ function blockedFr(msg: string): string {
   return msg
     .replace(/^blocked by a bot check/, 'bloquée par une vérification anti-robot')
     .replace(/^the store returned an error page/, 'la boutique a renvoyé une page d’erreur')
-    .replace(/^the page showed no content \(empty shell\)/, 'la page était vide');
+    .replace(/^the page showed no content \(empty shell\)/, 'la page était vide')
+    .replace(/^it sent our check to (\S+) instead of showing its product page/, 'elle a renvoyé notre vérification vers $1 au lieu d’afficher sa page produit')
+    .replace(/^it sent our check to (\S+) instead of showing its shop/, 'elle a renvoyé notre vérification vers $1 au lieu d’afficher sa boutique');
 }
 
 const FR: Rule[] = [
@@ -100,6 +102,10 @@ const FR: Rule[] = [
   [/^Redirects stay on (\S+) \((\d+) hops?\)\.$/, (_, d, n) => `Les redirections restent sur ${d} (${n} ${plural(n!, 'étape', 'étapes')}).`],
   [/^No redirects\.$/, 'Aucune redirection.'],
   [/^Redirects weren't observed \(the cloud browser visit failed\)\.$/, 'Redirections non observées (la visite du navigateur cloud a échoué).'],
+  [
+    /^This shop sent our check to (\S+) instead of showing (its product page|its shop)\. Real shops don't hide their pages\.$/,
+    (_, to, what) => `Cette boutique a renvoyé notre vérification vers ${to} au lieu d’afficher ${what === 'its shop' ? 'sa boutique' : 'sa page produit'}. Les vraies boutiques ne cachent pas leurs pages.`,
+  ],
   [/^Couldn't verify this store: the cloud browser visit failed \((.*)\)\.$/, 'Impossible de vérifier cette boutique : la visite du navigateur cloud a échoué ($1).'],
   [/^Couldn't verify this store: (.+), so the cloud browser never saw the shop itself\.$/, (_, why) => `Impossible de vérifier cette boutique : ${blockedFr(why!)}, le navigateur cloud n’a donc jamais vu la boutique elle-même.`],
 
@@ -114,6 +120,13 @@ const FR: Rule[] = [
   [/^Stores VoirCheck blocked were left out of the comparison\.$/, 'Les boutiques bloquées par VoirCheck ont été exclues de la comparaison.'],
   [/^A price this far below everyone else is a common sign of a fake shop\.$/, 'Un prix aussi bas par rapport à tous les autres est un signe fréquent de fausse boutique.'],
   [/^Couldn't read the store page: (.+), so its price is unknown\.$/, (_, why) => `Impossible de lire la page de la boutique : ${blockedFr(why!)}, son prix est donc inconnu.`],
+  [/^Couldn't find one product and its price on this page, so prices weren't compared\.$/, 'Impossible de trouver un produit et son prix sur cette page : les prix n’ont pas été comparés.'],
+  [/^Couldn't search other stores for (.+) right now, so its price wasn't compared\.$/, 'Impossible de chercher $1 dans d’autres boutiques pour le moment : son prix n’a pas été comparé.'],
+  [
+    /^Compared with: (.+) \(found with (a product search \(Channel3\) and a web search|a web search|a product search \(Channel3\)) for the same item(; web prices read by AI from search results)?\)\.$/,
+    (_, sites, how, web) =>
+      `Comparé avec : ${sites} (trouvées par ${how === 'a web search' ? 'une recherche web' : how!.includes('and') ? 'une recherche de produits (Channel3) et une recherche web' : 'une recherche de produits (Channel3)'} pour le même article${web ? ' ; prix web lus par l’IA dans les résultats de recherche' : ''}).`,
+  ],
   [/^Couldn't load the store page in the cloud browser, so its price is unknown\.$/, 'Impossible de charger la page de la boutique dans le navigateur cloud : son prix est donc inconnu.'],
 
   // Threat lists
@@ -134,7 +147,23 @@ const FR: Rule[] = [
     /^Uses the brand name "(.+)" but isn't (.+)'s site \((\S+), #([\d,]+) in the Tranco top-sites list\)\. Real resellers exist, so this alone is a warning, not proof\.$/,
     (_, b, _b2, d, rank) => `Utilise le nom de marque "${b}" sans être le site de ${b} (${d}, n° ${num(rank!)} de la liste Tranco des sites les plus visités). De vrais revendeurs existent : seul, c’est un avertissement, pas une preuve.`,
   ],
+  [
+    /^This page presents itself as (.+?) \((site name|logo|banner): "(.*)"\), but its address is (\S+), not (.+?)'s\. Fake shops often borrow a big store's name\.$/,
+    (_, name, where, quote, site) =>
+      `Cette page se présente comme ${name} (${where === 'logo' ? 'logo' : where === 'banner' ? 'bandeau' : 'nom du site'} : "${quote}"), mais son adresse est ${site}, pas celle de ${name}. Les fausses boutiques empruntent souvent le nom d’une grande enseigne.`,
+  ],
   [/^vs (.+?): (.*)$/, (_, label, rest) => `Face à ${label} : ${cloneFindingsFr(rest!)}`],
+
+  // What the web says (research step)
+  [/^From a web search about (\S+) \((\d+) searches?; the shop's own site is never searched\)\.$/, (_, d, n) => `D’après une recherche web sur ${d} (${n} ${plural(n!, 'recherche', 'recherches')} ; le site de la boutique elle-même n’est jamais consulté).`],
+  [/^The web search \((\d+) searches?\) found nothing written about (\S+) by other sites\.$/, (_, n, d) => `La recherche web (${n} ${plural(n!, 'recherche', 'recherches')}) n’a rien trouvé d’écrit sur ${d} par d’autres sites.`],
+  [/^The web search \((\d+) searches?\) found only passing mentions of (\S+), no reviews or warnings\.$/, (_, n, d) => `La recherche web (${n} ${plural(n!, 'recherche', 'recherches')}) n’a trouvé que de simples mentions de ${d}, ni avis ni alerte.`],
+  [/^(\d+) findings? without a real source link (?:was|were) left out\.$/, (_, n) => `${n} ${plural(n!, 'élément sans vrai lien source a été écarté', 'éléments sans vrai lien source ont été écartés')}.`],
+  [/^The web search didn't give a usable answer \((.*)\), so what the web says wasn't checked\.$/, 'La recherche web n’a pas donné de réponse exploitable ($1) : l’avis du web n’a pas été vérifié.'],
+  [/^The web search didn't complete, so what the web says wasn't checked\.$/, 'La recherche web n’a pas abouti : l’avis du web n’a pas été vérifié.'],
+  [/^The web search took too long, so what the web says wasn't checked\.$/, 'La recherche web a pris trop de temps : l’avis du web n’a pas été vérifié.'],
+  [/^The web search is off, so what the web says wasn't checked\.$/, 'La recherche web est désactivée : l’avis du web n’a pas été vérifié.'],
+  [/^Today's web search budget is used up, so what the web says wasn't checked\.$/, 'Le budget de recherche web du jour est épuisé : l’avis du web n’a pas été vérifié.'],
 
   // Page analysis
   [/^AI page analysis is off \(no Anthropic API key\)\.$/, 'L’analyse de page par IA est désactivée (pas de clé API Anthropic).'],

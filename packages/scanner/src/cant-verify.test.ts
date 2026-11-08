@@ -28,3 +28,9 @@ describe('cantVerifyOnly', () => {
     expect(cantVerifyOnly(scan(line, { verdict: 'BLOCK', score: 100 }))).toBeNull();
   });
 });
+
+describe('cantVerifyOnly: sent away', () => {
+  it('a store that sent our check elsewhere has its own reason', () => {
+    expect(cantVerifyOnly(scan("Couldn't verify this store: it sent our check to google.com instead of showing its product page, so the cloud browser never saw the shop itself."))).toEqual({ reason: 'sent_away' });
+  });
+});

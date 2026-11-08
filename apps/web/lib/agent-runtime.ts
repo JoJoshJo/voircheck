@@ -1,6 +1,6 @@
 import 'server-only';
 import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
-import { createSearchCache, demoPeersForUrl, type SearchCache } from '@voircheck/agent/search';
+import { demoPeersForUrl } from '@voircheck/agent/search';
 import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
 import { agentTextEvents, draftText, neutralizeFakeNote, type AgentEvent } from './agent-view';
@@ -11,6 +11,7 @@ import { anthropicCapReached, DailyCapError, recordSpendQuietly } from './spend'
 import { runStoreScan, ScanBusyError } from './scan-runner';
 import { canonicalUrl, findFreshScan, finishLinkRequest, recordLinkRequest, recordSearchRequest } from './scans';
 import { toScanView } from './scan-view';
+import { searchCache } from './search-cache';
 
 /**
  * Server side of the shopping agent. Conversations live in this process's memory (spec 5.16: one web instance, like
@@ -89,9 +90,6 @@ export class ConversationBudgetError extends Error {
 }
 
 // One Agent Toolkit reader per process (it caches its token for an hour). Read-only get_order, sandbox forced.
-// Channel3 results from the last 10 minutes, shared by every conversation in this process (spec 5.4).
-const gs = globalThis as typeof globalThis & { __voircheckSearchCache?: SearchCache };
-const searchCache = () => (gs.__voircheckSearchCache ??= createSearchCache());
 
 const gr = globalThis as typeof globalThis & { __voircheckOrderReader?: ReturnType<typeof toolkitOrderReader> };
 function orderReader() {

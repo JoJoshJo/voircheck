@@ -13,6 +13,8 @@ export interface SignalOutcome {
   summary?: AiSummary;
   /** ai_page only: tokens and cost of the model call (operational; never part of the result). */
   usage?: AiUsage;
+  /** ai_page only: the page's main product as the model read it (feeds the price check; never part of the result). */
+  product?: { name: string; price: number; currency: string | null };
 }
 
 export interface AiUsage {
@@ -39,6 +41,8 @@ export interface ScanFacts {
   wellKnownRank?: number | null;
   /** The AI page analysis reported a prompt-injection attempt (hard rule: at least HOLD). */
   aiInjection?: boolean;
+  /** The research step found what other sites say about the store (sourced findings). Unchecked → see unchecked_core_signals. */
+  reputationChecked?: boolean;
 }
 
 export type Fetch = typeof fetch;

@@ -50,6 +50,13 @@
       "when": 1793754673584,
       "tag": "0006_blue_dreaming_celestial",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794099993306,
+      "tag": "0007_research_spend",
+      "breakpoints": true
     }
   ]
 }

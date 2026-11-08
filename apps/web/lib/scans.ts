@@ -1,16 +1,16 @@
 import 'server-only';
 import { candidates, scans, shoppingSessions } from '@voircheck/db/schema';
 import { scanCoversStore } from '@voircheck/paypal';
-import type { ScanResult } from '@voircheck/scanner';
+import { stripTracking, type ScanResult } from '@voircheck/scanner';
 import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq, gt, like, or } from 'drizzle-orm';
 import { getDb } from './db';
 
 export const CACHE_HOURS = 24;
 
-/** Canonical form for cache lookups: no fragment, lowercase host. */
+/** Canonical form for cache lookups and storage: no fragment, lowercase host, no ad/click tracking (gclid, utm_*, ...). */
 export function canonicalUrl(raw: string): string {
-  const u = new URL(raw.trim());
+  const u = new URL(stripTracking(new URL(raw.trim()).href));
   u.hash = '';
   return u.href;
 }
@@ -56,7 +56,8 @@ export async function saveScan(result: ScanResult): Promise<ScanRecord> {
       riskScore: result.score,
       verdict: result.verdict,
       signals: result.signals,
-      explanation: {},
+      // The research step's "what the web says" (evidence only); scans before Nov 7 have {}.
+      explanation: result.webReputation ? { webReputation: result.webReputation } : {},
       hardRulesTriggered: result.hardRulesTriggered,
       kernelReplayUrl: withoutQuery(result.kernel.replayUrl),
       scannedAt,

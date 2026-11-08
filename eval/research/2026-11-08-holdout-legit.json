@@ -1,0 +1,1127 @@
+{
+  "promptVersion": "r2",
+  "model": "claude-sonnet-5-5",
+  "rows": [
+    {
+      "url": "https://www.walmart.com/",
+      "label": "legit",
+      "domain": "walmart.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Recent Trustpilot reviews mostly describe returns, refunds, late deliveries and customer service problems, often involving third-party sellers.",
+              "fr": "Les avis Trustpilot récents décrivent surtout des soucis de retours, remboursements, retards et service client, souvent avec des vendeurs tiers."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.walmart.com",
+            "sourceTitle": "Walmart Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "ConsumerAffairs reviews report delayed or wrong online orders, missing items and unhelpful customer service.",
+              "fr": "Les avis ConsumerAffairs signalent des commandes en ligne en retard ou erronées, des articles manquants et un service client peu utile."
+            },
+            "sourceUrl": "https://www.consumeraffairs.com/retail/walmart.htm",
+            "sourceTitle": "Wal-Mart Reviews & Complaints"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "SmartCustomer shows a 2.0/5 average. Reviewers mention third-party sellers, counterfeit items and refund difficulties.",
+              "fr": "SmartCustomer affiche 2,0/5 en moyenne. Les avis évoquent vendeurs tiers, contrefaçons et difficultés de remboursement."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/walmart.com",
+            "sourceTitle": "Walmart Reviews - 4,415 Customer Reviews of walmart.com, Rated 2.0/5"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io average is 1.93 over 1,129 reviews. Some buyers are happy with grocery delivery; others lost money on third-party orders.",
+              "fr": "La moyenne Reviews.io est de 1,93 sur 1 129 avis. Certains aiment la livraison de courses, d'autres ont perdu de l'argent chez des vendeurs tiers."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/www-walmart-com",
+            "sourceTitle": "Walmart Reviews - Read 1,129 Genuine Customer Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "TopCashback members mostly praise low prices and easy shopping, though some report missing cashback.",
+              "fr": "Les membres TopCashback apprécient surtout les prix bas et la simplicité, mais certains signalent un cashback manquant."
+            },
+            "sourceUrl": "https://www.topcashback.com/walmart/reviews",
+            "sourceTitle": "Walmart Reviews and Feedback - TopCashback"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Security articles describe scams that impersonate Walmart (phishing, fake support numbers, gift cards). They target its customers, not the shop itself.",
+              "fr": "Des articles de sécurité décrivent des arnaques imitant Walmart (hameçonnage, faux support, cartes cadeaux). Elles visent ses clients, pas la boutique."
+            },
+            "sourceUrl": "https://lifelock.norton.com/learn/fraud/walmart-scams",
+            "sourceTitle": "13 Walmart scams to watch out for"
+          }
+        ],
+        "summary": {
+          "en": "No fraud warning list or scam report about walmart.com itself appeared. Review sites show many complaints (delivery, returns, third-party sellers) alongside some positive comments; scams imitating Walmart are widely documented.",
+          "fr": "Aucune liste d'alerte ni signalement d'arnaque visant walmart.com lui-même n'est apparu. Les sites d'avis montrent de nombreuses plaintes (livraison, retours, vendeurs tiers) et quelques avis positifs ; les arnaques imitant Walmart sont bien documentées."
+        },
+        "evidence": [
+          "From a web search about walmart.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.11231,
+      "searches": 2,
+      "ms": 10012
+    },
+    {
+      "url": "https://www.homedepot.com/",
+      "label": "legit",
+      "domain": "homedepot.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot: about 1.8/5. Buyers report late or lost online deliveries, refund trouble and hard-to-reach customer service.",
+              "fr": "Trustpilot : environ 1,8/5. Les acheteurs signalent des livraisons en retard ou perdues, des remboursements difficiles et un service client peu joignable."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.homedepot.com",
+            "sourceTitle": "The Home Depot Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "ConsumerAffairs reviews describe repeated delivery rescheduling, missing items and long waits on the phone, alongside some positive store experiences.",
+              "fr": "Les avis ConsumerAffairs décrivent des livraisons reportées, des articles manquants et de longues attentes au téléphone, avec aussi quelques avis positifs."
+            },
+            "sourceUrl": "https://www.consumeraffairs.com/homeowners/home_depot.htm?page=2",
+            "sourceTitle": "Home Depot Reviews (From First-hand Experiences)"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io shows an average of 1.64 over 1,481 reviews, mostly about delivery delays, installation and refunds.",
+              "fr": "Reviews.io affiche une moyenne de 1,64 sur 1 481 avis, surtout sur les retards de livraison, l'installation et les remboursements."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/homedepot",
+            "sourceTitle": "The Home Depot Reviews - Read 1,481 Genuine Customer Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "PissedConsumer: 2.0/5 from about 1,200 reviews. Main complaints are customer service, refunds, exchanges and cancellations.",
+              "fr": "PissedConsumer : 2,0/5 sur environ 1 200 avis. Les plaintes portent surtout sur le service client, les remboursements, échanges et annulations."
+            },
+            "sourceUrl": "https://home-depot.pissedconsumer.com/review.html",
+            "sourceTitle": "3.8K Home Depot Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Google customer reviews show 4.5/5 from about 1,571 reviews, with praise for pricing, selection, returns and helpful staff.",
+              "fr": "Les avis clients Google affichent 4,5/5 sur environ 1 571 avis, avec des éloges sur les prix, le choix, les retours et le personnel."
+            },
+            "sourceUrl": "https://customerreviews.google.com/v/merchant?q=homedepot.com&c=US&v=19",
+            "sourceTitle": "Home Depot - reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser (automated): domain registered in 1992, valid SSL, high traffic. It also notes several negative reviews.",
+              "fr": "ScamAdviser (automatique) : domaine enregistré en 1992, SSL valide, trafic élevé. Il signale aussi plusieurs avis négatifs."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/homedepot.com",
+            "sourceTitle": "homedepot.com Reviews"
+          }
+        ],
+        "summary": {
+          "en": "homedepot.com is a long-established retailer. Review sites show many complaints about online delivery, refunds and customer service, while Google reviews are mostly positive. No fake-shop reports were found.",
+          "fr": "homedepot.com est un détaillant établi de longue date. Les sites d'avis montrent de nombreuses plaintes sur la livraison en ligne, les remboursements et le service client, tandis que les avis Google sont plutôt positifs. Aucun signalement de faux site trouvé."
+        },
+        "evidence": [
+          "From a web search about homedepot.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.112494,
+      "searches": 2,
+      "ms": 10009
+    },
+    {
+      "url": "https://www.newegg.com/",
+      "label": "legit",
+      "domain": "newegg.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Many buyers report refund delays, returns/restocking fees, cancelled orders, lost parcels and marketplace-seller problems; some call it a scam.",
+              "fr": "Beaucoup d'acheteurs signalent remboursements lents, frais de retour, commandes annulées, colis perdus et soucis avec les vendeurs tiers."
+            },
+            "sourceUrl": "https://www.consumeraffairs.com/computers/newegg.html",
+            "sourceTitle": "Newegg.com Reviews & Complaints"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Rated 2.8/5 from 922 reviews; complaints about wrong items, denied returns, cancelled orders and unhelpful support.",
+              "fr": "Note de 2,8/5 sur 922 avis ; plaintes : mauvais article, retours refusés, commandes annulées, support peu utile."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/newegg.com",
+            "sourceTitle": "Newegg Reviews - 922 Customers Rate 2.8/5 (2026)"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot reviewers mostly somewhat happy: easy site, good prices, fast shipping; some report defective items and difficult returns.",
+              "fr": "Sur Trustpilot, avis plutôt satisfaits : site simple, bons prix, livraison rapide ; quelques articles défectueux et retours difficiles."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.newegg.com",
+            "sourceTitle": "Newegg Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Google store page shows 4.4/5 from 1,914 reviews, praising selection, prices and shipping; a few return issues.",
+              "fr": "Google affiche 4,4/5 sur 1 914 avis, qui louent choix, prix et livraison ; quelques soucis de retour."
+            },
+            "sourceUrl": "https://www.google.com/storepages?q=newegg.com&c=us&v=19",
+            "sourceTitle": "Newegg.com"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Aggregate rating 3.3/5 from 1,815 reviews across Google, Sitejabber and Trustindex; mixed experiences.",
+              "fr": "Note agrégée de 3,3/5 sur 1 815 avis (Google, Sitejabber, Trustindex) ; expériences mitigées."
+            },
+            "sourceUrl": "https://www.trustindex.io/reviews/www.newegg.com",
+            "sourceTitle": "Newegg Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated check: domain about 26 years old, valid SSL; notes seller reliability on the marketplace can't be determined.",
+              "fr": "Analyse automatique : domaine d'environ 26 ans, SSL valide ; la fiabilité des vendeurs de la place de marché n'est pas évaluée."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/newegg.com",
+            "sourceTitle": "newegg.com Reviews"
+          }
+        ],
+        "summary": {
+          "en": "Newegg is a long-established retailer with mixed reviews: many good experiences, but recurring complaints about returns, refunds, support and third-party marketplace sellers. No fraud warning-list entry appeared in these results.",
+          "fr": "Newegg est un revendeur établi de longue date aux avis partagés : beaucoup d'expériences positives, mais des plaintes récurrentes (retours, remboursements, support, vendeurs tiers). Aucune liste d'alerte à la fraude n'apparaît dans ces résultats."
+        },
+        "evidence": [
+          "From a web search about newegg.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.098087,
+      "searches": 2,
+      "ms": 9484
+    },
+    {
+      "url": "https://www.boots.com/",
+      "label": "legit",
+      "domain": "boots.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: over 130,000 reviews, mostly positive on easy ordering and prompt delivery; some mention damaged parcels and delays.",
+              "fr": "Trustpilot : plus de 130 000 avis, surtout positifs (commande facile, livraison rapide) ; quelques colis abîmés et retards signalés."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.boots.com",
+            "sourceTitle": "Boots Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io averages 2.6/5 over about 1,993 reviews, with complaints about customer service, undelivered parcels and packaging.",
+              "fr": "Reviews.io : moyenne de 2,6/5 sur environ 1 993 avis, avec plaintes sur le service client, colis non livrés et emballages."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/boots",
+            "sourceTitle": "Boots Reviews - Read 1,993 Genuine Customer Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "PissedConsumer: 629 reviews, average 2.3. Recurring complaints about non-delivery, damaged parcels, delayed refunds and support.",
+              "fr": "PissedConsumer : 629 avis, moyenne 2,3. Plaintes récurrentes : non-livraison, colis abîmés, remboursements tardifs, service client."
+            },
+            "sourceUrl": "https://boots.pissedconsumer.com/review.html",
+            "sourceTitle": "629 Boots Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser automated check rates the domain as very likely legitimate; domain registered in 1995, valid SSL.",
+              "fr": "Le contrôle automatique de ScamAdviser juge le domaine très probablement légitime ; enregistré en 1995, SSL valide."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/boots.com",
+            "sourceTitle": "boots.com Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Boots was impersonated in a 2026 phishing campaign (fake survey emails). Boots' own systems reportedly were not compromised.",
+              "fr": "Boots a été usurpé dans une campagne d'hameçonnage en 2026 (faux sondages). Ses propres systèmes n'auraient pas été compromis."
+            },
+            "sourceUrl": "https://www.retailgazette.co.uk/blog/2026/06/boots-impersonated-in-phishing-scam-targeting-nearly-9m-shoppers",
+            "sourceTitle": "Boots impersonated in phishing scam targeting nearly 9m shoppers - Retail Gazette"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scam Detector's automated score is 80.2/100, with no blacklist detected and a low scam probability.",
+              "fr": "Le score automatique de Scam Detector est de 80,2/100, sans liste noire détectée et avec une faible probabilité d'arnaque."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/boots-com-review",
+            "sourceTitle": "boots.com Reviews: Is this site a scam or legit?"
+          }
+        ],
+        "summary": {
+          "en": "Boots.com is a long-established retailer with large review volumes: Trustpilot is mostly positive, other sites show complaints about delivery and support. Fake emails imitate Boots; no warning list entry for the domain was found.",
+          "fr": "Boots.com est un commerçant ancien avec de nombreux avis : Trustpilot est plutôt positif, d'autres sites signalent des problèmes de livraison et de service client. Des faux e-mails imitent Boots ; aucune liste d'alerte ne cite ce domaine."
+        },
+        "evidence": [
+          "From a web search about boots.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.110015,
+      "searches": 2,
+      "ms": 10281
+    },
+    {
+      "url": "https://www.waterstones.com/",
+      "label": "legit",
+      "domain": "waterstones.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: TrustScore 4.5/5 from about 5,500 reviews, 75% five-star. Praise centres on helpful customer service.",
+              "fr": "Trustpilot : note 4,5/5 sur environ 5 500 avis, 75 % de 5 étoiles. Le service client est souvent salué."
+            },
+            "sourceUrl": "https://uk.trustpilot.com/review/www.waterstones.com",
+            "sourceTitle": "Waterstones Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Some Trustpilot buyers report damaged parcels, late pre-orders and, for overseas buyers, return postage disputes. About 16% give 1 star.",
+              "fr": "Sur Trustpilot, des acheteurs signalent colis abîmés, précommandes tardives et litiges de frais de retour à l'international. Env. 16 % donnent 1 étoile."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.waterstones.com?page=9",
+            "sourceTitle": "Waterstones Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser automated check: domain registered in 1995, valid SSL, high traffic, rated likely safe. This is an automated score.",
+              "fr": "Analyse automatique ScamAdviser : domaine créé en 1995, SSL valide, fort trafic, jugé probablement sûr. Il s'agit d'un score automatisé."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/waterstones.com",
+            "sourceTitle": "waterstones.com Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Full Fact: fake Facebook posts offering cheap 'Bestsellers Boxes' use non-Waterstones links. Waterstones says it only directs to waterstones.com.",
+              "fr": "Full Fact : de fausses publications Facebook proposent des « Bestsellers Boxes » via des liens étrangers à Waterstones, qui dit renvoyer seulement vers waterstones.com."
+            },
+            "sourceUrl": "https://fullfact.org/shopping/waterstones-bestsellers-box-fake",
+            "sourceTitle": "Waterstones isn’t offering cheap ‘Bestsellers Boxes’ in Facebook posts"
+          }
+        ],
+        "summary": {
+          "en": "Waterstones.com is a long-established shop with a high Trustpilot score; no fraud-list entry was found. Complaints mainly concern damaged parcels, delays and support. Fake social-media offers using its name exist.",
+          "fr": "Waterstones.com est une boutique ancienne, bien notée sur Trustpilot ; aucune liste de fraude ne la mentionne. Les plaintes portent surtout sur colis abîmés, retards et support. De fausses offres circulent sous son nom."
+        },
+        "evidence": [
+          "From a web search about waterstones.com (2 searches; the shop's own site is never searched).",
+          "1 finding without a real source link was left out."
+        ]
+      },
+      "costUsd": 0.117352,
+      "searches": 2,
+      "ms": 10185
+    },
+    {
+      "url": "https://www.leroymerlin.fr/",
+      "label": "legit",
+      "domain": "leroymerlin.fr",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot: 1.5/5 from about 19,500 reviews, mostly about delivery, refunds, after-sales service and marketplace partner sellers.",
+              "fr": "Trustpilot : 1,5/5 sur environ 19 500 avis, surtout livraison, remboursements, SAV et vendeurs partenaires de la marketplace."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.leroymerlin.fr",
+            "sourceTitle": "leroy merlin Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Custplace shows a 2.3/5 average, with complaints about customer service, delivery delays and empty shelves.",
+              "fr": "Custplace affiche 2,3/5, avec des plaintes sur le service client, les retards de livraison et les rayons vides."
+            },
+            "sourceUrl": "https://fr.custplace.com/leroy-merlin",
+            "sourceTitle": "Leroy Merlin · 2.3/5 · Informations, services et avis client..."
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Some Tripadvisor reviewers report damaged or incomplete online orders and slow refunds, including from partner sellers.",
+              "fr": "Des avis Tripadvisor signalent des commandes en ligne abîmées ou incomplètes et des remboursements lents, y compris chez des vendeurs partenaires."
+            },
+            "sourceUrl": "https://www.tripadvisor.com/Attraction_Review-g187147-d19120048-Reviews-Leroy_Merlin-Paris_Ile_de_France.html",
+            "sourceTitle": "Leroy Merlin - All You SHOULD Know Before Going (2026 Reviews)"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "iGraal cashback users (2,670 ratings) mostly praise product choice, helpful staff and a convenient site.",
+              "fr": "Les utilisateurs cashback d'iGraal (2 670 évaluations) vantent surtout le choix, les conseils du personnel et la praticité du site."
+            },
+            "sourceUrl": "https://fr.igraal.com/avis/leroy-merlin",
+            "sourceTitle": "ᐅ Leroy Merlin Avis : 2670 évaluations clients certifiées"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser: automated score is average to good. Domain registered in 1996, valid SSL; it also notes several negative reviews.",
+              "fr": "ScamAdviser : score automatique moyen à bon. Domaine créé en 1996, SSL valide ; mentionne aussi plusieurs avis négatifs."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/leroymerlin.fr",
+            "sourceTitle": "leroymerlin.fr Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scam Detector gives 75.8/100 (low risk). The domain belongs to Groupe Adeo and is not on any blacklist.",
+              "fr": "Scam Detector donne 75,8/100 (risque faible). Le domaine appartient à Groupe Adeo et n'est sur aucune liste noire."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/leroymerlin-fr-review",
+            "sourceTitle": "leroymerlin.fr Reviews: Is this site a scam or legit?"
+          }
+        ],
+        "summary": {
+          "en": "Leroy Merlin is a long-established site (domain from 1996, owned by Groupe Adeo). No scam report or warning list entry appeared in these results. Reviews are mixed to poor on delivery, refunds and marketplace sellers.",
+          "fr": "Leroy Merlin est un site ancien (domaine de 1996, propriété du Groupe Adeo). Ces résultats ne montrent aucun signalement d'arnaque ni liste d'alerte. Les avis sont mitigés à mauvais sur livraison, remboursements et vendeurs marketplace."
+        },
+        "evidence": [
+          "From a web search about leroymerlin.fr (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.11345,
+      "searches": 2,
+      "ms": 10331
+    },
+    {
+      "url": "https://www.cdiscount.com/",
+      "label": "legit",
+      "domain": "cdiscount.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot shows about 4.1/5 from roughly 285,000 reviews, with many praising prices and quick delivery; some report problems.",
+              "fr": "Trustpilot affiche environ 4,1/5 sur quelque 285 000 avis ; beaucoup louent prix et livraison, certains signalent des problèmes."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.cdiscount.com",
+            "sourceTitle": "Cdiscount Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "French buyers report poor after-sales service, refused warranties, return costs and marketplace sellers who are hard to deal with.",
+              "fr": "Des acheteurs français signalent un SAV défaillant, des garanties refusées, des frais de retour et des vendeurs marketplace difficiles."
+            },
+            "sourceUrl": "https://fr.trustpilot.com/review/c.discount.com",
+            "sourceTitle": "Avis de C Discount"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io rates it 1.7/5 on 25 reviews. Some call it a scam over refunds, non-delivery and refurbished goods sold as new.",
+              "fr": "Reviews.io note 1,7/5 sur 25 avis. Certains parlent d'arnaque : remboursements, non-livraison, produits reconditionnés vendus neufs."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/cdiscount",
+            "sourceTitle": "Cdiscount Reviews - Read 25 Genuine Customer Reviews |"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "SmartCustomer gives 2.2/5 on 24 reviews, mostly about cancelled orders, unreachable support and refused warranties.",
+              "fr": "SmartCustomer donne 2,2/5 sur 24 avis : commandes annulées, support injoignable, garanties refusées."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/cdiscount.com",
+            "sourceTitle": "Cdiscount Reviews - 24 Customer Reviews of cdiscount.com, Rated 2.2/5"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Signal-Arnaques says few scams occur on the platform itself; most are phishing emails and fake sites using the Cdiscount name.",
+              "fr": "Signal-Arnaques indique que peu d'arnaques viennent de la plateforme ; la plupart sont des faux mails et sites imitant Cdiscount."
+            },
+            "sourceUrl": "https://www.signal-arnaques.com/tag/cdiscount",
+            "sourceTitle": "Liste des Arnaques qui gravitent autour de Cdiscount"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated checks (ScamAdviser, Scam Detector 81.5/100) see an old, well-known domain; they cannot judge the marketplace sellers.",
+              "fr": "Des analyses automatiques (ScamAdviser, Scam Detector 81,5/100) voient un domaine ancien et connu, sans juger les vendeurs marketplace."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/cdiscount.com",
+            "sourceTitle": "ScamAdviser.com"
+          }
+        ],
+        "summary": {
+          "en": "Cdiscount is a large, long-established French shop with a good Trustpilot average. Complaints focus on after-sales service, refunds and marketplace sellers, and fake sites imitate it.",
+          "fr": "Cdiscount est une grande enseigne française ancienne, bien notée sur Trustpilot. Les plaintes portent sur le SAV, les remboursements et les vendeurs marketplace ; des faux sites l'imitent."
+        },
+        "evidence": [
+          "From a web search about cdiscount.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.118836,
+      "searches": 2,
+      "ms": 9644
+    },
+    {
+      "url": "https://www.laredoute.fr/",
+      "label": "legit",
+      "domain": "laredoute.fr",
+      "reputation": {
+        "status": "warn",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot (~4/5, 13,000+ reviews): many praise the service, but several report late deliveries, slow refunds and hard-to-reach support.",
+              "fr": "Trustpilot (~4/5, plus de 13 000 avis) : beaucoup de satisfaits, mais plusieurs signalent retards, remboursements lents et service client difficile à joindre."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.laredoute.fr",
+            "sourceTitle": "La Redoute Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trusted Shops: 3.6/5 from about 38,000 reviews; complaints about delivery, marketplace items and unanswered customer service.",
+              "fr": "Trusted Shops : 3,6/5 sur environ 38 000 avis ; plaintes sur la livraison, les articles marketplace et un service client sans réponse."
+            },
+            "sourceUrl": "https://www.trustedshops.fr/evaluation/info_XA3F5BBDE34B5AD3FB64015EB823AC7C6.html&utm_source",
+            "sourceTitle": "Avis laredoute.fr"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "ResellerRatings: only 5 reviews, rated 1/5, citing defective items, ignored emails and poor support. Very small sample.",
+              "fr": "ResellerRatings : seulement 5 avis, note 1/5, évoquant articles défectueux, e-mails ignorés et support médiocre. Échantillon très réduit."
+            },
+            "sourceUrl": "https://www.resellerratings.com/store/La_Redoute",
+            "sourceTitle": "La Redoute Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser automated score: likely legit. Domain registered in 1998. Its few user comments look like recovery-scam spam.",
+              "fr": "Score automatique ScamAdviser : probablement légitime. Domaine enregistré en 1998. Les rares commentaires ressemblent à du spam d'arnaque au recouvrement."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/laredoute.fr",
+            "sourceTitle": "laredoute.fr Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scamdoc: average automated trust score, very old domain, popular site; some negative reviews noted, some about marketplace sellers.",
+              "fr": "Scamdoc : score automatique moyen, domaine très ancien, site populaire ; quelques avis négatifs, certains concernant des vendeurs marketplace."
+            },
+            "sourceUrl": "https://www.scamdoc.com/view/4285",
+            "sourceTitle": "Laredoute.fr reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scam Detector automated rank 80.7/100, low scam probability, not on blacklists.",
+              "fr": "Classement automatique Scam Detector 80,7/100, faible probabilité d'arnaque, absent des listes noires."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/laredoute-fr-review",
+            "sourceTitle": "laredoute.fr Reviews: Is this site a scam or legit?"
+          }
+        ],
+        "summary": {
+          "en": "La Redoute is a long-established French retailer (domain since 1998) with mixed reviews: many satisfied buyers, plus recurring complaints about delivery, refunds and support. No fraud warning list entry was found.",
+          "fr": "La Redoute est un distributeur français ancien (domaine de 1998) aux avis mitigés : beaucoup de clients satisfaits, mais des plaintes récurrentes sur livraison, remboursements et support. Aucune liste d'alerte à la fraude trouvée."
+        },
+        "evidence": [
+          "From a web search about laredoute.fr (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.108591,
+      "searches": 2,
+      "ms": 10128
+    },
+    {
+      "url": "https://www.maisonsdumonde.com/",
+      "label": "legit",
+      "domain": "maisonsdumonde.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot: about 3.4-3.5/5 from 13K reviews. Many complaints about damaged goods, slow refunds, hard-to-reach support and third-party sellers; some praise.",
+              "fr": "Trustpilot : environ 3,4-3,5/5 sur 13 000 avis. Nombreuses plaintes : colis abîmés, remboursements lents, SAV injoignable, vendeurs tiers ; aussi des avis positifs."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/maisonsdumonde.com/fr",
+            "sourceTitle": "Maisons du Monde France Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io: 148 reviews averaging 1.22. Buyers report damaged items, refused returns, unpaid refunds and no working contact. A few use the word scam.",
+              "fr": "Reviews.io : 148 avis, moyenne 1,22. Articles abîmés, retours refusés, remboursements attendus, contact impossible. Quelques avis parlent d'arnaque."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/maisonsdumonde",
+            "sourceTitle": "Maisons du Monde Reviews - Read 148 Genuine Customer Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot UK: 3.5/5 from 17K reviews. Several buyers praise product quality, fast careful delivery and helpful store staff.",
+              "fr": "Trustpilot UK : 3,5/5 sur 17 000 avis. Plusieurs clients saluent la qualité, la livraison soignée et le personnel en magasin."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.maisonsdumonde.com/uk/en",
+            "sourceTitle": "Maisons du Monde UK Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser's automated check rates it likely safe: domain 22 years old, registered to Maisons du Monde France SAS, valid SSL. Automated score only.",
+              "fr": "Le contrôle automatique de ScamAdviser le juge probablement fiable : domaine de 22 ans, Maisons du Monde France SAS, SSL valide. Score automatisé."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/maisonsdumonde.com",
+            "sourceTitle": "maisonsdumonde.com Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "On the Spanish site (maisonsdumonde.es, 2.5/5), some buyers report fake third-party vendors and lost money. A different domain, shown for context.",
+              "fr": "Sur le site espagnol (maisonsdumonde.es, 2,5/5), des clients signalent de faux vendeurs tiers et de l'argent perdu. Autre domaine, donné à titre de contexte."
+            },
+            "sourceUrl": "https://ie.trustpilot.com/review/maisonsdumonde.es",
+            "sourceTitle": "Maisons du Monde Reviews"
+          }
+        ],
+        "summary": {
+          "en": "The domain belongs to an established company (22 years old) with no fraud-list entry found. Review sites show mixed ratings, with frequent complaints about delivery damage, refunds and customer service, especially for third-party sellers.",
+          "fr": "Le domaine appartient à une entreprise établie (22 ans) et aucune liste de fraude ne le mentionne. Les avis sont partagés : plaintes fréquentes sur les dégâts de livraison, remboursements et service client, surtout pour les vendeurs tiers."
+        },
+        "evidence": [
+          "From a web search about maisonsdumonde.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.1256,
+      "searches": 2,
+      "ms": 10325
+    },
+    {
+      "url": "https://www.conrad.de/",
+      "label": "legit",
+      "domain": "conrad.de",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: 4.1/5 from about 18,000 reviews, 65% five-star, 15% one-star.",
+              "fr": "Trustpilot : 4,1/5 sur environ 18 000 avis, 65 % de 5 étoiles, 15 % d'une étoile."
+            },
+            "sourceUrl": "https://au.trustpilot.com/review/www.conrad.de",
+            "sourceTitle": "Conrad Electronic SE Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Many buyers report items shown in stock but delayed for months or cancelled, and unanswered support emails. Some call it fraud.",
+              "fr": "Plusieurs acheteurs signalent des articles en stock mais retardés ou annulés, et un support sans réponse. Certains parlent de fraude."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.conrad.de",
+            "sourceTitle": "Conrad Electronic SE Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io lists 3 reviews (2.0/5), one saying a refund came only after a chargeback. Very small sample.",
+              "fr": "Reviews.io : 3 avis (2,0/5), dont un avec remboursement obtenu seulement après rétrofacturation. Très petit échantillon."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/conrad",
+            "sourceTitle": "Conrad Electronic AG Reviews - Read 3 Genuine Customer Reviews |"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "VerifyPilot shows 6 reviews averaging 2/5, mostly about slow delivery and poor customer service.",
+              "fr": "VerifyPilot : 6 avis, moyenne 2/5, surtout sur la lenteur de livraison et le service client."
+            },
+            "sourceUrl": "https://www.verifypilot.com/company/conrad",
+            "sourceTitle": "Conrad Reviews & Ratings 2026"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "AskmeOffers shows mixed reviews (69% excellent, 21% terrible) and a German company address in Hirschau.",
+              "fr": "AskmeOffers : avis mitigés (69 % excellents, 21 % terribles) et une adresse d'entreprise allemande à Hirschau."
+            },
+            "sourceUrl": "https://askmeoffers.com/users-review/conrad-de",
+            "sourceTitle": "Conrad Electronic SE Reviews - Legit or Scam?"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated check: not on any of 9 blocklists, valid HTTPS, good traffic rank.",
+              "fr": "Analyse automatique : absent de 9 listes de blocage, HTTPS valide, bon classement de trafic."
+            },
+            "sourceUrl": "https://www.scamvoid.net/check/conrad.de",
+            "sourceTitle": "Is Conrad.de Safe ?"
+          }
+        ],
+        "summary": {
+          "en": "Conrad.de is a long-established German electronics shop with a 4.1/5 Trustpilot score. Recurring complaints concern stock shown as available, long delays, cancellations and slow support. No fraud-list entry was found.",
+          "fr": "Conrad.de est une boutique allemande d'électronique établie de longue date, notée 4,1/5 sur Trustpilot. Les plaintes portent sur des stocks affichés, des retards, des annulations et un support lent. Aucune liste de fraude trouvée."
+        },
+        "evidence": [
+          "From a web search about conrad.de (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.112977,
+      "searches": 2,
+      "ms": 9796
+    },
+    {
+      "url": "https://www.galaxus.de/",
+      "label": "legit",
+      "domain": "galaxus.de",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trusted Shops rating 1.41 (29 reviews): buyers report late deliveries, hard-to-reach support and slow refunds or warranty handling.",
+              "fr": "Trusted Shops : note de 1,41 (29 avis). Retards de livraison, service client difficile à joindre, remboursements et garanties lents."
+            },
+            "sourceUrl": "https://www.trustedshops.de/bewertung/galaxus.de",
+            "sourceTitle": "galaxus.de Erfahrungen: Lies 29 Bewertungen zu galaxus.de"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: about 4.5/5 from roughly 14,000 reviews, mostly praising fast delivery; some complain about marketplace dealers and warranty.",
+              "fr": "Trustpilot : environ 4,5/5 sur 14 000 avis, surtout de la livraison rapide ; quelques plaintes sur les vendeurs partenaires et la garantie."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/galaxus.de",
+            "sourceTitle": "Galaxus.de Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "billiger.de has 169 user ratings, a mix of praise for easy orders and complaints about a long repair case and customer service.",
+              "fr": "billiger.de : 169 avis, entre éloges de commandes simples et plaintes sur un dossier de réparation long et le service client."
+            },
+            "sourceUrl": "https://www.billiger.de/shops/21754-galaxus-de",
+            "sourceTitle": "Shopbewertungen & Shop-Infos für Galaxus.de"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "An older tech blog article criticises changing stock statuses and shifting delivery dates after ordering; it is a complaint about practices, not non-delivery.",
+              "fr": "Un ancien article de blog critique des statuts de stock et des dates de livraison qui changent après la commande ; c'est une plainte, pas une absence de livraison."
+            },
+            "sourceUrl": "https://www.igorslab.de/en/galaxus-tops-media-markt-by-a-long-way-nasty-scam-with-false-delivery-dates-and-a-fictitious-external-warehouse-investigative",
+            "sourceTitle": "Galaxus tops Media Markt"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser's automatic check rates the site as likely legitimate, with a valid SSL certificate and refund-friendly payment methods.",
+              "fr": "Le contrôle automatique de ScamAdviser juge le site probablement légitime, avec certificat SSL valide et paiements remboursables."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/galaxus.de",
+            "sourceTitle": "galaxus.de Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scam Detector's automated score is low (23.5/100), based on an algorithm and a recent domain date, with no blacklist detection. It is not a buyer report.",
+              "fr": "Le score automatique de Scam Detector est bas (23,5/100), sans liste noire détectée. Ce n'est pas un témoignage d'acheteurs."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/galaxus-de-review",
+            "sourceTitle": "galaxus.de Reviews: Is this site a scam or legit?"
+          }
+        ],
+        "summary": {
+          "en": "No fraud warning-list entry was found. Reviews are mixed: high Trustpilot scores, but many complaints about delays, marketplace sellers, support and refunds. Automated scores disagree.",
+          "fr": "Aucune entrée sur une liste d'alerte anti-fraude n'a été trouvée. Les avis sont partagés : bonnes notes sur Trustpilot, mais plaintes sur retards, vendeurs partenaires, support et remboursements."
+        },
+        "evidence": [
+          "From a web search about galaxus.de (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.095322,
+      "searches": 2,
+      "ms": 10865
+    },
+    {
+      "url": "https://www.douglas.de/",
+      "label": "legit",
+      "domain": "douglas.de",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: 4.5/5 from about 23,000 reviews, 74% five-star. Buyers praise delivery, prices and click-and-collect.",
+              "fr": "Trustpilot : 4,5/5 sur environ 23 000 avis, 74 % de 5 étoiles. Livraison, prix et retrait en magasin appréciés."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.douglas.de",
+            "sourceTitle": "Parfümerie Douglas GmbH & Co. KG Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "About 15% one-star reviews: orders cancelled after payment, undeliverable address changes, slow customer service, website lag.",
+              "fr": "Environ 15 % d'avis 1 étoile : commandes annulées après paiement, adresse non modifiable, service client lent, site lent."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.douglas.de",
+            "sourceTitle": "Parfümerie Douglas GmbH & Co. KG Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser's automated check rates douglas.de as very likely legitimate (valid SSL, positive reviews).",
+              "fr": "L'analyse automatique de ScamAdviser juge douglas.de très probablement légitime (SSL valide, avis positifs)."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/douglas.de",
+            "sourceTitle": "douglas.de Reviews"
+          }
+        ],
+        "summary": {
+          "en": "douglas.de has about 23,000 Trustpilot reviews averaging 4.5/5, with some complaints about cancelled orders and customer service. Look-alike fake Douglas sites exist, so check the exact address.",
+          "fr": "douglas.de compte environ 23 000 avis Trustpilot (4,5/5), avec des plaintes sur des annulations et le service client. Des faux sites imitent Douglas : vérifiez bien l'adresse exacte."
+        },
+        "evidence": [
+          "From a web search about douglas.de (2 searches; the shop's own site is never searched).",
+          "1 finding without a real source link was left out."
+        ]
+      },
+      "costUsd": 0.085284,
+      "searches": 2,
+      "ms": 7776
+    },
+    {
+      "url": "https://al-holz.at/",
+      "label": "legit",
+      "domain": "al-holz.at",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (3 searches) found nothing written about al-holz.at by other sites."
+        ]
+      },
+      "costUsd": 0.06966,
+      "searches": 3,
+      "ms": 5474
+    },
+    {
+      "url": "https://aureperlia.at/",
+      "label": "legit",
+      "domain": "aureperlia.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Listed with the Austrian E-Commerce Gütezeichen (cert. ECG-2426), valid 04.02.2026 to 04.02.2027; seller Aure Perlia, Perchtoldsdorf.",
+              "fr": "Certifié par le label autrichien E-Commerce Gütezeichen (ECG-2426), valable du 04.02.2026 au 04.02.2027 ; vendeur Aure Perlia, Perchtoldsdorf."
+            },
+            "sourceUrl": "https://www.guetezeichen.at/zertifizierte-websites/guetezeichen/pdf/?tx_wpkunden_shoppdf%5Baction%5D=showpdf&tx_wpkunden_shoppdf%5Bcontroller%5D=Shop&tx_wpkunden_shoppdf%5Bshop%5D=1615&cHash=f25f6a8c474c68480648f6048f4d758f",
+            "sourceTitle": "Österreichisches E-Commerce-Gütezeichen"
+          }
+        ],
+        "summary": {
+          "en": "The only source found about this domain is an Austrian E-Commerce Gütezeichen certificate, valid until Feb 2027. No buyer reviews, scam reports or warning-list entries turned up in my searches.",
+          "fr": "La seule source trouvée sur ce domaine est un certificat autrichien E-Commerce Gütezeichen valable jusqu'en février 2027. Aucun avis d'acheteur, signalement d'arnaque ou liste d'alerte trouvé."
+        },
+        "evidence": [
+          "From a web search about aureperlia.at (3 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.060933,
+      "searches": 3,
+      "ms": 8238
+    },
+    {
+      "url": "https://funstasy.at/",
+      "label": "legit",
+      "domain": "funstasy.at",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (3 searches) found nothing written about funstasy.at by other sites."
+        ]
+      },
+      "costUsd": 0.078442,
+      "searches": 3,
+      "ms": 7891
+    },
+    {
+      "url": "https://www.heysimeon.com/",
+      "label": "legit",
+      "domain": "heysimeon.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "A brand called heySimeon sells a washable rug on Amazon.de, with no customer reviews yet. Not a review of heysimeon.com itself.",
+              "fr": "Une marque heySimeon vend un tapis lavable sur Amazon.de, sans avis clients. Ce n'est pas un avis sur heysimeon.com lui-même."
+            },
+            "sourceUrl": "https://www.amazon.de/heySimeon-Premium-Teppich-waschbar-Pflegeleichter/dp/B0DGY5DQ3R",
+            "sourceTitle": "heySimeon Premium Washable Rug"
+          }
+        ],
+        "summary": {
+          "en": "No review, scam report or warning-list entry about heysimeon.com itself was found. Similarly named sites (heysimon.fr, heysimone.ca) are unrelated, so little is known about this shop.",
+          "fr": "Aucun avis, signalement d'arnaque ni liste d'alerte concernant heysimeon.com n'a été trouvé. Des sites au nom proche (heysimon.fr, heysimone.ca) sont sans lien ; on sait donc peu de choses sur cette boutique."
+        },
+        "evidence": [
+          "The web search (2 searches) found only passing mentions of heysimeon.com, no reviews or warnings."
+        ]
+      },
+      "costUsd": 0.050024,
+      "searches": 2,
+      "ms": 5904
+    },
+    {
+      "url": "https://lottacurls.com/",
+      "label": "legit",
+      "domain": "lottacurls.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot: 4.3/5 from 79 reviews, 80% five-star. Buyers praise the curling ribbon and fast shipping; the shop replies to negative reviews.",
+              "fr": "Trustpilot : 4,3/5 sur 79 avis, 80 % de 5 étoiles. Les clients louent le ruban et la livraison ; la boutique répond aux avis négatifs."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/lottacurls.com",
+            "sourceTitle": "Lotta Curls Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Some 1-star reviews cite month-long international delivery and a refund minus €9 after a parcel returned unclaimed. The shop says couriers cause this.",
+              "fr": "Des avis 1 étoile citent une livraison d'un mois et un remboursement moins 9 € après un colis retourné. La boutique en attribue la cause aux transporteurs."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/lottacurls.com",
+            "sourceTitle": "Lotta Curls Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Store-analytics page: domain registered in April 2022, mainly targets the German market. Automated estimates, not a review.",
+              "fr": "Page d'analyse : domaine enregistré en avril 2022, vise surtout le marché allemand. Estimations automatiques, pas un avis."
+            },
+            "sourceUrl": "https://onek.com/store/lottacurls.com",
+            "sourceTitle": "lottacurls.com Sales Tracker and Winning Products"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "The brand is also sold by third-party retailers such as Bellaffair and Ecco Verde, and describes itself as designed in Austria.",
+              "fr": "La marque est aussi vendue par des détaillants tiers comme Bellaffair et Ecco Verde, et se dit conçue en Autriche."
+            },
+            "sourceUrl": "https://www.bellaffair.com/lotta-curls",
+            "sourceTitle": "Lotta Curls Online Shop"
+          }
+        ],
+        "summary": {
+          "en": "No scam report or fraud warning-list entry found for lottacurls.com. Trustpilot shows mostly good reviews, with some delivery and refund complaints, mainly for international orders shipped from Austria.",
+          "fr": "Aucun signalement d'arnaque ni inscription sur une liste d'alerte trouvé pour lottacurls.com. Trustpilot montre surtout de bons avis, avec quelques plaintes de livraison et de remboursement à l'international."
+        },
+        "evidence": [
+          "From a web search about lottacurls.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.076906,
+      "searches": 2,
+      "ms": 8212
+    },
+    {
+      "url": "https://maluch.at/",
+      "label": "legit",
+      "domain": "maluch.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trusted Shops: about 4.76/5 from 218 recent reviews (1,349 total). Buyers praise fit, delivery and service; a few mention delays or delivery errors.",
+              "fr": "Trusted Shops : environ 4,76/5 sur 218 avis récents (1 349 au total). Les clients louent ajustement, livraison et service ; quelques retards ou erreurs signalés."
+            },
+            "sourceUrl": "https://www.trustedshops.at/bewertung/maluch-at",
+            "sourceTitle": "Bewertungen zu Maluch Premium Autozubehör: Alle Infos zu Maluch Premium Autozubehör"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "One reviewer says a refund for a damaged item was still pending after nearly 2 months. Overall rating on this page is 4.68/5 from 237 reviews.",
+              "fr": "Un client dit attendre depuis près de 2 mois le remboursement d'un article endommagé. Note globale sur cette page : 4,68/5 pour 237 avis."
+            },
+            "sourceUrl": "https://www.trstd.com/de-at/reviews/maluch-at",
+            "sourceTitle": "Bewertungen zu Maluch Premium Autozubehör"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Listed as Maluch Premium Autozubehör, Simonsgasse 12, 1220 Vienna. Reviewers also mention visiting a showroom in Vienna.",
+              "fr": "Référencé comme Maluch Premium Autozubehör, Simonsgasse 12, 1220 Vienne. Des clients mentionnent aussi une visite du magasin à Vienne."
+            },
+            "sourceUrl": "https://www.trustedshops.at/bewertung/maluch-at",
+            "sourceTitle": "Bewertungen zu Maluch Premium Autozubehör: Alle Infos zu Maluch Premium Autozubehör"
+          }
+        ],
+        "summary": {
+          "en": "Maluch.at is reviewed on Trusted Shops with a high rating (about 4.7/5) and a physical Vienna address. A few buyers report delivery errors or slow refunds. No scam report or warning list entry found.",
+          "fr": "Maluch.at est évalué sur Trusted Shops avec une note élevée (environ 4,7/5) et une adresse physique à Vienne. Quelques clients signalent des erreurs de livraison ou des remboursements lents. Aucun signalement d'arnaque trouvé."
+        },
+        "evidence": [
+          "From a web search about maluch.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.083462,
+      "searches": 2,
+      "ms": 7255
+    },
+    {
+      "url": "https://dorascheesecake.com/",
+      "label": "legit",
+      "domain": "dorascheesecake.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Facebook page for an online cheesecake shop in Vienna, Austria, showing 100% recommend from 11 reviews. Small sample.",
+              "fr": "Page Facebook d'une boutique de cheesecakes en ligne à Vienne (Autriche), 100 % de recommandations sur 11 avis. Échantillon réduit."
+            },
+            "sourceUrl": "https://www.facebook.com/dorascheesecake",
+            "sourceTitle": "Dora's Cheesecake (@dorascheesecake)"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Instagram profile describes the first online cheesecake shop in Vienna, with about 490 followers and 85 posts.",
+              "fr": "Le profil Instagram se présente comme la première boutique de cheesecakes en ligne de Vienne, avec environ 490 abonnés et 85 publications."
+            },
+            "sourceUrl": "https://www.instagram.com/doras.cheesecake",
+            "sourceTitle": "Dora's Cheesecake (@doras.cheesecake) • Instagram photos and videos"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "An older Kickstarter project by the shop's founder was cancelled by its creator after reaching €706 of €17,500.",
+              "fr": "Un ancien projet Kickstarter de la fondatrice a été annulé par sa créatrice, avec 706 € récoltés sur 17 500 €."
+            },
+            "sourceUrl": "https://www.kicktraq.com/projects/1527620168/doras-cheesecake",
+            "sourceTitle": "Dora's Cheesecake by Dora Hably :: Kicktraq"
+          }
+        ],
+        "summary": {
+          "en": "The web shows a small Vienna-based online cheesecake business with social media pages and few reviews. No scam reports or warning-list entries were found for this domain.",
+          "fr": "Le web montre une petite boutique de cheesecakes en ligne basée à Vienne, avec des pages de réseaux sociaux et peu d'avis. Aucun signalement d'arnaque ni inscription sur une liste d'alerte n'a été trouvé pour ce domaine."
+        },
+        "evidence": [
+          "From a web search about dorascheesecake.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.05608,
+      "searches": 2,
+      "ms": 7956
+    },
+    {
+      "url": "https://natur-versand.at/",
+      "label": "legit",
+      "domain": "natur-versand.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustindex lists about 495 reviews averaging 4.9/5 for Robert Franz Naturversand (mostly Google), praising fast delivery; it also shows a Top Rated certificate.",
+              "fr": "Trustindex recense environ 495 avis à 4,9/5 pour Robert Franz Naturversand (surtout Google), avec livraison rapide ; un certificat Top Rated est affiché."
+            },
+            "sourceUrl": "https://www.trustindex.io/reviews/natur-versand.at/lang/de",
+            "sourceTitle": "Robert Franz Naturversand n.d. OG Reviews 2025"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "The page identifies the operator as Robert Franz Naturversand n.d. OG, based in Pölfing-Brunn, Austria. Ratings are aggregated and may be curated.",
+              "fr": "La page indique l'exploitant : Robert Franz Naturversand n.d. OG, à Pölfing-Brunn (Autriche). Les notes sont agrégées et peuvent être sélectionnées."
+            },
+            "sourceUrl": "https://www.trustindex.io/reviews/natur-versand.at",
+            "sourceTitle": "Robert Franz Naturversand n.d. OG Bewertungen 2024"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "An affiliate-style review site repeats the 4.9 rating and notes the product effects are not medically confirmed. It may be promotional.",
+              "fr": "Un site d'avis de type affilié reprend la note de 4,9 et précise que les effets des produits ne sont pas confirmés médicalement. Source possiblement promotionnelle."
+            },
+            "sourceUrl": "https://robert-franz-naturversand.tenereteam.com",
+            "sourceTitle": "Robert Franz Naturversand Reviews - Read Customer Reviews of Robert-franz-naturversand.info"
+          }
+        ],
+        "summary": {
+          "en": "The searches found no scam reports or warning-list entries for this domain. Review pages show a high average rating (about 4.9/5) for the Austrian operator, though they come from aggregators.",
+          "fr": "Les recherches n'ont trouvé ni signalement d'arnaque ni inscription sur une liste d'alerte pour ce domaine. Les pages d'avis montrent une note moyenne élevée (environ 4,9/5), issue d'agrégateurs."
+        },
+        "evidence": [
+          "From a web search about natur-versand.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.069844,
+      "searches": 2,
+      "ms": 7520
+    }
+  ]
+}

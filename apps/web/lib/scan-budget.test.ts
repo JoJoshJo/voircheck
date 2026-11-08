@@ -4,8 +4,9 @@ import * as schema from '@voircheck/db/schema';
 
 vi.mock('server-only', () => ({}));
 
-const spend = vi.hoisted(() => ({ kernelOk: true, aiOk: true, recorded: [] as Array<{ anthropicUsd: number; kernelScans: number }> }));
-const scanner = vi.hoisted(() => ({ visit: true, aiCost: 0.031, throwBefore: null as Error | null, analyzerUsed: null as unknown, scanCalls: 0 }));
+const spend = vi.hoisted(() => ({ kernelOk: true, aiOk: true, researchOk: true, recorded: [] as Array<{ anthropicUsd: number; kernelScans: number }>, research: [] as number[] }));
+const scanner = vi.hoisted(() => ({ visit: true, aiCost: 0.031, researchCost: 0.07, throwBefore: null as Error | null, analyzerUsed: null as unknown, researcherUsed: undefined as unknown, scanCalls: 0 }));
+const realResearcher = vi.hoisted(() => ({ reputation: async () => ({}), prices: async () => ({}) }));
 const placeholder = vi.hoisted(() => ({ analyze: async () => ({}) }));
 const kernel = vi.hoisted(() => ({ cleanup: null as Promise<void> | null }));
 
@@ -17,36 +18,42 @@ vi.mock('./spend', async (orig) => {
     reserveKernelScan: vi.fn(async () => spend.kernelOk),
     reserveAiScan: vi.fn(async () => spend.aiOk),
     recordSpendQuietly: vi.fn(async (a: { anthropicUsd: number; kernelScans: number }) => void spend.recorded.push(a)),
+    reserveResearch: vi.fn(async () => spend.researchOk),
+    recordResearchSpendQuietly: vi.fn(async (usd: number) => void spend.research.push(usd)),
   };
 });
 vi.mock('./scans', () => ({ saveScan: async (r: unknown) => r, latestVerdictForStore: async () => null }));
-vi.mock('@voircheck/agent/search', () => ({ demoPeersForUrl: () => null }));
+vi.mock('@voircheck/agent/search', () => ({ demoPeersForUrl: () => null, searchProducts: async () => ({ status: 'unavailable', reason: 'test' }) }));
 vi.mock('@voircheck/scanner', () => ({
   placeholderAnalyzer: placeholder,
   anthropicAnalyzer: () => ({ analyze: async () => ({}) }),
+  anthropicResearcher: () => realResearcher,
+  notChecked: (why: string) => ({ status: 'unavailable', findings: [], evidence: [why] }),
   kernelVisitor: (o: { onCleanup?: (p: Promise<void>) => void }) => ({
     visit: async () => {
       if (kernel.cleanup) o.onCleanup?.(kernel.cleanup);
       return { pages: [] };
     },
   }),
-  scanStore: async (_input: unknown, deps: { visitor: { visit: (u: string[]) => Promise<unknown> } | null; analyzer: { analyze: (p: null) => Promise<unknown> } }) => {
+  scanStore: async (_input: unknown, deps: { visitor: { visit: (u: string[]) => Promise<unknown> } | null; analyzer: { analyze: (p: null) => Promise<unknown> }; researcher: unknown }) => {
     scanner.scanCalls++;
     scanner.analyzerUsed = deps.analyzer;
+    scanner.researcherUsed = deps.researcher;
     if (scanner.throwBefore) throw scanner.throwBefore; // e.g. the SSRF check, before KERNEL
     if (scanner.visit) await deps.visitor?.visit(['https://shop.example/']);
     await deps.analyzer.analyze(null);
-    return { result: { url: 'https://shop.example/' }, meta: { ai: deps.analyzer === placeholder ? undefined : { costUsd: scanner.aiCost } } };
+    return { result: { url: 'https://shop.example/' }, meta: { ai: deps.analyzer === placeholder ? undefined : { costUsd: scanner.aiCost }, research: deps.researcher === realResearcher ? [{ costUsd: scanner.researchCost }] : [] } };
   },
 }));
 
 const { MAX_FRESH_SCANS_RUNNING, runStoreScan, ScanBusyError, settlement } = await import('./scan-runner');
-const { AI_RESERVE_PER_SCAN_USD, DailyCapError, DAILY_CAPS, reserveAiQuery, reserveKernelQuery } = await import('./spend');
+const { AI_RESERVE_PER_SCAN_USD, DailyCapError, DAILY_CAPS, RESEARCH_RESERVE_PER_SCAN_USD, reserveAiQuery, reserveKernelQuery, reserveResearchQuery } = await import('./spend');
 
 beforeEach(() => {
-  Object.assign(spend, { kernelOk: true, aiOk: true, recorded: [] });
+  Object.assign(spend, { kernelOk: true, aiOk: true, researchOk: true, recorded: [], research: [] });
   kernel.cleanup = null;
-  Object.assign(scanner, { visit: true, aiCost: 0.031, throwBefore: null, analyzerUsed: null, scanCalls: 0 });
+  Object.assign(scanner, { visit: true, aiCost: 0.031, researchCost: 0.07, throwBefore: null, analyzerUsed: null, researcherUsed: undefined, scanCalls: 0 });
+  delete process.env.RESEARCH;
   process.env.KERNEL_API_KEY = 'test-kernel-key';
   process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
 });
@@ -62,6 +69,40 @@ describe('budget reservations are one conditional statement each', () => {
     const q = reserveAiQuery(db, '2026-11-04', AI_RESERVE_PER_SCAN_USD).toSQL();
     expect(q.sql).toMatch(/do update set "anthropic_usd" = "daily_spend"\."anthropic_usd" \+ \$\d+ where "daily_spend"\."anthropic_usd" < \$\d+ returning "day"/);
     expect(q.params).toEqual(expect.arrayContaining(['0.050000', DAILY_CAPS.anthropicUsd.toFixed(6)]));
+  });
+});
+
+describe('the research step has its own budget', () => {
+  const db = drizzle.mock({ schema }) as never;
+  it('its own table and cap, + the per-scan reservation only while below it (never touches daily_spend)', () => {
+    const q = reserveResearchQuery(db, '2026-11-07', RESEARCH_RESERVE_PER_SCAN_USD).toSQL();
+    expect(q.sql).toMatch(/^insert into "research_spend" \("day", "usd"\) values .* on conflict \("day"\) do update set "usd" = "research_spend"\."usd" \+ \$\d+ where "research_spend"\."usd" < \$\d+ returning "day"$/);
+    expect(q.params).toEqual(expect.arrayContaining(['0.150000', DAILY_CAPS.researchUsd.toFixed(6)]));
+  });
+  it('reserved → the scan gets the researcher, and it is settled to the real cost', async () => {
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    expect(scanner.researcherUsed).toBe(realResearcher);
+    expect(spend.research).toHaveLength(1);
+    expect(spend.research[0]).toBeCloseTo(0.07 - RESEARCH_RESERVE_PER_SCAN_USD, 6);
+  });
+  it('no budget left → "budget used up" (nothing searched), the scan still runs', async () => {
+    spend.researchOk = false;
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    const r = scanner.researcherUsed as { reputation: (d: string) => Promise<{ reputation: { evidence: string[] } }> };
+    expect(r).not.toBe(realResearcher);
+    expect((await r.reputation('shop.example')).reputation.evidence).toEqual(["Today's web search budget is used up, so what the web says wasn't checked."]);
+    expect(spend.research).toEqual([]);
+  });
+  it('off without an Anthropic key, or with RESEARCH=off: no researcher, no reservation', async () => {
+    process.env.RESEARCH = 'off';
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    expect(scanner.researcherUsed).toBeNull();
+    expect(spend.research).toEqual([]);
+  });
+  it('a scan that fails keeps the research reservation (its cost is unknown)', async () => {
+    scanner.throwBefore = new Error('ssrf');
+    await expect(runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false })).rejects.toThrow('ssrf');
+    expect(spend.research).toEqual([]);
   });
 });
 

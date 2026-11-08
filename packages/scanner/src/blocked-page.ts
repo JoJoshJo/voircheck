@@ -1,3 +1,4 @@
+import { domainInfo } from './domain';
 import type { PageSnapshot } from './kernel';
 
 /**
@@ -37,7 +38,37 @@ export const CHALLENGE_RE = new RegExp(
 export const MAX_CHALLENGE_TEXT = 1_000;
 const MIN_REAL_TEXT = 40;
 
-export type BlockedReason = { kind: 'bot_check' | 'error_page' | 'empty_page'; message: string };
+export type BlockedReason = { kind: 'bot_check' | 'error_page' | 'empty_page' | 'sent_away'; message: string; detail?: string };
+
+/**
+ * Sites a shop never sends a shopper to instead of its own page: search engines and big portals. A store link that
+ * ends there (while the store isn't that site) hides its page from our check, which real shops don't do. Matched on
+ * the registrable domain's name, so every country version counts (google.de, consent.google.com, yahoo.co.jp).
+ */
+export const DECOY_SITES = ['google', 'bing', 'yahoo', 'duckduckgo', 'yandex', 'baidu', 'ecosia', 'qwant', 'startpage', 'msn', 'aol', 'ask', 'youtube', 'wikipedia'] as const;
+
+const siteName = (u: string) => {
+  try {
+    return domainInfo(u).registrable ?? new URL(u).hostname;
+  } catch {
+    return null;
+  }
+};
+const label = (site: string) => site.split('.')[0]!;
+
+/** The store sent the cloud browser to a search engine or portal instead of showing its page. */
+export function detectSentAway(requestedUrl: string, finalUrl: string): BlockedReason | null {
+  const from = siteName(requestedUrl);
+  const to = siteName(finalUrl);
+  if (!from || !to || from === to || label(from) === label(to)) return null;
+  if (!(DECOY_SITES as readonly string[]).includes(label(to))) return null;
+  const what = new URL(requestedUrl).pathname.replace(/\/+$/, '') ? 'its product page' : 'its shop';
+  return {
+    kind: 'sent_away',
+    message: `it sent our check to ${to} instead of showing ${what}`,
+    detail: `This shop sent our check to ${to} instead of showing ${what}. Real shops don't hide their pages.`,
+  };
+}
 
 export function detectBlockedPage(page: Pick<PageSnapshot, 'title' | 'h1' | 'visibleText' | 'httpStatus'>): BlockedReason | null {
   const text = page.visibleText.replace(/\s+/g, ' ').trim();

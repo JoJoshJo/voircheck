@@ -1,5 +1,5 @@
 import 'server-only';
-import { dailySpend } from '@voircheck/db/schema';
+import { dailySpend, researchSpend } from '@voircheck/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import { getDb } from './db';
 
@@ -9,7 +9,7 @@ import { getDb } from './db';
  * here is a calm "back tomorrow", not an out-of-credit error. Past the Anthropic cap, scans still run with page
  * analysis "unavailable"; past the KERNEL cap, only cached scans (last 24h) are served.
  */
-export const DAILY_CAPS = { anthropicUsd: 3, kernelScans: 300 } as const;
+export const DAILY_CAPS = { anthropicUsd: 3, kernelScans: 300, researchUsd: 2 } as const;
 
 export const utcDay = (now = new Date()) => now.toISOString().slice(0, 10);
 
@@ -73,6 +73,50 @@ export const reserveAiQuery = (db: Db, day: string, usd: number) =>
       setWhere: sql`${dailySpend.anthropicUsd} < ${DAILY_CAPS.anthropicUsd.toFixed(6)}`,
     })
     .returning({ day: dailySpend.day });
+
+/**
+ * Research step (web search): its own budget, apart from page analysis, so it can never starve the AI signal.
+ * Upper bound per scan: 3 reputation searches + 2 price searches ($0.05) plus their result tokens.
+ */
+export const RESEARCH_RESERVE_PER_SCAN_USD = 0.15;
+
+export const reserveResearchQuery = (db: Db, day: string, usd: number) =>
+  db
+    .insert(researchSpend)
+    .values({ day, usd: usd.toFixed(6) })
+    .onConflictDoUpdate({
+      target: researchSpend.day,
+      set: { usd: sql`${researchSpend.usd} + ${usd.toFixed(6)}` },
+      setWhere: sql`${researchSpend.usd} < ${DAILY_CAPS.researchUsd.toFixed(6)}`,
+    })
+    .returning({ day: researchSpend.day });
+
+/**
+ * One scan's research step. false: today's research cap is reached, or the research_spend table isn't there yet
+ * (migration 0007 not applied): the scan then shows "what the web says" as not checked.
+ */
+export async function reserveResearch(now = new Date()): Promise<boolean> {
+  try {
+    return (await reserveResearchQuery(getDb(), utcDay(now), RESEARCH_RESERVE_PER_SCAN_USD)).length > 0;
+  } catch (err) {
+    console.error('[spend] research budget unavailable:', err instanceof Error ? err.message : 'unknown error');
+    return false;
+  }
+}
+
+/** Settles a research reservation to the real cost (negative = handed back). Never breaks a scan. */
+export async function recordResearchSpendQuietly(usd: number, now = new Date()): Promise<void> {
+  const add = usd.toFixed(6);
+  if (Number(add) === 0) return;
+  await getDb()
+    .insert(researchSpend)
+    .values({ day: utcDay(now), usd: Math.max(0, Number(add)).toFixed(6) })
+    .onConflictDoUpdate({ target: researchSpend.day, set: { usd: sql`GREATEST(${researchSpend.usd} + ${add}, 0)` } })
+    .then(
+      () => undefined,
+      (err) => console.error('[spend] could not record research:', err instanceof Error ? err.message : 'unknown error'),
+    );
+}
 
 /** One KERNEL session for a fresh scan. false: today's KERNEL cap is reached. */
 export async function reserveKernelScan(now = new Date()): Promise<boolean> {

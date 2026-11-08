@@ -1,8 +1,9 @@
 import 'server-only';
-import { demoPeersForUrl } from '@voircheck/agent/search';
-import { anthropicAnalyzer, kernelVisitor, placeholderAnalyzer, scanStore, type PageAnalyzer, type ScanProgress } from '@voircheck/scanner';
+import { demoPeersForUrl, searchProducts } from '@voircheck/agent/search';
+import { anthropicAnalyzer, anthropicResearcher, kernelVisitor, notChecked, placeholderAnalyzer, scanStore, type FindOffers, type PageAnalyzer, type ScanProgress, type WebResearcher } from '@voircheck/scanner';
+import { searchCache } from './search-cache';
 import { latestVerdictForStore, saveScan, type ScanRecord } from './scans';
-import { AI_RESERVE_PER_SCAN_USD, DailyCapError, recordSpendQuietly, reserveAiScan, reserveKernelScan } from './spend';
+import { AI_RESERVE_PER_SCAN_USD, DailyCapError, RESEARCH_RESERVE_PER_SCAN_USD, recordResearchSpendQuietly, recordSpendQuietly, reserveAiScan, reserveKernelScan, reserveResearch } from './spend';
 
 /** At most this many fresh scans (KERNEL sessions) run at once across the whole app (one Render instance). */
 export const MAX_FRESH_SCANS_RUNNING = 5;
@@ -19,12 +20,25 @@ export class ScanBusyError extends Error {
 export const freshScansRunning = () => running.__voircheckScansRunning ?? 0;
 
 // One analyzer per process: it holds the 24h per-URL AI result cache (on globalThis so a dev hot reload keeps it).
-const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: PageAnalyzer };
+const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: PageAnalyzer; __voircheckResearcher?: WebResearcher };
 function pageAnalyzer(): PageAnalyzer {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return placeholderAnalyzer;
   return (g.__voircheckAnalyzer ??= anthropicAnalyzer({ apiKey, model: process.env.SCAN_MODEL }));
 }
+
+/** Research step (Claude + web search, 24h cache per domain/product). Off without an Anthropic key or RESEARCH=off. */
+function webResearcher(): WebResearcher | null {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || process.env.RESEARCH === 'off') return null;
+  return (g.__voircheckResearcher ??= anthropicResearcher({ apiKey, model: process.env.SCAN_MODEL }));
+}
+
+/** Research has a key but no budget left today: said plainly, nothing searched. */
+const budgetUsedUp: WebResearcher = {
+  reputation: async () => ({ reputation: notChecked("Today's web search budget is used up, so what the web says wasn't checked."), usage: null }),
+  prices: async () => ({ offers: null, usage: null }),
+};
 
 /**
  * One store scan, shared by check-a-link, the shopping agent and MCP check_store. The page is only ever opened inside
@@ -62,7 +76,12 @@ async function runReservedScan(opts: { url: string; demoMode: boolean; liveView:
   let aiReserved = 0;
   let aiUsd = 0;
   let aiRan = false;
+  let researchReserved = 0;
+  let researchUsd: number | null = null;
   try {
+    // The research step has its own budget; no reservation → "what the web says" is not checked, the scan goes on.
+    const researcher = webResearcher();
+    if (researcher && (await reserveResearch())) researchReserved = RESEARCH_RESERVE_PER_SCAN_USD;
     const real = pageAnalyzer();
     if (real !== placeholderAnalyzer && (await reserveAiScan())) aiReserved = AI_RESERVE_PER_SCAN_USD;
     const analyzer: PageAnalyzer = aiReserved
@@ -85,15 +104,37 @@ async function runReservedScan(opts: { url: string; demoMode: boolean; liveView:
         },
         safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
         analyzer,
+        findOffers: findOffers(),
+        researcher: researchReserved ? researcher : researcher ? budgetUsedUp : null,
+        verdictFor: latestVerdictForStore,
         onProgress: opts.onProgress,
       },
     );
     aiUsd = meta.ai?.costUsd ?? 0;
+    researchUsd = meta.research.reduce((n, u) => n + u.costUsd, 0);
     aiRan = false; // settled to the real cost below
     return await saveScan(result);
   } finally {
     void recordSpendQuietly(settlement({ aiReserved, aiUsd, aiRan, kernelReserved: !!kernelKey, kernelUsed }));
+    // A research step that never reported (the scan failed, or it ran past its deadline) keeps its reservation.
+    if (researchReserved && researchUsd !== null) void recordResearchSpendQuietly(researchUsd - researchReserved);
   }
+}
+
+/**
+ * Pasted-link price check (spec 5.6): other stores' offers for the page's product, from Channel3 (10-minute cache),
+ * each with that store's own latest verdict so BLOCK stores are left out. No key → not compared.
+ */
+export function findOffers(apiKey = process.env.CHANNEL3_API_KEY, search = searchProducts, verdictFor = latestVerdictForStore): FindOffers | undefined {
+  if (!apiKey) return undefined;
+  return async (name) => {
+    const found = await search(name, 20, { apiKey, cache: searchCache() });
+    if (found.status === 'no_results') return [];
+    if (found.status !== 'ok') return null;
+    const verdicts = new Map<string, Awaited<ReturnType<typeof verdictFor>>>();
+    for (const r of found.results) if (!verdicts.has(r.storeUrl)) verdicts.set(r.storeUrl, await verdictFor(r.storeUrl).catch(() => undefined));
+    return found.results.map((r) => ({ title: r.title, price: r.price, currency: r.currency, storeUrl: r.storeUrl, verdict: verdicts.get(r.storeUrl) }));
+  };
 }
 
 /**

@@ -6,7 +6,7 @@
  * have their query strings (session tokens) removed.
  */
 import 'dotenv/config';
-import { anthropicAnalyzer, kernelVisitor, scanStore } from '@voircheck/scanner';
+import { anthropicAnalyzer, anthropicResearcher, kernelVisitor, scanStore } from '@voircheck/scanner';
 import { fileAiCache } from './ai-cache';
 
 function usage(): never {
@@ -34,6 +34,7 @@ const { result, meta } = await scanStore(
     visitor: kernelKey ? kernelVisitor({ apiKey: kernelKey, proxyId: process.env.KERNEL_PROXY_ID || undefined }) : null,
     safeBrowsingKey: process.env.GOOGLE_SAFE_BROWSING_API_KEY,
     ...(anthropicKey ? { analyzer: anthropicAnalyzer({ apiKey: anthropicKey, model: process.env.SCAN_MODEL, cache: fileAiCache(), log: (l) => console.error(l) }) } : {}),
+    researcher: anthropicKey && !args.includes('--no-research') ? anthropicResearcher({ apiKey: anthropicKey, model: process.env.SCAN_MODEL, log: (l) => console.error(l) }) : null,
   },
 );
 
@@ -45,3 +46,5 @@ console.log(
   ),
 );
 console.error(`kernel session: ${meta.kernelSessionSeconds?.toFixed(1) ?? '-'}s${meta.kernelError ? `, error: ${meta.kernelError}` : ''}`);
+const rc = meta.research.reduce((n, u) => n + u.costUsd, 0);
+console.error(`research: ${meta.research.reduce((n, u) => n + u.searches, 0)} searches, $${rc.toFixed(4)}, ${meta.researchMs !== null ? `${(meta.researchMs / 1000).toFixed(1)}s` : '-'}`);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { SIGNAL_IDS, type SignalId, type SignalStatus } from './schema';
-import { hardRules, score, THRESHOLDS, verdictForScore, WEIGHTS } from './scoring';
+import { hardRules, score, THRESHOLDS, uncheckedCoreSignals, verdictForScore, WEIGHTS } from './scoring';
 import type { ScanFacts, SignalOutcome } from './signals/types';
 
 const clean: ScanFacts = { domainAgeDays: 2000, validHttps: true, priceBelowPeersPct: 0, threatHit: false, kernelOk: true };
@@ -100,5 +100,38 @@ describe("can't verify", () => {
     const r = score(outcomes().filter((o) => o.id !== 'threat_list'), clean);
     expect(r.signals.map((s) => s.id)).toEqual([...SIGNAL_IDS]);
     expect(r.signals[4]).toMatchObject({ id: 'threat_list', status: 'unavailable', points: 0 });
+  });
+});
+
+describe('the page could not be judged, and price and copycat both unchecked', () => {
+  const unchecked = { price: 'unavailable', clone: 'unavailable', ai_page: 'unavailable' } as const;
+  it('with anything else worth a look → HOLD, rule "unchecked_core_signals"; the score and cutoffs are unchanged', () => {
+    const r = score(outcomes({ ...unchecked, domain_age: 'warn', ssl_redirects: 'warn' }), clean);
+    expect(r.score).toBe(25);
+    expect(verdictForScore(r.score)).toBe('SAFE');
+    expect(r.hardRulesTriggered).toEqual(['unchecked_core_signals']);
+    expect(r.verdict).toBe('HOLD');
+  });
+  it('a fail counts as worth a look too (a domain under 30 days alone is 25 points)', () => {
+    expect(score(outcomes({ ...unchecked, domain_age: 'fail' }), clean).verdict).toBe('HOLD');
+  });
+  it('not when nothing is worth a look, when price or copycat ran, or when the store could not be verified at all', () => {
+    expect(score(outcomes(unchecked), clean).verdict).toBe('SAFE');
+    expect(score(outcomes({ clone: 'unavailable', domain_age: 'warn' }), clean).verdict).toBe('SAFE');
+    expect(score(outcomes({ price: 'unavailable', domain_age: 'warn' }), clean).verdict).toBe('SAFE');
+    const cant = score(outcomes({ ...unchecked, domain_age: 'warn' }), { ...clean, kernelOk: false });
+    expect(cant.hardRulesTriggered).toEqual(['cant_verify']);
+  });
+  it('page analysis ran on the real page: a lone "worth a look" stays SAFE (funstasy.at, eval 2026-11-08)', () => {
+    // funstasy.at: .at has no RDAP (domain age not checked), no product found, no other stores, AI risk 45 (warn).
+    const funstasy = score(outcomes({ domain_age: 'unavailable', price: 'unavailable', clone: 'unavailable', ai_page: 'warn' }), clean);
+    expect(funstasy.hardRulesTriggered).toEqual([]);
+    expect(funstasy.verdict).toBe('SAFE');
+    expect(score(outcomes({ price: 'unavailable', clone: 'unavailable', ai_page: 'pass', domain_age: 'warn' }), clean).verdict).toBe('SAFE');
+    expect(uncheckedCoreSignals([{ id: 'price', status: 'unavailable' }, { id: 'clone', status: 'unavailable' }, { id: 'ai_page', status: 'warn' }], true)).toBe(false);
+    expect(uncheckedCoreSignals([{ id: 'price', status: 'unavailable' }, { id: 'clone', status: 'unavailable' }, { id: 'ai_page', status: 'unavailable' }, { id: 'domain_age', status: 'warn' }], true)).toBe(true);
+  });
+  it('what the web says was checked → not added', () => {
+    expect(uncheckedCoreSignals([{ id: 'price', status: 'unavailable' }, { id: 'clone', status: 'unavailable' }, { id: 'ai_page', status: 'unavailable' }, { id: 'domain_age', status: 'warn' }], true, true)).toBe(false);
   });
 });

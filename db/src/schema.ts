@@ -225,6 +225,13 @@ export const dailySpend = pgTable('daily_spend', {
   kernelScans: integer('kernel_scans').notNull().default(0),
 });
 
+// The research step's own daily budget (Claude + web search, migration 0007). A separate table, so the scan's other
+// reservations never depend on it: until it exists, only the research step is "not checked".
+export const researchSpend = pgTable('research_spend', {
+  day: date('day').primaryKey(),
+  usd: numeric('usd', { precision: 12, scale: 6 }).notNull().default('0'),
+});
+
 // Per-user API tokens for AI agents over MCP (POST /api/mcp). Only the SHA-256 of the token is stored; the token itself
 // is shown once, when it's created. `prefix` (first characters) lets the person tell their tokens apart.
 export const apiTokens = pgTable(

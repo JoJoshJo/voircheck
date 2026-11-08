@@ -1,0 +1,944 @@
+{
+  "promptVersion": "r2",
+  "model": "claude-sonnet-5-5",
+  "rows": [
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "domain": "elvaritaro.com",
+      "reputation": {
+        "status": "fail",
+        "findings": [
+          {
+            "kind": "warning_list",
+            "note": {
+              "en": "Watchlist Internet lists mall.elvaritaro.com (a subdomain) as a fake shop: payment, then no or wrong goods. Entered 29.10.2026.",
+              "fr": "Watchlist Internet classe mall.elvaritaro.com (sous-domaine) comme faux shop : paiement puis aucune ou mauvaise marchandise. Ajouté le 29.10.2026."
+            },
+            "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/mallelvaritarocom",
+            "sourceTitle": "Betrug! Vorsicht vor mall.elvaritaro.com - Watchlist Internet"
+          },
+          {
+            "kind": "warning_list",
+            "note": {
+              "en": "Fakeshop-Finder warns about store.elvaritaro.com (subdomain): several fake-shop signs, no imprint found, domain registered 18.08.2026.",
+              "fr": "Fakeshop-Finder met en garde contre store.elvaritaro.com (sous-domaine) : plusieurs signes de faux shop, pas de mentions légales, domaine créé le 18.08.2026."
+            },
+            "sourceUrl": "https://warnung.fakeshop-finder.de/2026_10/store_elvaritaro_com.html",
+            "sourceTitle": "Fakeshop-Warnung store.elvaritaro.com"
+          }
+        ],
+        "summary": {
+          "en": "Two fraud warning lists flag subdomains of elvaritaro.com (mall. and store.) as likely fake shops, and the domain is very recent. No buyer reviews of the main domain were found.",
+          "fr": "Deux listes d'alerte signalent des sous-domaines d'elvaritaro.com (mall. et store.) comme probables faux shops, et le domaine est très récent. Aucun avis d'acheteur sur le domaine principal n'a été trouvé."
+        },
+        "evidence": [
+          "From a web search about elvaritaro.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.049414,
+      "searches": 2,
+      "ms": 6688
+    },
+    {
+      "url": "https://heizungug.de/",
+      "label": "scam",
+      "domain": "heizungug.de",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (3 searches) found nothing written about heizungug.de by other sites."
+        ]
+      },
+      "costUsd": 0.098952,
+      "searches": 3,
+      "ms": 5474
+    },
+    {
+      "url": "https://messtool.com/",
+      "label": "scam",
+      "domain": "messtool.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated check (July 2026): score 0/100, domain 5 months old, flagged by external feeds. Not on fake-shop lists. Not an official body.",
+              "fr": "Analyse automatisée (juil. 2026) : score 0/100, domaine de 5 mois, signalé par des bases externes. Absent des listes officielles. Source non officielle."
+            },
+            "sourceUrl": "https://fakeshop.ai/shop/messtool.com",
+            "sourceTitle": "Warnung: Ist messtool.com ein Fakeshop?"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "A user comment says messtool.com is a scam; a second says the parcel held junk. The comment is pasted across unrelated Scamdoc pages, so it is weak evidence.",
+              "fr": "Un commentaire parle d'arnaque et un autre d'un colis rempli de déchets. Le texte est copié sur des pages sans rapport : preuve fragile."
+            },
+            "sourceUrl": "https://www.scamdoc.com/view/1963116",
+            "sourceTitle": "Bestwerkzeugeshop.com reviews"
+          }
+        ],
+        "summary": {
+          "en": "No official warning list entry was found for messtool.com. An automated checker gives it a very low score, and unverified user comments call it a scam; the domain is young (about 5 months at that check).",
+          "fr": "Aucune liste d'alerte officielle ne mentionne messtool.com. Un outil automatisé lui donne un score très bas et des commentaires non vérifiés parlent d'arnaque ; le domaine est récent (environ 5 mois)."
+        },
+        "evidence": [
+          "The web search (3 searches) found only passing mentions of messtool.com, no reviews or warnings."
+        ]
+      },
+      "costUsd": 0.095438,
+      "searches": 3,
+      "ms": 8924
+    },
+    {
+      "url": "https://pureshoerack.com/",
+      "label": "scam",
+      "domain": "pureshoerack.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (2 searches) found nothing written about pureshoerack.com by other sites."
+        ]
+      },
+      "costUsd": 0.040673,
+      "searches": 2,
+      "ms": 4268
+    },
+    {
+      "url": "https://missmodaberlin.de/",
+      "label": "scam",
+      "domain": "missmodaberlin.de",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (3 searches) found nothing written about missmodaberlin.de by other sites."
+        ]
+      },
+      "costUsd": 0.094939,
+      "searches": 3,
+      "ms": 8349
+    },
+    {
+      "url": "https://rimowa-store.de/",
+      "label": "scam",
+      "domain": "rimowa-store.de",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Rimowa says its products are sold only via official stores, rimowa.com and selected partners, not unauthorized websites. rimowa-store.de is not named there.",
+              "fr": "Rimowa indique vendre uniquement via ses boutiques, rimowa.com et des partenaires choisis, pas des sites non autorisés. rimowa-store.de n'y est pas cité."
+            },
+            "sourceUrl": "https://www.rimowa.com/us/en/faq/our-products/product-authenticity",
+            "sourceTitle": "RIMOWA fake and counterfeit awareness"
+          }
+        ],
+        "summary": {
+          "en": "No page found in the search results mentions rimowa-store.de itself: no reviews, no scam reports, no warning-list entry. Rimowa's official site says it sells only through rimowa.com, its own stores and selected partners.",
+          "fr": "Aucune page trouvée ne mentionne rimowa-store.de lui-même : ni avis, ni signalement d'arnaque, ni inscription sur une liste d'alerte. Rimowa indique vendre uniquement via rimowa.com, ses boutiques et des partenaires choisis."
+        },
+        "evidence": [
+          "The web search (3 searches) found only passing mentions of rimowa-store.de, no reviews or warnings."
+        ]
+      },
+      "costUsd": 0.116229,
+      "searches": 3,
+      "ms": 8344
+    },
+    {
+      "url": "https://scandiwarm.com/",
+      "label": "scam",
+      "domain": "scandiwarm.com",
+      "reputation": {
+        "status": "fail",
+        "findings": [
+          {
+            "kind": "warning_list",
+            "note": {
+              "en": "Watchlist Internet lists scandiwarm.com as a fake shop (entry dated 14.09.2026): buyers pay but get nothing or the wrong goods.",
+              "fr": "Watchlist Internet classe scandiwarm.com comme faux shop (14.09.2026) : les acheteurs paient mais ne reçoivent rien ou une marchandise erronée."
+            },
+            "sourceUrl": "https://www.watchlist-internet.at/liste-betruegerischer-shops/shop/scandiwarmcom",
+            "sourceTitle": "Betrug! Vorsicht vor scandiwarm.com - Watchlist Internet"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scamdoc (automated) gives a very low trust score of 1%, citing a very recent domain and negative reviews online.",
+              "fr": "Scamdoc (automatisé) donne un score de confiance très bas de 1 %, citant un domaine très récent et des avis négatifs en ligne."
+            },
+            "sourceUrl": "https://www.scamdoc.com/?adlt=strict&amp=&amp=&redig=5b384ffd35194c33a35021b87871cda3&towww=1",
+            "sourceTitle": "Scamdoc.com"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot shows scandiwarm.com with a low 2.2/5 average from only 8 reviews, listed on another shop's page.",
+              "fr": "Trustpilot affiche scandiwarm.com avec une note basse de 2,2/5 sur seulement 8 avis, mentionnée sur la page d'une autre boutique."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/scandi-home.co.uk",
+            "sourceTitle": "Scandi Home Reviews"
+          }
+        ],
+        "summary": {
+          "en": "Watchlist Internet lists scandiwarm.com as a fake shop, and Scamdoc gives it a very low automated score. Trustpilot shows a low rating from very few reviews.",
+          "fr": "Watchlist Internet recense scandiwarm.com comme faux shop et Scamdoc lui attribue un score automatisé très bas. Trustpilot montre une note basse sur très peu d'avis."
+        },
+        "evidence": [
+          "From a web search about scandiwarm.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.049191,
+      "searches": 2,
+      "ms": 7174
+    },
+    {
+      "url": "https://kinderschatz.com/",
+      "label": "scam",
+      "domain": "kinderschatz.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "kinderschatz.com only appears in ScamAdviser's list of weekly new domains checked by users. It carries no rating or verdict.",
+              "fr": "kinderschatz.com apparaît seulement dans la liste ScamAdviser des nouveaux domaines vérifiés par des internautes. Aucune note ni verdict n'y figure."
+            },
+            "sourceUrl": "https://www.scamadviser.com/sitemap/weekly/new/196",
+            "sourceTitle": "ScamAdviser"
+          }
+        ],
+        "summary": {
+          "en": "Nothing was found about kinderschatz.com itself, and no warning or scam report. Reviews found are for kinderschatz.ch, a different domain, so they do not apply here.",
+          "fr": "Rien n'a été trouvé sur kinderschatz.com lui-même, ni alerte ni signalement d'arnaque. Les avis trouvés concernent kinderschatz.ch, un autre domaine, et ne s'appliquent donc pas ici."
+        },
+        "evidence": [
+          "The web search (3 searches) found only passing mentions of kinderschatz.com, no reviews or warnings."
+        ]
+      },
+      "costUsd": 0.107232,
+      "searches": 3,
+      "ms": 8704
+    },
+    {
+      "url": "https://steadyhandtooling.com/",
+      "label": "scam",
+      "domain": "steadyhandtooling.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "The domain appears only in 'other reports' lists on seitcheck.de, a German site for reporting suspected fake shops. No review of this shop itself was seen.",
+              "fr": "Le domaine figure seulement dans des listes d'autres signalements sur seitcheck.de, site allemand de faux shops. Aucun avis sur cette boutique elle-même."
+            },
+            "sourceUrl": "https://seitcheck.de/shopfeinkost-de",
+            "sourceTitle": "Shopfeinkost (shopfeinkost.de) Erfahrungen & Bewertungen"
+          }
+        ],
+        "summary": {
+          "en": "No review, scam report or warning-list entry about steadyhandtooling.com was found. It only appears as a link in lists on a German fake-shop reporting site, so little is known about it.",
+          "fr": "Aucun avis, signalement d'arnaque ni liste d'alerte sur steadyhandtooling.com n'a été trouvé. Le domaine apparaît seulement dans des listes d'un site allemand de signalement de faux shops ; on sait donc peu de choses."
+        },
+        "evidence": [
+          "The web search (3 searches) found only passing mentions of steadyhandtooling.com, no reviews or warnings."
+        ]
+      },
+      "costUsd": 0.085232,
+      "searches": 3,
+      "ms": 7768
+    },
+    {
+      "url": "https://werkstatt-teile.com/",
+      "label": "scam",
+      "domain": "werkstatt-teile.com",
+      "reputation": {
+        "status": "unavailable",
+        "findings": [],
+        "evidence": [
+          "The web search (3 searches) found nothing written about werkstatt-teile.com by other sites."
+        ]
+      },
+      "costUsd": 0.083552,
+      "searches": 3,
+      "ms": 5118
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "domain": "rei.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot: low average (about 2/5). Buyers cite hard-to-reach support, cancelled or late orders and returns issues. A few praise staff and gear.",
+              "fr": "Trustpilot : note moyenne basse (environ 2/5). Les acheteurs citent un support difficile à joindre, des commandes annulées ou tardives et des retours. Quelques éloges."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.rei.com",
+            "sourceTitle": "REI Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "SmartCustomer: 1.9/5 from 126 reviews, mostly about cancelled online orders, slow shipping, membership and the return policy.",
+              "fr": "SmartCustomer : 1,9/5 sur 126 avis, surtout des commandes en ligne annulées, une livraison lente, l'adhésion et la politique de retour."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/rei.com",
+            "sourceTitle": "REI Reviews - 126 Customers Rate 1.9/5 (2026)"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "PissedConsumer: 19 reviews, average 2.2. Complaints about delayed shipping and returns; in-store staff are praised in some reviews.",
+              "fr": "PissedConsumer : 19 avis, moyenne 2,2. Plaintes sur des retards de livraison et les retours ; le personnel en magasin est salué dans certains avis."
+            },
+            "sourceUrl": "https://recreational-equipment.pissedconsumer.com/review.html",
+            "sourceTitle": "Recreational Equipment Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "ThingTesting reviewers praise the selection, quality and member return policy, while noting high prices.",
+              "fr": "Les avis sur ThingTesting louent le choix, la qualité et la politique de retour pour les membres, tout en signalant des prix élevés."
+            },
+            "sourceUrl": "https://thingtesting.com/brands/rei/reviews",
+            "sourceTitle": "REI Reviews 2026 - Read Before You Buy"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser (automated): domain about 30 years old, valid SSL, high traffic. It also detected some negative reviews.",
+              "fr": "ScamAdviser (automatique) : domaine vieux d'environ 30 ans, SSL valide, fort trafic. Des avis négatifs ont aussi été détectés."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/rei.com",
+            "sourceTitle": "rei.com Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "This page says REI is a long-running co-op and that most 'REI scams' are lookalike sites or phishing. Check the address is exactly rei.com.",
+              "fr": "Cette page dit que REI est une coopérative ancienne et que les « arnaques REI » sont surtout des sites imitateurs ou du phishing. Vérifiez l'adresse exacte rei.com."
+            },
+            "sourceUrl": "https://bynudge.com/is/rei-legit",
+            "sourceTitle": "Is REI Legit, Safe, or a Scam? Trust Score: 93/100 (2026)"
+          }
+        ],
+        "summary": {
+          "en": "No fraud-list entry found for rei.com. Review sites show a low average, mainly about online order cancellations, shipping delays, support and returns, with some praise for the gear and staff.",
+          "fr": "Aucune entrée sur une liste de fraude trouvée pour rei.com. Les sites d'avis montrent une note moyenne basse, surtout pour des annulations, retards, support et retours, avec des éloges pour le matériel et le personnel."
+        },
+        "evidence": [
+          "From a web search about rei.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.121913,
+      "searches": 2,
+      "ms": 10242
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "domain": "johnlewis.com",
+      "reputation": {
+        "status": "warn",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Large Trustpilot profile (~106K reviews). Praise for stores and click & collect; many complaints about customer service, delivery, refunds.",
+              "fr": "Grand profil Trustpilot (~106 000 avis). Magasins et click & collect salués ; nombreuses plaintes sur le service client, la livraison, les remboursements."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.johnlewis.com",
+            "sourceTitle": "John Lewis Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Reviews.io shows an average of 2.64 from 2,476 reviews, with complaints about repairs, installation and slow customer service.",
+              "fr": "Reviews.io indique une moyenne de 2,64 sur 2 476 avis, avec des plaintes sur les réparations, l'installation et la lenteur du service client."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/www-johnlewis-com-",
+            "sourceTitle": "John Lewis Reviews - Read 2,476 Genuine Customer Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "SmartCustomer rates it 2.1/5 from 79 reviews, mostly about refunds and aftercare. One reviewer calls it a scam, which the others don't echo.",
+              "fr": "SmartCustomer lui donne 2,1/5 (79 avis), surtout sur remboursements et SAV. Un avis parle d'arnaque, ce que les autres ne reprennent pas."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/johnlewis.com",
+            "sourceTitle": "JohnLewis Reviews - 79 Customer Reviews of johnlewis.com, Rated 2.1/5"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "PissedConsumer lists about 185 reviews averaging 2.1, mostly about customer service, refunds and lost deliveries.",
+              "fr": "PissedConsumer recense environ 185 avis, moyenne 2,1, surtout sur le service client, les remboursements et les livraisons perdues."
+            },
+            "sourceUrl": "https://john-lewis.pissedconsumer.com/complaints/RT-P.html",
+            "sourceTitle": "John Lewis Reviews and Complaints"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated ScamAdviser check rates it legit. Domain registered in 1997, valid SSL, high traffic rank, owner identity hidden on WHOIS.",
+              "fr": "Analyse automatique ScamAdviser : site jugé légitime. Domaine enregistré en 1997, SSL valide, fort trafic, identité du titulaire masquée."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/johnlewis.com",
+            "sourceTitle": "johnlewis.com Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated Scam Detector score of 95.4/100, no blacklist detection. It also quotes unhappy Sitejabber reviews.",
+              "fr": "Score automatique Scam Detector de 95,4/100, aucune liste noire détectée. Cite aussi des avis négatifs de Sitejabber."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/johnlewis-com-review",
+            "sourceTitle": "johnlewis.com Reviews: Is this site a scam or legit?"
+          }
+        ],
+        "summary": {
+          "en": "johnlewis.com is a long-established domain (1997) with no fraud warning-list entry found. Reviews are mixed: stores and click & collect are praised, while customer service, delivery and refunds draw many complaints.",
+          "fr": "johnlewis.com est un domaine ancien (1997) sans inscription trouvée sur une liste d'alerte à la fraude. Les avis sont partagés : magasins et click & collect appréciés, mais service client, livraison et remboursements critiqués."
+        },
+        "evidence": [
+          "From a web search about johnlewis.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.117654,
+      "searches": 2,
+      "ms": 10442
+    },
+    {
+      "url": "https://www.currys.co.uk/",
+      "label": "legit",
+      "domain": "currys.co.uk",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "PissedConsumer shows a 1.7 average with complaints about delivery, refunds and customer service. Real buyers, no fake-shop claims.",
+              "fr": "PissedConsumer affiche 1,7 de moyenne avec des plaintes sur livraison, remboursements et service client. Ce sont de vrais acheteurs, pas de faux site."
+            },
+            "sourceUrl": "https://currys-pcworld.pissedconsumer.com/review.html",
+            "sourceTitle": "1.4K Currys PCWorld Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "SmartCustomer lists 169 reviews averaging 1.7/5: slow refunds, hard-to-reach support, repair delays.",
+              "fr": "SmartCustomer recense 169 avis, moyenne 1,7/5 : remboursements lents, support difficile à joindre, réparations tardives."
+            },
+            "sourceUrl": "https://www.smartcustomer.com/reviews/currys.co.uk",
+            "sourceTitle": "Currys Ltd Reviews - 169 Customer Reviews of currys.co.uk, Rated 1.7/5"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot summary (139k+ reviews) says reviewers mostly praise store staff and delivery, with some product damage complaints.",
+              "fr": "Le résumé Trustpilot (139 000+ avis) indique que les avis louent surtout le personnel en magasin et la livraison, avec quelques produits abîmés."
+            },
+            "sourceUrl": "https://ie.trustpilot.com/review/www.currys.co.uk",
+            "sourceTitle": "Currys Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser's automated check gives a high trust rating: domain registered in 1996, valid SSL, very popular site.",
+              "fr": "L'analyse automatique de ScamAdviser donne une confiance élevée : domaine de 1996, SSL valide, site très populaire."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/currys.co.uk",
+            "sourceTitle": "ScamAdviser.com"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Scam Detector's automated score is 80.6/100, with low phishing risk and no blacklist detection.",
+              "fr": "Le score automatique de Scam Detector est de 80,6/100, avec un faible risque d'hameçonnage et aucune liste noire."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/currys-co-uk-review",
+            "sourceTitle": "currys.co.uk Reviews: Is this site a scam or legit?"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Which? reports fake sites copying Currys (other domains); it names currys.co.uk as the official site.",
+              "fr": "Which? signale de faux sites imitant Currys (autres domaines) et indique currys.co.uk comme site officiel."
+            },
+            "sourceUrl": "https://www.which.co.uk/news/article/fake-currys-websites-con-bargain-hunters-aJ1sY6J1Neiw",
+            "sourceTitle": "Fake Currys websites con bargain hunters - Which.co.uk"
+          }
+        ],
+        "summary": {
+          "en": "currys.co.uk is a long-established UK retailer. Buyers report many service, delivery and refund complaints alongside positive store and delivery reviews; no fraud warning was found for this domain.",
+          "fr": "currys.co.uk est un distributeur britannique ancien. Les acheteurs signalent des problèmes de service, livraison et remboursement, ainsi que des avis positifs ; aucune alerte de fraude pour ce domaine."
+        },
+        "evidence": [
+          "From a web search about currys.co.uk (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.096269,
+      "searches": 2,
+      "ms": 11104
+    },
+    {
+      "url": "https://bettenreiter.at/",
+      "label": "legit",
+      "domain": "bettenreiter.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Holds the Austrian E-Commerce Gütezeichen (certified since 2019, valid to March 2027). Operator: Reiter Betten & Vorhänge GmbH, Leonding.",
+              "fr": "Titulaire du label autrichien E-Commerce Gütezeichen (depuis 2019, valide jusqu'en mars 2027). Exploitant : Reiter Betten & Vorhänge GmbH, Leonding."
+            },
+            "sourceUrl": "https://www.guetezeichen.at/zertifikate/shopzertifikat/wwwbettenreiterat",
+            "sourceTitle": "Zertifikat bettenreiter.at - Österreichisches E-Commerce-Gütezeichen"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot: about 2.6/5 from 20 reviews. Complaints cover delivery, product quality and unfriendly staff. Several reviews praise the advice.",
+              "fr": "Trustpilot : env. 2,6/5 sur 20 avis. Plaintes sur livraison, qualité et accueil ; plusieurs avis louent aussi les conseils."
+            },
+            "sourceUrl": "https://at.trustpilot.com/review/bettenreiter.at",
+            "sourceTitle": "Bewertungen zu Reiter Betten und Vorhänge"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "The ÖGVS test institute scored Betten Reiter 90 in its 2026 mattress retailer test, after 80 in 2024 and 88 in 2022.",
+              "fr": "L'institut ÖGVS a attribué 90 à Betten Reiter au test 2026 des vendeurs de matelas (80 en 2024, 88 en 2022)."
+            },
+            "sourceUrl": "https://www.qualitaetstest.at/tested/betten-reiter",
+            "sourceTitle": "Testergebnisse für Betten Reiter - ÖGVS Testinstitut"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Webwiki describes it as an Austrian family-run bed and home textiles retailer; its page was last checked in September 2026.",
+              "fr": "Webwiki le décrit comme un détaillant familial autrichien de literie et textiles de maison ; page vérifiée en septembre 2026."
+            },
+            "sourceUrl": "https://www.webwiki.at/bettenreiter.at",
+            "sourceTitle": "Betten Reiter"
+          }
+        ],
+        "summary": {
+          "en": "No scam reports or warning-list entries turned up. The shop holds an Austrian e-commerce certificate and has mixed Trustpilot reviews (about 2.6/5), with complaints mainly about delivery and service.",
+          "fr": "Aucun signalement d'arnaque ni inscription sur une liste d'alerte trouvé. La boutique a un label e-commerce autrichien et des avis Trustpilot mitigés (env. 2,6/5), surtout sur la livraison et le service."
+        },
+        "evidence": [
+          "From a web search about bettenreiter.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.127593,
+      "searches": 2,
+      "ms": 8003
+    },
+    {
+      "url": "https://bikepalast.com/",
+      "label": "legit",
+      "domain": "bikepalast.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "ScamAdviser (automated): domain registered in 1997, valid SSL, Handelsverband trust mark, mixed reviews, low traffic rank.",
+              "fr": "ScamAdviser (automatique) : domaine créé en 1997, SSL valide, label Handelsverband, avis mitigés, faible trafic."
+            },
+            "sourceUrl": "https://www.scamadviser.com/check-website/bikepalast.com",
+            "sourceTitle": "bikepalast.com Reviews"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "AskmeOffers shows 2/5 from 56 votes, mostly Terrible or Poor; the page's text is generic and mentions occasional shipping delays.",
+              "fr": "AskmeOffers affiche 2/5 sur 56 votes, surtout Terrible ou Médiocre ; texte générique, retards d'expédition occasionnels."
+            },
+            "sourceUrl": "https://askmeoffers.com/users-review/bikepalast-com",
+            "sourceTitle": "bikepalast.com Reviews - Legit or Scam?"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "A Yelp reviewer says a different bottle cage was shipped than ordered. It is a single review, and the Freiburg listing may be a different business.",
+              "fr": "Un avis Yelp signale l'envoi d'un autre porte-bidon que celui commandé. Avis unique, l'adresse de Fribourg peut être une autre entreprise."
+            },
+            "sourceUrl": "https://www.yelp.com/biz/bike-palast-freiburg",
+            "sourceTitle": "BIKE PALAST - Updated June 2026 - Schwarzwaldstr. 18, Freiburg, Baden-Württemberg, Germany - Bikes - Phone Number - Yelp"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Facebook: 84% recommend (53 reviews). One reviewer reports a closed local site with no information posted.",
+              "fr": "Facebook : 84 % recommandent (53 avis). Un avis signale un site local fermé sans information affichée."
+            },
+            "sourceUrl": "https://www.facebook.com/bikepalast/reviews",
+            "sourceTitle": "bikepalast.com"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustpilot shows a single 5-star review praising fast delivery and service; too few reviews to be representative.",
+              "fr": "Trustpilot : un seul avis 5 étoiles (livraison rapide, bon service) ; trop peu d'avis pour être représentatif."
+            },
+            "sourceUrl": "https://at.trustpilot.com/review/www.bikepalast.com",
+            "sourceTitle": "Bewertungen zu Bikepalast"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "An old cycling forum thread has several buyers describing fast delivery and a reputable Austrian shop. The posts are old.",
+              "fr": "Un ancien forum de cyclisme : plusieurs acheteurs décrivent une livraison rapide et un magasin autrichien sérieux. Messages anciens."
+            },
+            "sourceUrl": "https://www.rennrad-news.de/forum/threads/bikepalast.61509",
+            "sourceTitle": "\"Bikepalast\""
+          }
+        ],
+        "summary": {
+          "en": "Bikepalast.com appears to be a long-established Austrian bike retailer with a trust mark and mostly older positive forum reports. Recent review scores are mixed, and no fraud warning-list entry was found.",
+          "fr": "Bikepalast.com semble être un détaillant de vélos autrichien établi de longue date, avec un label de confiance et des avis de forum plutôt anciens et positifs. Les notes récentes sont mitigées ; aucune liste d'alerte trouvée."
+        },
+        "evidence": [
+          "From a web search about bikepalast.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.088009,
+      "searches": 2,
+      "ms": 9466
+    },
+    {
+      "url": "https://messerkoenig.at/",
+      "label": "legit",
+      "domain": "messerkoenig.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Trustami shows 4.82/5 from 274 reviews (about 94% positive), praising advice, fast delivery and support. Some Google/Facebook reviews are unverified.",
+              "fr": "Trustami affiche 4,82/5 sur 274 avis (env. 94 % positifs), qui saluent conseils, livraison et service. Certains avis Google/Facebook ne sont pas vérifiés."
+            },
+            "sourceUrl": "https://www.trustami.com/review/messerkoenig-at-rating",
+            "sourceTitle": "Messerkoenig.at Review & Experience on Trustami"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "The Facebook page of the Vienna knife shop shows 96% recommending, based on 72 reviews, with delivery and in-store pickup.",
+              "fr": "La page Facebook du couteau­lier viennois affiche 96 % de recommandations sur 72 avis, avec livraison et retrait en magasin."
+            },
+            "sourceUrl": "https://www.facebook.com/Messerkoenig/wall",
+            "sourceTitle": "der MESSERKÖNIG"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated score of 10.8/100 (low), but no blacklist hit; it also describes a real Vienna knife smith. Domain age shown looks unreliable.",
+              "fr": "Score automatisé de 10,8/100 (bas), sans mention sur liste noire ; décrit aussi un vrai couteau­lier viennois. L'âge du domaine semble peu fiable."
+            },
+            "sourceUrl": "https://www.scam-detector.com/validator/messerkoenig-at-review",
+            "sourceTitle": "messerkoenig.at Reviews: Is this site a scam or legit?"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated trust score 70/100, no major malware or phishing detections; registrant is an Austrian firm. It advises checking refunds and delivery terms.",
+              "fr": "Score automatisé de 70/100, sans détection majeure de malware ou phishing ; titulaire : société autrichienne. Il conseille de vérifier retours et livraison."
+            },
+            "sourceUrl": "https://gridinsoft.com/online-virus-scanner/url/messerkoenig-at",
+            "sourceTitle": "Messerkoenig.at Store Review: Safe to Buy? (70/100 Trust Score)"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Yelp lists Der Messerkönig in Vienna with this website, rated 3.3 from only 3 reviews; the listing is unclaimed.",
+              "fr": "Yelp répertorie Der Messerkönig à Vienne avec ce site, noté 3,3 sur seulement 3 avis ; la fiche n'est pas revendiquée."
+            },
+            "sourceUrl": "https://www.yelp.com/biz/der-messerk%C3%B6nig-wien",
+            "sourceTitle": "DER MESSERKÖNIG - Updated November 2026 - 15 Photos - Vorgartenstraße 213, Wien, Austria - Kitchen & Bath - Phone Number - Yelp"
+          }
+        ],
+        "summary": {
+          "en": "No scam report or warning list entry was found. Buyer reviews are mostly positive for this Vienna knife shop; automated scores conflict (10.8/100 vs 70/100).",
+          "fr": "Aucun signalement d'arnaque ni liste d'alerte trouvé. Les avis d'acheteurs sont plutôt positifs pour ce couteau­lier viennois ; les scores automatiques divergent (10,8/100 contre 70/100)."
+        },
+        "evidence": [
+          "From a web search about messerkoenig.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.075351,
+      "searches": 2,
+      "ms": 8860
+    },
+    {
+      "url": "https://tee-shop.at/",
+      "label": "legit",
+      "domain": "tee-shop.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "reviews.io lists tee-shop.at (Moses Tee Shop, Dornbirn) at about 5.0 from 555 reviews, with verified buyers praising fast delivery.",
+              "fr": "reviews.io liste tee-shop.at (Moses Tee Shop, Dornbirn) avec environ 5,0 sur 555 avis ; des acheteurs vérifiés louent la livraison rapide."
+            },
+            "sourceUrl": "https://www.reviews.io/company-reviews/store/tee-shop.at",
+            "sourceTitle": "CHA Ye GmbH - Moses Tee Shop Bewertungen"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Regional directory lists Moses Tee Shop with tee-shop.at as its homepage, rated 5.0 from about 210 Google reviews.",
+              "fr": "Un annuaire régional liste Moses Tee Shop avec tee-shop.at comme site, noté 5,0 sur environ 210 avis Google."
+            },
+            "sourceUrl": "https://kauftregional.at/unternehmen/moses-tee-shop",
+            "sourceTitle": "Moses Tee Shop"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Google-sourced reviews for Moses Tee Shop praise quick delivery, careful packaging and free tea samples.",
+              "fr": "Des avis issus de Google sur Moses Tee Shop vantent la livraison rapide, l'emballage soigné et les échantillons de thé offerts."
+            },
+            "sourceUrl": "https://www.sluurpy.at/dornbirn/restaurant/4387911/moses-tee-shop/reviews",
+            "sourceTitle": "Moses Tee Shop Bewertungen - 8 verifizierte Meinungen"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Business directory shows a physical shop at Marktstraße 14, Dornbirn, with phone numbers and tee-shop.at as its website.",
+              "fr": "Un annuaire d'entreprises indique une boutique physique à Marktstraße 14, Dornbirn, avec téléphone et tee-shop.at comme site."
+            },
+            "sourceUrl": "https://www.cylex.at/dornbirn/moses-tee-shop-7235859.html",
+            "sourceTitle": "▷ Moses Tee Shop"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Described as a long-standing Dornbirn tea shop and the first official Ronnefeldt brand partner in Austria.",
+              "fr": "Décrit comme un magasin de thé établi à Dornbirn et premier partenaire officiel de la marque Ronnefeldt en Autriche."
+            },
+            "sourceUrl": "https://www.mapquest.com/at/moses-tee-shop-525735650",
+            "sourceTitle": "Moses Tee Shop, Marktstrasse 14 Am Rand der Fußgängerzone, Dornbirn, AT - MapQuest"
+          }
+        ],
+        "summary": {
+          "en": "tee-shop.at appears to be the website of Moses Tee Shop, a physical tea shop in Dornbirn, Austria. Review sites show consistently positive ratings; no scam reports or warning-list entries turned up in these searches.",
+          "fr": "tee-shop.at semble être le site du Moses Tee Shop, un magasin de thé physique à Dornbirn (Autriche). Les sites d'avis montrent des notes très positives ; aucun signalement d'arnaque ni liste d'alerte trouvé."
+        },
+        "evidence": [
+          "From a web search about tee-shop.at (3 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.101312,
+      "searches": 3,
+      "ms": 10907
+    },
+    {
+      "url": "https://tauchversand.com/",
+      "label": "legit",
+      "domain": "tauchversand.com",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Trustpilot (listed as divestore.de): about 2.5/5 from 57 reviews. Many cite poor customer service, returns and refund delays; some buyers are happy.",
+              "fr": "Trustpilot (divestore.de) : environ 2,5/5 sur 57 avis. Beaucoup citent un service client, des retours et remboursements lents ; d'autres sont satisfaits."
+            },
+            "sourceUrl": "https://de.trustpilot.com/review/www.tauchversand.com?page=3",
+            "sourceTitle": "Bewertungen zu divestore.de"
+          },
+          {
+            "kind": "complaint",
+            "note": {
+              "en": "Some reviewers report refunds delayed over a month and an order cancelled after payment. Others report fast delivery and helpful phone advice.",
+              "fr": "Certains avis signalent des remboursements tardifs (plus d'un mois) et une commande annulée après paiement. D'autres louent la livraison rapide et le conseil."
+            },
+            "sourceUrl": "https://at.trustpilot.com/review/www.tauchversand.com?page=2",
+            "sourceTitle": "Bewertungen zu divestore.de"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "A recent Trustpilot review (July 2026) reports on-time delivery and friendly phone support. Mixed overall rating of 2.5/5.",
+              "fr": "Un avis Trustpilot récent (juillet 2026) mentionne une livraison à temps et un support téléphonique aimable. Note globale mitigée de 2,5/5."
+            },
+            "sourceUrl": "https://www.trustpilot.com/review/www.tauchversand.com",
+            "sourceTitle": "divestore.de Reviews"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Erfahrungen.de says the shop held the EHI 'Geprüfter Onlineshop' seal and quotes mostly positive eKomi reviews from 2018 (older data).",
+              "fr": "Erfahrungen.de indique que la boutique avait le label EHI « Geprüfter Onlineshop » et cite des avis eKomi surtout positifs de 2018 (données anciennes)."
+            },
+            "sourceUrl": "https://www.erfahrungen.de/tauchversand-com",
+            "sourceTitle": "Erfahrungen mit tauchversand.com"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Automated score 78/100: domain registered in 2000, German hosting, no malware found. Its review sentiment is rated 2.3/5.",
+              "fr": "Score automatisé 78/100 : domaine créé en 2000, hébergé en Allemagne, aucun malware détecté. Sentiment des avis noté 2,3/5."
+            },
+            "sourceUrl": "https://gridinsoft.com/online-virus-scanner/url/tauchversand-com",
+            "sourceTitle": "Tauchversand.com Reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Old diver forum thread (very dated): one buyer complained about defective suits and a slow refund; other members reported good experiences.",
+              "fr": "Ancien fil de forum de plongeurs (très daté) : un acheteur se plaint de combinaisons défectueuses et d'un remboursement lent ; d'autres sont satisfaits."
+            },
+            "sourceUrl": "https://taucher.net/forum-vorsicht_beim_einkauf_beim_divestore__tauchversand.com_-ioz25738",
+            "sourceTitle": "Vorsicht beim Einkauf beim Divestore (tauchversand.com) - Forenbeitrag auf Taucher.Net"
+          }
+        ],
+        "summary": {
+          "en": "The shop (also called Divestore) has existed since 2000. Reviews are mixed: Trustpilot is around 2.5/5, with complaints about service and refunds, while others report good orders. No fraud-list entry was found.",
+          "fr": "La boutique (aussi nommée Divestore) existe depuis 2000. Les avis sont partagés : environ 2,5/5 sur Trustpilot, avec des plaintes sur le service et les remboursements, mais aussi des commandes réussies. Aucune liste de fraude trouvée."
+        },
+        "evidence": [
+          "From a web search about tauchversand.com (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.125826,
+      "searches": 2,
+      "ms": 11185
+    },
+    {
+      "url": "https://dieroester.at/",
+      "label": "legit",
+      "domain": "dieroester.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Google Maps lists DieRöster in Steyregg at 4.9/5 (94 reviews); buyers praise advice and service, including a free loaner machine during a repair.",
+              "fr": "Google Maps affiche DieRöster à Steyregg à 4,9/5 (94 avis) ; des clients louent les conseils et le service, dont une machine de prêt gratuite."
+            },
+            "sourceUrl": "https://www.google.com/maps/place//data=!4m2!3m1!1s0x4773bd2130d6ef61:0x757e0bbf763bc19d",
+            "sourceTitle": "DieRöster - Google Maps"
+          },
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Restaurant Guru relays 89 visitor reviews with a 4.9/5 Google rating, mentioning fair prices, good selection and friendly service.",
+              "fr": "Restaurant Guru reprend 89 avis avec une note Google de 4,9/5, citant prix corrects, bon choix et service aimable."
+            },
+            "sourceUrl": "https://restaurantguru.com/DieRoster-Steyregg",
+            "sourceTitle": "DieRöster, Steyregg - Restaurant menu, prices and reviews"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Lelit's official site lists DieRöster (dieroester.at) among its dealers and resellers in Steyregg.",
+              "fr": "Le site officiel de Lelit liste DieRöster (dieroester.at) parmi ses revendeurs à Steyregg."
+            },
+            "sourceUrl": "https://www.lelit.com/lelit-worldwide",
+            "sourceTitle": "Lelit Worldwide - LELIT"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "The shop's YouTube channel gives a legal imprint: DieRöster GmbH, Steyregg near Linz, Austria, with a physical store.",
+              "fr": "La chaîne YouTube du shop indique une société, DieRöster GmbH, à Steyregg près de Linz (Autriche), avec un magasin physique."
+            },
+            "sourceUrl": "https://www.youtube.com/c/DieR%C3%B6ster",
+            "sourceTitle": "DieRöster - YouTube"
+          }
+        ],
+        "summary": {
+          "en": "Results show a physical coffee and espresso-machine shop in Steyregg, Austria, with high Google ratings and a listing as a Lelit dealer. No scam report or warning list entry was found for this domain.",
+          "fr": "Les résultats montrent un magasin de café et machines espresso à Steyregg (Autriche), très bien noté sur Google et référencé revendeur Lelit. Aucun signalement d'arnaque ni liste d'alerte trouvé pour ce domaine."
+        },
+        "evidence": [
+          "From a web search about dieroester.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.062264,
+      "searches": 2,
+      "ms": 8322
+    },
+    {
+      "url": "https://naehprinz.at/",
+      "label": "legit",
+      "domain": "naehprinz.at",
+      "reputation": {
+        "status": "pass",
+        "findings": [
+          {
+            "kind": "positive_review",
+            "note": {
+              "en": "Holds the Austrian E-Commerce-Gütezeichen (cert. ECG-743), with yearly re-checks and a neutral complaints procedure.",
+              "fr": "Détient le label autrichien E-Commerce-Gütezeichen (ECG-743), avec contrôle annuel et procédure de réclamation neutre."
+            },
+            "sourceUrl": "https://www.guetezeichen.at/zertifikate/shopzertifikat/wwwnaehprinzat",
+            "sourceTitle": "Zertifikat naehprinz.at - Österreichisches E-Commerce-Gütezeichen"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Listed as a dealer by Patchworkgilde Austria: E. & F. Pflänzel GmbH, Vienna, in business since 1892, with a physical store.",
+              "fr": "Référencé comme revendeur par la Patchworkgilde Austria : E. & F. Pflänzel GmbH, Vienne, active depuis 1892, avec magasin."
+            },
+            "sourceUrl": "https://patchworkgilde.at/haendler/naehprinz",
+            "sourceTitle": "Nähprinz-Pfaff Wien - Patchworkgilde Austria"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "Webwiki shows no user reviews yet; automated checks rate it 85% trustworthy and Google Safe Browsing finds nothing.",
+              "fr": "Webwiki n'affiche aucun avis d'utilisateur ; l'évaluation automatique est de 85 % et Google Safe Browsing ne signale rien."
+            },
+            "sourceUrl": "http://www.webwiki.at/naehprinz.at",
+            "sourceTitle": "Naehprinz.at - Erfahrungen und Bewertungen"
+          },
+          {
+            "kind": "neutral",
+            "note": {
+              "en": "The Pfaff Wien store website, run by Pflänzel GmbH, points to naehprinz.at as its web shop.",
+              "fr": "Le site du magasin Pfaff Wien, géré par Pflänzel GmbH, renvoie vers naehprinz.at comme boutique en ligne."
+            },
+            "sourceUrl": "https://www.pfaff-wien.at",
+            "sourceTitle": "Pfaff Wien"
+          }
+        ],
+        "summary": {
+          "en": "No scam reports or warning-list entries were found for this domain. It holds an Austrian e-commerce quality seal and is linked to a Vienna company operating since 1892. Few buyer reviews exist online.",
+          "fr": "Aucun signalement d'arnaque ni inscription sur une liste d'alerte n'a été trouvé pour ce domaine. Il détient un label autrichien de commerce en ligne et est lié à une entreprise viennoise active depuis 1892. Peu d'avis d'acheteurs en ligne."
+        },
+        "evidence": [
+          "From a web search about naehprinz.at (2 searches; the shop's own site is never searched)."
+        ]
+      },
+      "costUsd": 0.076206,
+      "searches": 2,
+      "ms": 7983
+    }
+  ]
+}

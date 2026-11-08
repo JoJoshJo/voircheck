@@ -78,7 +78,7 @@ export async function POST(req: Request) {
           onProgress: (e) => {
             // The live-view link goes to this requester only and is never stored.
             if (e.type === 'browser') send({ type: 'browser', liveViewUrl: e.liveViewUrl ?? null });
-            else send(e);
+            else if (e.type === 'signal') send(e); // the research row is shown with the finished scan
           },
         });
         await finishLinkRequest(user.id, sessionId, 'done');
