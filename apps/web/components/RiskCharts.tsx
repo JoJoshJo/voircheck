@@ -78,8 +78,8 @@ export function VerdictChart({ rows, t, lang }: { rows: RiskRow[]; t: Dict; lang
           label: { color: '#6B6866', fontSize: 13, formatter: ({ value }: { value: unknown }) => (Number.isInteger(value) ? String(value) : '') },
         },
       },
-      legend: { position: 'bottom', item: { label: { color: '#0C0C0C', fontSize: 13 } } },
-      theme: { params: { fontFamily, fontSize: 13, foregroundColor: '#0C0C0C', backgroundColor: '#FFFFFF' } },
+      legend: { position: 'bottom', item: { label: { color: '#08090B', fontSize: 13 } } },
+      theme: { params: { fontFamily, fontSize: 13, foregroundColor: '#08090B', backgroundColor: '#FFFFFF' } },
     }),
     [data, t, locale, fontFamily],
   );

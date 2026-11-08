@@ -19,7 +19,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const lang = await guessLang();
   return (
     <html lang={lang} className={inter.variable}>
-      <body className="min-h-screen bg-white text-ink">
+      <body className="min-h-screen bg-page text-ink">
         {children}
         <SiteFooter t={DICTS[lang]} />
       </body>

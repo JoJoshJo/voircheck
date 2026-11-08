@@ -5,7 +5,7 @@ import { HeroDemo } from '../components/HeroDemo';
 import { Mascot } from '../components/Mascot';
 import { Reveal } from '../components/Reveal';
 import { SiteHeader } from '../components/SiteHeader';
-import { btnPrimary, btnSecondary } from '../components/ui';
+import { btnAccent, btnSecondary } from '../components/ui';
 import { shareCard } from '../lib/og';
 import { dictFor, getCurrentUser, guessLang } from '../lib/user';
 
@@ -52,6 +52,17 @@ const TILE_ICONS: Record<string, ReactNode> = {
   ),
 };
 
+/** The headline's closing full stop is drawn as a lime disc with an ink centre (spec 5.12; decoration only). */
+function headline(text: string): ReactNode {
+  if (!text.endsWith('.')) return text;
+  return (
+    <>
+      {text.slice(0, -1)}
+      <span className="vc-dot" aria-hidden="true" />
+    </>
+  );
+}
+
 export default async function Landing() {
   // Signed-in visitors see the landing page too (J, Nov 5), with "Open my workspace" instead of the demo and sign-in.
   // Same session read as before (the proxy has already refreshed it), so no extra cost for anyone.
@@ -88,15 +99,15 @@ export default async function Landing() {
           <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-8 lg:grid-cols-[1.3fr_0.7fr] lg:gap-12 lg:pb-28 lg:pt-20">
             <div>
               {/* The one place semibold (600) is allowed (spec 5.12). */}
-              <h1 className="text-[44px] font-[600] leading-[1.02] tracking-[-0.035em] sm:text-[60px] lg:text-[80px] xl:text-[88px]">{t.meta.tagline}</h1>
+              <h1 className="text-[44px] font-[600] leading-[1.02] tracking-[-0.035em] sm:text-[60px] lg:text-[80px] xl:text-[88px]">{headline(t.meta.tagline)}</h1>
               <p className="mt-7 max-w-xl text-[19px] leading-relaxed text-muted sm:text-[20px]">{l.subline}</p>
               <div className="mt-9 flex flex-wrap items-start gap-3">
                 {signedIn ? (
-                  <Link href="/app" className={btnPrimary}>
+                  <Link href="/app" className={btnAccent}>
                     {l.openWorkspace}
                   </Link>
                 ) : (
-                  <DemoButton label={l.tryDemo} working={t.auth.working} errorText={l.demoError} />
+                  <DemoButton label={l.tryDemo} working={t.auth.working} errorText={l.demoError} className={btnAccent} />
                 )}
                 <Link href="/how-it-works" className={btnSecondary}>
                   {l.howItWorks}

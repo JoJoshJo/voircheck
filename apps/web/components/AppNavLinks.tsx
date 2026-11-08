@@ -15,7 +15,7 @@ export function AppNavLinks({ links }: { links: readonly (readonly [string, stri
       {links.map(([href, label, show]) => {
         const active = href === '/app' ? path === '/app' : path.startsWith(href);
         return (
-          <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`${show} ${active ? 'font-medium text-ink' : 'hover:text-ink'}`.trim()}>
+          <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`${show} ${active ? 'font-medium text-ink underline decoration-lime decoration-[3px] underline-offset-8' : 'hover:text-ink'}`.trim()}>
             {label}
           </Link>
         );

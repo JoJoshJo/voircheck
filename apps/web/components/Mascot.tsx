@@ -65,7 +65,7 @@ export function Mascot({
   const floating = mood === 'scanning' && !building && !assemble;
   const cls = [floating ? 'vc-float' : '', assemble ? 'vc-asm' : '', faceIn ? 'vc-face-in' : '', className ?? ''].filter(Boolean).join(' ');
   // Ink by default (also inside verdict-colored banners); a dark hero can set --vc-ghost-ink / --vc-ghost-fill.
-  const style = { '--vc-k': strokeScale(size), color: 'var(--vc-ghost-ink, #0c0c0c)' } as CSSProperties;
+  const style = { '--vc-k': strokeScale(size), color: 'var(--vc-ghost-ink, #08090b)' } as CSSProperties;
   const off = (i: number) => (i >= n ? ' vc-off' : '');
   return (
     // title="" means decorative (e.g. next to the wordmark): hidden from screen readers instead of an unnamed image.

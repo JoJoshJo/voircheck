@@ -35,12 +35,12 @@ import { input, label as labelClass } from './ui';
 const GRID_MODULES: Module[] = [ClientSideRowModelModule, TextFilterModule, NumberFilterModule, QuickFilterModule, ExternalFilterModule, PaginationModule, LocaleModule, CellStyleModule];
 if (process.env.NODE_ENV !== 'production') enableDevValidations();
 
-// Mono ink (spec 5.12) through the Theming API: white, #F5F5F4 surfaces, #E7E5E4 borders, #0C0C0C ink, no accent.
+// Spec 5.12 through the Theming API: white grid, #F5F5F4 surfaces, #E7E5E4 borders, Midnight #08090B ink; no lime here.
 const gridTheme = themeQuartz.withParams({
   browserColorScheme: 'light',
   backgroundColor: '#FFFFFF',
-  foregroundColor: '#0C0C0C',
-  textColor: '#0C0C0C',
+  foregroundColor: '#08090B',
+  textColor: '#08090B',
   subtleTextColor: '#6B6866',
   borderColor: '#E7E5E4',
   rowBorder: { color: '#E7E5E4' },
@@ -49,7 +49,7 @@ const gridTheme = themeQuartz.withParams({
   headerTextColor: '#6B6866',
   headerFontWeight: 500,
   headerFontSize: 13,
-  accentColor: '#0C0C0C',
+  accentColor: '#08090B',
   rowHoverColor: '#F5F5F4',
   selectedRowBackgroundColor: '#F5F5F4',
   fontFamily: 'inherit',
@@ -62,7 +62,7 @@ const gridTheme = themeQuartz.withParams({
   wrapperBorderRadius: 16,
   borderRadius: 8,
   inputBorder: { color: '#E7E5E4' },
-  inputFocusBorder: { color: '#0C0C0C' },
+  inputFocusBorder: { color: '#08090B' },
   focusShadow: 'none',
 });
 

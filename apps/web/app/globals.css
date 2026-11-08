@@ -1,17 +1,22 @@
 @import "tailwindcss";
 
 /*
- * VoirCheck design tokens (spec 5.12, "Mono ink"). No brand accent color: the only color in the UI is a verdict.
+ * VoirCheck design tokens (spec 5.12): Soft Ivory page, Midnight ink, one Neon Lime accent. Lime is only a fill behind
+ * ink text (the landing hero button) or a small decoration (headline dot, active nav underline, focus halo, mobile tab
+ * bar): never text, never on a verdict. Verdict colors are unchanged.
  * Two weights: regular (400) and medium (500); only the landing hero headline is semibold (600, spec 5.12).
  */
 @theme {
   --color-*: initial;
   --color-white: #ffffff;
+  --color-page: #faf8f3; /* Soft Ivory: page background (cards stay white) */
   --color-surface: #f5f5f4;
   --color-line: #e7e5e4;
-  --color-ink: #0c0c0c;
+  --color-ink: #08090b; /* Midnight Black: 18.7:1 on page, 15.5:1 on lime */
   --color-muted: #6b6866;
-  --color-faint: #736e6a; /* 5.0:1 on white, 4.6:1 on surface (WCAG AA); was #a8a29e */
+  --color-faint: #736e6a; /* 5.0:1 on white, 4.75:1 on page, 4.6:1 on surface (WCAG AA); was #a8a29e */
+  --color-lime: #cdf22b; /* Neon Lime accent: 1.2:1 on page, so it never carries meaning alone */
+  --color-lime-hover: #bfe31f;
   --color-transparent: transparent;
 
   --color-safe-bg: #eaf3de;
@@ -35,7 +40,7 @@ html {
 }
 
 body {
-  background: var(--color-white);
+  background: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
@@ -88,8 +93,8 @@ body {
 .vc-asm .vc-face .vc-part { animation-delay: 1800ms; animation-duration: 400ms; }
 /* Result: the verdict face draws in once the check is done. */
 .vc-face-in .vc-face .vc-part { animation: vc-draw 400ms ease-out 100ms both; }
-/* Hero background: stone to white once the ghost is assembled. */
-@keyframes vc-hero-bg { from { background-color: var(--color-surface); } to { background-color: var(--color-white); } }
+/* Hero background: stone to ivory once the ghost is assembled. */
+@keyframes vc-hero-bg { from { background-color: var(--color-surface); } to { background-color: var(--color-page); } }
 .vc-hero-bg { animation: vc-hero-bg 600ms ease-out 2200ms both; }
 
 /*
@@ -129,3 +134,7 @@ body {
   .vc-float, .vc-scan, .vc-tick, .vc-asm .vc-part, .vc-asm .vc-eyes, .vc-asm .vc-fill, .vc-face-in .vc-face .vc-part, .vc-hero-bg { animation: none; }
   .vc-part, .vc-eyes, .vc-fill { transition: none; }
 }
+
+/* Landing headline: the closing full stop is a lime disc with a Midnight centre (decoration; spec 5.12). */
+.vc-dot { display: inline-block; position: relative; width: 0.27em; height: 0.27em; margin-left: 0.03em; border-radius: 50%; background: var(--color-lime); vertical-align: -0.01em; }
+.vc-dot::after { content: ''; position: absolute; inset: 0; margin: auto; width: 0.12em; height: 0.12em; border-radius: 50%; background: var(--color-ink); }

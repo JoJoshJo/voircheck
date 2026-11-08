@@ -37,7 +37,7 @@ describe('landing page', () => {
     const t = DICTS[l];
     const html = await landing(l);
     expect(redirect).not.toHaveBeenCalled();
-    expect(html).toContain(t.meta.tagline);
+    expect(html).toContain(`${t.meta.tagline.slice(0, -1)}<span class="vc-dot" aria-hidden="true"></span>`);
     expect(html.match(new RegExp(`href="/app"[^>]*>${t.landing.openWorkspace}<`, 'g'))).toHaveLength(2); // header + hero
     expect(html).not.toContain(t.landing.tryDemo);
     expect(html).not.toContain(t.landing.tryDemoNote.replace(/'/g, '&#x27;'));
@@ -47,7 +47,9 @@ describe('landing page', () => {
   it.each(['en', 'fr'] as const)('hero: the tagline as the headline, the subline, Try the demo, the assembling ghost (%s)', async (l) => {
     const html = await landing(l);
     const t = DICTS[l];
-    for (const s of [t.meta.tagline, t.landing.subline, t.landing.tryDemo, t.landing.howItWorks]) expect(html).toContain(s.replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
+    // The headline's closing full stop is drawn as the lime dot (spec 5.12).
+    expect(html).toContain(`${t.meta.tagline.slice(0, -1)}<span class="vc-dot" aria-hidden="true"></span></h1>`);
+    for (const s of [t.landing.subline, t.landing.tryDemo, t.landing.howItWorks]) expect(html).toContain(s.replace(/&/g, '&amp;').replace(/'/g, '&#x27;'));
     expect(html).toMatch(/<h1 class="[^"]*font-\[600\]/);
     // The hero demo renders its finished Safe state on the server (no JS / reduced motion).
     expect(html).toContain(t.agent.example);

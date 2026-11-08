@@ -115,7 +115,7 @@ export function Workspace({
   }, [autoStart, initialCheck]);
 
   const tabBtn = (id: 'chat' | 'results', text: string) => (
-    <button type="button" onClick={() => setTab(id)} className={`flex-1 rounded-full py-2 text-[14px] font-medium ${tab === id ? 'bg-ink text-white' : 'text-muted'}`}>
+    <button type="button" onClick={() => setTab(id)} className={`flex-1 rounded-full py-2 text-[14px] font-medium ${tab === id ? 'bg-ink text-white shadow-[inset_0_-3px_0_var(--color-lime)]' : 'text-muted'}`}>
       {text}
     </button>
   );
