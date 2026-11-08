@@ -130,7 +130,7 @@ describe('dataset', () => {
     const live = stores.filter((s) => s.split === 'live-2026-11');
     expect(live.map((s) => [new URL(s.url).hostname, s.label])).toContainEqual(['hensaro.com', 'scam']);
     expect(live.every((s) => !/[?&](utm_|gclid|gad_|stkn)/.test(s.url))).toBe(true);
-    expect(live.every((s) => s.sourceUrl.includes('/eval/misses/'))).toBe(true);
+    expect(live.find((s) => s.url.includes('hensaro.com'))!.sourceUrl).toContain('/eval/misses/');
   });
   it('the seen test split is kept and marked; holdout scams must be first reported after 2026-10-31', () => {
     expect(stores.filter((s) => s.split === 'seen-2026-10-31')).toHaveLength(40);

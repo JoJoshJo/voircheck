@@ -1,7 +1,7 @@
 /**
  * Real-world eval (spec 5.5 "Eval method"): scan the source-labelled stores in eval/stores.json with the production
  * scanner and report accuracy.
- *   pnpm eval:run [--split holdout|tune|seen-2026-10-31|live-2026-11|all] [--label scam|legit] [--limit N] [--no-research]   (default: holdout)
+ *   pnpm eval:run [--split holdout|tune|seen-2026-10-31|live-2026-11|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research]   (default: holdout)
  * Scan only: no payments, forms or sign-ups. Store pages are opened only inside KERNEL; the runner itself makes a
  * plain HTTP reachability check first (no browser, no JavaScript). Concurrency 2 with polite delays.
  * Writes eval/results/<date>-<split>.json + .md. No secrets or KERNEL links in the output.
@@ -24,7 +24,7 @@ const AI_MAX_CALL = { inputTokens: 11_500, outputTokens: 1_200, cacheReadTokens:
 const CHECK_DELAY_MS = 500;
 
 function usage(): never {
-  console.error(`usage: pnpm eval:run [--split ${SPLITS.join('|')}|all] [--label scam|legit] [--limit N]`);
+  console.error(`usage: pnpm eval:run [--split ${SPLITS.join('|')}|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research]`);
   process.exit(2);
 }
 
@@ -36,6 +36,9 @@ const limitRaw = opt('--limit');
 const limit = limitRaw === undefined ? undefined : Number(limitRaw);
 if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) usage();
 const label = opt('--label');
+/** Only stores added on this day (a new batch), e.g. --added 2026-11-08. */
+const added = opt('--added');
+if (added !== undefined && !/^\d{4}-\d{2}-\d{2}$/.test(added)) usage();
 if (label !== undefined && label !== 'scam' && label !== 'legit') usage();
 
 const kernelKey = process.env.KERNEL_API_KEY;
@@ -46,13 +49,13 @@ if (!kernelKey) {
 const safeBrowsingKey = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 if (!safeBrowsingKey) console.error('warning: GOOGLE_SAFE_BROWSING_API_KEY missing; the threat-list signal will be unavailable.');
 
-const stores = selectStores(loadStores(JSON.parse(readFileSync('eval/stores.json', 'utf8'))).filter((s) => !label || s.label === label), split, limit);
+const stores = selectStores(loadStores(JSON.parse(readFileSync('eval/stores.json', 'utf8'))).filter((s) => (!label || s.label === label) && (!added || s.addedOn === added)), split, limit);
 const scams = stores.filter((s) => s.label === 'scam').length;
 if (stores.length === 0) {
   console.log(`Split "${split}" has no stores yet. Nothing scanned.`);
   process.exit(0);
 }
-console.log(`Split "${split}"${label ? `, ${label} only` : ''}${limit ? `, limit ${limit}` : ''}: ${stores.length} stores (${scams} scam, ${stores.length - scams} legit).`);
+console.log(`Split "${split}"${label ? `, ${label} only` : ''}${added ? `, added ${added}` : ''}${limit ? `, limit ${limit}` : ''}: ${stores.length} stores (${scams} scam, ${stores.length - scams} legit).`);
 console.log(`Estimate: up to ${stores.length} KERNEL sessions (one per live store; dead sites are skipped) and up to ${stores.length} Safe Browsing lookups.`);
 const anthropicKey = process.env.ANTHROPIC_API_KEY;
 const aiModel = process.env.SCAN_MODEL || DEFAULT_SCAN_MODEL;
@@ -115,7 +118,7 @@ const info: RunInfo = { runAt: new Date().toISOString(), split, commit, aiAnalys
 const metrics = computeMetrics(rows);
 
 mkdirSync('eval/results', { recursive: true });
-let stem = `eval/results/${info.runAt.slice(0, 10)}-${split}${label ? `-${label}` : ''}`;
+let stem = `eval/results/${info.runAt.slice(0, 10)}-${split}${label ? `-${label}` : ''}${added ? `-added-${added}` : ''}`;
 for (let n = 2, base = stem; existsSync(`${stem}.json`); n++) stem = `${base}-${n}`;
 writeFileSync(`${stem}.json`, JSON.stringify({ ...info, limit: limit ?? null, rows }, null, 2) + '\n');
 writeFileSync(`${stem}.md`, markdownReport(metrics, rows, info));

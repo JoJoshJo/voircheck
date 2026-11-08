@@ -840,6 +840,303 @@
       "sourceUrl": "https://github.com/JoJoshJo/voircheck/blob/main/eval/misses/2026-11-07-hensaro.md",
       "addedOn": "2026-11-07",
       "notes": "Found by J via Google Shopping ad 2026-11-07"
+    },
+    {
+      "url": "https://kswfcrwc.shop/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Verbraucherzentrale Niedersachsen (fake-shop warning)",
+      "sourceUrl": "https://www.verbraucherzentrale-niedersachsen.de/node/126923",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-05",
+      "notes": "Listed by J 2026-11-07. Lidl look-alike, reached through a Google ad (per the source)."
+    },
+    {
+      "url": "https://velonia-nord.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Verbraucherzentrale Niedersachsen (fake-shop warning)",
+      "sourceUrl": "https://www.verbraucherzentrale-niedersachsen.de/node/126920",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-04",
+      "notes": "Listed by J 2026-11-07."
+    },
+    {
+      "url": "https://skiwaxcare.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Verbraucherzentrale Niedersachsen (fake-shop warning)",
+      "sourceUrl": "https://www.verbraucherzentrale-niedersachsen.de/warnungen/skiwaxcarecom-kein-shop-unter-der-im-impressum-angegebenen-adresse-fakeshop-126860",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-03",
+      "notes": "Listed by J 2026-11-07. No shop at the address in its legal notice (per the source)."
+    },
+    {
+      "url": "https://depot-sale.top/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "5min.at (news report)",
+      "sourceUrl": "https://www.5min.at/oesterreich/5202611060918/depot-schliesst-jetzt-locken-betrueger-mit-mega-rabatten/",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Fake \"Depot is closing\" sale (per the source)."
+    },
+    {
+      "url": "https://heizoel-online.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://heizoel-aral.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://fastenergy24.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://heizoel-deutschland.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://brennholz-emil.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://paulusbrennholz.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://brennholzauswahl.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://kaminexpertstore.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://brennholzbredemeier.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://holzpelletshop.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://mein-brennholz-gmbh.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://brennholzkaufen.shop/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://astbrennholz.com/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://feuerholzexpress.de/",
+      "label": "scam",
+      "split": "holdout",
+      "source": "Netzmeldung fraud warnings (Verbraucherzentrale heating-season warning)",
+      "sourceUrl": "https://www.netzmeldung.com/en/fraud-warnings/fake-shops",
+      "addedOn": "2026-11-08",
+      "reportedOn": "2026-11-06",
+      "notes": "Listed by J 2026-11-07. Heating oil / firewood fake shop, heating-season warning (per the source)."
+    },
+    {
+      "url": "https://nisaogy.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://surtables.online/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://evelano.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://theetelectronics.net/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://bagbase.online/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://validtion.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://daroervia.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://stylezavora.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://hoodartwear.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://metallicastores.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://iesilience.shop/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://vellunee.com/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
+    },
+    {
+      "url": "https://velvetteesfashion.shop/",
+      "label": "scam",
+      "split": "live-2026-11",
+      "source": "MalwareTips (scam write-up)",
+      "sourceUrl": "https://malwaretips.com/blogs/",
+      "addedOn": "2026-11-08",
+      "notes": "Listed by J 2026-11-07 from MalwareTips write-ups; report date not verified (reportedOn null); exact write-up URL not recorded."
     }
   ]
 }
