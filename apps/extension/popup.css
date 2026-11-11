@@ -1,4 +1,4 @@
-/* Mono ink (spec 5.12): white, stone surfaces and borders, ink text. No verdict colours here: the verdict shows in the app. */
+/* Mono ink (spec 5.12): white, stone surfaces and borders, ink text. No verdict colours here: the saved verdict is words only; the full result shows in the app. */
 :root {
   --ink: #0c0c0c;
   --muted: #6b6866;
@@ -86,4 +86,17 @@ footer {
 }
 a {
   color: var(--ink);
+}
+.saved {
+  margin: 0 0 12px;
+}
+.saved-verdict {
+  margin-top: 2px;
+  font-weight: 600;
+}
+.saved-message,
+.saved-date {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
 }

@@ -1,7 +1,7 @@
 /**
  * What the popup hands to VoirCheck (spec 5.23): the current tab's link, if it's a store page we can check, as
  * https://voircheck.com/check?url=…. The /check route validates it again and only fills the check box; the person
- * presses Check in the app. Nothing here reads the page, calls an API or touches payment data.
+ * presses Check in the app. Nothing here reads the page or touches payment data; the only call is savedVerdictUrl below.
  */
 export const APP_ORIGIN = 'https://voircheck.com';
 
@@ -50,4 +50,16 @@ export function checkLink(raw) {
  */
 export function hostOf(url) {
   return new URL(url).hostname.replace(/^www\./, '');
+}
+
+/**
+ * Where the popup asks for a saved result (spec 5.23, Nov 11): voircheck.com/api/verdict with the DOMAIN only, never
+ * the path, query or anything from the page.
+ * @param {string} domain
+ * @returns {string}
+ */
+export function savedVerdictUrl(domain) {
+  const link = new URL('/api/verdict', APP_ORIGIN);
+  link.searchParams.set('domain', domain);
+  return link.href;
 }

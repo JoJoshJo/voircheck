@@ -7,10 +7,19 @@ const SHIPPED = ['manifest.json', 'popup.html', 'popup.css', 'popup.js', 'link.j
 const files = SHIPPED.map((name) => ({ name, text: readFileSync(join(__dirname, name), 'utf8') }));
 
 describe('extension source guard', () => {
-  it('makes no network calls and runs no dynamic code', () => {
+  it('makes exactly one network call, the saved-result lookup, and runs no dynamic code', () => {
     for (const f of files) {
-      expect(f.text, f.name).not.toMatch(/\bfetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|\beval\(|new Function|import\(|setTimeout\(\s*['"`]/);
+      expect(f.text, f.name).not.toMatch(/XMLHttpRequest|WebSocket|EventSource|sendBeacon|\beval\(|new Function|import\(|setTimeout\(\s*['"`]/);
     }
+    const fetches = files.flatMap((f) => [...f.text.matchAll(/\bfetch\(([^,]*),/g)].map((m) => `${f.name}: ${m[1]}`));
+    expect(fetches).toEqual(['popup.js: savedVerdictUrl(domain)']);
+    const popup = files.find((f) => f.name === 'popup.js')!.text;
+    // No cookies, no referrer (which would carry the tab's full link), no caching.
+    expect(popup).toMatch(/credentials: 'omit'/);
+    expect(popup).toMatch(/referrerPolicy: 'no-referrer'/);
+    // It only ever gets the domain: hostOf(tab.url), never the link itself.
+    expect(popup).toMatch(/const domain = hostOf\(tab\.url\);/);
+    expect(popup).toMatch(/showSaved\(domain\)/);
   });
 
   it('never writes HTML from strings', () => {

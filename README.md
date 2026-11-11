@@ -297,16 +297,21 @@ in-process, with an in-memory token check. Transcripts: against local dev with a
 
 ## Chrome extension
 
-A check-only shortcut: on any store page, click the VoirCheck ghost in Chrome's toolbar, then **Check this store**.
+A check-only shortcut: on any store page, click the VoirCheck ghost in Chrome's toolbar. If VoirCheck checked that
+site in the last 3 days, the popup shows the saved result right away (looks safe, a bit off, or looks fake, with the
+date); otherwise it says "Not checked yet". Then press **Check this store**.
 VoirCheck opens in a new tab and, if you're signed in, starts checking that store right away (Safe, Hold or Block).
 Signed out, it keeps the link through sign-in or "Try the demo"; then press **Check**. The extension never pays, never handles payment details and never reads
-the page: its only permission is `activeTab` (the current tab's link, after your click), it makes no network calls,
-and the scan runs on VoirCheck's servers through KERNEL as usual. English or French, following Chrome's language.
+the page. Its permissions are `activeTab` (the current tab's link, after your click) and `voircheck.com` (Chrome
+shows this on install). **Privacy:** the extension asks voircheck.com for a saved result about the site's domain;
+nothing else is sent (no path, no page content, no cookies). The lookup never starts a scan or an AI call, needs no
+sign-in and answers only the verdict, a short line and the date. The scan itself runs on VoirCheck's servers through
+KERNEL as usual. English or French, following Chrome's language.
 
 **Install (unpacked, Chrome or another Chromium browser):**
 
-1. Get `voircheck-extension-v0.1.1.zip` (or build it: `pnpm --filter @voircheck/extension zip`, which writes
-   `apps/extension/dist/voircheck-extension-v0.1.1.zip` and the folder `apps/extension/dist/voircheck-extension/`).
+1. Get `voircheck-extension-v0.2.0.zip` (or build it: `pnpm --filter @voircheck/extension zip`, which writes
+   `apps/extension/dist/voircheck-extension-v0.2.0.zip` and the folder `apps/extension/dist/voircheck-extension/`).
 2. Unzip it. You get a folder named `voircheck-extension`.
 3. Open `chrome://extensions` and turn on **Developer mode** (top right).
 4. Click **Load unpacked** and pick the `voircheck-extension` folder.

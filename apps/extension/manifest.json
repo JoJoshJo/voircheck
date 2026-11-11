@@ -3,7 +3,7 @@
   "name": "__MSG_extName__",
   "short_name": "VoirCheck",
   "description": "__MSG_extDescription__",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "default_locale": "en",
   "homepage_url": "https://voircheck.com",
   "icons": {
@@ -21,6 +21,7 @@
     }
   },
   "permissions": ["activeTab"],
+  "host_permissions": ["https://voircheck.com/*"],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'none'; base-uri 'none'"
   }

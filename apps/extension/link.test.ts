@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { pendingCheckUrl } from '../web/lib/workspace';
-import { APP_ORIGIN, checkableUrl, checkLink, hostOf } from './link.js';
+import { APP_ORIGIN, checkableUrl, checkLink, hostOf, savedVerdictUrl } from './link.js';
 
 describe('checkableUrl', () => {
   it('accepts http(s) store pages and drops the #fragment', () => {
@@ -64,5 +64,14 @@ describe('hostOf', () => {
   it('shows the host without www.', () => {
     expect(hostOf('https://www.shop.example/p')).toBe('shop.example');
     expect(hostOf('https://outlet.shop.example/p')).toBe('outlet.shop.example');
+  });
+});
+
+describe('savedVerdictUrl', () => {
+  it('sends only the domain, to voircheck.com', () => {
+    const u = new URL(savedVerdictUrl(hostOf('https://www.amazon.com/dp/B0?tag=x&ref=y#top')));
+    expect(u.origin).toBe('https://voircheck.com');
+    expect(u.pathname).toBe('/api/verdict');
+    expect([...u.searchParams]).toEqual([['domain', 'amazon.com']]);
   });
 });

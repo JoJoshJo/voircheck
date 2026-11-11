@@ -7,5 +7,13 @@
   "checkNote": { "message": "Ouvre VoirCheck dans un nouvel onglet et vérifie cette boutique : semble fiable, un doute, ou semble faux. Pas connecté ? Connectez-vous, puis appuyez sur Vérifier.", "description": "Under the button when the tab is a store page" },
   "notAStore": { "message": "Ouvrez d’abord la page d’une boutique. VoirCheck vérifie les boutiques en ligne, pas les pages du navigateur ni les fichiers.", "description": "When the tab can't be checked" },
   "checkOnly": { "message": "Vérification seulement : ne paie jamais et ne lit jamais la page.", "description": "Footer promise" },
-  "howLink": { "message": "Comment VoirCheck vérifie", "description": "Footer link to the how-it-works page" }
+  "howLink": { "message": "Comment VoirCheck vérifie", "description": "Footer link to the how-it-works page" },
+  "savedLabel": { "message": "Résultat enregistré", "description": "Label above the saved verdict" },
+  "savedLoading": { "message": "Recherche d’un résultat enregistré…", "description": "While asking voircheck.com" },
+  "savedNone": { "message": "Pas encore vérifiée", "description": "No saved result from the last 3 days" },
+  "savedUnavailable": { "message": "Pas de résultat enregistré pour l’instant. Vous pouvez quand même la vérifier.", "description": "The lookup failed or was rate-limited" },
+  "savedCheckedOn": { "message": "Vérifiée le", "description": "Before the date of the saved result, e.g. 'Checked 10 Nov'" },
+  "verdictSAFE": { "message": "Semble fiable", "description": "Saved verdict SAFE" },
+  "verdictHOLD": { "message": "Un doute", "description": "Saved verdict HOLD" },
+  "verdictBLOCK": { "message": "Semble faux", "description": "Saved verdict BLOCK" }
 }

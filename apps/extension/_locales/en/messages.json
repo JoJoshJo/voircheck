@@ -7,5 +7,13 @@
   "checkNote": { "message": "Opens VoirCheck in a new tab and checks this store: looks safe, a bit off, or looks fake. Signed out? Sign in, then press Check.", "description": "Under the button when the tab is a store page" },
   "notAStore": { "message": "Open a store page first. VoirCheck checks web shops, not browser pages or files.", "description": "When the tab can't be checked" },
   "checkOnly": { "message": "Check only: this never pays and never reads the page.", "description": "Footer promise" },
-  "howLink": { "message": "How VoirCheck checks", "description": "Footer link to the how-it-works page" }
+  "howLink": { "message": "How VoirCheck checks", "description": "Footer link to the how-it-works page" },
+  "savedLabel": { "message": "Saved result", "description": "Label above the saved verdict" },
+  "savedLoading": { "message": "Looking for a saved result…", "description": "While asking voircheck.com" },
+  "savedNone": { "message": "Not checked yet", "description": "No saved result from the last 3 days" },
+  "savedUnavailable": { "message": "No saved result right now. You can still check it.", "description": "The lookup failed or was rate-limited" },
+  "savedCheckedOn": { "message": "Checked", "description": "Before the date of the saved result, e.g. 'Checked 10 Nov'" },
+  "verdictSAFE": { "message": "Looks safe", "description": "Saved verdict SAFE" },
+  "verdictHOLD": { "message": "A bit off", "description": "Saved verdict HOLD" },
+  "verdictBLOCK": { "message": "Looks fake", "description": "Saved verdict BLOCK" }
 }

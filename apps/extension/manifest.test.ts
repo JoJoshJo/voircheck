@@ -12,8 +12,12 @@ describe('extension manifest', () => {
     expect(manifest.permissions).toEqual(['activeTab']);
   });
 
-  it('asks for no hosts, runs nothing on pages and exposes nothing', () => {
-    for (const key of ['host_permissions', 'optional_permissions', 'optional_host_permissions', 'content_scripts', 'background', 'web_accessible_resources', 'externally_connectable', 'update_url', 'key']) {
+  it('may reach voircheck.com only (the saved-result lookup, Nov 11)', () => {
+    expect(manifest.host_permissions).toEqual(['https://voircheck.com/*']);
+  });
+
+  it('runs nothing on pages and exposes nothing', () => {
+    for (const key of ['optional_permissions', 'optional_host_permissions', 'content_scripts', 'background', 'web_accessible_resources', 'externally_connectable', 'update_url', 'key']) {
       expect(manifest, key).not.toHaveProperty(key);
     }
   });
