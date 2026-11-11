@@ -176,11 +176,9 @@ describe('OpenRouter: free models only, never charged', () => {
 
 describe('free chains ($0 for AI, Nov 11)', () => {
   const env = { GROQ_API_KEY: 'g', GEMINI_API_KEY: 'k', OPENROUTER_API_KEY: 'o' };
-  it('page analysis: Groq ×3 → Gemini Flash-Lite → OpenRouter free ×2 (Claude is added last by the caller)', () => {
+  it('page analysis: Groq qwen → Gemini Flash-Lite → OpenRouter free ×2, no gpt-oss (Claude is added last by the caller)', () => {
     expect(pageAnalysisChain(env).map((p) => `${p.id} ${p.model}`)).toEqual([
       'groq qwen/qwen3.8-27b',
-      'groq openai/gpt-oss-120b',
-      'groq openai/gpt-oss-20b',
       'gemini gemini-3.5-flash-lite',
       'openrouter nvidia/nemotron-3.5-lightning:free',
       'openrouter nvidia/nemotron-3.5-super-vl:free',

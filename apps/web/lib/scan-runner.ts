@@ -21,7 +21,7 @@ export class ScanBusyError extends Error {
 export const freshScansRunning = () => running.__voircheckScansRunning ?? 0;
 
 // One analyzer per process, two flavours sharing one 72 h per-URL AI result cache in the database (ai_page_cache; in memory until migration 0008 is applied) (on globalThis so a dev hot reload
-// keeps it): Groq ×3 → Gemini → OpenRouter free ×2 → Claude Haiku last, and the same without Claude (no reservation).
+// keeps it): Groq qwen → Gemini → OpenRouter free ×2 → Claude Haiku last, and the same without Claude (no reservation).
 const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: { full: PageAnalyzer; free: PageAnalyzer | null }; __voircheckResearcher?: WebResearcher };
 function pageAnalyzers(): { full: PageAnalyzer; free: PageAnalyzer | null } {
   return (g.__voircheckAnalyzer ??= (() => {

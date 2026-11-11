@@ -61,7 +61,7 @@ console.log(`Split "${split}"${label ? `, ${label} only` : ''}${added ? `, added
 console.log(`Estimate: up to ${stores.length} KERNEL sessions (one per live store; dead sites are skipped) and up to ${stores.length} Safe Browsing lookups.`);
 const freeOnly = args.includes('--free-only');
 const anthropicKey = freeOnly ? undefined : process.env.ANTHROPIC_API_KEY;
-// The same free chain as production (Groq ×3 → Gemini → OpenRouter ×2), Claude last only with a key (not --free-only).
+// The same free chain as production (Groq qwen → Gemini → OpenRouter ×2), Claude last only with a key (not --free-only).
 const free = pageAnalysisChain();
 // Research (web search) keeps its own model, Claude-only.
 const aiModel = process.env.SCAN_MODEL || DEFAULT_SCAN_MODEL;

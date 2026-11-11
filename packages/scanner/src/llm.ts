@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 /**
  * Shared AI provider layer (spec 5.13, $0 for AI, J Nov 11): free providers FIRST, Claude LAST.
- *   Page analysis: Groq qwen → Groq gpt-oss-120b → Groq gpt-oss-20b → Gemini Flash-Lite → OpenRouter free → Claude.
+ *   Page analysis: Groq qwen → Gemini Flash-Lite → OpenRouter free → Claude (no gpt-oss, J Nov 11).
  *   Shopping agent: Groq qwen → gpt-oss-120b → gpt-oss-20b → OpenRouter free → Claude. NEVER Gemini (user chat stays
  *   off Google's free tier, whose content is used to improve Google's products; public store pages only).
  * No paid usage: Groq and Gemini only on their free plans (the code can't see billing, so never link one), OpenRouter
@@ -277,9 +277,13 @@ export function geminiProvider(env: Record<string, string | undefined> = process
 export const openRouterProviders = (env: Record<string, string | undefined> = process.env): ChatProvider[] =>
   [openRouterProvider(env, 'primary'), openRouterProvider(env, 'backup')].filter((p): p is ChatProvider => !!p);
 
-/** The free chain for page analysis (J, Nov 11): Groq ×3 → Gemini → OpenRouter ×2. Claude is added last by the caller. */
+/**
+ * The free chain for page analysis (J, Nov 11, second decision): Groq qwen → Gemini → OpenRouter ×2. Claude is added
+ * last by the caller. No gpt-oss here: in the 10-shop check it flagged Target and REI for payment red flags the pages
+ * never showed. gpt-oss stays in the agent chain.
+ */
 export const pageAnalysisChain = (env: Record<string, string | undefined> = process.env): ChatProvider[] => [
-  ...groqProviders(env),
+  ...[groqProvider(env, 0)].filter((p): p is ChatProvider => !!p),
   ...[geminiProvider(env)].filter((p): p is ChatProvider => !!p),
   ...openRouterProviders(env),
 ];
