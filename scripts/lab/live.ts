@@ -11,7 +11,7 @@ import { agentOrderStatus, compareStores, demoPeersForUrl, parsePaymentRef, type
 import { createDb } from '@voircheck/db';
 import { scans } from '@voircheck/db/schema';
 import { MemoryGateStore, MoneyGate, PayPalClient } from '@voircheck/paypal';
-import { anthropicAnalyzer, assertSafeUrlShape, kernelVisitor, scanStore, type SignalResult } from '@voircheck/scanner';
+import { anthropicAnalyzer, assertSafeUrlShape, kernelVisitor, scanStore, type PageAnalyzer, type SignalResult } from '@voircheck/scanner';
 import { and, desc, eq, gt, like, or } from 'drizzle-orm';
 import { fileAiCache } from '../ai-cache';
 
@@ -77,7 +77,7 @@ async function latestVerdictForStore(storeUrl: string) {
  * One store scan: the app's fresh cached scan when there is one (no new cost), else a real scan. `budget` is checked
  * by the caller before every run; a fresh scan costs one KERNEL session and one Claude page analysis.
  */
-export async function labScan(rawUrl: string, spend: Spend, opts: { useCache?: boolean } = {}): Promise<Omit<LabScan, 'storeId'>> {
+export async function labScan(rawUrl: string, spend: Spend, opts: { useCache?: boolean; analyzer?: PageAnalyzer } = {}): Promise<Omit<LabScan, 'storeId'>> {
   const url = new URL(assertSafeUrlShape(rawUrl).href);
   url.hash = '';
   const href = url.href;
@@ -87,7 +87,8 @@ export async function labScan(rawUrl: string, spend: Spend, opts: { useCache?: b
   }
   const kernelKey = env('KERNEL_API_KEY');
   const anthropicKey = env('ANTHROPIC_API_KEY');
-  if (!kernelKey || !anthropicKey) throw new Error('labScan needs KERNEL_API_KEY and ANTHROPIC_API_KEY');
+  if (!kernelKey) throw new Error('labScan needs KERNEL_API_KEY');
+  if (!opts.analyzer && !anthropicKey) throw new Error('labScan needs ANTHROPIC_API_KEY (or a page analyzer)');
   const demo = demoPeersForUrl(href, env('DEMO_STORES_BASE_URL'));
   const peers = demo ? await Promise.all(demo.peers.map(async (p) => ({ url: p.url, productTitle: p.productTitle, verdict: await latestVerdictForStore(p.storeUrl) }))) : [];
   spend.kernelSessions += 1;
@@ -96,7 +97,7 @@ export async function labScan(rawUrl: string, spend: Spend, opts: { useCache?: b
     {
       visitor: kernelVisitor({ apiKey: kernelKey, proxyId: env('KERNEL_PROXY_ID') }),
       safeBrowsingKey: env('GOOGLE_SAFE_BROWSING_API_KEY'),
-      analyzer: anthropicAnalyzer({ apiKey: anthropicKey, model: env('SCAN_MODEL'), cache: fileAiCache() }),
+      analyzer: opts.analyzer ?? anthropicAnalyzer({ apiKey: anthropicKey, model: env('SCAN_MODEL'), cache: fileAiCache() }),
     },
   );
   spend.scanUsd += meta.ai?.costUsd ?? 0;
@@ -119,6 +120,8 @@ export function voirCheckDeps(opts: {
   returnUrl?: string;
   /** Scans already run for this lab run, by scanned URL (so an attack page is scanned once, not once per tool call). */
   preScanned?: ReadonlyMap<string, Omit<LabScan, 'storeId'>>;
+  /** Page analyzer for scans this run makes (default: Claude). */
+  analyzer?: PageAnalyzer;
 }) {
   const clientId = env('PAYPAL_CLIENT_ID');
   const clientSecret = env('PAYPAL_CLIENT_SECRET');
@@ -151,7 +154,7 @@ export function voirCheckDeps(opts: {
       if (!r) return { status: 'unavailable', reason: 'unknown_store' };
       try {
         const target = r.source === 'demo' ? r.productUrl : r.storeUrl;
-        const s = opts.preScanned?.get(target) ?? (await labScan(target, opts.spend));
+        const s = opts.preScanned?.get(target) ?? (await labScan(target, opts.spend, opts.analyzer ? { analyzer: opts.analyzer } : {}));
         const id = `scan-${storeId}`;
         store.scans.set(id, { id, url: s.url, verdict: s.verdict, riskScore: s.score, scannedAt: new Date(), cacheExpiresAt: new Date(Date.now() + 24 * 3_600_000) });
         scanIds.set(storeId, id);

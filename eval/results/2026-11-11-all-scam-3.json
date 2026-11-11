@@ -1,0 +1,274 @@
+{
+  "runAt": "2026-11-11T01:36:22.766Z",
+  "split": "all",
+  "commit": "063725c",
+  "aiAnalysis": "on",
+  "aiModel": "qwen/qwen3.8-27b > openai/gpt-oss-120b > openai/gpt-oss-20b > gemini-3.5-flash-lite > nvidia/nemotron-3.5-lightning:free > nvidia/nemotron-3.5-super-vl:free",
+  "limit": 5,
+  "rows": [
+    {
+      "url": "https://gruenstark.de/",
+      "label": "scam",
+      "split": "seen-2026-10-31",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 15,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of gruenstark.de (no RDAP server listed for .de).",
+            "gruenstark.de was first seen on 2023-06-21 (about 3 years ago): its first certificate in the public certificate logs (crt.sh). This is not the registration date; the domain may be older.",
+            "gruenstark.de is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 45 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects across domains: gruenstark.de → angeltarotreading.com.",
+            "This shop sent our check to angeltarotreading.com instead of showing its shop. Real shops don't hide their pages.",
+            "Couldn't verify this store: it sent our check to angeltarotreading.com instead of showing its shop, so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: it sent our check to angeltarotreading.com instead of showing its shop, so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: it sent our check to angeltarotreading.com instead of showing its shop.",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12511,
+      "kernelError": "it sent our check to angeltarotreading.com instead of showing its shop",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 15
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 15
+      },
+      "sentElsewhere": {
+        "via": "browser",
+        "to": "angeltarotreading.com"
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://mall.elvaritaro.com/",
+      "label": "scam",
+      "split": "tune",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    },
+    {
+      "url": "https://hochzeitsdekorationen.shop/",
+      "label": "scam",
+      "split": "seen-2026-10-31",
+      "outcome": "dead",
+      "deadReason": "unreachable: UND_ERR_CONNECT_TIMEOUT"
+    },
+    {
+      "url": "https://werkaro.com/",
+      "label": "scam",
+      "split": "seen-2026-10-31",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "werkaro.com was registered on 2025-11-12 (about 12 months ago).",
+            "Registrar: Spaceship, Inc.",
+            "werkaro.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 8 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on werkaro.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (Groq, qwen/qwen3.8-27b): risk 75/100, 3 findings.",
+            "Unrealistic discounts (high, home): \"Bosch Bohr-Meißelhammer GBH 2-28 F + GOTOOLS SDS-plus Hammerbohrer-Satz 5-teilig €256.99 ... €64.25\"",
+            "Company details inconsistent (med, home): \"© 2026 werkaro.com ... PICHLER Werkzeug GmbH\"",
+            "Copied or generic text (med, contact): \"Unser Unternehmen bietet Hunderte von speziellen Produkten für globale Käufer.\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 18545,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.werkaro.com/",
+            "kind": "home",
+            "title": "Heim - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/about-us/",
+            "kind": "contact",
+            "title": "Über uns - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/return-shipping/",
+            "kind": "terms",
+            "title": "Rückgabe & Versand - Professionelle Werkzeuge & Handwerksbedarf – Werkaro | Deutsche Präzision trifft Design"
+          },
+          {
+            "url": "https://www.werkaro.com/products/subframe-fixing-system-engine-gearbox-support-mod-1-2/",
+            "kind": "product",
+            "title": "Subframe fixing system Engine & Gearbox Support Mod. 1 + 2",
+            "hiddenText": [
+              {
+                "text": "Subframe fixing system Engine & Gearbox Support Mod. 1 + 2 Menge",
+                "reason": "clipped",
+                "hint": "label.screen-reader-text",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "PICHLER Werkzeug GmbH"
+          ],
+          "addresses": [
+            "Address:Schneidmühlweg 2, 63741 Aschaffenburg",
+            "1-2 Werktage (Vorausgesetzt alle gewünschten Artikel sind in unserem Versandlager lagernd.)You order at: PICHLER Werkzeug GmbH, Zugspitzstraße 33,82467 Garmisch-Partenkirchen,Germany"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "sales@werkaro.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "PayPal"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            80,
+            75,
+            70
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 0,
+        "outputTokens": 0,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": true,
+        "provider": "groq",
+        "model": "qwen/qwen3.8-27b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 35
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://elveant.com/",
+      "label": "scam",
+      "split": "seen-2026-10-31",
+      "outcome": "dead",
+      "deadReason": "unreachable: ENOTFOUND"
+    }
+  ]
+}

@@ -1,0 +1,3358 @@
+{
+  "runAt": "2026-11-11T00:11:20.034Z",
+  "split": "holdout",
+  "commit": "063725c",
+  "aiAnalysis": "on",
+  "aiModel": "qwen/qwen3.8-27b > nvidia/nemotron-3.5-lightning:free",
+  "limit": null,
+  "rows": [
+    {
+      "url": "https://www.walmart.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 15,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "walmart.com was registered on 1995-02-23 (about 31 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: walmart.com is #478 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by GlobalSign nv-sa.",
+            "Certificate is 106 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "warn",
+          "points": 15,
+          "evidence": [
+            "AI page analysis (OpenRouter, nvidia/nemotron-3.5-lightning:free): risk 45/100, 4 findings.",
+            "Fake scarcity or urgency (med, home), AI note: A countdown or low-stock message pressures the shopper to buy quickly.",
+            "Fake scarcity or urgency (med, home), AI note: A message shows many other shoppers are viewing the same item.",
+            "Copied or generic text (low, contact), AI note: Placeholder text found on a page, suggesting the shop has not filled in its own details.",
+            "Payment red flags (high, terms): \"Pay by Bank Program\""
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 25481,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.walmart.com/",
+            "kind": "home",
+            "title": "Walmart | Save Money. Live better.",
+            "hiddenText": [
+              {
+                "text": "Spanish / Español now available!Spanish / Españolnow available!",
+                "reason": "display_none",
+                "hint": "div.flex.items-center",
+                "possibleInjection": false
+              },
+              {
+                "text": "Sacramento, 95829•Sacramento Supercenter",
+                "reason": "clipped",
+                "hint": "span.ld_Ec[aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Pre-lit to snow-flockedYour perfect tree awaitsShop nowShop now",
+                "reason": "offscreen",
+                "hint": "div.aspect-ratio--object.br3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Bedding, decor & moreGuest room glow-upShop nowShop now",
+                "reason": "offscreen",
+                "hint": "div.aspect-ratio--object.br3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jeans & moreThe Denim ShopShop nowShop now",
+                "reason": "offscreen",
+                "hint": "div.aspect-ratio--object.br3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Hosting, decor & moreThe Holiday ShopShop nowShop now",
+                "reason": "offscreen",
+                "hint": "div.aspect-ratio--object.br3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Harry's Original Men's Razor Blade Refills, 5 Blade Razor Blade Cartridges, 4 Pack, Price $9.97",
+                "reason": "clipped",
+                "hint": "span.ld_Ec",
+                "possibleInjection": false
+              },
+              {
+                "text": "Rollback, KitchenAid Deluxe Series 4.5 Quart Tilt-Head Stand Mixer with Stainless Bowl, Pistachio, Model KSM97PT, Price Now $279.00 Was $399.00",
+                "reason": "clipped",
+                "hint": "span.ld_Ec",
+                "possibleInjection": false
+              },
+              {
+                "text": "AirPods Max 2 - Orange, Price Now $479.00 Was $549.00",
+                "reason": "clipped",
+                "hint": "span.ld_Ec",
+                "possibleInjection": false
+              },
+              {
+                "text": "Grand Theft Auto VI, PlayStation 5 Game, (Code in Box, Delivers 11/12/26, Playable 11/19/26), Price $79.99",
+                "reason": "clipped",
+                "hint": "span.ld_Ec",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://business.walmart.com/cp/about-walmart-business/6136230?povid=6136230_POV_WMTfooter",
+            "kind": "contact",
+            "title": "Walmart Business - Save on Bulk Supplies & Office Essentials."
+          },
+          {
+            "url": "https://www.walmart.com/help/article/walmart-com-terms-of-use/3b75080af40340d6bbd596f116fae5a0",
+            "kind": "terms",
+            "title": "Walmart.com Terms of Use - Walmart.com"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Walmart Inc."
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Invoice",
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 6022,
+        "outputTokens": 596,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "openrouter",
+        "model": "nvidia/nemotron-3.5-lightning:free"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 15
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.homedepot.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "homedepot.com was registered on 1992-08-04 (about 34 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: homedepot.com is #767 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 107 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 3473,
+      "kernelError": "blocked by a bot check (HTTP 403)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.newegg.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "newegg.com was registered on 2000-02-01 (about 26 years ago).",
+            "Registrar: Network Solutions, LLC.",
+            "Well-known site: newegg.com is #5,261 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 48 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 35394,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.newegg.com/",
+            "kind": "home",
+            "title": "PC Parts, Computers, Workstations & AI PCs | Newegg"
+          },
+          {
+            "url": "https://secure.newegg.com/identity/signin?tk=b767ea_1d96187e9353439fa4641f46f3687081242116",
+            "kind": "terms",
+            "title": "Newegg.com Sign In",
+            "hiddenText": [
+              {
+                "text": "Opens in a new window Opens an external website Opens an external website in a new window This website utilizes technologies such as cookies to enable essential site functionality, as well as for analytics, personalization, and targeted advertising. You may change your settings at any time or accept the default settings. You may close this banner to continue with only essential cookies. Your preferences are saved across the devices where you're signed in, and may differ from the choices you make",
+                "reason": "offscreen",
+                "hint": "div.osano-cm-window[data-nosnippet]",
+                "possibleInjection": false
+              },
+              {
+                "text": "@font-face { font-family: \"applied-button-font-0\"; src: url(data:application/x-font-woff;charset=utf-8;base64,d09GRgABAAAAABRMABEAAAAAIawAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABHUE9TAAATFAAAALsAAAHIbUB2PEdTVUIAABPQAAAAZQAAAIxKSyvpT1MvMgAACjgAAABNAAAAYHLeeipic2xuAAAUOAAAABMAAABI/ykCnmNtYXAAAAqIAAAArAAAATzUgYTCY3Z0IAAAEagAAACGAAAA/h4jsglmcGdtAAALNAAABcMAAAviP64gqWdhc3AAABMMAAAACAAAAAgAAAAQZ2x5ZgAAAYAAAAfMAAAMDN+ERypoZWFkAAAJlAAAADYAAAA2FZUeyWhoZWEAAAoYAAAAIAAAACQQagbMaG10eAAACcwAAABMAAAATFWqCFBsb2NhAAAJbA",
+                "reason": "display_none",
+                "hint": "div",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.newegg.com/ai-hardware?Tpk=ai+hardware",
+            "kind": "product",
+            "title": "AI Hardware: PCs, GPU Accelerators, Robotics & Maker Kits",
+            "hiddenText": [
+              {
+                "text": "MoreFeedbackTo Top123456789101112131415CompareClear AllClose",
+                "reason": "display_none",
+                "hint": "div.floating-right-tools",
+                "possibleInjection": false
+              },
+              {
+                "text": "Thanks for subscribing! Your request will be processed within the next 24 hours. Please add \"promo@promo.newegg.com\" to your address book to ensure delivery.",
+                "reason": "display_none",
+                "hint": "div.footer2021-sub-success[data-footer-newsletter-success]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "2000-2026 Newegg Inc."
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            75,
+            71,
+            67,
+            62,
+            55,
+            52,
+            51,
+            43,
+            37,
+            36
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.boots.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "boots.com was registered on 1995-06-06 (about 31 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: boots.com is #10,207 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Sectigo Limited.",
+            "Certificate is 29 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: blocked by a bot check, so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check, so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check.",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 3045,
+      "kernelError": "blocked by a bot check",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.waterstones.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "waterstones.com was registered on 1995-08-09 (about 31 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: waterstones.com is #12,054 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Corporation Service Company.",
+            "Certificate is 63 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Groq, qwen/qwen3.8-27b): risk 0/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12906,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.waterstones.com/",
+            "kind": "home",
+            "title": "Buy books, stationery and gifts, online and in store | Waterstones",
+            "hiddenText": [
+              {
+                "text": "Diary of a Wimpy Kid 21: Fight Or Flight",
+                "reason": "clipped",
+                "hint": "span.visuallyhidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "2026's Most Wanted. The best new books for this Christmas. Shop Now",
+                "reason": "clipped",
+                "hint": "span.visuallyhidden",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.waterstones.com/help/delivery-options/19",
+            "kind": "terms",
+            "title": "Delivery Options | Waterstones.com Help | Waterstones"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Jellycat Ltd",
+            "Ginger Fox Ltd",
+            "Guinness World Records Limited",
+            "2026. Waterstones Booksellers Limited"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Company number",
+              "value": "00610095"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": false,
+          "discountsPct": [
+            50,
+            25
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4781,
+        "outputTokens": 76,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "qwen/qwen3.8-27b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.leroymerlin.fr/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "leroymerlin.fr was registered on 1996-09-12 (about 30 years ago).",
+            "Registrar: NAMESHIELD.",
+            "Well-known site: leroymerlin.fr is #1,347 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by GlobalSign nv-sa.",
+            "Certificate is 20 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 4689,
+      "kernelError": "blocked by a bot check (HTTP 403)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.cdiscount.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "cdiscount.com was registered on 1998-10-17 (about 28 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: cdiscount.com is #1,286 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Corporation Service Company.",
+            "Certificate is 281 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 10590,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.cdiscount.com/",
+            "kind": "home",
+            "title": "Cdiscount : des prix bas qui ont de la voix !",
+            "hiddenText": [
+              {
+                "text": "En précommande.Précommande garantie au prix le plus bas Précommandez pour profiter d'avantages",
+                "reason": "display_none",
+                "hint": "div.sc-11c3ifi-12.kPpQUs[data-e2e]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Forfait mobile 5G 220Go à 9,99€/ mois sans engagement OFFERT : McAfee Total Protection pendant 1 an. Valable sur 3 appareils",
+                "reason": "display_none",
+                "hint": "div.sc-11c3ifi-12.kPpQUs[data-e2e]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Black Month Payez en 4 fois. Voir conditions.",
+                "reason": "display_none",
+                "hint": "div.sc-11c3ifi-12.kPpQUs[data-e2e]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Black Month -15€ dès 89€ d'achat avec le code PHILIPS15D89",
+                "reason": "display_none",
+                "hint": "div.sc-11c3ifi-12.kPpQUs[data-e2e]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ce bandeau vous demande votre consentement pour utiliser des cookies et d'autres technologies de suivi pour améliorer votre expérience sur Cdiscount, analyser votre utilisation de nos produits et services, et montrer des publicités pertinentes.",
+                "reason": "display_none",
+                "hint": "div#consentDescription",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://clients.cdiscount.com/frequentlyaskedquestions.html?userinput=Comment%2520contacter%2520Cdiscount%2520%3F",
+            "kind": "contact",
+            "title": "Just a moment...",
+            "hiddenText": [
+              {
+                "text": "Verification successful. Waiting for clients.cdiscount.com to respond",
+                "reason": "display_none",
+                "hint": "div#_b788da27967456af6e147a57",
+                "possibleInjection": false
+              },
+              {
+                "text": "La case ne s’affiche pas ou la vérification échoue ? Désactivez vos extensions de navigateur ou testez un autre navigateur. Si vous pensez qu’il s’agit d’une erreur, vous pouvez nous le signaler par e-mail : Destinataire RayID IP client Heure du blocage URL bloquée Signaler par e-mail RayID a5891182fddbd233 · IP 213.110.69.54 · clients.cdiscount.com · mardi 10 novembre 2026 à 19:09:28 Vous pouvez aussi nous écrire directement à blockreport@cdiscount.com : Copier le mail prérempli Informations à ",
+                "reason": "display_none",
+                "hint": "div#signalement.signalement",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.cdiscount.com/shipping/shippinginfo.html?shippingPartnerOrigin=FP",
+            "kind": "terms",
+            "title": "Livraison Cdiscount - Point retrait, Kiala, TNT, livraison gratuite, livraison rapide, frais de livraison... - Cdiscount.com",
+            "hiddenText": [
+              {
+                "text": "En cas d'indisponibilité de relais Pick Up, le colis pourra être déposé en bureau de poste ou agence Chronopost. Si c'est le cas, vous aurez un délai de 14 jours calendaires pour retirer votre colis.",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "En cas d'empêchement, vous avez également la possibilité d'autoriser une personne de votre choix à retirer votre colis, à condition que celle-ci soit munie de votre pièce d'identité ainsi que de la sienne.",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "Pour les cas de précommande veuillez vous référer à la page \"Précommande Standard\".",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "Si la livraison n'a pas pu être effectuée, Chronopost vous enverra un message pour replanifier la livraison.",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "En cas d’absence, un mail vous sera envoyé vous indiquant les modalités de récupération de votre colis dans le relais Pickup le plus proche de l'adresse de livraison, sinon un avis de passage sera déposé dans la boîte aux lettres si accessible + avis de passage électronique (mail/sms) vous invitant à reprogrammer votre livraison.",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "Pour les cas de précommande veuillez-vous référer à la page « Précommande Standard ».",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "Pour les cas de précommande veuillez-vous référer à la page « Précommande Express »",
+                "reason": "display_none",
+                "hint": "li.item.u-hide",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ce bandeau vous demande votre consentement pour utiliser des cookies et d'autres technologies de suivi pour améliorer votre expérience sur Cdiscount, analyser votre utilisation de nos produits et services, et montrer des publicités pertinentes.",
+                "reason": "display_none",
+                "hint": "div#consentDescription",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            58,
+            50,
+            49,
+            45,
+            41,
+            37,
+            33,
+            32,
+            31,
+            30
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.laredoute.fr/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "laredoute.fr was registered on 1998-04-05 (about 28 years ago).",
+            "Registrar: GANDI.",
+            "Well-known site: laredoute.fr is #16,195 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 42 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on laredoute.fr (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12078,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.laredoute.fr/",
+            "kind": "home",
+            "title": "Meubles, linge de maison, déco, mode | La Redoute",
+            "hiddenText": [
+              {
+                "text": "Venez découvrir tout le meilleur de La Redoute Des promos uniquement disponibles sur l'app Les dernières tendances mode & maison L'état de vos commandes toujours sous les yeux En savoir plus sur l'app Téléchargez l'app en scannant ce QR code avec votre smartphone",
+                "reason": "display_none",
+                "hint": "div#webToAppMarketingModal[data-title]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Abonnez-vous et profitez-en + Livraison à domicile offerte(1) Prix exclusifs pour les clients La Redoute + (2) Des Ventes Privées et des avantages Oui ! Je profite de tous les avantages pour 19€/an. Le tarif membre LR+ est un prix exclusif réservé aux adhérents du programme. Le taux d’écart affiché par rapport au prix tout public met en valeur l’avantage dont bénéficient les membres LR+, à titre purement informatif. Je veux en savoir +",
+                "reason": "display_none",
+                "hint": "div#modalLRAndMe.lrandme.lrandme-discover[data-isloyaltyincart]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Merci de renseigner un email Exemple: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterEmpty.newsletter-message.empty",
+                "possibleInjection": false
+              },
+              {
+                "text": "Email incorrect : merci de supprimer les espaces, les caractères spéciaux et les accents. Exemple d'email: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterNotEmail.newsletter-message.not-email",
+                "possibleInjection": false
+              },
+              {
+                "text": "Précédent - aller à la diapositive à gauche",
+                "reason": "display_none",
+                "hint": "button.prev-icon",
+                "possibleInjection": false
+              },
+              {
+                "text": "Suivant - aller à la prochaine diapositive",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.laredoute.fr/espace-mentions_legales.aspx",
+            "kind": "legal",
+            "title": "Mentions légales | La Redoute",
+            "hiddenText": [
+              {
+                "text": ".op-boutique {min-height:80px;} .opco-message {line-height:22px !important;} .bdoOpeco {background-color: #191B21;color:#FFFF1A;position:relative; font-family:'Poppins';min-height: 48px;} .bdoOpeco {flex-direction: row;align-items: center;justify-content:center; } .bdoOpeco .bdo-part1 { text-align:center; font-weight: 600;align-items: end;font-size:16px;} .bdoOpeco .bdo-part1 .part1abis{margin: 4px 0 4px 4px;font-weight: 600;font-size: 14px;color:#FFFF1A} .bdoOpeco .bdo-part1 sup{font-size: 10px",
+                "reason": "clipped",
+                "hint": "div#panel1.panel",
+                "possibleInjection": false
+              },
+              {
+                "text": "Venez découvrir tout le meilleur de La Redoute Des promos uniquement disponibles sur l'app Les dernières tendances mode & maison L'état de vos commandes toujours sous les yeux En savoir plus sur l'app Téléchargez l'app en scannant ce QR code avec votre smartphone",
+                "reason": "display_none",
+                "hint": "div#webToAppMarketingModal[data-title]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Abonnez-vous et profitez-en + Livraison à domicile offerte(1) Prix exclusifs pour les clients La Redoute + (2) Des Ventes Privées et des avantages Oui ! Je profite de tous les avantages pour 19€/an. Le tarif membre LR+ est un prix exclusif réservé aux adhérents du programme. Le taux d’écart affiché par rapport au prix tout public met en valeur l’avantage dont bénéficient les membres LR+, à titre purement informatif. Je veux en savoir +",
+                "reason": "display_none",
+                "hint": "div#modalLRAndMe.lrandme.lrandme-discover[data-isloyaltyincart]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Nom du cookie __cf_bm Emetteur du cookie Cloudflare Finalité Sécurité Motif d’exemption Les traceurs destinés à l’authentification auprès d’un service, y compris ceux visant à assurer la sécurité du mécanisme d’authentification, par exemple en limitant les tentatives d’accès robotisées ou inattendues Nom du cookie _cfuvid Emetteur du cookie Cloudflare Finalité Sécurité Motif d’exemption Les traceurs destinés à l’authentification auprès d’un service, y compris ceux visant à assurer la sécurité du",
+                "reason": "display_none",
+                "hint": "table.tabmobile",
+                "possibleInjection": false
+              },
+              {
+                "text": "Merci de renseigner un email Exemple: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterEmpty.newsletter-message.empty",
+                "possibleInjection": false
+              },
+              {
+                "text": "Email incorrect : merci de supprimer les espaces, les caractères spéciaux et les accents. Exemple d'email: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterNotEmail.newsletter-message.not-email",
+                "possibleInjection": false
+              },
+              {
+                "text": "Précédent - aller à la diapositive à gauche",
+                "reason": "display_none",
+                "hint": "button.prev-icon",
+                "possibleInjection": false
+              },
+              {
+                "text": "Suivant - aller à la prochaine diapositive",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.laredoute.fr/popretoursremboursement.aspx",
+            "kind": "terms",
+            "title": "La Redoute, Mode française | La Redoute",
+            "hiddenText": [
+              {
+                "text": "Venez découvrir tout le meilleur de La Redoute Des promos uniquement disponibles sur l'app Les dernières tendances mode & maison L'état de vos commandes toujours sous les yeux En savoir plus sur l'app Téléchargez l'app en scannant ce QR code avec votre smartphone",
+                "reason": "display_none",
+                "hint": "div#webToAppMarketingModal[data-title]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Abonnez-vous et profitez-en + Livraison à domicile offerte(1) Prix exclusifs pour les clients La Redoute + (2) Des Ventes Privées et des avantages Oui ! Je profite de tous les avantages pour 19€/an. Le tarif membre LR+ est un prix exclusif réservé aux adhérents du programme. Le taux d’écart affiché par rapport au prix tout public met en valeur l’avantage dont bénéficient les membres LR+, à titre purement informatif. Je veux en savoir +",
+                "reason": "display_none",
+                "hint": "div#modalLRAndMe.lrandme.lrandme-discover[data-isloyaltyincart]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Merci de renseigner un email Exemple: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterEmpty.newsletter-message.empty",
+                "possibleInjection": false
+              },
+              {
+                "text": "Email incorrect : merci de supprimer les espaces, les caractères spéciaux et les accents. Exemple d'email: nom@domaine.fr",
+                "reason": "display_none",
+                "hint": "span#newsletterNotEmail.newsletter-message.not-email",
+                "possibleInjection": false
+              },
+              {
+                "text": "Précédent - aller à la diapositive à gauche",
+                "reason": "display_none",
+                "hint": "button.prev-icon",
+                "possibleInjection": false
+              },
+              {
+                "text": "Suivant - aller à la prochaine diapositive",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Redoute SAS"
+          ],
+          "addresses": [
+            "La Redoute Quai 30 - 30 rue de Chardonnet - 59150 Wattrelos"
+          ],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Carte Bancaire",
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            70,
+            50,
+            40,
+            20,
+            11,
+            10
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.maisonsdumonde.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "maisonsdumonde.com was registered on 2004-07-22 (about 22 years ago).",
+            "Registrar: Gandi SAS.",
+            "Well-known site: maisonsdumonde.com is #13,737 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 50 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: blocked by a bot check (HTTP 403), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: blocked by a bot check (HTTP 403).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 4457,
+      "kernelError": "blocked by a bot check (HTTP 403)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.conrad.de/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of conrad.de (no RDAP server listed for .de).",
+            "Well-known site: conrad.de is #20,440 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 1 day old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 13562,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.conrad.de/",
+            "kind": "home",
+            "title": "Elektronik & Technik bei Conrad » Zum Online-Shop",
+            "hiddenText": [
+              {
+                "text": "Elektronik & Technik bei Conrad » Zum Online-Shop",
+                "reason": "offscreen",
+                "hint": "span.nuxt-route-announcer",
+                "possibleInjection": false
+              },
+              {
+                "text": "Exklusiv mit PRO: 15 % ab 75 € Einkaufswert",
+                "reason": "same_color",
+                "hint": "span.text-md.leading-[22px]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.conrad.de/de/ueber-conrad/rechtliches/impressum.html",
+            "kind": "legal",
+            "title": "Impressum",
+            "hiddenText": [
+              {
+                "text": "1 1x pro Geschäftskunde, gültig bis 13.11.2026 auf conrad.de. 10% Rabatt bei Mindestwarenwert 100,- € zzgl. MwSt, für Conrad PRO Mitglieder: 15% Rabatt bei Mindestwarenwert 75,-€ zzgl. MwSt (Wert der behaltenen Ware nach einer etwaigen Rückgabe). Von Rabatten ausgenommen sind Artikel der Marken Apple, Samsung, BambuLab, Raspberry Pi und Nvidia sowie Produkte, die direkt durch unsere Geschäftspartner versendet werden, Prepaid-/ Geschenkkarten, Bücher und Conrad PRO Mitgliedsgebühr. Nicht mit ande",
+                "reason": "visibility_hidden",
+                "hint": "div#_content_ccp_de_DE_jcr_content_root_footer_footercontainer_columncontrol_2_col1_text_549097082.campaign",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.conrad.de/de/o/reed-kontakte-0200190.html",
+            "kind": "contact",
+            "title": "Reedkontakte, Reedschalter günstig online kaufen bei Conrad",
+            "hiddenText": [
+              {
+                "text": "Direktlink Header Hauptmenü Inhalt Fußleiste",
+                "reason": "offscreen",
+                "hint": "div#top.cmsSkiplinks",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ich bin Geschäftskunde Ich bin Privatkunde",
+                "reason": "display_none",
+                "hint": "div.cmsHeaderIdentificationPopup.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "Plattform für alles Technische Lieferungen in 24h Große Auswahl, eine Rechnung Garantiertes Rückgaberecht",
+                "reason": "display_none",
+                "hint": "div.cmsHeaderUsps.cmsHeader__row",
+                "possibleInjection": false
+              },
+              {
+                "text": "14,61-54,317% = 1,50 €104,219% = 4,00 €254,1111% = 12,50 €504,0612% = 27,50 €1003,9614% = 65,00 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "13,61-103,347% = 2,70 €253,2410% = 9,25 €503,1612% = 22,50 €1003,1114% = 50,00 €2503,0216% = 147,50 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "12,34-102,177% = 1,70 €252,1110% = 5,75 €502,0512% = 14,50 €1002,0313% = 31,00 €2501,9716% = 92,50 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "17,13-56,706% = 2,15 €106,558% = 5,80 €256,4110% = 18,00 €506,3411% = 39,50 €1006,1913% = 94,00 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "10,61-90,568% = 0,45 €150,5510% = 0,90 €300,5313% = 2,40 €600,5215% = 5,40 €1200,5018% = 13,20 €3000,4920% = 36,00 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "16,29-55,916% = 1,90 €105,788% = 5,10 €255,6610% = 15,75 €505,5911% = 35,00 €1005,4613% = 83,00 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              },
+              {
+                "text": "12,76-102,558% = 2,10 €252,4910% = 6,75 €502,4212% = 17,00 €1002,3913% = 37,00 €2502,3216% = 110,00 €",
+                "reason": "display_none",
+                "hint": "tbody.hidden[data-full]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.conrad.de/de/service/schutz-und-versicherung/retoure.html",
+            "kind": "terms",
+            "title": "Retoure und Rückgabe bei Conrad",
+            "hiddenText": [
+              {
+                "text": "Direktlink Header Hauptmenü Inhalt Seitenleistenmenü Fußleiste",
+                "reason": "offscreen",
+                "hint": "div#top.cmsSkiplinks",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ich bin Geschäftskunde Ich bin Privatkunde",
+                "reason": "display_none",
+                "hint": "div.cmsHeaderIdentificationPopup.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "Plattform für alles Technische Lieferungen in 24h Große Auswahl, eine Rechnung Garantiertes Rückgaberecht",
+                "reason": "display_none",
+                "hint": "div.cmsHeaderUsps.cmsHeader__row",
+                "possibleInjection": false
+              },
+              {
+                "text": "Geschäftskunde Privatkunde Einkaufen als Geschäftskunde Mehr als 12 Mio. Artikel Nettopreise (exkl. MwSt.) Privatkunde Mehr als 1 Mio. Artikel Bruttopreise (inkl. MwSt.) Einkaufen als Geschäftskunde Mehr als 12 Mio. Artikel Nettopreise (exkl. MwSt.) Privatkunde Mehr als 1 Mio. Artikel Bruttopreise (inkl. MwSt.) Hilfe & Support Hilfe und Support Mehr anzeigen Womit benötigen Sie Hilfe? Bestellung Versand Bezahlung Rücksendung & Garantie Virtueller Assistent Häufige Fragen Tel.: 09604 / 40 87 87 M",
+                "reason": "visibility_hidden",
+                "hint": "div.cmsHeaderMain__top--right",
+                "possibleInjection": false
+              },
+              {
+                "text": "Flexibilität für Ihr Business – mit unserem freiwilligen 14-tägigen Rückgaberecht für Geschäftskunden (B2B)",
+                "reason": "visibility_hidden",
+                "hint": "div#_content_ccp_de_DE_service_protection-and-insurance_free-return_jcr_content_root_main_responsivegrid_columncontrol_1",
+                "possibleInjection": false
+              },
+              {
+                "text": "“Allgemeines” 14-tägiges Rückgaberecht gemäß unserer Rückgaberechts-Richtlinie für Lieferungen an Geschäftskunden (B2B) Erweitertes Rückgaberecht mit 30-tägiger Rückgabefrist und Übernahme der Rücksendekosten (für Standardlieferungen innerhalb Deutschlands) durch Conrad gemäß den Teilnahmebedingungen für das Conrad-PRO-Programm für Geschäftskunden (B2B) als einer der PRO-Vorteile, wenn Sie Conrad-PRO-Mitglied sind",
+                "reason": "visibility_hidden",
+                "hint": "div#_content_ccp_de_DE_service_protection-and-insurance_free-return_jcr_content_root_main_responsivegrid_columncontrol_c",
+                "possibleInjection": false
+              },
+              {
+                "text": "Ihre gesetzlichen Rechte bleiben davon selbstverständlich unberührt; die Einzelheiten (einschließlich der vorgesehenen Ausschlüsse vom jeweiligen Rückgaberecht) ergeben sich aus der Rückgaberechts-Richtlinie für Lieferungen an Geschäftskunden (B2B) bzw. den Teilnahmebedingungen für das Conrad-PRO-Programm für Geschäftskunden (B2B).",
+                "reason": "visibility_hidden",
+                "hint": "div#_content_ccp_de_DE_service_protection-and-insurance_free-return_jcr_content_root_main_responsivegrid_columncontrol_c",
+                "possibleInjection": false
+              },
+              {
+                "text": "Gewerblicher Shop: Anzeige von Nettopreisen exkl. MwSt. und Versandkosten",
+                "reason": "clipped",
+                "hint": "p.cmsVatInformation--hidden.cmsVatInformation__text[data-price-notification]",
+                "possibleInjection": false
+              },
+              {
+                "text": "1 1x pro Geschäftskunde, gültig bis 13.11.2026 auf conrad.de. 10% Rabatt bei Mindestwarenwert 100,- € zzgl. MwSt, für Conrad PRO Mitglieder: 15% Rabatt bei Mindestwarenwert 75,-€ zzgl. MwSt (Wert der behaltenen Ware nach einer etwaigen Rückgabe). Von Rabatten ausgenommen sind Artikel der Marken Apple, Samsung, BambuLab, Raspberry Pi und Nvidia sowie Produkte, die direkt durch unsere Geschäftspartner versendet werden, Prepaid-/ Geschenkkarten, Bücher und Conrad PRO Mitgliedsgebühr. Nicht mit ande",
+                "reason": "visibility_hidden",
+                "hint": "div#_content_ccp_de_DE_jcr_content_root_footer_footercontainer_columncontrol_2_col1_text_549097082.campaign",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.conrad.de/de/p/voltcraft-ph-100-atc-ph-messgeraet-101145.html",
+            "kind": "product",
+            "title": "VOLTCRAFT PH-100 ATC pH-Messgerät kaufen | Elektronik & Technik bei Conrad » Zum Online-Shop",
+            "hiddenText": [
+              {
+                "text": "VOLTCRAFT PH-100 ATC pH-Messgerät kaufen | Elektronik & Technik bei Conrad » Zum Online-Shop",
+                "reason": "offscreen",
+                "hint": "span.nuxt-route-announcer",
+                "possibleInjection": false
+              },
+              {
+                "text": "prav.priceAvailability.ecoparticipation.cost ...",
+                "reason": "display_none",
+                "hint": "div[data-v-b954cd4c]",
+                "possibleInjection": false
+              },
+              {
+                "text": "prav.priceAvailability.privatecopyingfee.cost ...",
+                "reason": "display_none",
+                "hint": "div[data-v-b954cd4c]",
+                "possibleInjection": false
+              },
+              {
+                "text": "BeschreibungOb pH-Wert im Schwimmbad oder Sauerstoffanteil und Leitwert des Wassers im Aquarium: Schlechte Wasserwerte sind oftmals die Ursachen für Fischsterben, schlechtes Pflanzenwachstum oder misslungene Versuche in Schule und Labor. Und wenn sich die Folgen schlechter Wasserqualität zeigen, ist es meist schon zu spät. Zuverlässiges und genaues pH-Meter für Anwendungen in Schulen, Laboren, Aquarien, Schwimmbädern oder zur Qualitätskontrolle.Das Gerät ist auch geeignet für wassermischbare Küh",
+                "reason": "display_none",
+                "hint": "section.section.bg-white[data-v-a45f292a]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Wird oft zusammen gekauft (*Alle Angaben sind zzgl. gesetzl. MwSt) Dieser ArtikelVOLTCRAFT PH-100 ATC pH-MessgerätVersand durch Conrad Electronic65,54 €* VOLTCRAFT PE-03 PE-03 1 St.Versand durch Conrad Electronic36,97 €* -19% VOLTCRAFT 6LR61 9 V Block-Batterie Alkali-Mangan 550 mAh 9 V 10 St.Versand durch Conrad Electronic11,34 €9,24 €* VOLTCRAFT CR-01 Reagenz 1 St.Versand durch Conrad Electronic7,55 €*1 l = 151,00 €Gesamtpreis:121,40 €119,30 €*4 in den Einkaufswagen",
+                "reason": "display_none",
+                "hint": "div.md:hidden[data-v-a45f292a]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Conrad Electronic SE",
+            "MT24 GmbH & Co. KG"
+          ],
+          "addresses": [],
+          "phones": [
+            "09604 40 87 87",
+            "+49 (0) 9604 408 787"
+          ],
+          "emails": [
+            {
+              "address": "kundenservice@conrad.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "dsacompliance@conrad.de",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "DE131832937"
+            },
+            {
+              "type": "Commercial register (HRB/HRA)",
+              "value": "HRB 3896"
+            }
+          ],
+          "paymentMethods": [
+            "Visa",
+            "Mastercard",
+            "Sofort",
+            "Bank transfer / prepayment",
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            19,
+            18,
+            15,
+            13,
+            10,
+            5
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.galaxus.de/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of galaxus.de (no RDAP server listed for .de).",
+            "Well-known site: galaxus.de is #40,440 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 38 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 11288,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.galaxus.de/",
+            "kind": "home",
+            "title": "galaxus.de – more than an online shop",
+            "hiddenText": [
+              {
+                "text": "EUR253,10Nintendo Switch + Mario Kart 8 Deluxe",
+                "reason": "display_none",
+                "hint": "div.yvaqvas8.yvaqvas9",
+                "possibleInjection": false
+              },
+              {
+                "text": "EUR119,–Sony DualSense LISA X Limited Edition controller, PS5",
+                "reason": "display_none",
+                "hint": "div.yvaqvas8.yvaqvas9",
+                "possibleInjection": false
+              },
+              {
+                "text": "EUR87,90Pokémon Pokemon TCG: Mega Evolution - ME06: Delta Reign - Booster Bundle",
+                "reason": "display_none",
+                "hint": "div.yvaqvas8.yvaqvas9",
+                "possibleInjection": false
+              },
+              {
+                "text": "EUR324,44AMD Ryzen 7 5800X3D 10th Anniversary Edition",
+                "reason": "display_none",
+                "hint": "div.yvaqvas8.yvaqvas9",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.galaxus.de/en/page/this-is-what-the-iphone-duo-feels-like-44190",
+            "kind": "contact",
+            "title": "iPhone Duo hands-on - Galaxus",
+            "hiddenText": [
+              {
+                "text": "The perfectly calibrated hinge holds the iPhone Duo stable at any angle.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "If I set the Duo up like a tent, it turns into a clock.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "The crease is visible when opening, but once unfolded, I no longer notice it.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "If light falls on a matte display, the contrast drops drastically. Even Apple cannot change that. However, in person, the difference does not seem as dramatic as in photos and videos.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "Once you have a grease stain on the inner display, it is difficult to remove.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "When folded, the Duo is smaller and heavier than the iPhone 18 Pro.",
+                "reason": "opacity_0",
+                "hint": "figure.yZthHrHB.yZthHrHC",
+                "possibleInjection": false
+              },
+              {
+                "text": "These articles might also interest youShow allSkip carouselBackground informationiPhone event on 9 September: what to expectSamuel Buchmann125 likes125101 comments101Background informationIs the iPhone 18 Pro’s variable aperture any good?Samuel Buchmann324 likes32480 comments80Background informationvideoHow the iPhone 3G feels in 2026David Lee58 likes5817 comments17Background information7 things you should know about the new iPhonesSamuel Buchmann177 likes17753 comments53Background informationWh",
+                "reason": "display_none",
+                "hint": "div.yDnMDws1",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.galaxus.de/en/s2/product/roborock-saros-20-flow-complete-36000-pa-mop-roller-robot-vacuum-cleaners-76143439",
+            "kind": "product",
+            "title": "Roborock Saros 20 Flow Complete (36000 Pa, Mop roller) - Galaxus",
+            "hiddenText": [
+              {
+                "text": "Sort by:NewestWithout ratingNo ratingismartzone.deSingle testReleaseNovember 2026PositiveWischwalze mit FrischwasserspülungPositiveflache BauweisePositivestarke SaugleistungPositiveSprachsteuerung ohne AppPositivegroßzügiger LieferumfangPositiveübersichtliche AppShow more",
+                "reason": "opacity_0",
+                "hint": "div#_R_ma6m9pb57bq6_.yWc1Mhq8[aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "What would you like to know?4 questions and answersmozzo77771 week ago000I have very little space and need to know exactly how wide the docking station is. Specifically, the width of the back panel that sits against the wall. Thank you!Show in original language (German)This question was asked about another variant: Saros 20 Flow Complete (36000 Pa, Mop roller)1 answerLuca Frighetto4 days ago000According to our information, the width of the back panel is 38.1 cm.Show in original language (German)",
+                "reason": "opacity_0",
+                "hint": "div#_R_2nq6m9pb57bq6_.yWc1Mhq8[aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "EUR1500,10Roborock Saros 20 Flow Complete36000 Pa, Mop rollerAdd to cart",
+                "reason": "display_none",
+                "hint": "div.yHULsMQ2.yHULsMQ3",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [
+            {
+              "address": "samuel.buchmann@digitecgalaxus.ch",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            5
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.douglas.de/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of douglas.de (no RDAP server listed for .de).",
+            "Well-known site: douglas.de is #19,584 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 72 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Groq, qwen/qwen3.8-27b): risk 0/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 4570,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.douglas.de/",
+            "kind": "home",
+            "title": "Access Denied"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": false,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 2096,
+        "outputTokens": 98,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "qwen/qwen3.8-27b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://al-holz.at/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of al-holz.at (no RDAP server listed for .at).",
+            "No first certificate date either (crt.sh HTTP 502).",
+            "al-holz.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 51 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on al-holz.at (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Not enough other trustworthy stores sell exactly \"Brennholz Ahorn 33 cm, luftgetrocknet\" to compare prices."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Groq, qwen/qwen3.8-27b): risk 5/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 5978,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.al-holz.at/",
+            "kind": "home",
+            "title": "Brennholz aus der Region — trocken ab 105€/srm, Lieferung im Bezirk Liezen | AL-Holz"
+          },
+          {
+            "url": "https://www.al-holz.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum | AL-Holz"
+          },
+          {
+            "url": "https://www.al-holz.at/bestellung/",
+            "kind": "contact",
+            "title": "Bestellung — so einfach geht's | AL-Holz"
+          },
+          {
+            "url": "https://www.al-holz.at/widerruf/",
+            "kind": "terms",
+            "title": "Widerruf online erklären | AL-Holz",
+            "hiddenText": [
+              {
+                "text": "Ihr Widerruf ist eingegangen. Die Eingangsbestätigung kommt per E-Mail; wir melden uns umgehend wegen der Rückabwicklung.",
+                "reason": "display_none",
+                "hint": "div#wr-ok",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Outzeit GmbH"
+          ],
+          "addresses": [
+            "Donnersbachstraße 99, 8952 Irdning",
+            "Donnersbachstraße 99, 8952 Irdning, Österreich",
+            "Sitz der Geschäftsführung: Donnersbachstraße 99, 8952 Irdning, Österreich"
+          ],
+          "phones": [
+            "0664 145 17 40",
+            "+43 664 145 17 40"
+          ],
+          "emails": [
+            {
+              "address": "holz@al-holz.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU61777517"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 263889 y"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": [
+            90
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4627,
+        "outputTokens": 138,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "qwen/qwen3.8-27b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://aureperlia.at/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 0,
+      "hardRules": [
+        "cant_verify"
+      ],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of aureperlia.at (no RDAP server listed for .at).",
+            "No first certificate date either (crt.sh HTTP 502).",
+            "aureperlia.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 61 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects.",
+            "Couldn't verify this store: the store returned an error page (HTTP 404), so the cloud browser never saw the shop itself."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 404), so its price is unknown."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't read the store page: the store returned an error page (HTTP 404).",
+            "No store page was read, so there was nothing to analyze."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 4002,
+      "kernelError": "the store returned an error page (HTTP 404)",
+      "ai": null,
+      "withoutAi": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 0
+      },
+      "gone": 404,
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://funstasy.at/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of funstasy.at (no RDAP server listed for .at).",
+            "funstasy.at was first seen on 2024-10-30 (about 2 years ago): its first certificate in the public certificate logs (crt.sh). This is not the registration date; the domain may be older.",
+            "funstasy.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Google Trust Services.",
+            "Certificate is 6 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15002,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://funstasy.at/",
+            "kind": "home",
+            "title": "Erotikshop aus Österreich – Vibratoren & diskrete Lieferung",
+            "hiddenText": [
+              {
+                "text": "🤍Geheim & schnell geliefert – kostenlos ab 65 €! 📦 In diskreter Verpackung | 📅 Lieferung in 2–6 Werktagen Service Search Anmelden / Registrieren 0 items € 0,00 0 items Vibratoren Auflegevibrator Bullet Vibratoren Fingervibratoren G-Punkt Vibratoren Intelligenter Vibrator Klassische Vibratoren Paarvibratoren Prostata Vibratoren Rabbitvibratoren Rose Vibratoren Zungen Vibrator Liebeskugeln AV Massager Vibro Eier Erotik Adventskalender 2026 Sexspielzeuge Für Frauen Fingervibratoren Dildos mit Sa",
+                "reason": "visibility_hidden",
+                "hint": "div.wd-page-wrapper.website-wrapper",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://funstasy.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Funstasy",
+            "hiddenText": [
+              {
+                "text": "🤍Geheim & schnell geliefert – kostenlos ab 65 €! 📦 In diskreter Verpackung | 📅 Lieferung in 2–6 Werktagen Service Search Anmelden / Registrieren 0 items € 0,00 0 items Vibratoren Auflegevibrator Bullet Vibratoren Fingervibratoren G-Punkt Vibratoren Intelligenter Vibrator Klassische Vibratoren Paarvibratoren Prostata Vibratoren Rabbitvibratoren Rose Vibratoren Zungen Vibrator Liebeskugeln AV Massager Vibro Eier Erotik Adventskalender 2026 Sexspielzeuge Für Frauen Fingervibratoren Dildos mit Sa",
+                "reason": "visibility_hidden",
+                "hint": "div.wd-page-wrapper.website-wrapper",
+                "possibleInjection": false
+              },
+              {
+                "text": "Warenkorb Close Es befinden sich keine Produkte im Warenkorb. Return To Shop",
+                "reason": "visibility_hidden",
+                "hint": "div.cart-widget-side.wd-side-hidden",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://funstasy.at/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt - Funstasy",
+            "hiddenText": [
+              {
+                "text": "Warenkorb Close Es befinden sich keine Produkte im Warenkorb. Return To Shop",
+                "reason": "visibility_hidden",
+                "hint": "div.cart-widget-side.wd-side-hidden",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://funstasy.at/bestellung-widerrufen-mit-einfachem-formular/",
+            "kind": "terms",
+            "title": "Widerrufsformular - Funstasy",
+            "hiddenText": [
+              {
+                "text": "Warenkorb Close Es befinden sich keine Produkte im Warenkorb. Return To Shop",
+                "reason": "visibility_hidden",
+                "hint": "div.cart-widget-side.wd-side-hidden",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://funstasy.at/produkte/vibratoren/",
+            "kind": "product",
+            "title": "Vibratoren – Für klitorale, vaginale & anale Lust | Funstasy",
+            "hiddenText": [
+              {
+                "text": "🤍Geheim & schnell geliefert – kostenlos ab 65 €! 📦 In diskreter Verpackung | 📅 Lieferung in 2–6 Werktagen Service Search Anmelden / Registrieren 0 items € 0,00 0 items Vibratoren Auflegevibrator Bullet Vibratoren Fingervibratoren G-Punkt Vibratoren Intelligenter Vibrator Klassische Vibratoren Paarvibratoren Prostata Vibratoren Rabbitvibratoren Rose Vibratoren Zungen Vibrator Liebeskugeln AV Massager Vibro Eier Erotik Adventskalender 2026 Sexspielzeuge Für Frauen Fingervibratoren Dildos mit Sa",
+                "reason": "visibility_hidden",
+                "hint": "div.wd-page-wrapper.website-wrapper",
+                "possibleInjection": false
+              },
+              {
+                "text": "Warenkorb Close Es befinden sich keine Produkte im Warenkorb. Return To Shop",
+                "reason": "visibility_hidden",
+                "hint": "div.cart-widget-side.wd-side-hidden",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": false,
+          "discountsPct": []
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.heysimeon.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "heysimeon.com was registered on 2023-10-19 (about 3 years ago).",
+            "Registrar: World4You Internet Services GmbH.",
+            "heysimeon.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Sectigo Limited.",
+            "Certificate is 19 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16222,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.heysimeon.com/",
+            "kind": "home",
+            "title": "Exklusive Produkte zu fairen Preisen. | heySimeon",
+            "hiddenText": [
+              {
+                "text": "(Funktional, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a03d2-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "(Marketing, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a03d2-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Privatsphäre-Einstellungen individuell festlegen",
+                "reason": "display_none",
+                "hint": "a.a03d2-ext-1-414.a03d2-ext-4-301",
+                "possibleInjection": false
+              },
+              {
+                "text": "Spielerische Details für kleine Entdecker:innen",
+                "reason": "same_color",
+                "hint": "div.ecomus-banner__description",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.heysimeon.com/impressum/",
+            "kind": "legal",
+            "title": "Impressum - heySimeon",
+            "hiddenText": [
+              {
+                "text": "(Funktional, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.aca15-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "(Marketing, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.aca15-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Privatsphäre-Einstellungen individuell festlegen",
+                "reason": "display_none",
+                "hint": "a.aca15-ext-1-414.aca15-ext-4-301",
+                "possibleInjection": false
+              },
+              {
+                "text": "heySimeon.com Was Unsere Kunden Sagen 5.00 Bewertung (4 Rezensionen)",
+                "reason": "tiny_font",
+                "hint": "div.cr-badge.badge_size_small",
+                "possibleInjection": false
+              },
+              {
+                "text": "Einkaufswagen Dein Warenkorb ist leer Sie können alle verfügbaren Produkte ansehen und einige im Shop kaufen Kehre zum Einkaufen zurück",
+                "reason": "display_none",
+                "hint": "div#cart-panel.offscreen-panel.cart-panel[data-rocket-location-hash]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.heysimeon.com/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt zu heySimeon",
+            "hiddenText": [
+              {
+                "text": "(Funktional, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a1ccb-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "(Marketing, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a1ccb-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Privatsphäre-Einstellungen individuell festlegen",
+                "reason": "display_none",
+                "hint": "a.a1ccb-ext-1-414.a1ccb-ext-4-301",
+                "possibleInjection": false
+              },
+              {
+                "text": "heySimeon.com Was Unsere Kunden Sagen 5.00 Bewertung (4 Rezensionen)",
+                "reason": "tiny_font",
+                "hint": "div.cr-badge.badge_size_small",
+                "possibleInjection": false
+              },
+              {
+                "text": "Einkaufswagen Dein Warenkorb ist leer Sie können alle verfügbaren Produkte ansehen und einige im Shop kaufen Kehre zum Einkaufen zurück",
+                "reason": "display_none",
+                "hint": "div#cart-panel.offscreen-panel.cart-panel",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.heysimeon.com/widerrufsbelehrung/",
+            "kind": "terms",
+            "title": "Widerrufsbelehrung - heySimeon",
+            "hiddenText": [
+              {
+                "text": "(Funktional, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a0d11-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "(Marketing, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a0d11-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Privatsphäre-Einstellungen individuell festlegen",
+                "reason": "display_none",
+                "hint": "a.a0d11-ext-1-414.a0d11-ext-4-301",
+                "possibleInjection": false
+              },
+              {
+                "text": "heySimeon.com Was Unsere Kunden Sagen 5.00 Bewertung (4 Rezensionen)",
+                "reason": "tiny_font",
+                "hint": "div.cr-badge.badge_size_small",
+                "possibleInjection": false
+              },
+              {
+                "text": "Einkaufswagen Dein Warenkorb ist leer Sie können alle verfügbaren Produkte ansehen und einige im Shop kaufen Kehre zum Einkaufen zurück",
+                "reason": "display_none",
+                "hint": "div#cart-panel.offscreen-panel.cart-panel[data-rocket-location-hash]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.heysimeon.com/produkt/phalaenopsis-orchidee-treviso-mit-topf-o9-cm-altrosa-by-kolibri/",
+            "kind": "product",
+            "title": "Phalaenopsis Orchidee Treviso | mit Topf Ø9 cm | Rosa | by Kolibri - heySimeon",
+            "hiddenText": [
+              {
+                "text": "(Funktional, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a2ebf-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "(Marketing, Datenverarbeitung in unsicheren Drittländern)",
+                "reason": "clipped",
+                "hint": "span.a2ebf-3",
+                "possibleInjection": false
+              },
+              {
+                "text": "Privatsphäre-Einstellungen individuell festlegen",
+                "reason": "display_none",
+                "hint": "a.a2ebf-ext-1-414.a2ebf-ext-4-301",
+                "possibleInjection": false
+              },
+              {
+                "text": "Menge für Phalaenopsis Orchidee Treviso | mit Topf Ø9 cm | Rosa | by Kolibri",
+                "reason": "clipped",
+                "hint": "label.screen-reader-text",
+                "possibleInjection": false
+              },
+              {
+                "text": "heySimeon.com Was Unsere Kunden Sagen 5.00 Bewertung (4 Rezensionen)",
+                "reason": "tiny_font",
+                "hint": "div.cr-badge.badge_size_small",
+                "possibleInjection": false
+              },
+              {
+                "text": "Einkaufswagen Dein Warenkorb ist leer Sie können alle verfügbaren Produkte ansehen und einige im Shop kaufen Kehre zum Einkaufen zurück",
+                "reason": "display_none",
+                "hint": "div#cart-panel.offscreen-panel.cart-panel[data-rocket-location-hash]",
+                "possibleInjection": false
+              },
+              {
+                "text": "<img width=\"130\" height=\"130\" src=\"https://www.heysimeon.com/wp-content/uploads/2026/02/ff8ceefc-fad4-46d3-97b4-b8ee99161c44_1200x1200_fill-130x130.jpg\" alt=\"\" data-o_src=\"https://www.heysimeon.com/wp-content/uploads/2026/02/ff8ceefc-fad4-46d3-97b4-b8ee99161c44_1200x1200_fill-130x130.jpg\"> Phalaenopsis Orchidee Treviso | mit Topf Ø9 cm | Rosa | by Kolibri € 34,90 Ursprünglicher Preis war: € 34,90€ 31,41Aktueller Preis ist: € 31,41. inkl. MwSt Menge für Phalaenopsis Orchidee Treviso | mit Topf Ø9",
+                "reason": "opacity_0",
+                "hint": "section#ecomus-sticky-add-to-cart.ecomus-sticky-add-to-cart.product-simple[data-rocket-location-hash]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Spitalstraße 16, A-7350 Oberpullendorf"
+          ],
+          "phones": [
+            "+43 660 444 0123"
+          ],
+          "emails": [
+            {
+              "address": "support@heysimeon.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            },
+            {
+              "address": "info@masterdesign.at",
+              "freeMail": false,
+              "matchesStoreDomain": false
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU76596079"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 555187 b"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Visa",
+            "Mastercard",
+            "American Express",
+            "Apple Pay",
+            "Google Pay",
+            "Klarna",
+            "Sofort",
+            "EPS",
+            "SEPA direct debit",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            10
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://lottacurls.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "lottacurls.com was registered on 2022-04-26 (about 4 years ago).",
+            "Registrar: Name SRS AB.",
+            "lottacurls.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 31 days old (auto-renewed certificates are often new, so this alone means little).",
+            "Redirects stay on lottacurls.com (1 hop)."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (2 addresses checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14331,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://lottacurls.com/de-de",
+            "kind": "home",
+            "title": "LOTTA CURLS | Das Original für Locken ohne Hitze über Nacht – lottacurls"
+          },
+          {
+            "url": "https://lottacurls.com/de-de/policies/legal-notice",
+            "kind": "legal",
+            "title": "Impressum – lottacurls"
+          },
+          {
+            "url": "https://lottacurls.com/de-de/pages/uber-uns",
+            "kind": "contact",
+            "title": "Über uns – lottacurls",
+            "hiddenText": [
+              {
+                "text": "So wurde das beste Lockenband aller Zeiten geboren – überzeug dich selbst!",
+                "reason": "visibility_hidden",
+                "hint": "p",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://lottacurls.com/de-de/pages/widerruf-formular",
+            "kind": "terms",
+            "title": "Widerruf – lottacurls"
+          },
+          {
+            "url": "https://lottacurls.com/de-de/products/geschenkgutschein",
+            "kind": "product",
+            "title": "Gutschein – lottacurls",
+            "hiddenText": [
+              {
+                "text": "Nennwerte: € 30 € 30 € 40 € 50 € 100 [{ \"id\": 46378448093508, \"title\": \"€ 30\", \"available\": true, \"options\": [\"€ 30\"], \"option1\": \"€ 30\", \"option2\": null, \"option3\": null, \"price\": 3000, \"compare_at_price\": null, \"unit_price\": null, \"unit_price_measurement\": { \"reference_value\": null, \"reference_unit\": null }, \"featured_media\": {\"id\": 69664084754756, \"position\": 1, \"alt\": \"#nennwerte_€-30\", \"media_type\": \"image\", \"preview_image\": { \"src\": \"\\/\\/lottacurls.com\\/cdn\\/shop\\/files\\/490_26fd5e2d-6c42-",
+                "reason": "display_none",
+                "hint": "div.product-add-to-cart-sticky--content",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Lotta GmbH & Co. KG",
+            "Lotta GmbH"
+          ],
+          "addresses": [
+            "Brockmanngasse 7, 8010 Graz"
+          ],
+          "phones": [],
+          "emails": [
+            {
+              "address": "support@lottacurls.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU79694289"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 609447 x"
+            },
+            {
+              "type": "Firmenbuch (FN)",
+              "value": "FN 607391y"
+            }
+          ],
+          "paymentMethods": [
+            "Sofort"
+          ],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://maluch.at/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of maluch.at (no RDAP server listed for .at).",
+            "No first certificate date either (crt.sh HTTP 502).",
+            "maluch.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 5 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 16219,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://maluch.at/",
+            "kind": "home",
+            "title": "Premium Autozubehör – von Armlehnen bis Wischerblätter",
+            "hiddenText": [
+              {
+                "text": "Premium Autozubehör – von Armlehnen bis Wischerblätter",
+                "reason": "display_none",
+                "hint": "div",
+                "possibleInjection": false
+              },
+              {
+                "text": "- Sitzbezüge für Ihr Auto: Passgenaue & maßgeschneiderte Lösungen 2026",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              },
+              {
+                "text": "- Laderaumverkleidung 2026: Vorteile, Materialien, Montage & Einsatzbereiche",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              },
+              {
+                "text": "- Was ist ein Frunk? Erklärung und Nutzen des trunk at the front 2026",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              },
+              {
+                "text": "- Der perfekte Begleiter zum Einkaufen - Einkaufshelfer",
+                "reason": "clipped",
+                "hint": "span.sr-only",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://maluch.at/policies/legal-notice",
+            "kind": "legal",
+            "title": "Impressum"
+          },
+          {
+            "url": "https://maluch.at/pages/contact",
+            "kind": "contact",
+            "title": "Kontakt"
+          },
+          {
+            "url": "https://maluch.at/policies/refund-policy",
+            "kind": "terms",
+            "title": "Widerrufsrecht"
+          },
+          {
+            "url": "https://maluch.at/products/velours-fussmatten",
+            "kind": "product",
+            "title": "Hochwertige Velours Fußmatten für Ihr Auto",
+            "hiddenText": [
+              {
+                "text": "Hochwertige Velours Fußmatten für Ihr Auto",
+                "reason": "display_none",
+                "hint": "div",
+                "possibleInjection": false
+              },
+              {
+                "text": "Default Title Default Title - € 49.99 EUR .selector-wrapper, #productSelect { display: block; }",
+                "reason": "display_none",
+                "hint": "div.form-group.pb-2",
+                "possibleInjection": false
+              },
+              {
+                "text": "Jubiläumsrabatt endet in: 12h 00m 00s#AeC91cmRuRDFwOFhxQ__buy_box_discount_timer_CAQreq{color:#bc2323;}document.addEventListener('DOMContentLoaded',function(){const u=function(){updateCountdown('23:00','09:00','AeC91cmRuRDFwOFhxQ__buy_box_discount_timer_CAQreq','2025-11-12','2026-10-15',{d:'d',h:'h',m:'m',s:'s'})};u();setInterval(u,1e3)});",
+                "reason": "display_none",
+                "hint": "div#shopify-block-AeC91cmRuRDFwOFhxQ__buy_box_discount_timer_CAQreq.shopify-block.shopify-app-block",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Simonsgasse 12, 1220 Wien",
+            "Simonsgasse 12/10/5, 1220 Wien",
+            "Simonsgasse 12, 1220 Wien, Österreich"
+          ],
+          "phones": [
+            "+43 660 789 555",
+            "06607895556",
+            "00436607895556"
+          ],
+          "emails": [
+            {
+              "address": "info@maluch.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU70431035"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Invoice"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            17
+          ]
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://dorascheesecake.com/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "dorascheesecake.com was registered on 2020-02-20 (about 6 years ago).",
+            "Registrar: InterNetX GmbH.",
+            "dorascheesecake.com is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 14 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Groq, qwen/qwen3.8-27b): risk 5/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 14838,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://dorascheesecake.com/",
+            "kind": "home",
+            "title": "Dora's Cheesecake - der beste Cheesecake in Wien"
+          },
+          {
+            "url": "https://dorascheesecake.com/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Dora's Cheesecake"
+          },
+          {
+            "url": "https://dorascheesecake.com/ueber-uns/",
+            "kind": "contact",
+            "title": "Über Uns - Dora's Cheesecake"
+          },
+          {
+            "url": "https://dorascheesecake.com/allgemeine-geschaeftsbedingungen/",
+            "kind": "terms",
+            "title": "Allgemeine Geschäftsbedingungen - Dora's Cheesecake"
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [
+            "Jheringgasse 33/2/14, A-1150 Wien"
+          ],
+          "phones": [
+            "+43 676 33 55 934"
+          ],
+          "emails": [
+            {
+              "address": "office@dorascheesecake.com",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU75108036"
+            }
+          ],
+          "paymentMethods": [
+            "PayPal",
+            "Visa",
+            "Mastercard",
+            "Apple Pay",
+            "Google Pay",
+            "Klarna",
+            "Sofort",
+            "EPS",
+            "SEPA direct debit",
+            "Bank transfer / prepayment"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4114,
+        "outputTokens": 107,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "qwen/qwen3.8-27b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://natur-versand.at/",
+      "label": "legit",
+      "split": "holdout",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't look up the registration of natur-versand.at (no RDAP server listed for .at).",
+            "No first certificate date either (crt.sh took too long).",
+            "natur-versand.at is not in the Tranco top 100,000 sites (list 746VX)."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 43 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "AI page analysis wasn't available: every AI provider failed or was busy."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15145,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://natur-versand.at/",
+            "kind": "home",
+            "title": "Robert Franz Natur-Versand | Produkte online kaufen"
+          },
+          {
+            "url": "https://natur-versand.at/impressum/",
+            "kind": "legal",
+            "title": "Impressum - Robert Franz Natur-Versand n.d. OG"
+          },
+          {
+            "url": "https://natur-versand.at/kontakt/",
+            "kind": "contact",
+            "title": "Kontakt - Robert Franz Natur-Versand | Offizieller Shop"
+          },
+          {
+            "url": "https://natur-versand.at/versandarten/",
+            "kind": "terms",
+            "title": "Versandarten | Robert Franz Natur-Versand | Offizieller Robert Franz Shop"
+          },
+          {
+            "url": "https://natur-versand.at/produkt/opc-3er-set/",
+            "kind": "product",
+            "title": "OPC 3er-Set | Robert Franz Natur-Versand | Hier erhältlich!",
+            "hiddenText": [
+              {
+                "text": "Die Bewertungen konnten nicht geladen werden. Erneut versuchen oder Seite öffnen.",
+                "reason": "display_none",
+                "hint": "p.nv-review-error[data-nv-review-error]",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "Robert Franz Naturversand GmbH"
+          ],
+          "addresses": [
+            "Hauptstraße 188a, 8544 Pölfing-Brunn"
+          ],
+          "phones": [
+            "+43 664 993 946 03"
+          ],
+          "emails": [
+            {
+              "address": "info@natur-versand.at",
+              "freeMail": false,
+              "matchesStoreDomain": true
+            }
+          ],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "VAT",
+              "value": "ATU74269908"
+            }
+          ],
+          "paymentMethods": [],
+          "returnPolicy": true,
+          "discountsPct": []
+        }
+      },
+      "ai": null,
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    }
+  ]
+}

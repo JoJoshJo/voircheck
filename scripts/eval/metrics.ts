@@ -51,7 +51,7 @@ export type EvalRow =
       /** Pages + facts collected for page analysis (evidence only, not scored). */
       collected?: CollectedEvidence;
       /** AI page analysis tokens and cost for this scan (null when it was off or didn't call the model). */
-      ai?: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; costUsd: number; cached: boolean } | null;
+      ai?: { inputTokens: number; outputTokens: number; cacheReadTokens: number; cacheWriteTokens: number; costUsd: number; cached: boolean; provider?: string; model?: string } | null;
       /** Research step: what the web says (status, how many sourced findings), its cost, searches and time. */
       web?: { status: SignalStatus; findings: number; kinds: string[]; details?: Array<{ kind: string; sourceUrl: string; note: string }> };
       research?: { costUsd: number; searches: number; ms: number | null };

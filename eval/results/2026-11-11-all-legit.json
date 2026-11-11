@@ -1,0 +1,842 @@
+{
+  "runAt": "2026-11-11T01:37:19.835Z",
+  "split": "all",
+  "commit": "063725c",
+  "aiAnalysis": "on",
+  "aiModel": "qwen/qwen3.8-27b > openai/gpt-oss-120b > openai/gpt-oss-20b > gemini-3.5-flash-lite > nvidia/nemotron-3.5-lightning:free > nvidia/nemotron-3.5-super-vl:free",
+  "limit": 5,
+  "rows": [
+    {
+      "url": "https://www.bestbuy.com/",
+      "label": "legit",
+      "split": "seen-2026-10-31",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bestbuy.com was registered on 1994-03-03 (about 32 years ago).",
+            "Registrar: MarkMonitor Inc.",
+            "Well-known site: bestbuy.com is #782 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 273 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Groq, openai/gpt-oss-120b): risk 20/100, 1 finding.",
+            "Missing legal information (low, home), AI note: No address, company name, or legal notice is shown on the pages read."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 8515,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bestbuy.com/",
+            "kind": "home",
+            "title": "Best Buy International: Select your Country - Best Buy",
+            "hiddenText": [
+              {
+                "text": "Bonjour! Choisir un pays : Canada United States Vous magasinez aux É.-U.? Les clients internationaux peuvent magasiner au www.bestbuy.com et faire livrer leurs commandes à n’importe quelle adresse ou n’importe quel magasin aux États-Unis. Voir les détails",
+                "reason": "display_none",
+                "hint": "div.hidden",
+                "possibleInjection": false
+              },
+              {
+                "text": "¡Hola! Seleciona un país. Canada Estados Unidos ¿COMPRANDO EN EE. UU.? Clientes internacionales pueden comparer en www.bestbuy.com y enviar sus pedidos a cualquier domicilio o tienda en EE. UU. Ver más detalles",
+                "reason": "display_none",
+                "hint": "div.hidden",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [],
+          "returnPolicy": false,
+          "discountsPct": []
+        }
+      },
+      "ai": {
+        "inputTokens": 2182,
+        "outputTokens": 294,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.target.com/",
+      "label": "legit",
+      "split": "seen-2026-10-31",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "target.com was registered on 1997-01-02 (about 29 years ago).",
+            "Registrar: GoDaddy Corporate Domains, LLC.",
+            "Well-known site: target.com is #611 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by GlobalSign nv-sa.",
+            "Certificate is 78 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (Groq, openai/gpt-oss-120b): risk 70/100, 2 findings.",
+            "Payment red flags (high, terms), AI note: The shop pushes payment via Western Union or gift cards, which is a common fraud method.",
+            "Missing legal information (med, home), AI note: No company name, legal address or registration details are shown on the pages read."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 15087,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.target.com/",
+            "kind": "home",
+            "title": "Target : Expect More. Pay Less.",
+            "hiddenText": [
+              {
+                "text": "{\"@context\":\"https://schema.org\",\"@type\":\"WebPage\",\"name\":\"Target : Expect More. Pay Less.\",\"url\":\"https://www.target.com/\",\"breadcrumb\":{\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"item\":{\"@id\":\"https://www.target.com/\",\"name\":\"Homepage\"}}]}}Homepage",
+                "reason": "clipped",
+                "hint": "div.h-text-center.h-margin-a-tight[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Threshold™, Casaluna™ & more bedding & bath*",
+                "reason": "same_color",
+                "hint": "span",
+                "possibleInjection": false
+              },
+              {
+                "text": "2pk Christmas Mini Wreath Red Bow - Wondershop™",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "112oz Stoneware Layered Leaf Tureen Open Baking Dish Dark Green - Threshold™",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Holiday Large Ribbed White Tree Candle Christmas Cheer - Threshold™",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "8pc Nonstick Bakeware Set Gold - Figmint™: Figmint Kitchen Baking Set, Includes Baking Pan & Cooling Rack",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Nespresso Vertuo Next Premium Coffee and Espresso Maker by Breville, Creamy White and Dark Chrome - Hearth & Hand™ with Magnolia",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "19\" Christmas Flocked Tree Round White Base - Wondershop™",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "UNO Card Game for Kids, Adults & Family Game Night, Original Game of Matching Colors & Numbers",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              },
+              {
+                "text": "What Do You Meme? Color Stack Challenge, Puzzle Strategy Game",
+                "reason": "display_none",
+                "hint": "div.styles_ndsTruncate__PqkOk.h-text-md[data-test]",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.target.com/c/order-pickup/-/N-ng0a0?l1_nid=5xt1a&prehydrateClick=true",
+            "kind": "terms",
+            "title": "Order Pickup : Target",
+            "hiddenText": [
+              {
+                "text": "Or switch to Drive Up in the app. Learn how",
+                "reason": "opacity_0",
+                "hint": "div.sc-c2f2b411-0.hILcpd",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50,
+            40,
+            25,
+            20
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4717,
+        "outputTokens": 449,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 35
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.rei.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "HOLD",
+      "score": 35,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "rei.com was registered on 1996-03-13 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: rei.com is #4,772 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 140 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "fail",
+          "points": 35,
+          "evidence": [
+            "AI page analysis (Groq, openai/gpt-oss-20b): risk 70/100, 2 findings.",
+            "Missing legal information (high, home), AI note: No address, company name, or legal notice on any page read.",
+            "Payment red flags (high, home), AI note: The shop accepts payment methods that are risky and not typical for e-commerce."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12538,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.rei.com/",
+            "kind": "home",
+            "title": "REI: A Life Outdoors is a Life Well Lived | REI Co-op",
+            "hiddenText": [
+              {
+                "text": "1193 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "2333 reviews with an average rating of 4.7 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "343 reviews with an average rating of 4.5 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "139 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "97 reviews with an average rating of 4.3 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "1589 reviews with an average rating of 4.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "44 reviews with an average rating of 3.6 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "631 reviews with an average rating of 4.3 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "167 reviews with an average rating of 4.5 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              },
+              {
+                "text": "278 reviews with an average rating of 4.7 out of 5 stars",
+                "reason": "clipped",
+                "hint": "span.cdr-rating__caption-sr_16-3-1",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Mastercard",
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            50,
+            40
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4734,
+        "outputTokens": 359,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "groq",
+        "model": "openai/gpt-oss-20b"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "HOLD",
+        "score": 35
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.bhphotovideo.com/",
+      "label": "legit",
+      "split": "seen-2026-10-31",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "bhphotovideo.com was registered on 1996-05-14 (about 30 years ago).",
+            "Registrar: CSC Corporate Domains, Inc.",
+            "Well-known site: bhphotovideo.com is #6,737 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by Let's Encrypt.",
+            "Certificate is 16 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Gemini, gemini-3.5-flash-lite): risk 10/100, 1 finding.",
+            "Fake scarcity or urgency (low, terms), AI note: A countdown timer creates urgency to make a quick purchase."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 12537,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.bhphotovideo.com/",
+            "kind": "home",
+            "title": "B&H Photo Video Digital Cameras, Photography, Computers",
+            "hiddenText": [
+              {
+                "text": "Please update your browser to take advantage of the latest technology securityenhancements to ensure your B&H Shopping experience is as safe as it is enjoyable:Google ChromeDownloadSafariDownloadFirefoxDownloadMicrosoft EdgeDownload",
+                "reason": "display_none",
+                "hint": "div.upgradeBrowserWrapper",
+                "possibleInjection": false
+              },
+              {
+                "text": "Press ‎↵ Enter‎ for Accessibility for blind people who use screen readers",
+                "reason": "offscreen",
+                "hint": "button.button__g63uRSIs8",
+                "possibleInjection": false
+              },
+              {
+                "text": "div[class^=\"container_\"]:has(span#holiday2026-store-footer) {display:none;} /* just for mobile homepage--> body:has([class^=\"hostedCatalogWrapper_\"]) */ footer img[data-selenium=\"footerStorePhotoMobile\"] { content: url(\"https://www.bhphotovideo.com/bimages/Holiday2026-StoreFooter-mobile-new.jpg\"); margin-top: 0; } /* just for desktop homepage and gift page--> body:has([class^=\"hostedNoteBackground_\"]) footer::before, html:has(#perfectGifts) */ footer[class*='footer_']::before { content: \"\"; disp",
+                "reason": "display_none",
+                "hint": "div.container_DIOhDI0XlF",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bhphotovideo.com/a/pages/aboutus",
+            "kind": "contact",
+            "title": "About Us | B&H Photo Video",
+            "hiddenText": [
+              {
+                "text": "Please update your browser to take advantage of the latest technology securityenhancements to ensure your B&H Shopping experience is as safe as it is enjoyable:Google ChromeDownloadSafariDownloadFirefoxDownloadMicrosoft EdgeDownload",
+                "reason": "display_none",
+                "hint": "div.upgradeBrowserWrapper",
+                "possibleInjection": false
+              },
+              {
+                "text": "Press ‎↵ Enter‎ for Accessibility for blind people who use screen readers",
+                "reason": "offscreen",
+                "hint": "button.button__g63uRSIs8",
+                "possibleInjection": false
+              },
+              {
+                "text": "div[class^=\"container_\"]:has(span#holiday2026-store-footer) {display:none;} /* just for mobile homepage--> body:has([class^=\"hostedCatalogWrapper_\"]) */ footer img[data-selenium=\"footerStorePhotoMobile\"] { content: url(\"https://www.bhphotovideo.com/bimages/Holiday2026-StoreFooter-mobile-new.jpg\"); margin-top: 0; } /* just for desktop homepage and gift page--> body:has([class^=\"hostedNoteBackground_\"]) footer::before, html:has(#perfectGifts) */ footer[class*='footer_']::before { content: \"\"; disp",
+                "reason": "display_none",
+                "hint": "div.container_DIOhDI0XlF",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.bhphotovideo.com/find/HelpCenter/ReturnExchange.jsp",
+            "kind": "terms",
+            "title": "Returns & Exchanges Policy | Hassle-Free Returns at B&H",
+            "hiddenText": [
+              {
+                "text": "div[class^=\"container_\"]:has(span#holiday2026-store-footer) {display:none;} /* just for mobile homepage--> body:has([class^=\"hostedCatalogWrapper_\"]) */ footer img[data-selenium=\"footerStorePhotoMobile\"] { content: url(\"https://www.bhphotovideo.com/bimages/Holiday2026-StoreFooter-mobile-new.jpg\"); margin-top: 0; } /* just for desktop homepage and gift page--> body:has([class^=\"hostedNoteBackground_\"]) footer::before, html:has(#perfectGifts) */ footer[class*='footer_']::before { content: \"\"; disp",
+                "reason": "display_none",
+                "hint": "div.container_DIOhDI0XlF",
+                "possibleInjection": false
+              }
+            ]
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "B&H Photo Video Inc."
+          ],
+          "addresses": [
+            "290 Daniels Way, Burlington, NJ 08016-2141"
+          ],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            25
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 5454,
+        "outputTokens": 227,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    },
+    {
+      "url": "https://www.johnlewis.com/",
+      "label": "legit",
+      "split": "tune",
+      "outcome": "scanned",
+      "verdict": "SAFE",
+      "score": 0,
+      "hardRules": [],
+      "signals": [
+        {
+          "id": "domain_age",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "johnlewis.com was registered on 1997-12-31 (about 28 years ago).",
+            "Registrar: Ascio Technologies, Inc. Danmark - Filial af Ascio technologies, Inc. USA.",
+            "Well-known site: johnlewis.com is #4,937 in the Tranco top-sites research list (list 746VX, 2026-10-30). This alone doesn't make a store safe."
+          ]
+        },
+        {
+          "id": "ssl_redirects",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Valid HTTPS certificate.",
+            "Certificate issued by DigiCert Inc.",
+            "Certificate is 272 days old (auto-renewed certificates are often new, so this alone means little).",
+            "No redirects."
+          ]
+        },
+        {
+          "id": "price",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "Couldn't find one product and its price on this page, so prices weren't compared."
+          ]
+        },
+        {
+          "id": "ai_page",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "AI page analysis (Gemini, gemini-3.5-flash-lite): risk 0/100, nothing suspicious found."
+          ]
+        },
+        {
+          "id": "threat_list",
+          "status": "pass",
+          "points": 0,
+          "evidence": [
+            "Not on Google Safe Browsing threat lists (1 address checked)."
+          ]
+        },
+        {
+          "id": "clone",
+          "status": "unavailable",
+          "points": 0,
+          "evidence": [
+            "No other stores to compare with."
+          ]
+        }
+      ],
+      "scanMs": 19731,
+      "kernelError": null,
+      "collected": {
+        "pages": [
+          {
+            "url": "https://www.johnlewis.com/",
+            "kind": "home",
+            "title": "John Lewis & Partners | Never Knowingly Undersold",
+            "hiddenText": [
+              {
+                "text": "100s of deals on Tech. Plus 20% off selected Beauty. Shop now",
+                "reason": "visibility_hidden",
+                "hint": "span.banner-elements__sizer[aria-hidden]",
+                "possibleInjection": false
+              },
+              {
+                "text": "Discover gifts that will make their Christmas",
+                "reason": "same_color",
+                "hint": "p.hero-banner-heroBanner_subHeading--4f0e9.hero-banner-heroBanner_subHeading__isDarkModeMobile--b29f1",
+                "possibleInjection": false
+              }
+            ]
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/contact-us",
+            "kind": "contact",
+            "title": "Contact Us | Customer Services | John Lewis & Partners"
+          },
+          {
+            "url": "https://www.johnlewis.com/customer-services/returns",
+            "kind": "terms",
+            "title": "Returns & Refunds | Customer Services | John Lewis & Partners"
+          }
+        ],
+        "facts": {
+          "companyNames": [
+            "John Lewis Finance Limited",
+            "Creation Consumer Finance Limited",
+            "Creation Consumer Finance Ltd",
+            "General Insurance PLC",
+            "JOHN LEWIS PLC"
+          ],
+          "addresses": [],
+          "phones": [],
+          "emails": [],
+          "freeMailContact": false,
+          "registrationIds": [
+            {
+              "type": "Company number",
+              "value": "15785347"
+            },
+            {
+              "type": "Company number",
+              "value": "NI032565"
+            }
+          ],
+          "paymentMethods": [
+            "Western Union / gift cards"
+          ],
+          "returnPolicy": true,
+          "discountsPct": [
+            30,
+            20,
+            15,
+            10
+          ]
+        }
+      },
+      "ai": {
+        "inputTokens": 4889,
+        "outputTokens": 113,
+        "cacheReadTokens": 0,
+        "cacheWriteTokens": 0,
+        "costUsd": 0,
+        "cached": false,
+        "provider": "gemini",
+        "model": "gemini-3.5-flash-lite"
+      },
+      "withoutAi": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "withoutWeb": {
+        "verdict": "SAFE",
+        "score": 0
+      },
+      "web": {
+        "status": "unavailable",
+        "findings": 0,
+        "kinds": [],
+        "details": []
+      }
+    }
+  ]
+}

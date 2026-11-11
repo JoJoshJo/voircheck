@@ -29,6 +29,7 @@ export function scoreWithoutWeb(score: number, webPoints: number, hardRules: Har
 export function toRow(store: EvalStore, report: ScanReport, scanMs: number, reach: { sentElsewhere?: string; gone?: number } = {}): EvalRow {
   const { result, meta } = report;
   const collected = result.signals.find((s) => s.id === 'ai_page')?.collected;
+  const aiBy = result.signals.find((s) => s.id === 'ai_page')?.analyzedBy;
   return {
     url: store.url,
     label: store.label,
@@ -41,7 +42,7 @@ export function toRow(store: EvalStore, report: ScanReport, scanMs: number, reac
     scanMs: Math.round(scanMs),
     kernelError: meta.kernelError,
     ...(collected ? { collected } : {}),
-    ai: meta.ai ? { inputTokens: meta.ai.inputTokens, outputTokens: meta.ai.outputTokens, cacheReadTokens: meta.ai.cacheReadTokens, cacheWriteTokens: meta.ai.cacheWriteTokens, costUsd: meta.ai.costUsd, cached: meta.ai.cached } : null,
+    ai: meta.ai ? { inputTokens: meta.ai.inputTokens, outputTokens: meta.ai.outputTokens, cacheReadTokens: meta.ai.cacheReadTokens, cacheWriteTokens: meta.ai.cacheWriteTokens, costUsd: meta.ai.costUsd, cached: meta.ai.cached , ...(aiBy ? { provider: aiBy.provider, model: aiBy.model } : {}) } : null,
     withoutAi: scoreWithoutAi(result.signals, result.hardRulesTriggered),
     withoutWeb: scoreWithoutWeb(result.score, result.webReputation?.points ?? 0, result.hardRulesTriggered),
     ...(reach.sentElsewhere

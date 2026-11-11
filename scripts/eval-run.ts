@@ -1,7 +1,8 @@
 /**
  * Real-world eval (spec 5.5 "Eval method"): scan the source-labelled stores in eval/stores.json with the production
  * scanner and report accuracy.
- *   pnpm eval:run [--split holdout|tune|seen-2026-10-31|live-2026-11|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research]   (default: holdout)
+ *   pnpm eval:run [--split holdout|tune|seen-2026-10-31|live-2026-11|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research] [--free-only]   (default: holdout)
+ * --free-only: page analysis on Groq/OpenRouter only (no Claude backup, no research), so nothing can be charged.
  * Scan only: no payments, forms or sign-ups. Store pages are opened only inside KERNEL; the runner itself makes a
  * plain HTTP reachability check first (no browser, no JavaScript). Concurrency 2 with polite delays.
  * Writes eval/results/<date>-<split>.json + .md. No secrets or KERNEL links in the output.
@@ -11,7 +12,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline/promises';
 import { createSearchCache, searchProducts } from '@voircheck/agent/search';
-import { anthropicAnalyzer, anthropicResearcher, costUsd, DEFAULT_SCAN_MODEL, kernelVisitor, scanStore, type FindOffers } from '@voircheck/scanner';
+import { anthropicResearcher, CLAUDE_BACKUP_MODEL, costUsd, DEFAULT_SCAN_MODEL, failoverAnalyzer, kernelVisitor, pageAnalysisChain, scanStore, type FindOffers } from '@voircheck/scanner';
 import { fileAiCache } from './ai-cache';
 import { computeMetrics, loadStores, SPLITS, type EvalRow, type Split } from './eval/metrics';
 import { checkReachability } from './eval/reachability';
@@ -25,7 +26,7 @@ const AI_MAX_CALL = { inputTokens: 11_500, outputTokens: 1_200, cacheReadTokens:
 const CHECK_DELAY_MS = 500;
 
 function usage(): never {
-  console.error(`usage: pnpm eval:run [--split ${SPLITS.join('|')}|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research]`);
+  console.error(`usage: pnpm eval:run [--split ${SPLITS.join('|')}|all] [--label scam|legit] [--added YYYY-MM-DD] [--limit N] [--no-research] [--free-only]`);
   process.exit(2);
 }
 
@@ -58,13 +59,18 @@ if (stores.length === 0) {
 }
 console.log(`Split "${split}"${label ? `, ${label} only` : ''}${added ? `, added ${added}` : ''}${limit ? `, limit ${limit}` : ''}: ${stores.length} stores (${scams} scam, ${stores.length - scams} legit).`);
 console.log(`Estimate: up to ${stores.length} KERNEL sessions (one per live store; dead sites are skipped) and up to ${stores.length} Safe Browsing lookups.`);
-const anthropicKey = process.env.ANTHROPIC_API_KEY;
+const freeOnly = args.includes('--free-only');
+const anthropicKey = freeOnly ? undefined : process.env.ANTHROPIC_API_KEY;
+// The same free chain as production (Groq ×3 → Gemini → OpenRouter ×2), Claude last only with a key (not --free-only).
+const free = pageAnalysisChain();
+// Research (web search) keeps its own model, Claude-only.
 const aiModel = process.env.SCAN_MODEL || DEFAULT_SCAN_MODEL;
-const aiMaxPerScan = costUsd(AI_MAX_CALL, aiModel);
+const aiOn = !!(free.length || anthropicKey);
+const aiMaxPerScan = costUsd(AI_MAX_CALL, CLAUDE_BACKUP_MODEL);
 console.log(
-  anthropicKey
-    ? `AI page analysis is ON (${aiModel}): up to ${stores.length} model calls, at most ~$${(stores.length * aiMaxPerScan).toFixed(3)} (≤ $${aiMaxPerScan.toFixed(4)} per scan; URLs analyzed in the last 24h cost $0).`
-    : 'AI page analysis is OFF (no ANTHROPIC_API_KEY).',
+  aiOn
+    ? `AI page analysis is ON: ${[...free.map((p) => `${p.id} ${p.model} ($0)`), anthropicKey && `Claude ${CLAUDE_BACKUP_MODEL} last (≤ $${aiMaxPerScan.toFixed(4)} per scan, only when every free provider fails)`].filter(Boolean).join(' → ')}.`
+    : 'AI page analysis is OFF (no GROQ_API_KEY, OPENROUTER_API_KEY or ANTHROPIC_API_KEY).',
 );
 const research = !!anthropicKey && !args.includes('--no-research');
 /**
@@ -100,7 +106,7 @@ if (answer !== 'y' && answer !== 'yes') {
 }
 
 const visitor = kernelVisitor({ apiKey: kernelKey, proxyId: process.env.KERNEL_PROXY_ID || undefined });
-const analyzer = anthropicKey ? anthropicAnalyzer({ apiKey: anthropicKey, model: aiModel, cache: fileAiCache(), log: (l) => console.log(`    ${l}`) }) : undefined;
+const analyzer = aiOn ? failoverAnalyzer({ free, claude: anthropicKey ? { apiKey: anthropicKey } : null, cache: fileAiCache('.cache/ai-page-failover'), log: (l) => console.log(`    ${l}`) }) : undefined;
 const researcher = research ? anthropicResearcher({ apiKey: anthropicKey, model: aiModel, log: (l) => console.log(`    ${l}`) }) : null;
 let done = 0;
 const rows: EvalRow[] = await mapPool(stores, CONCURRENCY, CHECK_DELAY_MS, async (store): Promise<EvalRow> => {
@@ -131,7 +137,7 @@ try {
 } catch {
   // not a git checkout
 }
-const info: RunInfo = { runAt: new Date().toISOString(), split, commit, aiAnalysis: anthropicKey ? 'on' : 'off', ...(anthropicKey ? { aiModel } : {}) };
+const info: RunInfo = { runAt: new Date().toISOString(), split, commit, aiAnalysis: aiOn ? 'on' : 'off', ...(aiOn ? { aiModel: [...free.map((p) => p.model), anthropicKey && CLAUDE_BACKUP_MODEL].filter(Boolean).join(' > ') } : {}) };
 const metrics = computeMetrics(rows);
 
 mkdirSync('eval/results', { recursive: true });
