@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
  * receipts. Never added under /app, and receipts never get their store, amount or verdict in a card: links to them
  * get pasted into chats, and the preview would show it to everyone there.
  */
-export const OG_TAGLINE = 'Your AI agent sees who it’s paying, before it pays.';
+export const OG_TAGLINE = 'We check the store before your AI pays.';
 
 const IMAGE = { url: '/og.png', width: 1200, height: 630, alt: `VoirCheck: ${OG_TAGLINE}` };
 

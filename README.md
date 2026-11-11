@@ -2,9 +2,9 @@
 
 [![CI](https://github.com/JoJoshJo/voircheck/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JoJoshJo/voircheck/actions/workflows/ci.yml)
 
-Your AI agent sees who it's paying, before it pays.
+We check the store before your AI pays.
 
-**Know Your Merchant for AI agents.** AI agents are starting to pay for people. Agent payment protocols verify the
+AI agents are starting to pay for people. Agent payment protocols verify the
 agent and what the person allowed it to do, but not the merchant. VoirCheck is that check. It opens the store in a
 cloud browser before PayPal takes the money, then tells PayPal what to do: pay, hold it for you, or release it. Built
 for the PayPal AI Hackathon 2026.

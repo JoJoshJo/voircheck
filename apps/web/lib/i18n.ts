@@ -10,7 +10,7 @@ export const isLang = (x: unknown): x is Lang => x === 'en' || x === 'fr';
 const en = {
   /** Label–value separator: French typography puts a no-break space before the colon. */
   colon: ':',
-  meta: { tagline: 'Before your agent pays, VoirCheck sees who it’s paying.' },
+  meta: { tagline: 'We check the store before your AI pays.' },
   nav: { workspace: 'Workspace', history: 'History', settings: 'Settings', howItWorks: 'How it works', signIn: 'Sign in', signOut: 'Sign out', guest: 'Demo account' },
   landing: {
     subline: 'Your agent finds the deal. VoirCheck checks the store before PayPal takes the money.',
@@ -565,7 +565,7 @@ const en = {
   },
   how: {
     title: 'How VoirCheck checks a store',
-    intro: 'AI agents are starting to pay for people. Agent payment protocols verify the agent and what the person allowed it to do; they don’t verify the merchant. VoirCheck is that check, before PayPal captures: every store is opened in an isolated cloud browser and checked six ways. Each check adds points; the total sets the verdict.',
+    intro: 'We check the store before your AI pays. AI agents are starting to pay for people. Agent payment protocols verify the agent and what the person allowed it to do; they don’t verify the merchant. VoirCheck is that check, before PayPal captures: every store is opened in an isolated cloud browser and checked six ways. Each check adds points; the total sets the verdict.',
     whyTitle: 'Why now',
     whyIntro: 'What others have published about agents and fake merchants:',
     why1: 'Guardio Labs, “Scamlexity”: an agentic browser (Perplexity Comet) bought an Apple Watch from a fake Walmart site.',
@@ -627,7 +627,7 @@ export type Dict = typeof en;
 
 const fr: Dict = {
   colon: '\u00a0:',
-  meta: { tagline: 'Avant que votre agent ne paie, VoirCheck vérifie à qui il paie.' },
+  meta: { tagline: 'On vérifie la boutique avant que votre IA paie.' },
   nav: { workspace: 'Espace de travail', history: 'Historique', settings: 'Réglages', howItWorks: 'Comment ça marche', signIn: 'Se connecter', signOut: 'Se déconnecter', guest: 'Compte de démo' },
   landing: {
     subline: 'Votre agent trouve la bonne affaire. VoirCheck vérifie la boutique avant que PayPal n’encaisse l’argent.',
@@ -1182,7 +1182,7 @@ const fr: Dict = {
   },
   how: {
     title: 'Comment VoirCheck vérifie une boutique',
-    intro: 'Les agents IA commencent à payer pour nous. Les protocoles de paiement pour agents vérifient l’agent et ce que la personne l’autorise à faire ; ils ne vérifient pas le marchand. VoirCheck fait cette vérification, avant que PayPal n’encaisse : chaque boutique est ouverte dans un navigateur cloud isolé et passe six vérifications. Chacune ajoute des points ; le total détermine le verdict.',
+    intro: 'On vérifie la boutique avant que votre IA paie. Les agents IA commencent à payer pour nous. Les protocoles de paiement pour agents vérifient l’agent et ce que la personne l’autorise à faire ; ils ne vérifient pas le marchand. VoirCheck fait cette vérification, avant que PayPal n’encaisse : chaque boutique est ouverte dans un navigateur cloud isolé et passe six vérifications. Chacune ajoute des points ; le total détermine le verdict.',
     whyTitle: 'Pourquoi maintenant',
     whyIntro: 'Ce que d’autres ont publié sur les agents et les faux marchands (sources en anglais) :',
     why1: 'Guardio Labs, « Scamlexity » : un navigateur agentique (Perplexity Comet) a acheté une Apple Watch sur un faux site Walmart.',

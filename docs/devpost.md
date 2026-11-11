@@ -4,7 +4,7 @@ Ready to paste. Plain words, numbers as measured. Everything runs in the PayPal 
 
 ## Tagline
 
-Your AI agent sees who it's paying, before it pays.
+We check the store before your AI pays.
 
 ## Inspiration
 
