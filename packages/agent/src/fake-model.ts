@@ -29,6 +29,8 @@ interface Verdict {
   score?: number;
   pageTriedToInstructAgents?: boolean;
   signals?: Array<{ id: string; status: string; meaning: string }>;
+  /** The compact view (scanForModel): checks that didn't pass. */
+  checks?: Array<{ id: string; status: string; meaning: string }>;
 }
 
 const T = {
@@ -105,7 +107,7 @@ function orderMoney(o: OrderStatus, lang: Lang): string {
 }
 
 function reasonEn(v: Verdict): string {
-  const failed = (v.signals ?? []).filter((s) => s.status === 'fail').map((s) => s.meaning);
+  const failed = (v.checks ?? v.signals ?? []).filter((s) => s.status === 'fail').map((s) => s.meaning);
   return failed.length ? ` (${failed.slice(0, 2).join(', ')})` : '';
 }
 

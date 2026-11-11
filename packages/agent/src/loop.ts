@@ -29,7 +29,8 @@ export type LoopEvent =
 
 export const MAX_STEPS = 8;
 /** A tool result longer than this is a bug in our tool code, not something to send. */
-export const MAX_TOOL_RESULT_CHARS = 8_000;
+/** Cap on one tool result for the model (Nov 11: 8k → 4k; the largest real one, 10 recent orders, is ~3k). */
+export const MAX_TOOL_RESULT_CHARS = 4_000;
 
 export function toolSpecs(tools: readonly AnyAgentTool[]): ToolSpec[] {
   return tools.map((t) => ({ name: t.name, description: t.description, inputSchema: z.toJSONSchema(t.input) as Record<string, unknown> }));

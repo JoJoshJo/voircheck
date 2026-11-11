@@ -172,6 +172,22 @@ export function scanSummaryForAgent(storeId: string, scan: { verdict: z.infer<ty
   });
 }
 
+/**
+ * A scan summary as the MODEL sees it (Nov 11, to save tokens on free providers): the same facts in fewer words. Checks
+ * that passed are listed by name only; every other check keeps its status and our fixed meaning. Points per check are
+ * dropped (the total score stays). Nothing is added: still only our own fields, never page text.
+ */
+export function scanForModel(out: object): unknown {
+  const s = out as unknown as Partial<ScanSummary> & Record<string, unknown>;
+  if (!Array.isArray(s.signals)) return out;
+  const { signals, ...rest } = s;
+  return {
+    ...rest,
+    passed: signals.filter((x) => x.status === 'pass').map((x) => x.id),
+    checks: signals.filter((x) => x.status !== 'pass').map(({ id, status, meaning }) => ({ id, status, meaning })),
+  };
+}
+
 // ---------- money ----------
 
 export const RefusalReason = z.enum(['block', 'unverified', 'no_price', 'not_found', 'other']);
@@ -252,7 +268,7 @@ export interface AgentDeps {
 export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   const search: AgentTool<z.infer<typeof SearchInput>, SearchOutput> = {
     name: 'search_products',
-    description: 'Find one item at up to 3 stores. Returns store IDs, product titles and prices from our product search. Pass maxPrice when the person gives a budget.',
+    description: 'Find one item at up to 3 stores: store IDs, titles and prices from our product search. Pass maxPrice for a budget.',
     input: SearchInput,
     output: SearchOutput,
     run: ({ query, maxPrice }) => deps.searchStores(query, maxPrice),
@@ -260,18 +276,19 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   };
   const verdict: AgentTool<{ storeId: string }, ScanOutput> = {
     name: 'get_scan_verdict',
-    description: "Check a store from the search results with VoirCheck's scanner. Returns the verdict (SAFE, HOLD or BLOCK), a one-sentence summary by that overall verdict, the risk score and each signal's status. Call it for every store before recommending one.",
+    description: "VoirCheck's check of a store from the search: verdict (SAFE, HOLD or BLOCK), a one-sentence summary by that overall verdict, the score, the checks that passed and what the others found. Call it for every store before recommending one.",
     input: z.object({ storeId: Id }),
     output: ScanOutput,
     run: async ({ storeId }) => {
       const r = await deps.scanStore(storeId);
       return r.status === 'ok' ? scanSummaryForAgent(storeId, r) : { storeId, status: 'unavailable' as const, reason: r.reason };
     },
+    forModel: scanForModel,
   };
   const link: AgentTool<{ url: string }, CheckLinkOutput> = {
     name: 'check_link',
     description:
-      "Check a store link the person pasted in the chat (copy their link exactly). Returns VoirCheck's summary of that shop: a plain sentence, the verdict, what each check found, and the evidence page. Check-only: you can't buy from a pasted link; offer to search for the item instead.",
+      "Check a store link the person pasted (copy it exactly): VoirCheck's summary, verdict, checks and evidence page. Check-only: you can't buy from it; offer to search for the item instead.",
     input: z.object({ url: z.string().trim().min(1).max(2048) }),
     output: CheckLinkOutput,
     run: async ({ url }) => {
@@ -279,17 +296,18 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
       if (r.status !== 'ok') return { status: 'unavailable' as const, reason: r.reason };
       return { ...scanSummaryForAgent(r.storeId, r), status: 'ok' as const, site: r.site, evidence: `/app/scans/${r.scanId}`, buyable: false as const };
     },
+    forModel: scanForModel,
   };
   const order: AgentTool<{ storeId: string }, CreateOrderOutput> = {
     name: 'create_order',
-    description: 'Prepare a PayPal order for the item at this store, at the price from the search. Nothing is held or charged yet: the person still has to approve it in PayPal. Only after they approve does PayPal hold the money, until VoirCheck’s check passes. VoirCheck refuses BLOCK stores and stores it cannot verify.',
+    description: 'Prepare a PayPal order at this store, at the search price. Nothing is held or charged until the person approves it in PayPal. VoirCheck refuses BLOCK stores and stores it cannot verify.',
     input: z.object({ storeId: Id }),
     output: CreateOrderOutput,
     run: ({ storeId }) => deps.createOrder(storeId),
   };
   const pay: AgentTool<{ paymentId: string }, RequestPaymentOutput> = {
     name: 'request_payment',
-    description: "Ask VoirCheck to settle an order the person approved in PayPal. The server decides from the scan: SAFE is captured, HOLD stays held for the person, BLOCK is released. Returns the payment's status.",
+    description: "Settle an order the person approved in PayPal. VoirCheck's server decides: SAFE is captured, HOLD stays held, BLOCK is released. Returns the payment status.",
     input: z.object({ paymentId: Id }),
     output: RequestPaymentOutput,
     run: ({ paymentId }) => deps.requestPayment(paymentId),
@@ -297,7 +315,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   const status: AgentTool<{ order: string }, GetOrderOutput> = {
     name: 'get_order',
     description:
-      "Look up an order's current status in PayPal (read only; it changes nothing). Pass the paymentId from create_order, or the order's VoirCheck reference (like VC-7K2F) from this chat or from list_my_recent_orders. Returns PayPal's order status, the amount and the authorization / capture status.",
+      "Read an order's status in PayPal (changes nothing). Pass the paymentId from create_order or a VoirCheck reference (VC-7K2F). Returns the order status, amount and authorization / capture status.",
     input: z.object({ order: z.string().trim().min(1).max(100) }),
     output: GetOrderOutput,
     run: ({ order }) => deps.getOrder(order),
@@ -305,7 +323,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   const recent: AgentTool<Record<string, never>, RecentOrdersOutput> = {
     name: 'list_my_recent_orders',
     description:
-      "List the signed-in person's own most recent orders (up to 10, newest first): VoirCheck reference, store, item, amount, VoirCheck's payment status (\"expired\" = never approved in time, nothing charged) and date. Use it when they ask about an order that isn't in this chat. Read only.",
+      "The person's own recent orders (up to 10, newest first): reference, store, item, amount, status (\"expired\" = never approved in time, nothing charged), date. For an order not in this chat. Read only.",
     input: z.object({}),
     output: RecentOrdersOutput,
     run: () => deps.listRecentOrders(),
@@ -314,7 +332,7 @@ export function shoppingTools(deps: AgentDeps): AnyAgentTool[] {
   const refund: AgentTool<{ ref: string }, RequestRefundOutput> = {
     name: 'request_refund',
     description:
-      "Offer the person a full refund of one of their own paid orders, by its VoirCheck reference (like VC-7K2F). This does NOT refund anything: it shows them a \"Request refund\" button, and only their click asks PayPal. Returns awaiting_person_confirmation with the amount, or not_refundable with the reason (not paid yet, already refunded, refund in progress, too old for PayPal, not found).",
+      "Offer a full refund of one of the person's own paid orders, by reference (VC-7K2F). It does NOT refund: it shows a \"Request refund\" button, and only their click asks PayPal. Returns awaiting_person_confirmation with the amount, or not_refundable with the reason.",
     input: z.object({ ref: z.string().trim().min(1).max(20) }),
     output: RequestRefundOutput,
     run: ({ ref }) => deps.requestRefund(ref),
