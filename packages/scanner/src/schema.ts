@@ -86,6 +86,11 @@ export const AiFinding = z.object({
    * Otherwise it is shown as the AI's own note, without quote marks. Missing on scans from before Nov 2 = not checked.
    */
   quoteVerified: z.boolean().optional(),
+  /**
+   * Set by VoirCheck, not the model (J, Nov 11): a finding our own code confirmed from page facts. Only
+   * missing_legal_info, which has nothing to quote: no legal / imprint / terms / contact link and no company name found.
+   */
+  codeConfirmed: z.boolean().optional(),
   /** The model's one-line explanation for the shopper, per UI language (plain text). Missing on scans before prompt v5. */
   note: z.object({ en: z.string().max(200), fr: z.string().max(200) }).optional(),
 });

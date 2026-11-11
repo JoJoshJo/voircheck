@@ -122,10 +122,15 @@ describe('evidence lines in French', () => {
 
 describe('Nov 11 lines: unproven AI claims, fake trust badges', () => {
   it('are put into French; the quote stays as written', () => {
-    expect(evidenceLine('Counted risk 0/100: 2 findings have no quote we could find on the page, so they are AI notes worth 0 points.', 'fr')).toBe(
-      'Risque compté 0/100 : 2 constats n’ont pas de citation que nous ayons trouvée sur la page, ce sont donc des notes de l’IA qui valent 0 point.',
+    expect(evidenceLine("Counted risk 0/100: 2 findings couldn't be confirmed on the page, so they are AI notes worth 0 points.", 'fr')).toBe(
+      'Risque compté 0/100 : 2 constats n’ont pas pu être confirmés sur la page, ce sont donc des notes de l’IA qui valent 0 point.',
     );
-    expect(evidenceLine('Counted risk 12/100: 1 finding has no quote we could find on the page, so it is an AI note worth 0 points.', 'fr')).toMatch(/^Risque compté 12\/100 : 1 constat /);
+    expect(evidenceLine("Counted risk 12/100: 1 finding couldn't be confirmed on the page, so it is an AI note worth 0 points.", 'fr')).toBe(
+      'Risque compté 12/100 : 1 constat n’a pas pu être confirmé sur la page, c’est donc une note de l’IA qui vaut 0 point.',
+    );
+    expect(evidenceLine('Missing legal information (high), confirmed by our own check: no legal notice, terms or contact link and no company name on the pages read.', 'fr')).toBe(
+      'Informations légales manquantes (grave), confirmé par notre propre vérification : ni lien vers des mentions légales, des conditions ou un contact, ni nom d’entreprise sur les pages lues.',
+    );
     expect(evidenceLine('Shows a trust badge it gave itself: "✓ Verified safe by VoirCheck". Only VoirCheck and PayPal can say that, on their own sites.', 'fr')).toBe(
       'Affiche un badge de confiance qu’elle s’est donné elle-même : « ✓ Verified safe by VoirCheck ». Seuls VoirCheck et PayPal peuvent le dire, sur leurs propres sites.',
     );

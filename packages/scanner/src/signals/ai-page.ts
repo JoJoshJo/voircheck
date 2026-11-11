@@ -30,6 +30,11 @@ export interface PageForAnalysis {
   hiddenText: Array<HiddenText & { pageUrl: string; pageKind: EvidenceKind | 'home' }>;
   /** Tranco rank of the store's own registrable domain (top 100k), else null. Trusted context. */
   wellKnownRank?: number | null;
+  /**
+   * Did the store's own pages link to a legal notice / imprint, terms or contact page (or did one load)? Set by the
+   * scanner from the links it read. Only `false` lets code confirm a missing_legal_info finding.
+   */
+  legalLinkFound?: boolean;
   /** The product and price the page's own data declares (JSON-LD / meta), when found. Extracted, untrusted. */
   productOnPage?: { name: string; price: number; currency: string | null } | null;
 }
@@ -255,10 +260,59 @@ export function quoteFound(quote: string, haystack: string): boolean {
   return parts.length > 0 && parts.every((p) => haystack.includes(p));
 }
 
+/**
+ * Code's own check of "missing legal info" (J, Nov 11): no link to a legal notice / imprint, terms or contact page, none
+ * of those pages loaded, and no company name found on the pages read. The model's word alone never counts.
+ */
+export function legalInfoMissingByCode(page: Pick<PageForAnalysis, 'legalLinkFound' | 'pages' | 'facts'>): boolean {
+  return page.legalLinkFound === false && !page.pages.some((p) => p.kind !== 'product') && page.facts.companyNames.length === 0;
+}
+
 /** Marks each finding's quote as verified or not against everything the analyzer read for this store. */
 export function verifyQuotes(a: AiAnalysis, page: PageForAnalysis): AiAnalysis {
   const haystack = normalizeForQuote([page.fullText, page.visibleText, ...page.pages.flatMap((p) => [p.fullText, p.visibleText]), ...page.hiddenText.map((h) => h.text)].join('\n'));
-  return { ...a, findings: a.findings.map((f) => ({ ...f, quoteVerified: quoteFound(f.quote, haystack) })) };
+  const legalMissing = legalInfoMissingByCode(page);
+  return {
+    ...a,
+    findings: a.findings.map((f) => ({ ...f, quoteVerified: quoteFound(f.quote, haystack), ...(f.kind === 'missing_legal_info' && legalMissing ? { codeConfirmed: true } : {}) })),
+  };
+}
+
+/** A finding counts (adds risk) only with proof: a quote we found on the page, or our own code's confirmation. */
+export const findingCounts = (f: Pick<AiAnalysis['findings'][number], 'quoteVerified' | 'codeConfirmed'>) => f.quoteVerified === true || f.codeConfirmed === true;
+
+const KIND_PLAIN: Record<AiFindingKind, { en: string; fr: string }> = {
+  prompt_injection_attempt: { en: 'hidden instructions aimed at AI shopping helpers', fr: 'des instructions cachées destinées aux assistants d’achat IA' },
+  company_details_inconsistent: { en: 'company details that don’t match', fr: 'des coordonnées d’entreprise qui ne concordent pas' },
+  unrealistic_discounts: { en: 'discounts too big to be real', fr: 'des remises trop fortes pour être vraies' },
+  fake_scarcity_urgency: { en: 'pressure to buy fast', fr: 'une pression pour acheter vite' },
+  missing_legal_info: { en: 'no legal notice, terms, contact page or company name', fr: 'ni mentions légales, ni conditions, ni page de contact, ni nom d’entreprise' },
+  copied_or_generic_text: { en: 'copied or generic text', fr: 'du texte copié ou générique' },
+  payment_red_flags: { en: 'unusual ways to pay', fr: 'des moyens de paiement inhabituels' },
+  language_mismatch: { en: 'text in a language that doesn’t fit the shop', fr: 'du texte dans une langue qui ne colle pas à la boutique' },
+};
+
+/**
+ * The shopper summary when the model's own summary can't be shown (J, Nov 11): some finding was counted at 0, and the
+ * model's summary may repeat it. Written by code, only from the findings that counted, in plain words.
+ */
+export function codeSummary(counted: ReadonlyArray<Pick<AiAnalysis['findings'][number], 'kind'>>): { en: string; fr: string } {
+  const kinds = [...new Set(counted.map((f) => f.kind))];
+  if (!kinds.length) {
+    return {
+      en: 'The page analysis raised points we couldn’t confirm on the shop’s pages, so they don’t count. Nothing else stood out.',
+      fr: 'L’analyse de la page a relevé des points que nous n’avons pas pu confirmer sur les pages de la boutique : ils ne comptent pas. Rien d’autre n’a attiré l’attention.',
+    };
+  }
+  const list = (lang: 'en' | 'fr') => {
+    const parts = kinds.map((k) => KIND_PLAIN[k][lang]);
+    const and = lang === 'en' ? ' and ' : ' et ';
+    return parts.length === 1 ? parts[0]! : `${parts.slice(0, -1).join(', ')}${and}${parts.at(-1)}`;
+  };
+  return {
+    en: `What we could confirm on the shop’s pages: ${list('en')}. Other points the page analysis raised couldn’t be confirmed, so they don’t count.`,
+    fr: `Ce que nous avons pu confirmer sur les pages de la boutique : ${list('fr')}. Les autres points relevés par l’analyse n’ont pas pu être confirmés : ils ne comptent pas.`,
+  };
 }
 
 const SEVERITY_WEIGHT = { low: 1, med: 2, high: 3 } as const;
@@ -273,7 +327,7 @@ const SEVERITY_WEIGHT = { low: 1, med: 2, high: 3 } as const;
 export function countedRisk(a: Pick<AiAnalysis, 'risk' | 'findings'>): number {
   const total = a.findings.reduce((n, f) => n + SEVERITY_WEIGHT[f.severity], 0);
   if (!total) return Math.min(a.risk, 24);
-  const verified = a.findings.reduce((n, f) => n + (f.quoteVerified === true ? SEVERITY_WEIGHT[f.severity] : 0), 0);
+  const verified = a.findings.reduce((n, f) => n + (findingCounts(f) ? SEVERITY_WEIGHT[f.severity] : 0), 0);
   return Math.round((a.risk * verified) / total);
 }
 
@@ -281,7 +335,9 @@ export function countedRisk(a: Pick<AiAnalysis, 'risk' | 'findings'>): number {
 export function outcomeFromAnalysis(a: AiAnalysis, by: AnalyzedBy | string): SignalOutcome {
   const who = typeof by === 'string' ? by : `${PROVIDER_LABEL[by.provider]}, ${by.model}`;
   const counted = countedRisk(a);
-  const notes = a.findings.filter((f) => f.quoteVerified !== true).length;
+  const notes = a.findings.filter((f) => !findingCounts(f)).length;
+  // J, Nov 11: the evidence page never repeats a claim counted at 0, so the model's summary goes when any claim was dropped.
+  const summary = notes ? codeSummary(a.findings.filter(findingCounts)) : a.summary;
   return {
     id: 'ai_page',
     status: riskToStatus(counted),
@@ -289,13 +345,19 @@ export function outcomeFromAnalysis(a: AiAnalysis, by: AnalyzedBy | string): Sig
     evidence: [
       `AI page analysis (${who}): risk ${a.risk}/100, ${a.findings.length ? `${a.findings.length} finding${a.findings.length === 1 ? '' : 's'}` : 'nothing suspicious found'}.`,
       ...(counted !== a.risk && notes
-        ? [`Counted risk ${counted}/100: ${notes === 1 ? '1 finding has' : `${notes} findings have`} no quote we could find on the page, so ${notes === 1 ? 'it is an AI note' : 'they are AI notes'} worth 0 points.`]
+        ? [`Counted risk ${counted}/100: ${notes === 1 ? '1 finding' : `${notes} findings`} couldn't be confirmed on the page, so ${notes === 1 ? 'it is an AI note' : 'they are AI notes'} worth 0 points.`]
         : []),
-      ...a.findings.map((f) => (f.quoteVerified ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"` : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.note?.en ?? f.quote}`)),
+      ...a.findings.map((f) =>
+        f.quoteVerified
+          ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"`
+          : f.codeConfirmed
+            ? `${KIND_EN[f.kind]} (${f.severity}), confirmed by our own check: no legal notice, terms or contact link and no company name on the pages read.`
+            : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.note?.en ?? f.quote}`,
+      ),
     ],
     findings: a.findings,
     risk: counted,
-    ...(a.summary ? { summary: a.summary } : {}),
+    ...(summary ? { summary } : {}),
     ...(a.product ? { product: { ...a.product, currency: a.product.currency?.toUpperCase() ?? null } } : {}),
   };
 }

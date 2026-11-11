@@ -266,7 +266,7 @@ describe('AI page analysis: quotes must be real', () => {
     expect(r.findings?.[0]?.quoteVerified).toBe(false);
     expect(r.evidence[2]).toBe('Payment red flags (high, home), AI note: Pay by bank transfer for an extra 15% off');
     // J, Nov 11: an unproven claim is worth 0 points; the risk the model gave is shown, the counted one says why.
-    expect(r.evidence[1]).toBe('Counted risk 0/100: 1 finding has no quote we could find on the page, so it is an AI note worth 0 points.');
+    expect(r.evidence[1]).toBe("Counted risk 0/100: 1 finding couldn't be confirmed on the page, so it is an AI note worth 0 points.");
     expect(r.status).toBe('pass');
     expect(r.risk).toBe(0);
   });

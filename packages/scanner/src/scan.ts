@@ -212,6 +212,8 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
         ...evidencePages.map((p) => ({ url: p.finalUrl, kind: p.kind, title: p.title, hiddenText: filterHiddenText(p.hiddenCandidates) })),
       ]
     : [];
+  // A link to a legal notice / terms / contact page on the store's own home page (J, Nov 11: code confirms missing legal info).
+  const legalLinkFound = !!targetPage && pickEvidenceLinks(targetPage.links, targetPage.finalUrl).some((l) => l.kind !== 'product');
   const hiddenText = readPages.flatMap((p) => p.hiddenText.map((h) => ({ ...h, pageUrl: p.url, pageKind: p.kind })));
   const collected: CollectedEvidence | undefined = targetPage
     ? {
@@ -236,7 +238,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
       return r;
     }),
     (deps.analyzer ?? placeholderAnalyzer)
-      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText, wellKnownRank: pop.rank, productOnPage: pageProduct && { name: pageProduct.name, price: pageProduct.price, currency: pageProduct.currency } })
+      .analyze(targetPage && { url: targetPage.finalUrl, fullText: targetPage.fullText, visibleText: targetPage.visibleText, pages: evidencePages, facts: pageFacts, hiddenText, legalLinkFound, wellKnownRank: pop.rank, productOnPage: pageProduct && { name: pageProduct.name, price: pageProduct.price, currency: pageProduct.currency } })
       .catch(() => unavailable('ai_page', 'AI analysis failed.'))
       .then((o) => (blocked && o.status === 'unavailable' ? { ...o, evidence: [`Couldn't read the store page: ${blocked.message}.`, ...o.evidence] } : o))
       .then((o): SignalOutcome => (collected ? { ...o, collected } : o))
