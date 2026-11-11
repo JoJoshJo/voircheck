@@ -7,7 +7,7 @@ import { getDb } from './db';
  * Global daily caps for the public demo (spec 5.17 #3), across all users, per UTC day. Per-user and per-IP limits
  * can be dodged with throwaway guest accounts; these can't. Anthropic stays under the $5 workspace cap, so hitting it
  * here is a calm "back tomorrow", not an out-of-credit error. Past the Anthropic cap, scans still run with page
- * analysis "unavailable"; past the KERNEL cap, only cached scans (last 24h) are served.
+ * analysis "unavailable"; past the KERNEL cap, only cached scans (last 72 h) are served.
  */
 export const DAILY_CAPS = { anthropicUsd: 3, kernelScans: 300, researchUsd: 2 } as const;
 

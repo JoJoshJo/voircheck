@@ -172,7 +172,7 @@ export function createMcpServer(api: McpApi, version = '1.0.0'): McpServer {
     'get_verdict',
     {
       title: 'Get a cached verdict',
-      description: "VoirCheck's most recent verdict for this link if it was checked in the last 24 hours. Never starts a scan. Returns not_scanned otherwise.",
+      description: "VoirCheck's most recent verdict for this link if it was checked in the last 3 days (our demo stores: any time). Never starts a scan. Returns not_scanned otherwise.",
       inputSchema: { url: ToolUrl },
       annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     },

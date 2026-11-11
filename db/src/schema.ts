@@ -232,6 +232,15 @@ export const researchSpend = pgTable('research_spend', {
   usd: numeric('usd', { precision: 12, scale: 6 }).notNull().default('0'),
 });
 
+// AI page-analysis results (Nov 11, migration 0008): one row per page URL + prompt version, so a deploy or restart no
+// longer wipes them (they were in memory) and a free provider's daily quota isn't spent twice on the same page. Public
+// store pages only; no user data. Until the table exists the app falls back to the in-memory cache.
+export const aiPageCache = pgTable('ai_page_cache', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
+
 // Per-user API tokens for AI agents over MCP (POST /api/mcp). Only the SHA-256 of the token is stored; the token itself
 // is shown once, when it's created. `prefix` (first characters) lets the person tell their tokens apart.
 export const apiTokens = pgTable(

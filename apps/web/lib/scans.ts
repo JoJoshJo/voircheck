@@ -2,11 +2,27 @@ import 'server-only';
 import { candidates, scans, shoppingSessions } from '@voircheck/db/schema';
 import { scanCoversStore } from '@voircheck/paypal';
 import { stripTracking, type ScanResult } from '@voircheck/scanner';
+import { DEFAULT_DEMO_STORES_BASE_URL } from '@voircheck/agent/search';
 import { ownedBy } from '@voircheck/shared';
 import { and, desc, eq, gt, like, or } from 'drizzle-orm';
 import { getDb } from './db';
 
-export const CACHE_HOURS = 24;
+/** How long a scan is reused (J, Nov 11: 72 h, was 24 h). Demo stores: permanent (see `cacheExpiry`). */
+export const CACHE_HOURS = 72;
+/** "Permanent" for demo stores: our own fictional shops, whose pages only change when we deploy them. */
+export const DEMO_CACHE_EXPIRES = new Date('9999-12-31T00:00:00Z');
+
+/** Is this URL one of our own demo stores (or a lab page on the same host)? */
+export function isDemoStoreUrl(url: string, base = process.env.DEMO_STORES_BASE_URL || DEFAULT_DEMO_STORES_BASE_URL): boolean {
+  try {
+    return new URL(url).hostname === new URL(base).hostname;
+  } catch {
+    return false;
+  }
+}
+
+/** When a scan stops being reused: 72 h, or never for a demo store. */
+export const cacheExpiry = (url: string, scannedAt: Date) => (isDemoStoreUrl(url) ? DEMO_CACHE_EXPIRES : new Date(scannedAt.getTime() + CACHE_HOURS * 3_600_000));
 
 /** Canonical form for cache lookups and storage: no fragment, lowercase host, no ad/click tracking (gclid, utm_*, ...). */
 export function canonicalUrl(raw: string): string {
@@ -61,7 +77,7 @@ export async function saveScan(result: ScanResult): Promise<ScanRecord> {
       hardRulesTriggered: result.hardRulesTriggered,
       kernelReplayUrl: withoutQuery(result.kernel.replayUrl),
       scannedAt,
-      cacheExpiresAt: new Date(scannedAt.getTime() + CACHE_HOURS * 3_600_000),
+      cacheExpiresAt: cacheExpiry(result.url, scannedAt),
     })
     .returning();
   return row!;
