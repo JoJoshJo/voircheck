@@ -50,7 +50,7 @@ describe('GET /check', () => {
   it('the person’s own navigation (none), signed in → link kept and marked to start (2 minutes)', async () => {
     const { res, check, auto } = await visit('none');
     expect(res.status).toBe(303);
-    expect(res.headers.get('location')).toBe('https://voircheck.com/app');
+    expect(res.headers.get('location')).toBe('/app');
     expect(check?.value).toBe(STORE);
     expect(auto).toMatchObject({ value: STORE, maxAge: 120 });
   });
@@ -66,6 +66,14 @@ describe('GET /check', () => {
     const { check, auto } = await visit('none');
     expect(check?.value).toBe(STORE);
     expect(auto).toMatchObject({ value: '', maxAge: 0 });
+  });
+
+  it('stays on the host that saved the cookie, whatever APP_URL says (Nov 11: the link was lost on onrender.com)', async () => {
+    process.env.APP_URL = 'https://voircheck-web.onrender.com';
+    const { res, check } = await visit('none');
+    expect(res.status).toBe(303);
+    expect(res.headers.get('location')).toBe('/app');
+    expect(check?.value).toBe(STORE);
   });
 
   it('an invalid link sets nothing', async () => {
