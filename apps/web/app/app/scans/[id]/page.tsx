@@ -1,6 +1,7 @@
 import { plainVerdict } from '../../../../lib/plain-verdict';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { PROVIDER_LABEL } from '@voircheck/scanner';
 import { AiFindings, CollectedEvidence, WebReputationRow } from '../../../../components/CollectedEvidence';
 import { LocalTime } from '../../../../components/LocalTime';
 import { Mascot } from '../../../../components/Mascot';
@@ -28,6 +29,8 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
   const scan = toScanView(row);
   // The page analysis' own plain-language summary (model text, shown as plain text); none when the AI didn't run.
   const summary = scan.signals.find((s) => s.id === 'ai_page')?.summary?.[lang];
+  // Which AI provider wrote it (Groq, OpenRouter or Claude); missing on scans from before Nov 10.
+  const analyzedBy = scan.signals.find((s) => s.id === 'ai_page')?.analyzedBy;
   const [whenBefore, whenAfter] = splitWhen(t.evidence.scannedAt);
 
   return (
@@ -57,6 +60,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ id: s
             <h3 className="text-[14px] font-medium">{t.evidence.summaryTitle}</h3>
             <p className="mt-1 text-[15px] leading-relaxed">{summary}</p>
             <p className="mt-1 text-[13px] text-faint">{t.evidence.summaryNote}</p>
+            {analyzedBy ? <p className="mt-1 text-[13px] text-faint">{t.evidence.analyzedBy.replace('{provider}', PROVIDER_LABEL[analyzedBy.provider])}</p> : null}
           </div>
         ) : null}
       </section>

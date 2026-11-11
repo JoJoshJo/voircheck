@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CollectedEvidence } from './evidence-pages';
+import { AnalyzedBy } from './llm';
 
 export const MAX_URL_LENGTH = 2048;
 
@@ -106,6 +107,8 @@ export const SignalResult = z.object({
   findings: z.array(AiFinding).max(12).optional(),
   /** ai_page only: the model's plain-language summary (EN + FR). Missing on scans from before Nov 2. */
   summary: AiSummary.optional(),
+  /** ai_page only: which AI provider answered (shown as "Page analysis: Groq"). Missing on scans from before Nov 10. */
+  analyzedBy: AnalyzedBy.optional(),
 });
 export type SignalResult = z.infer<typeof SignalResult>;
 

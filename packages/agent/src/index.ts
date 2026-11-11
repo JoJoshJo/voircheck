@@ -2,6 +2,7 @@
 export * from './search';
 export * from './model';
 export * from './anthropic-model';
+export * from './failover-model';
 export * from './fake-model';
 export * from './loop';
 export * from './prompt';

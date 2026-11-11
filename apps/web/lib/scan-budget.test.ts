@@ -26,7 +26,14 @@ vi.mock('./scans', () => ({ saveScan: async (r: unknown) => r, latestVerdictForS
 vi.mock('@voircheck/agent/search', () => ({ demoPeersForUrl: () => null, searchProducts: async () => ({ status: 'unavailable', reason: 'test' }) }));
 vi.mock('@voircheck/scanner', () => ({
   placeholderAnalyzer: placeholder,
-  anthropicAnalyzer: () => ({ analyze: async () => ({}) }),
+  // The failover analyzer (Groq → OpenRouter → Claude): `paid` says whether Claude is in its list.
+  failoverAnalyzer: (o: { claude: unknown }) => {
+    // Records itself when it runs (the scan runner wraps it), so a test can see which flavour ran.
+    const a = { paid: !!o.claude, analyze: async () => ((scanner.analyzerUsed = a), {}) };
+    return a;
+  },
+  pageAnalysisChain: () => [...(process.env.GROQ_API_KEY ? [{ id: 'groq', model: 'g' }] : []), ...(process.env.OPENROUTER_API_KEY ? [{ id: 'openrouter', model: 'o:free' }] : [])],
+  memoryAiCache: () => ({}),
   anthropicResearcher: () => realResearcher,
   notChecked: (why: string) => ({ status: 'unavailable', findings: [], evidence: [why] }),
   kernelVisitor: (o: { onCleanup?: (p: Promise<void>) => void }) => ({
@@ -42,7 +49,7 @@ vi.mock('@voircheck/scanner', () => ({
     if (scanner.throwBefore) throw scanner.throwBefore; // e.g. the SSRF check, before KERNEL
     if (scanner.visit) await deps.visitor?.visit(['https://shop.example/']);
     await deps.analyzer.analyze(null);
-    return { result: { url: 'https://shop.example/' }, meta: { ai: deps.analyzer === placeholder ? undefined : { costUsd: scanner.aiCost }, research: deps.researcher === realResearcher ? [{ costUsd: scanner.researchCost }] : [] } };
+    return { result: { url: 'https://shop.example/' }, meta: { ai: deps.analyzer === placeholder ? undefined : { costUsd: (scanner.analyzerUsed as { paid?: boolean }).paid === false ? 0 : scanner.aiCost }, research: deps.researcher === realResearcher ? [{ costUsd: scanner.researchCost }] : [] } };
   },
 }));
 
@@ -56,6 +63,9 @@ beforeEach(() => {
   delete process.env.RESEARCH;
   process.env.KERNEL_API_KEY = 'test-kernel-key';
   process.env.ANTHROPIC_API_KEY = 'test-anthropic-key';
+  delete process.env.GROQ_API_KEY;
+  delete process.env.OPENROUTER_API_KEY;
+  delete (globalThis as { __voircheckAnalyzer?: unknown }).__voircheckAnalyzer;
 });
 
 describe('budget reservations are one conditional statement each', () => {
@@ -129,6 +139,18 @@ describe('runStoreScan reserves before it runs', () => {
     await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
     expect(scanner.analyzerUsed).toBe(placeholder);
     expect(spend.recorded).toEqual([{ anthropicUsd: 0, kernelScans: 0 }]); // a zero settlement writes nothing
+  });
+  it('no AI reservation but a free provider key → page analysis still runs, free providers only, $0 settled', async () => {
+    spend.aiOk = false;
+    process.env.GROQ_API_KEY = 'test-groq-key';
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    expect(scanner.analyzerUsed).toMatchObject({ paid: false });
+    expect(spend.recorded).toEqual([{ anthropicUsd: 0, kernelScans: 0 }]);
+  });
+  it('with an AI reservation the analyzer includes the Claude backup', async () => {
+    process.env.GROQ_API_KEY = 'test-groq-key';
+    await runStoreScan({ url: 'https://shop.example/', demoMode: false, liveView: false });
+    expect(scanner.analyzerUsed).toMatchObject({ paid: true });
   });
   it('without a KERNEL key nothing is reserved for KERNEL', async () => {
     delete process.env.KERNEL_API_KEY;

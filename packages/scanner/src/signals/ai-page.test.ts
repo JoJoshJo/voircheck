@@ -169,7 +169,7 @@ describe('AI page analysis: model call', () => {
     expect(calls).toHaveLength(0);
   });
 
-  it('caches per URL for 24h: the second scan makes no call and costs $0', async () => {
+  it('caches per URL for 72h: the second scan makes no call and costs $0', async () => {
     let t = 0;
     const cache = memoryAiCache(() => t);
     const { client, calls } = fakeClient({ parsed_output: injection });
@@ -178,7 +178,7 @@ describe('AI page analysis: model call', () => {
     const again = await a.analyze(page());
     expect(calls).toHaveLength(1);
     expect(again).toMatchObject({ status: 'fail', usage: { cached: true, costUsd: 0 } });
-    t = 24 * 3_600_000 + 1;
+    t = 72 * 3_600_000 + 1;
     await a.analyze(page());
     expect(calls).toHaveLength(2);
     expect(aiCacheKey('m', 'https://a.test/')).not.toBe(aiCacheKey('m', 'https://b.test/'));

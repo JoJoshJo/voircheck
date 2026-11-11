@@ -4,6 +4,7 @@ import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
 import { z } from 'zod';
 import type { CollectedFacts, EvidenceKind, EvidencePage } from '../evidence-pages';
 import { looksLikeInjection, type HiddenText } from '../hidden-text';
+import { AnalyzedBy, anthropicError, breakerKey, type ProviderId, chatComplete, extractJson, PROVIDER_LABEL, ProviderError, runFailover, sharedBreaker, strictJsonSchema, type Attempt, type ChatProvider, type CircuitBreaker, type FailoverLog } from '../llm';
 import { AI_FINDING_KINDS, AiFinding, AiSummary, type AiFindingKind, type SignalStatus } from '../schema';
 import { errorMessage, unavailable, type AiUsage, type SignalOutcome } from './types';
 
@@ -106,7 +107,9 @@ const MAX_EXTRA_PAGE_CHARS = 4_000;
 const MAX_PAGE_CHARS = 20_000;
 const MAX_HIDDEN_CHARS = 4_000;
 const MAX_OUTPUT_TOKENS = 1_800; // findings with EN + FR notes, then the summary
-const CACHE_TTL_MS = 24 * 3_600_000;
+/** AI page-analysis results are reused for 72 h, like scans (J, Nov 11; was 24 h). */
+export const AI_CACHE_TTL_MS = 72 * 3_600_000;
+const CACHE_TTL_MS = AI_CACHE_TTL_MS;
 
 /** Overall risk → signal status, on the verdict scale (spec 5.6): <30 pass, 30–64 warn, ≥65 fail. */
 export function riskToStatus(risk: number): Exclude<SignalStatus, 'unavailable'> {
@@ -130,6 +133,8 @@ export const AiAnalysis = z.object({
   // A malformed product is dropped, never a reason to drop the analysis.
   product: AiProduct.nullable().optional().catch(null),
   summary: AiSummary.optional(),
+  /** Who answered (set by our code after validation, never taken from the model). Missing on results before Nov 10. */
+  by: AnalyzedBy.optional(),
 });
 export type AiAnalysis = z.infer<typeof AiAnalysis>;
 
@@ -185,13 +190,16 @@ function pageLabels(page: PageForAnalysis): Array<{ label: string; url: string; 
 }
 
 /** The one user message: untrusted blocks first (hidden text, then pages), then our own context. */
-export function buildAnalysisInput(page: PageForAnalysis): string {
+/** Groq's free plan allows 8,000 tokens a minute, so it gets less page text (approved Nov 10). */
+export const SMALL_INPUT = { maxPageChars: 8_000, maxHiddenChars: 2_000 } as const;
+
+export function buildAnalysisInput(page: PageForAnalysis, limits: { maxPageChars: number; maxHiddenChars: number } = { maxPageChars: MAX_PAGE_CHARS, maxHiddenChars: MAX_HIDDEN_CHARS }): string {
   const pageText = pageLabels(page)
     .map((p) => `=== page "${p.label}": ${p.url} ===\n${p.text.replace(/\s+\n/g, '\n').slice(0, p.max)}`)
     .join('\n\n');
   const untrusted = buildUntrustedPageInput(
     { hiddenText: page.hiddenText.map((h) => ({ text: h.text, reason: h.reason, hint: h.hint, possibleInjection: h.possibleInjection, pageUrl: h.pageUrl })), pageText },
-    { maxHiddenChars: MAX_HIDDEN_CHARS, maxPageChars: MAX_PAGE_CHARS },
+    limits,
   );
   const context = {
     storeUrl: page.url,
@@ -254,12 +262,14 @@ export function verifyQuotes(a: AiAnalysis, page: PageForAnalysis): AiAnalysis {
 }
 
 /** The signal outcome for a validated analysis. Evidence strings are plain text (rendered as text, never HTML). */
-export function outcomeFromAnalysis(a: AiAnalysis, model: string): SignalOutcome {
+export function outcomeFromAnalysis(a: AiAnalysis, by: AnalyzedBy | string): SignalOutcome {
+  const who = typeof by === 'string' ? by : `${PROVIDER_LABEL[by.provider]}, ${by.model}`;
   return {
     id: 'ai_page',
     status: riskToStatus(a.risk),
+    ...(typeof by === 'string' ? {} : { analyzedBy: by }),
     evidence: [
-      `AI page analysis (${model}): risk ${a.risk}/100, ${a.findings.length ? `${a.findings.length} finding${a.findings.length === 1 ? '' : 's'}` : 'nothing suspicious found'}.`,
+      `AI page analysis (${who}): risk ${a.risk}/100, ${a.findings.length ? `${a.findings.length} finding${a.findings.length === 1 ? '' : 's'}` : 'nothing suspicious found'}.`,
       ...a.findings.map((f) => (f.quoteVerified ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"` : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.note?.en ?? f.quote}`)),
     ],
     findings: a.findings,
@@ -321,7 +331,7 @@ export const aiCacheKey = (model: string, url: string) => createHash('sha256').u
 
 /** The slice of the SDK client we use (lets tests pass a fake). */
 export interface MessagesParser {
-  messages: { parse(params: Anthropic.MessageCreateParamsNonStreaming): PromiseLike<{ stop_reason: string | null; parsed_output?: unknown; usage: Anthropic.Usage }> };
+  messages: { parse(params: Anthropic.MessageCreateParamsNonStreaming, options?: { signal?: AbortSignal }): PromiseLike<{ stop_reason: string | null; parsed_output?: unknown; usage: Anthropic.Usage }> };
 }
 
 export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache?: AiResultCache; client?: MessagesParser; log?: (line: string) => void }): PageAnalyzer {
@@ -338,7 +348,7 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
       if (hit) {
         const usage: AiUsage = { model, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, cached: true };
         log(`[ai_page] ${page.url}: cached result (risk ${hit.risk}), $0`);
-        return { ...outcomeFromAnalysis(verifyQuotes(hit, page), model), usage };
+        return { ...outcomeFromAnalysis(verifyQuotes(hit, page), hit.by ?? { provider: 'claude', model }), usage };
       }
       client ??= new Anthropic({ apiKey: opts.apiKey });
       let res: Awaited<ReturnType<MessagesParser['messages']['parse']>>;
@@ -374,7 +384,126 @@ export function anthropicAnalyzer(opts: { apiKey?: string; model?: string; cache
       if (!parsed.success) log(`[ai_page] ${page.url}: wrong format (${parsed.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.code}`).join('; ')})`);
       if (!parsed.success) return { ...unavailable('ai_page', 'AI page analysis returned an answer in the wrong format, so it was ignored.'), usage };
       await cache.set(key, parsed.data, CACHE_TTL_MS);
-      return { ...outcomeFromAnalysis(verifyQuotes(parsed.data, page), model), usage };
+      return { ...outcomeFromAnalysis(verifyQuotes(parsed.data, page), { provider: 'claude', model }), usage };
+    },
+  };
+}
+
+// ---------- failover analyzer: free providers first, Claude Haiku last ($0 for AI, J Nov 11) ----------
+
+/** Claude, last in line for page analysis and the agent: Haiku 5.5 (J, Nov 10), input well under 100k tokens. */
+export const CLAUDE_BACKUP_MODEL = 'claude-haiku-5-5';
+/**
+ * Per-provider timeouts and the overall cap for one page analysis (approved Nov 10). Nov 11: Gemini 20 s, overall
+ * 50 s for the longer chain (a busy model fails in well under a second; only a slow one uses its timeout).
+ */
+export const PAGE_ANALYSIS_TIMEOUTS = { groq: 12_000, gemini: 20_000, openrouter: 20_000, claude: 30_000, overall: 50_000 } as const;
+export type ProviderTimeouts = Record<ProviderId, number> & { overall: number };
+/** The failover cache is shared by every provider: one entry per URL and prompt version. */
+export const FAILOVER_CACHE_MODEL = 'failover';
+
+const JSON_SHAPE_LINE = `Return ONLY one JSON object, no other text, matching this JSON Schema exactly:\n${JSON.stringify(strictJsonSchema(ModelOutput))}`;
+
+/** A validated analysis from a model's raw output, or a bad_output error (the next provider gets a turn). */
+function validated(raw: unknown): AiAnalysis {
+  const parsed = AiAnalysis.safeParse(trimPageLabels(raw));
+  if (!parsed.success) throw new ProviderError('bad_output', `wrong format (${parsed.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.code}`).join('; ')})`);
+  // `by` is ours to set after the call, never the model's.
+  return { ...parsed.data, by: undefined };
+}
+
+type Analyzed = { analysis: AiAnalysis; usage: AiUsage };
+
+async function chatAnalyze(p: ChatProvider, page: PageForAnalysis, signal: AbortSignal, fetchImpl?: typeof fetch): Promise<Analyzed> {
+  const ans = await chatComplete(
+    p,
+    {
+      messages: [
+        // A strict-schema model gets the shape from the schema; the others get it in the prompt (saves ~1k tokens).
+        { role: 'system', content: p.jsonSchema ? AI_SYSTEM_PROMPT : `${AI_SYSTEM_PROMPT}\n\n${JSON_SHAPE_LINE}` },
+        { role: 'user', content: buildAnalysisInput(page, p.smallInput ? SMALL_INPUT : undefined) },
+      ],
+      maxTokens: MAX_OUTPUT_TOKENS,
+      // Groq, Gemini and OpenRouter's second model follow a strict schema; the first OpenRouter model gets it in the prompt.
+      ...(p.jsonSchema ? { responseFormat: { type: 'json_schema', json_schema: { name: 'page_analysis', strict: true, schema: strictJsonSchema(ModelOutput) } } } : {}),
+    },
+    signal,
+    fetchImpl,
+  );
+  if (ans.finishReason === 'length') throw new ProviderError('bad_output', 'the answer was cut off');
+  const usage: AiUsage = { model: p.model, inputTokens: ans.usage.inputTokens, outputTokens: ans.usage.outputTokens, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, cached: false };
+  return { analysis: validated(extractJson(ans.content)), usage };
+}
+
+async function claudeAnalyze(client: MessagesParser, model: string, page: PageForAnalysis, signal?: AbortSignal): Promise<Analyzed> {
+  let res: Awaited<ReturnType<MessagesParser['messages']['parse']>>;
+  try {
+    res = await client.messages.parse({
+      model,
+      max_tokens: MAX_OUTPUT_TOKENS,
+      thinking: model.startsWith('claude-sonnet-5-5') ? { type: 'between_tools' } : { type: 'disabled' },
+      output_config: { effort: 'low', format: zodOutputFormat(ModelOutput) },
+      system: [{ type: 'text', text: AI_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+      messages: [{ role: 'user', content: buildAnalysisInput(page) }],
+    }, signal ? { signal } : undefined);
+  } catch (err) {
+    throw anthropicError(err);
+  }
+  const u = res.usage;
+  const usage: AiUsage = { model, inputTokens: u.input_tokens, outputTokens: u.output_tokens, cacheReadTokens: u.cache_read_input_tokens ?? 0, cacheWriteTokens: u.cache_creation_input_tokens ?? 0, costUsd: 0, cached: false };
+  usage.costUsd = costUsd(usage, model);
+  if (res.stop_reason !== 'end_turn') throw new ProviderError('bad_output', `stop reason ${res.stop_reason ?? 'none'}`);
+  return { analysis: validated(res.parsed_output), usage };
+}
+
+export interface FailoverAnalyzerOptions {
+  /** The free providers, in order (`pageAnalysisChain()`): each model has its own breaker entry. */
+  free: readonly ChatProvider[];
+  /** Claude, tried LAST (full page input); null = free providers only (no credit, or today's Anthropic budget used up). */
+  claude: { apiKey?: string; model?: string; client?: MessagesParser } | null;
+  cache?: AiResultCache;
+  breaker?: CircuitBreaker;
+  fetchImpl?: typeof fetch;
+  timeouts?: ProviderTimeouts;
+  log?: (line: string) => void;
+  onAttempt?: (l: FailoverLog) => void;
+}
+
+/**
+ * Page analysis on the shared provider layer (llm.ts). Same untrusted-input wrapping, same output validation, same
+ * quote verification and two-sign injection rule as before (all downstream of the model call); code, not the model,
+ * still decides SAFE/HOLD/BLOCK.
+ */
+export function failoverAnalyzer(opts: FailoverAnalyzerOptions): PageAnalyzer {
+  const cache = opts.cache ?? memoryAiCache();
+  const log = opts.log ?? ((line: string) => console.log(line));
+  const timeouts = opts.timeouts ?? PAGE_ANALYSIS_TIMEOUTS;
+  const claudeModel = opts.claude?.model || CLAUDE_BACKUP_MODEL;
+  let client: MessagesParser | null = opts.claude?.client ?? null;
+  return {
+    async analyze(page) {
+      if (!page) return unavailable('ai_page', 'No store page was read, so there was nothing to analyze.');
+      const key = aiCacheKey(FAILOVER_CACHE_MODEL, page.url);
+      const hit = await cache.get(key);
+      if (hit?.by) {
+        log(`[ai_page] ${page.url}: cached result from ${hit.by.provider} (risk ${hit.risk}), $0`);
+        return { ...outcomeFromAnalysis(verifyQuotes(hit, page), hit.by), usage: { model: hit.by.model, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0, cached: true } };
+      }
+      // Order (J, Nov 11): the free chain first (Groq with the smaller input), Claude Haiku last with the full page.
+      const attempts: Attempt<Analyzed>[] = opts.free.map((p) => ({ provider: p.id, key: breakerKey(p), model: p.model, timeoutMs: timeouts[p.id], run: (signal: AbortSignal) => chatAnalyze(p, page, signal, opts.fetchImpl) }));
+      const c = opts.claude;
+      if (c && (c.apiKey || c.client)) {
+        attempts.push({ provider: 'claude', model: claudeModel, timeoutMs: timeouts.claude, run: (signal) => claudeAnalyze((client ??= new Anthropic({ apiKey: c.apiKey, maxRetries: 0, timeout: timeouts.claude })), claudeModel, page, signal) });
+      }
+      const r = await runFailover('page_analysis', attempts, { breaker: opts.breaker ?? sharedBreaker(), overallMs: timeouts.overall, ...(opts.onAttempt ? { log: opts.onAttempt } : {}) });
+      if (!r.ok) {
+        log(`[ai_page] ${page.url}: no provider answered (${r.tried.map((t) => `${t.provider} ${t.outcome}`).join(', ') || 'none configured'})`);
+        return unavailable('ai_page', "AI page analysis wasn't available: every AI provider failed or was busy.");
+      }
+      const analysis: AiAnalysis = { ...r.value.analysis, by: r.by };
+      log(`[ai_page] ${page.url}: ${r.by.provider} answered in ${r.ms} ms, in ${r.value.usage.inputTokens}, out ${r.value.usage.outputTokens}, $${r.value.usage.costUsd.toFixed(5)}`);
+      await cache.set(key, analysis, CACHE_TTL_MS);
+      return { ...outcomeFromAnalysis(verifyQuotes(analysis, page), r.by), usage: r.value.usage };
     },
   };
 }

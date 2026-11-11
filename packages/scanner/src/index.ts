@@ -7,6 +7,11 @@ export { kernelVisitor, browserCreateParams, ensureIspProxy, ISP_PROXY_COUNTRIES
 export {
   placeholderAnalyzer,
   anthropicAnalyzer,
+  failoverAnalyzer,
+  CLAUDE_BACKUP_MODEL,
+  PAGE_ANALYSIS_TIMEOUTS,
+  FAILOVER_CACHE_MODEL,
+  SMALL_INPUT,
   confirmedInjection,
   quoteFound,
   verifyQuotes,
@@ -61,3 +66,4 @@ export {
 } from './research';
 export { WEB_FINDING_KINDS, WebFinding, WebReputation } from './schema';
 export { RESEARCH_DEADLINE_MS } from './scan';
+export * from './llm';

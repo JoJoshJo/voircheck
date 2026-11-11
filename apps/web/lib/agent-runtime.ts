@@ -1,7 +1,7 @@
 import 'server-only';
-import { AGENT_SYSTEM_PROMPT, agentOrderStatus, AnthropicModel, compareStores, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
+import { AGENT_SYSTEM_PROMPT, agentOrderStatus, compareStores, FailoverModel, FakeModel, runAgentTurn, shoppingTools, toolkitOrderReader, type AgentDeps, type AgentMessage, type ModelClient, type SearchResult } from '@voircheck/agent';
 import { demoPeersForUrl } from '@voircheck/agent/search';
-import { assertSafeUrlShape, SsrfError, StoreUrl } from '@voircheck/scanner';
+import { agentChain, assertSafeUrlShape, CLAUDE_BACKUP_MODEL, SsrfError, StoreUrl } from '@voircheck/scanner';
 import { parsePaymentRef } from '@voircheck/shared';
 import { agentTextEvents, draftText, neutralizeFakeNote, type AgentEvent } from './agent-view';
 import { paymentIdForRef, recentOrdersForUser, refundableRefsAtStore } from './orders';
@@ -67,14 +67,19 @@ export function openConversation(userId: string, id: string | null): { id: strin
 }
 
 /**
- * Claude (AGENT_MODEL, default Sonnet 5.5) when ANTHROPIC_API_KEY is set; the scripted FakeModel without a key or with
- * AGENT_MODEL=fake (offline demo). One client per process.
+ * The shared AI provider layer (spec 5.13, $0 for AI): Groq qwen → gpt-oss-120b → gpt-oss-20b → OpenRouter free →
+ * Claude Haiku 5.5 last, one at a time; never Gemini for chat. Claude is skipped while today's Anthropic budget is used up (the free providers still answer). The scripted
+ * FakeModel with AGENT_MODEL=fake (offline demo) or when no provider key is set. One client per process.
  */
-const gm = globalThis as typeof globalThis & { __voircheckAgentModel?: AnthropicModel };
-export function agentModel(): { model: ModelClient; kind: 'fake' | 'claude' } {
+const gm = globalThis as typeof globalThis & { __voircheckAgentModel?: FailoverModel };
+export function agentModel(): { model: ModelClient; kind: 'fake' | 'live' } {
+  const free = agentChain();
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || process.env.AGENT_MODEL === 'fake') return { model: new FakeModel(), kind: 'fake' };
-  return { model: (gm.__voircheckAgentModel ??= new AnthropicModel({ apiKey, model: process.env.AGENT_MODEL || undefined })), kind: 'claude' };
+  if (process.env.AGENT_MODEL === 'fake' || (!free.length && !apiKey)) return { model: new FakeModel(), kind: 'fake' };
+  return {
+    model: (gm.__voircheckAgentModel ??= new FailoverModel({ free, claude: apiKey ? { apiKey, model: CLAUDE_BACKUP_MODEL } : null, claudeAllowed: async () => !(await anthropicCapReached()) })),
+    kind: 'live',
+  };
 }
 
 const STOPPED = {
@@ -339,9 +344,9 @@ async function statusNote(o: { conv: Conversation; userId: string; send: (e: Age
 
 /** One chat turn for this user. Streams events through `send`; returns when the agent has answered. */
 export async function runChatTurn(o: { convId: string; conv: Conversation; userId: string; isGuest: boolean; ip: string; demoMode: boolean; origin: string; lang: 'en' | 'fr'; text: string; send: (e: AgentEvent) => void }) {
-  const { model, kind } = agentModel();
+  const { model } = agentModel();
   if (o.conv.costUsd >= MAX_CONVERSATION_USD) throw new ConversationBudgetError();
-  if (kind === 'claude' && (await anthropicCapReached())) throw new DailyCapError();
+  // No daily-cap stop here any more: when today's Anthropic budget is used up, the failover model just skips Claude.
   const note = await statusNote(o).catch(() => null);
   const userText = [note, neutralizeFakeNote(o.text)].filter(Boolean).join('\n');
   let draft = draftText();
@@ -370,8 +375,8 @@ export async function runChatTurn(o: { convId: string; conv: Conversation; userI
   o.conv.costUsd += usage.costUsd;
   await recordSpendQuietly({ anthropicUsd: usage.costUsd });
   if (stopped === 'max_steps') o.send({ type: 'text', text: STOPPED[o.lang] });
-  if (modelCalls && usage.costUsd)
+  if (modelCalls)
     console.log(
-      `[agent] ${model.id} conv ${o.convId.slice(0, 8)}: ${modelCalls} calls, in ${usage.inputTokens} (cache read ${usage.cacheReadTokens}, write ${usage.cacheWriteTokens}), out ${usage.outputTokens}, $${usage.costUsd.toFixed(4)}; conversation $${o.conv.costUsd.toFixed(4)}`,
+      `[agent] ${model instanceof FailoverModel && model.lastBy ? model.lastBy.provider : model.id} conv ${o.convId.slice(0, 8)}: ${modelCalls} calls, in ${usage.inputTokens} (cache read ${usage.cacheReadTokens}, write ${usage.cacheWriteTokens}), out ${usage.outputTokens}, $${usage.costUsd.toFixed(4)}; conversation $${o.conv.costUsd.toFixed(4)}`,
     );
 }

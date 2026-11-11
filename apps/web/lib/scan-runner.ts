@@ -1,7 +1,8 @@
 import 'server-only';
 import { demoPeersForUrl, searchProducts } from '@voircheck/agent/search';
-import { anthropicAnalyzer, anthropicResearcher, kernelVisitor, notChecked, placeholderAnalyzer, scanStore, type FindOffers, type PageAnalyzer, type ScanProgress, type WebResearcher } from '@voircheck/scanner';
+import { anthropicResearcher, failoverAnalyzer, kernelVisitor, notChecked, pageAnalysisChain, placeholderAnalyzer, scanStore, type FindOffers, type PageAnalyzer, type ScanProgress, type WebResearcher } from '@voircheck/scanner';
 import { searchCache } from './search-cache';
+import { dbAiCache } from './ai-cache';
 import { latestVerdictForStore, saveScan, type ScanRecord } from './scans';
 import { AI_RESERVE_PER_SCAN_USD, DailyCapError, RESEARCH_RESERVE_PER_SCAN_USD, recordResearchSpendQuietly, recordSpendQuietly, reserveAiScan, reserveKernelScan, reserveResearch } from './spend';
 
@@ -19,12 +20,20 @@ export class ScanBusyError extends Error {
 
 export const freshScansRunning = () => running.__voircheckScansRunning ?? 0;
 
-// One analyzer per process: it holds the 24h per-URL AI result cache (on globalThis so a dev hot reload keeps it).
-const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: PageAnalyzer; __voircheckResearcher?: WebResearcher };
-function pageAnalyzer(): PageAnalyzer {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return placeholderAnalyzer;
-  return (g.__voircheckAnalyzer ??= anthropicAnalyzer({ apiKey, model: process.env.SCAN_MODEL }));
+// One analyzer per process, two flavours sharing one 72 h per-URL AI result cache in the database (ai_page_cache; in memory until migration 0008 is applied) (on globalThis so a dev hot reload
+// keeps it): Groq ×3 → Gemini → OpenRouter free ×2 → Claude Haiku last, and the same without Claude (no reservation).
+const g = globalThis as typeof globalThis & { __voircheckAnalyzer?: { full: PageAnalyzer; free: PageAnalyzer | null }; __voircheckResearcher?: WebResearcher };
+function pageAnalyzers(): { full: PageAnalyzer; free: PageAnalyzer | null } {
+  return (g.__voircheckAnalyzer ??= (() => {
+    const free = pageAnalysisChain();
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!free.length && !apiKey) return { full: placeholderAnalyzer, free: null };
+    const cache = dbAiCache();
+    return {
+      full: failoverAnalyzer({ free, claude: apiKey ? { apiKey } : null, cache }),
+      free: free.length ? failoverAnalyzer({ free, claude: null, cache }) : null,
+    };
+  })());
 }
 
 /** Research step (Claude + web search, 24h cache per domain/product). Off without an Anthropic key or RESEARCH=off. */
@@ -43,7 +52,7 @@ const budgetUsedUp: WebResearcher = {
 /**
  * One store scan, shared by check-a-link, the shopping agent and MCP check_store. The page is only ever opened inside
  * KERNEL; this server does RDAP, DNS, TLS and Safe Browsing lookups only, behind the scanner's SSRF guards. The result
- * is saved (24h cache) and returned as the stored row.
+ * is saved (72 h cache; demo stores permanent) and returned as the stored row.
  *
  * Budget: a KERNEL session and the page analysis are reserved against today's caps before anything runs. No KERNEL
  * reservation → DailyCapError (callers show the calm "daily limit reached" message). No AI reservation → the scan
@@ -82,9 +91,11 @@ async function runReservedScan(opts: { url: string; demoMode: boolean; liveView:
     // The research step has its own budget; no reservation → "what the web says" is not checked, the scan goes on.
     const researcher = webResearcher();
     if (researcher && (await reserveResearch())) researchReserved = RESEARCH_RESERVE_PER_SCAN_USD;
-    const real = pageAnalyzer();
-    if (real !== placeholderAnalyzer && (await reserveAiScan())) aiReserved = AI_RESERVE_PER_SCAN_USD;
-    const analyzer: PageAnalyzer = aiReserved
+    // Claude (the paid backup) only with an AI reservation; the free providers run either way.
+    const analyzers = pageAnalyzers();
+    if (analyzers.full !== placeholderAnalyzer && process.env.ANTHROPIC_API_KEY && (await reserveAiScan())) aiReserved = AI_RESERVE_PER_SCAN_USD;
+    const real = aiReserved ? analyzers.full : analyzers.free;
+    const analyzer: PageAnalyzer = real
       ? {
           analyze: (p) => {
             aiRan = true;

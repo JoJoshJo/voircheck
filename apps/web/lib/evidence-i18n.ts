@@ -179,6 +179,7 @@ const FR: Rule[] = [
   [/^No store page was read, so there was nothing to analyze\.$/, 'Aucune page de la boutique n’a été lue : rien à analyser.'],
   [/^AI page analysis failed \(the model call did not complete\)\.$/, 'L’analyse de page par IA a échoué (l’appel au modèle n’a pas abouti).'],
   [/^AI analysis failed\.$/, 'L’analyse par IA a échoué.'],
+  [/^AI page analysis wasn't available: every AI provider failed or was busy\.$/, 'L’analyse de page par IA n’était pas disponible : tous les fournisseurs d’IA ont échoué ou étaient occupés.'],
   [/^AI page analysis returned no usable answer \((.+)\)\.$/, 'L’analyse de page par IA n’a pas donné de réponse exploitable ($1).'],
   [/^AI page analysis returned an answer in the wrong format, so it was ignored\.$/, 'L’analyse de page par IA a répondu dans un mauvais format : la réponse a été ignorée.'],
   [

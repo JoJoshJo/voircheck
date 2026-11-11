@@ -1,4 +1,5 @@
 import type { CollectedEvidence } from '../evidence-pages';
+import type { AnalyzedBy } from '../llm';
 import type { AiFinding, AiSummary, SignalId, SignalStatus } from '../schema';
 
 /** What a signal reports; points are added by scoring.ts from the weights table. */
@@ -13,6 +14,8 @@ export interface SignalOutcome {
   risk?: number;
   /** ai_page only: plain-language summary (EN + FR). */
   summary?: AiSummary;
+  /** ai_page only: which AI provider answered. */
+  analyzedBy?: AnalyzedBy;
   /** ai_page only: tokens and cost of the model call (operational; never part of the result). */
   usage?: AiUsage;
   /** ai_page only: the page's main product as the model read it (feeds the price check; never part of the result). */

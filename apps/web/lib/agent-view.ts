@@ -10,7 +10,7 @@ import type { ScanView } from './scan-view';
 export type AgentStore = z.infer<typeof StoreOffer>;
 
 export type AgentEvent =
-  | { type: 'conversation'; id: string; model: 'fake' | 'claude' }
+  | { type: 'conversation'; id: string; model: 'fake' | 'live' }
   | { type: 'text'; text: string }
   /** A piece of the agent's message while it is written; the `text` event that follows replaces the draft. */
   | { type: 'text_delta'; text: string }
