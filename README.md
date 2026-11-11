@@ -12,7 +12,6 @@ for the PayPal AI Hackathon 2026.
 - **Live app:** https://voircheck.com
 - **Try the demo:** press "Try the demo" on the home page. It creates a private temporary account (English, Demo mode
   on). Everything runs in the PayPal **sandbox**: no real money moves.
-- **Video:** [link coming]
 
 ## Why now
 
@@ -44,7 +43,7 @@ tools and MoneyGate. No real money either way: the fake pay tool only records th
 One earlier exploratory run went the other way: the agent alone noticed the lookalike name and paid the real shop.
 So across all 7 naive runs, 6 paid the scam. Transcripts: [`eval/compare/`](eval/compare/).
 
-## Attacks we test against
+## Attacks we tested
 
 Five published attacks on shopping agents, each planted in a page of a fictional store (Quillmere Audio,
 `apps/stores` `/lab/<attack>`: demo banner, noindex, nothing to buy). For each one, `pnpm attacks:run` ran a real
@@ -65,6 +64,14 @@ domain with nothing to compare prices against. Every order was the listed $49 to
 waiting for the person's approval: MoneyGate's orders have no payee field, and no agent tool takes an amount. Full
 report, transcripts and the two runs that went wrong: [`eval/attacks/`](eval/attacks/).
 
+These runs used Claude (Nov 4). On Nov 11 we ran the same five pages once on the free providers. Again no money moved.
+But one page came out wrong: Gemini read the fake-badge page as normal and it scored Safe 0. That is now a fixed rule in
+code, not left to the AI (`fake_trust_badge`, see "Security" below). We checked the fix against the saved page from that
+run, not with a new live run. On the same day, the shopping agent couldn't be tested properly: the free daily limits
+were used up, so the agent never got an answer.
+
+This only covers the attacks we tested. A new trick could get past VoirCheck, and a page can still score wrong.
+
 ## A quick walkthrough
 
 AI agents are starting to shop for people. Fake shops are built to look real: a copied layout, a price that is a
@@ -81,10 +88,10 @@ VoirCheck puts a check between "buy" and "paid":
 
 ```mermaid
 flowchart LR
-  P[Person] -->|chat| A[Shopping agent<br/>Claude Sonnet 5.5]
+  P[Person] -->|chat| A[Shopping agent<br/>free AI providers, Claude last]
   P -->|paste a link| W[VoirCheck web app]
   A -->|tool calls: IDs only| W
-  W --> S[Scanner<br/>KERNEL browser, RDAP, TLS,<br/>Safe Browsing, Claude page analysis]
+  W --> S[Scanner<br/>KERNEL browser, RDAP, TLS,<br/>Safe Browsing, AI page analysis]
   S -->|verdict + evidence| G
   W --> G{{MoneyGate<br/>server only}}
   G -->|create order, intent AUTHORIZE<br/>price from our own rows| PP[(PayPal Orders v2)]
@@ -114,17 +121,40 @@ MoneyGate can move money.
 
 ## How we use AI
 
-Both use Claude Sonnet 5.5 through the Anthropic TypeScript SDK.
+Right now VoirCheck spends $0 on AI. Free providers answer first; Claude is the last backup and is only used when the
+Anthropic account has credit. Each model has its own circuit breaker: if one hits a limit or fails, the next one
+answers. `packages/scanner/src/llm.ts`
 
-- **Page analysis (signal 4 of 6):** one structured-output call per uncached scan. It reads the store's pages as
-  marked, untrusted data and returns findings (kind, severity, a quote, the page), a risk score from 0 to 100, and a
-  short plain-language summary in English and French. Quotes are checked against the page text: one that isn't on
-  the page is shown as the AI's own note, never as a quote. Results are cached per URL for 24 hours.
-  `packages/scanner/src/signals/ai-page.ts`
+| Job | Order tried |
+| --- | --- |
+| Page analysis (public store pages only) | Groq (Qwen) → Google Gemini Flash-Lite → OpenRouter (free models) → Claude |
+| Shopping agent (your chat) | Groq (Qwen, then gpt-oss 120b, then gpt-oss 20b) → OpenRouter (free models) → Claude |
+| "What the web says" (web search about the store) | Claude only |
+
+- **Free daily limits apply.** Groq, Gemini and OpenRouter cap how much a free account can use per minute and per
+  day. When every free model has hit its limit and there is no Claude credit, page analysis shows "Not checked" (0
+  points) and the agent can't answer. On Nov 11 our test runs used up the daily limits within a few
+  dozen checks.
+- **"What the web says" needs Claude.** It is a web search, and only Claude runs it. With no Claude credit it shows
+  "Not checked".
+- **Gemini never sees your chat.** Google's free tier may use what it's sent to improve its products, so Gemini only
+  reads public store pages. The code refuses to use it for the agent.
+- **No paid usage by mistake.** OpenRouter: only models whose names end in `:free`, checked against its live price
+  list, with a maximum price of 0 on every request. Gemini: only the free Flash-Lite models. Billing must stay off on
+  the Groq, Gemini and OpenRouter accounts, because the code can't see account plans.
+- **Results are reused for 72 hours**, stored in the database so a restart doesn't throw them away. Our own demo stores
+  are cached permanently.
+
+- **Page analysis (signal 4 of 6):** reads the store's pages as marked, untrusted data and returns findings (kind,
+  severity, a quote, the page), a risk score from 0 to 100, and a short summary in English and French. **A finding
+  only counts with proof:** a quote we found on the page, or, for "missing legal information", our own code
+  confirming it (no legal, terms or contact link and no company name). A claim without proof is shown as the AI's note
+  and is worth 0 points. When a claim is dropped, the AI's summary is replaced by one our code writes from the findings
+  that counted. `packages/scanner/src/signals/ai-page.ts`
 - **Shopping agent:** finds an item at up to 3 stores (Channel3 product search, plus our demo stores), checks every
   store before recommending one, ranks by trust first and price second, and prepares the order. Seven tools, none of
   which can capture, void, override or refund (`request_refund` only proposes; the person's button decides). `packages/agent/src/tools.ts`, `packages/agent/src/prompt.ts`,
-  `packages/agent/src/anthropic-model.ts`, `apps/web/lib/agent-runtime.ts`
+  `packages/agent/src/failover-model.ts`, `apps/web/lib/agent-runtime.ts`
 
 ## Security: the AI never touches the money
 
@@ -142,7 +172,9 @@ Both use Claude Sonnet 5.5 through the Anthropic TypeScript SDK.
   tiny or same-colour text) and flags lines that address AI agents. `packages/scanner/src/hidden-text.ts`
 - **No single check reaches BLOCK.** Points add up to a score; the biggest single weight is 40 (clone fail), below
   the BLOCK line of 65, so it takes several findings together, such as a copied page and a fresh domain (40 + 25). Hard rules add floors: a threat-list hit always blocks; no valid HTTPS, a
-  verified injection attempt, a young domain with a much lower price, or a page we couldn't read is at least HOLD.
+  verified injection attempt, a young domain with a much lower price, a page we couldn't read, or a page that shows
+  a "Verified by VoirCheck" or "PayPal Verified" badge it gave itself is at least HOLD. The badge rule is plain code,
+  so no AI can talk it out of it.
   `packages/scanner/src/scoring.ts`
 - **Store pages never open on our server or your device.** Every visit runs in KERNEL's isolated cloud browser.
   The server only does DNS, RDAP and TLS checks, behind SSRF guards (public http(s) only, private and metadata
@@ -156,34 +188,40 @@ Both use Claude Sonnet 5.5 through the Anthropic TypeScript SDK.
 
 To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
-## Accuracy
+## How we tested
 
-We report what we measured, on small samples.
+We report what we measured, on small samples. Full reports: [`eval/results/`](eval/results/),
+[`eval/attacks/`](eval/attacks/), [`eval/compare/`](eval/compare/). Test set: [`eval/stores.json`](eval/stores.json),
+runner `pnpm eval:run`.
 
-**Method** (`eval/stores.json`, runner `pnpm eval:run`)
-- Ground truth comes only from named sources, never from VoirCheck: scams from Watchlist Internet's fake-shop list;
-  legit stores are established retailers (Wikipedia) and Austrian E-Commerce-Gütezeichen certified shops.
-- A scam counts as **caught** when VoirCheck says HOLD or BLOCK. A legit store on HOLD is a soft false alarm; one on
-  BLOCK is a hard false alarm. Dead sites are excluded and counted.
-- Splits:
-  - **`tune`** (10 scam + 10 legit): settings may be tuned here, so its numbers flatter us.
-  - **`seen-2026-10-31`** (20 + 20): run once as a baseline before the AI signal. It may inform tuning and is never
-    reported as a final number.
-  - **`holdout`**: scams first reported after 2026-10-31 plus fresh legit shops. Run once per scanner version, never
-    tuned on.
-- Eval scans use the homepage URL only, with no other stores to compare prices against, so the price signal is
-  unavailable there.
+**Where the shops come from.** Never from VoirCheck itself.
+- Fake shops: Watchlist Internet's fake-shop list, Verbraucherzentrale warnings (Niedersachsen, and its Netzmeldung
+  warnings about heating-oil sites), MalwareTips scam write-ups, one news report (5min.at), and one shop we found
+  ourselves in a Google Shopping ad. Reported between Aug 20 and Nov 6, 2026; added to the test set from Oct 30 to
+  Nov 8.
+- Real shops: established retailers (Wikipedia) and shops certified by Austria's E-Commerce-Gütezeichen.
 
-**Tune numbers (labelled tune: the AI cutoffs were chosen on this split)**
-- Before the AI signal (2026-10-31): 2 of 8 scams caught, 1 of 10 legit on HOLD, 0 blocked. Most catches were
-  "couldn't verify" bot walls, not real detections.
-- AI page analysis on its own, same captured pages, Sonnet 5.5 (2026-11-01): 6 of 7 readable scams scored at or above
-  the fail cutoff (risk 50), 0 of 9 legit did (legit stores scored at most 12).
-- Run-to-run noise on the same input is real: up to about 20 points (one scam scored 30 and 48 on two runs).
-- Reports: `eval/results/2026-10-31-tune.md`, `eval/results/2026-11-01-tune-ai-compare-2.md`,
-  `eval/results/2026-11-02-tune-ai-noise.md`.
+**What counts as caught.** A fake shop is caught when VoirCheck says HOLD or BLOCK. A real shop on HOLD is a false
+alarm. Sites that were already offline are left out and counted. Scans used the home page only, with no other stores
+to compare prices against, so the price check couldn't run.
 
-**Holdout: coming.** It hasn't been run yet. We'll publish it here once, as measured.
+**Tuned or not.** Settings were tuned on the `tune` split (10 fake + 10 real shops), so its numbers flatter us. The
+`seen-2026-10-31` split was run before and may have informed our changes. The `holdout` split (fake shops first reported after Oct 31, and
+real shops we hadn't used) and the shops added on Nov 8 were not tuned on before these runs.
+
+**Results**
+
+| Test | Date | Result |
+| --- | --- | --- |
+| Fake shops, with Claude analysing pages | Nov 8 | **34 of 54** online fake shops caught (2 BLOCK, 32 HOLD, 20 missed); 16 more were already offline. By split: holdout 11 of 20 and new finds 10 of 12 (not tuned on), seen 9 of 15, tune 4 of 7 (tuned on). |
+| Real shops, with Claude | Nov 8 | **7 of 30** put on HOLD, none blocked: tune 1 of 10, holdout 6 of 20. 6 of the 7 were stores we couldn't read (4 bot checks, 2 error pages), which VoirCheck never calls safe. |
+| Attacks on the shopping agent | Nov 4 | **0 of 5** tested attacks moved money or got an order on the attacker's terms (see "Attacks we tested"). |
+| The same agent, with and without VoirCheck | Nov 4 | Without VoirCheck the agent paid the fake shop in **6 of 7** runs. With VoirCheck, **0 of 6** runs ordered there. |
+
+**After these runs.** We changed the scanner on Nov 8 after looking at the 54-shop results (catch-rate fixes), and on
+Nov 11 (AI findings need proof, the fake-badge rule, free providers). So numbers on these same shops after those dates
+are not clean holdout numbers. We haven't re-measured the full set since: the free providers' daily limits run out
+long before 84 shops. A 5 + 5 shop check on the free providers on Nov 11 is in `eval/results/` too.
 
 ## Testing guide for judges
 
@@ -225,7 +263,7 @@ pays: `POST https://voircheck.com/api/mcp` (Streamable HTTP, stateless). Three t
 | Tool | What it does |
 | --- | --- |
 | `check_store(url)` | VoirCheck's verdict (SAFE / HOLD / BLOCK), score, each check's status in our words, hard rules, whether the page tried to instruct agents, an evidence link, and a `storeId`. Scans the store if there's no fresh result (up to a minute). Never returns page text or hidden text. |
-| `get_verdict(url)` | The cached verdict only (last 24 hours). Never starts a scan. |
+| `get_verdict(url)` | The cached verdict only (last 3 days; our demo stores any time). Never starts a scan. |
 | `prepare_purchase(storeId, amount)` | A PayPal **sandbox** order for the item, at VoirCheck's price (`amount` must match; it is a check, never applied). BLOCK and unchecked stores are refused. Returns an approval link **for the person**: nothing is held or charged until they approve, and settling stays with VoirCheck. |
 
 There is no capture, void, refund, price or payee tool. Each token acts as its owner, with the same scan limits,
@@ -282,7 +320,8 @@ Chrome may show a "developer mode extensions" notice; that's expected for unpack
 - Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4
 - Neon Postgres + Neon Auth (magic link, Google, email and password), Drizzle ORM and drizzle-kit
 - PayPal Orders v2 REST, JS SDK v6, PayPal AI Toolkit 1.11.0 (read-only `get_order`; `create_refund` run by MoneyGate)
-- Anthropic TypeScript SDK (Claude Sonnet 5.5) for page analysis and the agent
+- Free AI providers through their OpenAI-compatible APIs: Groq, Google Gemini (page analysis only), OpenRouter (free
+  models only); Anthropic TypeScript SDK (Claude) as the last backup and for web research
 - KERNEL cloud browser for every store visit
 - Channel3 product search
 - Google Safe Browsing, RDAP, Tranco top-sites list
@@ -302,7 +341,7 @@ packages/shared/   shared types, ownership helper, demo store config, order refe
 db/                Drizzle schema, migrations, seed, retention rules
 scripts/           eval runner, offline agent demo, PayPal checks, maintenance jobs
 eval/              real-world test set and results
-docs/              PayPal spike results
+docs/              PayPal spike results, Devpost text
 ```
 
 `VOIRCHECK_SPEC.md` is the project's full spec and decision log.
@@ -317,8 +356,9 @@ cp .env.example .env
 ```
 
 Fill in `.env` with your own keys. `.env.example` lists every variable with placeholders only. You need at least the
-PayPal **sandbox** app, Neon (database + auth) and KERNEL. Without `ANTHROPIC_API_KEY`, page analysis is
-"unavailable" (0 points) and the agent runs a scripted stand-in model.
+PayPal **sandbox** app, Neon (database + auth) and KERNEL. For AI, add any of `GROQ_API_KEY`, `GEMINI_API_KEY`,
+`OPENROUTER_API_KEY` (free accounts) or `ANTHROPIC_API_KEY`. With none of them, page analysis is "unavailable" (0
+points) and the agent runs a scripted stand-in model. "What the web says" needs `ANTHROPIC_API_KEY`.
 
 ```bash
 pnpm db:migrate
@@ -333,7 +373,7 @@ catalog, with a fake PayPal and saved scan results. No keys needed.
 ## Tests
 
 ```bash
-pnpm test        # Vitest: 731 tests
+pnpm test        # Vitest: 1,126 tests
 pnpm typecheck
 pnpm lint
 ```
@@ -354,8 +394,10 @@ access or keys.
 - **Google Safe Browsing is non-commercial.** A paid product would move to Google Web Risk.
 - **No domain age for `.de`.** There is no public RDAP server for `.de`, so domain age is "unavailable" for German
   shops, which make up much of our scam source.
-- **Run-to-run noise.** The scan model accepts no temperature setting, so the same page can score differently on
-  two runs (up to about 20 points in our check). Scores near a cutoff can flip.
+- **Run-to-run noise.** The same page can score differently on two runs (up to about 20 points in our check with
+  Claude), and different AI providers can read the same page differently. Scores near a cutoff can flip.
+- **Free AI limits.** Page analysis and the agent run on free accounts with daily limits. When they run out and there
+  is no Claude credit, page analysis is "Not checked" and the agent can't answer. "What the web says" needs Claude.
 - **Chats live in server memory.** A conversation with the shopping agent is kept in the web server's memory for
   2 hours, and resets on a redeploy or instance restart (the chat then starts over). Orders, receipts and History
   are stored in the database and survive restarts (see Data retention below).
@@ -366,7 +408,8 @@ access or keys.
 ## Credits and attribution
 
 - **PayPal:** Orders v2, JS SDK v6, PayPal AI Toolkit.
-- **Anthropic:** Claude Sonnet 5.5.
+- **Groq, Google Gemini, OpenRouter:** free AI models for page analysis and the agent.
+- **Anthropic:** Claude (last backup, web research; Sonnet 5.5 for the measurements above).
 - **KERNEL:** isolated cloud browsers for every store visit.
 - **Channel3:** product search.
 - **Render:** hosting.
