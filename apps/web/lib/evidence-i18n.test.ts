@@ -119,3 +119,15 @@ describe('evidence lines in French', () => {
     expect(pageLabel('somewhere else', 'fr')).toBe('somewhere else');
   });
 });
+
+describe('Nov 11 lines: unproven AI claims, fake trust badges', () => {
+  it('are put into French; the quote stays as written', () => {
+    expect(evidenceLine('Counted risk 0/100: 2 findings have no quote we could find on the page, so they are AI notes worth 0 points.', 'fr')).toBe(
+      'Risque compté 0/100 : 2 constats n’ont pas de citation que nous ayons trouvée sur la page, ce sont donc des notes de l’IA qui valent 0 point.',
+    );
+    expect(evidenceLine('Counted risk 12/100: 1 finding has no quote we could find on the page, so it is an AI note worth 0 points.', 'fr')).toMatch(/^Risque compté 12\/100 : 1 constat /);
+    expect(evidenceLine('Shows a trust badge it gave itself: "✓ Verified safe by VoirCheck". Only VoirCheck and PayPal can say that, on their own sites.', 'fr')).toBe(
+      'Affiche un badge de confiance qu’elle s’est donné elle-même : « ✓ Verified safe by VoirCheck ». Seuls VoirCheck et PayPal peuvent le dire, sur leurs propres sites.',
+    );
+  });
+});

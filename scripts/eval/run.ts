@@ -2,7 +2,7 @@ import { THRESHOLDS, type HardRule, type ScanReport, type SignalResult, type Ver
 import type { EvalRow, EvalStore, Split } from './metrics';
 
 const ORDER: Verdict[] = ['SAFE', 'HOLD', 'BLOCK'];
-const FLOOR: Record<HardRule, Verdict> = { threat_list_hit: 'BLOCK', no_valid_https: 'HOLD', young_domain_cheap_price: 'HOLD', cant_verify: 'HOLD', prompt_injection_attempt: 'HOLD', unchecked_core_signals: 'HOLD', authority_warning: 'BLOCK', scam_reports: 'HOLD', young_domain_weak_page: 'HOLD' };
+const FLOOR: Record<HardRule, Verdict> = { threat_list_hit: 'BLOCK', no_valid_https: 'HOLD', young_domain_cheap_price: 'HOLD', cant_verify: 'HOLD', prompt_injection_attempt: 'HOLD', unchecked_core_signals: 'HOLD', authority_warning: 'BLOCK', scam_reports: 'HOLD', young_domain_weak_page: 'HOLD', fake_trust_badge: 'HOLD' };
 /** Rules that need the AI's reading of the page, so they don't apply "without AI". */
 const AI_RULES = new Set<HardRule>(['prompt_injection_attempt', 'young_domain_weak_page']);
 

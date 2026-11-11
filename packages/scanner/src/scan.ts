@@ -19,6 +19,7 @@ import { evaluateSsl, makeTlsChecker, safeTlsCheck, type TlsChecker } from './si
 import { threatListSignal } from './signals/threat-list';
 import { errorMessage, unavailable, type AiUsage, type Fetch, type ScanFacts, type SignalOutcome } from './signals/types';
 import { assertSafeUrlShape, resolvePublicHost, SsrfError, type Resolver } from './ssrf';
+import { fakeTrustBadge } from './signals/trust-badge';
 
 export interface ScannerDeps {
   /** null = no cloud browser available; the scan then can't verify the store (never SAFE). */
@@ -262,6 +263,11 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
   // A big retailer's name in this page's own site name, logo or banner, on someone else's address.
   const retailer = targetPage ? retailerOnPage({ url: targetPage.finalUrl, siteName: targetPage.siteName, title: targetPage.title, facts: targetPage.pageFacts, wellKnownRank: pop.rank }) : null;
   const clone = withRetailerHit(branded, retailer, targetPage?.finalUrl ?? url.href);
+  // Fake VoirCheck / PayPal badge in the shop's own text, image alt, aria-labels or structured data (all pages read).
+  const badge = targetPage
+    ? fakeTrustBadge(targetPage.finalUrl, [targetPage.visibleText, targetPage.fullText, ...targetPage.hiddenCandidates.map((c) => c.text), ...evidencePages.flatMap((p) => [p.visibleText, p.fullText, ...p.hiddenCandidates.map((c) => c.text)])])
+    : null;
+  if (badge) clone.evidence.push(`Shows a trust badge it gave itself: "${badge}". Only VoirCheck and PayPal can say that, on their own sites.`);
   emit(clone);
 
   const facts: ScanFacts = {
@@ -272,6 +278,7 @@ export async function scanStore(rawInput: ScanInput, deps: ScannerDeps): Promise
     kernelOk: !!targetPage,
     wellKnownRank: pop.rank,
     aiInjection: confirmedInjection(ai.findings),
+    fakeTrustBadge: badge,
     reputationChecked: false,
   };
   const reputation = await reputationP;

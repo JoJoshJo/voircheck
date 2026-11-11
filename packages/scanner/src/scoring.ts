@@ -78,6 +78,8 @@ export function hardRules(facts: ScanFacts): Array<{ rule: HardRule; floor: Verd
   ) {
     out.push({ rule: 'young_domain_weak_page', floor: 'HOLD' });
   }
+  // J, Nov 11: a VoirCheck / PayPal badge the shop gave itself (code, not AI; see signals/trust-badge.ts).
+  if (facts.fakeTrustBadge) out.push({ rule: 'fake_trust_badge', floor: 'HOLD' });
   return out;
 }
 

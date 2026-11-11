@@ -261,19 +261,40 @@ export function verifyQuotes(a: AiAnalysis, page: PageForAnalysis): AiAnalysis {
   return { ...a, findings: a.findings.map((f) => ({ ...f, quoteVerified: quoteFound(f.quote, haystack) })) };
 }
 
+const SEVERITY_WEIGHT = { low: 1, med: 2, high: 3 } as const;
+
+/**
+ * AI claims need proof (J, Nov 11; model-independent): only findings whose quote we found on the page add risk. The
+ * model gives one overall risk, so it counts in proportion to the verified findings' share (by severity: low 1, med 2,
+ * high 3). An unverified finding stays on the evidence page as an "AI note" worth 0 points; missing_legal_info has
+ * nothing to quote, so it is always a note. With no findings at all, the risk stays under the warning line (24).
+ * Run before this rule (Nov 11, 10 shops): Target and REI were HOLD on "payment red flags" the page never showed.
+ */
+export function countedRisk(a: Pick<AiAnalysis, 'risk' | 'findings'>): number {
+  const total = a.findings.reduce((n, f) => n + SEVERITY_WEIGHT[f.severity], 0);
+  if (!total) return Math.min(a.risk, 24);
+  const verified = a.findings.reduce((n, f) => n + (f.quoteVerified === true ? SEVERITY_WEIGHT[f.severity] : 0), 0);
+  return Math.round((a.risk * verified) / total);
+}
+
 /** The signal outcome for a validated analysis. Evidence strings are plain text (rendered as text, never HTML). */
 export function outcomeFromAnalysis(a: AiAnalysis, by: AnalyzedBy | string): SignalOutcome {
   const who = typeof by === 'string' ? by : `${PROVIDER_LABEL[by.provider]}, ${by.model}`;
+  const counted = countedRisk(a);
+  const notes = a.findings.filter((f) => f.quoteVerified !== true).length;
   return {
     id: 'ai_page',
-    status: riskToStatus(a.risk),
+    status: riskToStatus(counted),
     ...(typeof by === 'string' ? {} : { analyzedBy: by }),
     evidence: [
       `AI page analysis (${who}): risk ${a.risk}/100, ${a.findings.length ? `${a.findings.length} finding${a.findings.length === 1 ? '' : 's'}` : 'nothing suspicious found'}.`,
+      ...(counted !== a.risk && notes
+        ? [`Counted risk ${counted}/100: ${notes === 1 ? '1 finding has' : `${notes} findings have`} no quote we could find on the page, so ${notes === 1 ? 'it is an AI note' : 'they are AI notes'} worth 0 points.`]
+        : []),
       ...a.findings.map((f) => (f.quoteVerified ? `${KIND_EN[f.kind]} (${f.severity}, ${f.page}): "${f.quote}"` : `${KIND_EN[f.kind]} (${f.severity}, ${f.page}), AI note: ${f.note?.en ?? f.quote}`)),
     ],
     findings: a.findings,
-    risk: a.risk,
+    risk: counted,
     ...(a.summary ? { summary: a.summary } : {}),
     ...(a.product ? { product: { ...a.product, currency: a.product.currency?.toUpperCase() ?? null } } : {}),
   };

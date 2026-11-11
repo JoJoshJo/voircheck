@@ -154,6 +154,7 @@ export const HARD_RULES = [
   'authority_warning',
   'scam_reports',
   'young_domain_weak_page',
+  'fake_trust_badge',
 ] as const;
 export const HardRule = z.enum(HARD_RULES);
 export type HardRule = z.infer<typeof HardRule>;

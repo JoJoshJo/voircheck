@@ -20,6 +20,7 @@ export {
   buildAnalysisInput,
   outcomeFromAnalysis,
   riskToStatus,
+  countedRisk,
   costUsd,
   wrapUntrustedPageText,
   buildUntrustedPageInput,
@@ -67,3 +68,4 @@ export {
 export { WEB_FINDING_KINDS, WebFinding, WebReputation } from './schema';
 export { RESEARCH_DEADLINE_MS } from './scan';
 export * from './llm';
+export { fakeTrustBadge, isOfficialDomain, TRUST_BADGE_RE } from './signals/trust-badge';

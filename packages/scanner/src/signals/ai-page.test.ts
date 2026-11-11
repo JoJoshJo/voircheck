@@ -152,7 +152,7 @@ describe('AI page analysis: model call', () => {
     const long = 'home and product pages (hidden accordion blocks)';
     const { client } = fakeClient({ parsed_output: { findings: [{ kind: 'fake_scarcity_urgency', severity: 'med', quote: 'Beeilen Sie sich', page: long }], risk: 40 } });
     const r = await anthropicAnalyzer({ client, log: quiet }).analyze(page());
-    expect(r.status).toBe('warn');
+    expect(r.status).toBe('pass'); // the quote isn't on this test page: an AI note worth 0 points (J, Nov 11)
     expect(r.findings?.[0]?.page).toBe(long.slice(0, 40));
   });
 
@@ -264,7 +264,11 @@ describe('AI page analysis: quotes must be real', () => {
     const { client } = fakeClient({ parsed_output: made });
     const r = await anthropicAnalyzer({ client, log: quiet }).analyze(page());
     expect(r.findings?.[0]?.quoteVerified).toBe(false);
-    expect(r.evidence[1]).toBe('Payment red flags (high, home), AI note: Pay by bank transfer for an extra 15% off');
+    expect(r.evidence[2]).toBe('Payment red flags (high, home), AI note: Pay by bank transfer for an extra 15% off');
+    // J, Nov 11: an unproven claim is worth 0 points; the risk the model gave is shown, the counted one says why.
+    expect(r.evidence[1]).toBe('Counted risk 0/100: 1 finding has no quote we could find on the page, so it is an AI note worth 0 points.');
+    expect(r.status).toBe('pass');
+    expect(r.risk).toBe(0);
   });
   it('a cached result is checked against the current page too', async () => {
     const cache = memoryAiCache();

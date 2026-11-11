@@ -188,6 +188,11 @@ const FR: Rule[] = [
   ],
   // Findings: the quote (or the AI's own note) stays exactly as written.
   [/^(.+?) \((low|med|high), (.+?)\): (".*")$/, (all, k, sev, page, quote) => (KIND_FR[k!] ? `${KIND_FR[k!]} (${SEV_FR[sev!]}, ${pageLabel(page!, 'fr')}) : ${quote}` : all!)],
+  [/^Shows a trust badge it gave itself: "(.+)"\. Only VoirCheck and PayPal can say that, on their own sites\.$/, (_, q) => `Affiche un badge de confiance qu’elle s’est donné elle-même : « ${q} ». Seuls VoirCheck et PayPal peuvent le dire, sur leurs propres sites.`],
+  [
+    /^Counted risk (\d+)\/100: (1 finding has|\d+ findings have) no quote we could find on the page, so (?:it is an AI note|they are AI notes) worth 0 points\.$/,
+    (_, r, n) => (n!.startsWith('1 ') ? `Risque compté ${r}/100 : 1 constat n’a pas de citation que nous ayons trouvée sur la page, c’est donc une note de l’IA qui vaut 0 point.` : `Risque compté ${r}/100 : ${n!.split(' ')[0]} constats n’ont pas de citation que nous ayons trouvée sur la page, ce sont donc des notes de l’IA qui valent 0 point.`),
+  ],
   [/^(.+?) \((low|med|high), (.+?)\), AI note: (.*)$/, (all, k, sev, page, note) => (KIND_FR[k!] ? `${KIND_FR[k!]} (${SEV_FR[sev!]}, ${pageLabel(page!, 'fr')}), note de l’IA : ${note}` : all!)],
   [/^Couldn't read the store page: (.+)\.$/, (_, why) => `Impossible de lire la page de la boutique : ${blockedFr(why!)}.`],
   [/^Signal did not run\.$/, 'Vérification non effectuée.'],

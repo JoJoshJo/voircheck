@@ -54,6 +54,8 @@ export interface ScanFacts {
   aiRisk?: number | null;
   /** The AI reported missing legal info (who runs the shop) at high severity. */
   aiMissingIdentity?: boolean;
+  /** A fake VoirCheck / PayPal trust badge on the shop's own page (quote), found by code, not AI. */
+  fakeTrustBadge?: string | null;
 }
 
 export type Fetch = typeof fetch;

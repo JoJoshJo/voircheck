@@ -314,3 +314,25 @@ describe('ScanResult schema', () => {
     expect(ScanResult.safeParse({ ...result, hardRulesTriggered: ['vibes'] }).success).toBe(false);
   });
 });
+
+// ---------- fake trust badge (J, Nov 11), whole scan ----------
+
+describe('fake trust badge: at least HOLD whatever the AI says', () => {
+  it('a "PayPal Verified Merchant" badge in an image alt text, AI says all fine → HOLD with the quote on the copycat check', async () => {
+    const page: PageSnapshot = {
+      ...PAGES['https://velbrook.com/']!,
+      hiddenCandidates: [{ text: 'PayPal Verified Merchant badge', reason: 'alt_text', hint: 'img', linkRatio: 0, context: 'markup', hashLink: false }],
+    };
+    const visitor: PageVisitor = { visit: async (urls) => ({ sessionId: 's', pages: urls.map(() => ({ ok: true as const, page })), sessionSeconds: 2 }) };
+    const analyzer = { analyze: async () => ({ id: 'ai_page' as const, status: 'pass' as const, evidence: ['AI page analysis (Gemini, gemini-3.5-flash-lite): risk 0/100, nothing suspicious found.'], findings: [], risk: 0 }) };
+    const { result } = await scanStore({ url: 'https://velbrook.com/' }, deps({ visitor, analyzer }));
+    expect(result.verdict).toBe('HOLD');
+    expect(result.hardRulesTriggered).toContain('fake_trust_badge');
+    expect(signal(result, 'clone').evidence).toContain('Shows a trust badge it gave itself: "PayPal Verified Merchant badge". Only VoirCheck and PayPal can say that, on their own sites.');
+  });
+  it('the same page without the badge stays SAFE', async () => {
+    const analyzer = { analyze: async () => ({ id: 'ai_page' as const, status: 'pass' as const, evidence: ['x'], findings: [], risk: 0 }) };
+    const { result } = await scanStore({ url: 'https://velbrook.com/' }, deps({ analyzer }));
+    expect(result.hardRulesTriggered).not.toContain('fake_trust_badge');
+  });
+});

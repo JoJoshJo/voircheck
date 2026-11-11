@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TRUST_BADGE_RE } from './signals/trust-badge';
 
 /**
  * Hidden-text extract (spec 5.13 injection showcase, prepares the AI signal). Text that is in the DOM but hidden from
@@ -175,7 +176,8 @@ export const HIDDEN_TEXT_JS = `() => {
   };
   if (document.body) for (const c of document.body.children) walk(c);
   // Markup people never read: alt text, aria-labels, comments, JSON-LD strings. Injection-like text only, max 20.
-  const RE = new RegExp(${JSON.stringify(INJECTION_CANDIDATE_RE.source)}, 'i');
+  // Plus fake trust-badge claims ("Verified by VoirCheck" in an image's alt text): the fake_trust_badge rule reads these.
+  const RE = new RegExp(${JSON.stringify(INJECTION_CANDIDATE_RE.source + '|' + TRUST_BADGE_RE.source)}, 'i');
   const marked = [];
   const add = (text, reason, h) => { const t = (text || '').replace(/\\s+/g, ' ').trim(); if (marked.length < 20 && t.length >= 12 && RE.test(t)) marked.push({ text: t.slice(0, 1000), reason, hint: h.slice(0, 120), linkRatio: 0, context: 'markup', hashLink: false }); };
   for (const el of document.querySelectorAll('img[alt]')) add(el.getAttribute('alt'), 'alt_text', hint(el));
